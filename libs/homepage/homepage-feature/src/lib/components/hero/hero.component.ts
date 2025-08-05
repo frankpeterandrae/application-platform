@@ -3,11 +3,11 @@
  * All rights reserved.
  */
 
-import { AsyncPipe } from '@angular/common';
-import type { OnInit } from '@angular/core';
-import { Component, inject } from '@angular/core';
-import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { TranslationPipe } from '@application-platform/services';
+import { Component } from '@angular/core';
+import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
+import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
+
+import { featureTextModules } from '../../i18n/i18n';
 
 /**
  * Component decorator for defining the HeroComponent.
@@ -16,22 +16,14 @@ import { TranslationPipe } from '@application-platform/services';
 	selector: 'homepage-feature-hero',
 	templateUrl: './hero.component.html',
 	styleUrl: './hero.component.scss',
-	imports: [TranslationPipe, AsyncPipe]
+	imports: [TranslationDirective],
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'HeroComponent' }, provideTranslocoScope(Scopes.FEATURE)]
 })
-export class HeroComponent implements OnInit {
-	private readonly translocoService = inject(ScopedTranslationServiceInterface);
+export class HeroComponent extends BaseComponent {
+	public readonly featureTextModules = featureTextModules;
 
 	/**
 	 * The translated paragraph text.
 	 */
-	public paragraph: string | undefined;
-
-	/**
-	 * Initializes the component and sets the translated paragraph text.
-	 */
-	ngOnInit(): void {
-		this.translocoService.selectTranslate('HeroComponent.lbl.Paragraph1', 'feature').subscribe((translation) => {
-			this.paragraph = translation;
-		});
-	}
+	public paragraph = translateSignal(featureTextModules.HeroComponent.lbl.Paragraph1);
 }

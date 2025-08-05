@@ -1,0 +1,87 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+@use '../../theme/base/prefix';
+@use '../../theme/base/variables';
+@use '../../theme/base/utility';
+
+// Reusable text color mixin to avoid selector expansion from @extend.
+@mixin button-text-color($color) {
+	color: $color;
+}
+
+.#{prefix.$prefix}default {
+	background-color: #{variables.$default};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$default, 2);
+	}
+
+	@include button-text-color(variables.$dark-text);
+}
+
+.#{prefix.$prefix}primary {
+	background-color: #{variables.$primary};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$primary, 2);
+	}
+
+	@include button-text-color(variables.$light-text);
+}
+
+.#{prefix.$prefix}info {
+	background-color: #{variables.$info};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$info, 2);
+	}
+
+	@include button-text-color(variables.$light-text);
+}
+
+.#{prefix.$prefix}success {
+	background-color: #{variables.$success};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$success, 2);
+	}
+
+	@include button-text-color(variables.$light-text);
+}
+
+.#{prefix.$prefix}warning {
+	background-color: #{variables.$warning};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$warning, 2);
+	}
+
+	@include button-text-color(variables.$light-text);
+}
+
+.#{prefix.$prefix}danger {
+	background-color: #{variables.$danger};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$danger, 2);
+	}
+
+	@include button-text-color(variables.$light-text);
+}
+
+.#{prefix.$prefix}disabled {
+	background-color: variables.$default;
+	cursor: not-allowed;
+}
+
+.#{prefix.$prefix}no-color {
+	background-color: transparent;
+}

@@ -137,6 +137,7 @@
 		"*.{js,jsx,ts}": [
 			"organize-imports-cli",
 			"node scripts/sort-exports.js",
+			"node scripts/build-translation-files.js",
 			"npm run lint:staged --silent",
 			"prettier --config .prettierrc --write"
 		],

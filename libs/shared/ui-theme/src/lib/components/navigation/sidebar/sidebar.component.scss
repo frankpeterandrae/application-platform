@@ -1,7 +1,9 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
+
+@use '../../../theme/base/variables';
 
 nav {
 	transition:
@@ -19,7 +21,7 @@ nav {
 				color: inherit;
 
 				&:hover {
-					background-color: var(--sidebar-hover-bg);
+					background-color: variables.$dark-shades-highlight;
 				}
 			}
 		}

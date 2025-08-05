@@ -1,0 +1,80 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../../theme/base/variables';
+
+$default-primary-color: variables.$main-band;
+$default-secondary-color: variables.$light-accent;
+$default-check-color: variables.$info;
+
+@mixin checkbox-color-variation(
+	$primary-color: $default-primary-color,
+	$secondary-color: $default-secondary-color,
+	$check-color: $default-check-color,
+	$variation-name: 'default'
+) {
+	.checkbox-wrapper--#{$variation-name} {
+		.cbx {
+			span:first-child {
+				border: 1px solid $secondary-color;
+
+				svg {
+					stroke: $check-color;
+				}
+
+				&::before {
+					background: $primary-color;
+				}
+			}
+
+			&:hover span:first-child {
+				border-color: $primary-color;
+			}
+		}
+
+		.inp-cbx:checked + .cbx span:first-child {
+			background: $primary-color;
+			border-color: $primary-color;
+		}
+	}
+}
+
+@include checkbox-color-variation;
+@include checkbox-color-variation(
+	$primary-color: variables.$light-shades,
+	$secondary-color: variables.$info,
+	$check-color: variables.$info,
+	$variation-name: 'light-shades'
+);
+@include checkbox-color-variation(
+	$primary-color: variables.$light-accent,
+	$secondary-color: variables.$warning,
+	$check-color: variables.$info,
+	$variation-name: 'light-accent'
+);
+@include checkbox-color-variation(
+	$primary-color: variables.$main-band,
+	$secondary-color: variables.$main-band,
+	$check-color: variables.$info,
+	$variation-name: 'main-band'
+);
+@include checkbox-color-variation(
+	$primary-color: variables.$dark-accent,
+	$secondary-color: variables.$dark-accent,
+	$check-color: variables.$info,
+	$variation-name: 'dark-accent'
+);
+@include checkbox-color-variation(
+	$primary-color: variables.$dark-shades,
+	$secondary-color: variables.$dark-shades,
+	$check-color: variables.$info,
+	$variation-name: 'dark-shades'
+);
+@include checkbox-color-variation(
+	$primary-color: variables.$success,
+	$secondary-color: variables.$success,
+	$check-color: variables.$info,
+	$variation-name: 'success'
+);

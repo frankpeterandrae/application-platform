@@ -62,10 +62,10 @@ describe('ColorSearchContainerComponent', () => {
 		// Wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		expect(mockTitle.setTitle).toHaveBeenCalledWith('ColorSearchContainerComponent.meta.Title');
+		expect(mockTitle.setTitle).toHaveBeenCalledWith('colorRack.ColorSearchContainerComponent.meta.Title');
 		expect(mockMeta.addTag).toHaveBeenCalledWith({
 			name: 'description',
-			content: 'ColorSearchContainerComponent.meta.Description'
+			content: 'colorRack.ColorSearchContainerComponent.meta.Description'
 		});
 	});
 });

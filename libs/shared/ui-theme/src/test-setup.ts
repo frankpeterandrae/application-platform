@@ -8,8 +8,8 @@ import '@angular/compiler';
 import type { TestModuleMetadata } from '@angular/core/testing';
 import { setupTestingModule as sharedSetup } from '@application-platform/testing';
 
-import de from './lib/theme/assets/i18n/theme/de.json';
-import en from './lib/theme/assets/i18n/theme/en.json';
+import de from '../src/assets/i18n/theme/de.json';
+import en from '../src/assets/i18n/theme/en.json';
 
 /**
  * Sets up the Angular testing module with the provided metadata.

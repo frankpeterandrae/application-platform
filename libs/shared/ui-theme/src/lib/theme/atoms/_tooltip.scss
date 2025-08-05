@@ -5,6 +5,7 @@
 @use '../base/prefix';
 @use '../base/variables';
 @use '../electrons/typography';
+
 .#{prefix.$prefix}tooltip {
 	position: absolute;
 	background-color: variables.$dark-accent;

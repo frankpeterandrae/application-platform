@@ -61,7 +61,7 @@ describe('AppComponent', () => {
 	it('initializes menuItems with the expected routes', () => {
 		const app = fixture.componentInstance;
 		expect(Array.isArray(app.menuItems)).toBeTruthy();
-		expect(app.menuItems.map((i) => i.route)).toEqual(['button', 'colors', 'icons', 'typography']);
+		expect(app.menuItems.map((i) => i.route)).toEqual(['button', 'checkbox', 'colors', 'icons', 'typography']);
 	});
 
 	it('populates opts with homepage and z21 options after view init', () => {

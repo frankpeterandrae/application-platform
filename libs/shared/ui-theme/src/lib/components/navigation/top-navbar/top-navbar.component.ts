@@ -8,14 +8,15 @@ import { Component, HostListener, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { ColorDefinition } from '../../../enums';
-import type { MenuItem } from '../../../model/menu-item.model';
+import type { MenuItem } from '../../../model';
+import { UnwrapSignalPipe } from '../../../pipes/unwrap-signal/unwrap-signal.pipe';
 
 /**
  * Component representing the top navigation bar.
  */
 @Component({
 	selector: 'theme-topnavbar',
-	imports: [CommonModule, RouterLink],
+	imports: [CommonModule, RouterLink, UnwrapSignalPipe],
 	templateUrl: './top-navbar.component.html',
 	styleUrl: './top-navbar.component.scss'
 })
@@ -61,18 +62,12 @@ export class TopNavbarComponent {
 	}
 
 	/**
-	 * Convert an iterable or HTMLCollection to an array for template iteration.
-	 * The template can call this helper: `toArray(navItem.children)`.
+	 * Gets children menu items as an array.
+	 * @param {MenuItem | undefined} item - The menu item.
+	 * @returns {MenuItem[]} - Array of child menu items.
 	 */
-	public toArray<T>(value: Iterable<T> | ArrayLike<T> | null | undefined): T[] {
-		if (!value) return [];
-		// If it already has Array.from available in global scope, this will use it;
-		// otherwise, fallback to manual conversion to keep template-friendly logic here.
-		try {
-			return Array.from(value as Iterable<T>);
-		} catch {
-			return ([] as T[]).slice.call(value as ArrayLike<T>);
-		}
+	public getChildren(item: MenuItem | undefined): MenuItem[] {
+		return item?.children ?? [];
 	}
 
 	/**

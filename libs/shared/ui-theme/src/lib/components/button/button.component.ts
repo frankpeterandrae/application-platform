@@ -16,7 +16,8 @@ import { ButtonColorDefinition, IconDefinition } from '../../enums';
 @Component({
 	selector: 'theme-button',
 	imports: [CommonModule, FastSvgComponent],
-	templateUrl: './button.component.html'
+	templateUrl: './button.component.html',
+	styleUrls: ['./button.base.scss', './button.variants.scss']
 })
 export class ButtonComponent implements OnInit {
 	/** Event emitter for button click events. */

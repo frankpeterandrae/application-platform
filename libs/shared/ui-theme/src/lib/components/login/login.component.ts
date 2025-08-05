@@ -2,10 +2,11 @@
  * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
+
 import { Component, inject } from '@angular/core';
 import type { FormGroup } from '@angular/forms';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DataConnectionService } from '@application-platform/services';
+import { DataConnectionService } from '@application-platform/shared-ui';
 
 import { ButtonColorDefinition } from '../../enums';
 import { ButtonComponent } from '../button/button.component';

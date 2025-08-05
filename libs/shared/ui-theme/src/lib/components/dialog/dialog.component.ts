@@ -7,7 +7,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 
 import { ButtonColorDefinition, IconDefinition } from '../../enums';
-import type { DialogConfigModel } from '../../model/dialog-config.model';
+import type { DialogConfigModel } from '../../model/';
 import { ButtonComponent } from '../button/button.component';
 
 import { DIALOG_DATA } from './dialog-tokens';

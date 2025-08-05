@@ -10,7 +10,7 @@
 html,
 body {
 	height: 100%;
-	font-family: #{variables.$font-family};
+	font-family: variables.$font-family;
 
 	@extend %#{prefix.$prefix}bg-dark-shades;
 	@extend %#{prefix.$prefix}light-text;

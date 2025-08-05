@@ -5,23 +5,26 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { TranslationPipe } from '@application-platform/services';
 import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
 import { DialogComponent, DIALOG_DATA } from '@application-platform/shared/ui-theme';
+import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
+import { provideTranslocoScope } from '@jsverse/transloco';
 
+import { colorRackTextModules } from '../i18n/i18n';
 import { ColorType } from '../models/color-type.enum';
 import type { Color } from '../models/color.model';
-
 /**
  * Component representing the details of a color.
  */
 @Component({
 	selector: 'cr-color-details',
-	imports: [CommonModule, DialogComponent, TranslationPipe],
-	templateUrl: './color-details.component.html'
+	imports: [CommonModule, DialogComponent, TranslationDirective],
+	templateUrl: './color-details.component.html',
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorDetailsComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)]
 })
-export class ColorDetailsComponent {
+export class ColorDetailsComponent extends BaseComponent {
 	public readonly data = inject<DialogConfigModel<Color>>(DIALOG_DATA);
+	public readonly colorRackTextModules = colorRackTextModules;
 
 	/**
 	 * Returns the color type as a string.

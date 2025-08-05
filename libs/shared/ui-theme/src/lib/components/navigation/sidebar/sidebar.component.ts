@@ -7,7 +7,8 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
-import type { MenuItem } from '../../../model/menu-item.model';
+import type { MenuItem } from '../../../model';
+import { UnwrapSignalPipe } from '../../../pipes/unwrap-signal/unwrap-signal.pipe';
 
 /**
  * SidebarComponent is a standalone component that represents the sidebar navigation.
@@ -15,7 +16,7 @@ import type { MenuItem } from '../../../model/menu-item.model';
  */
 @Component({
 	selector: 'theme-sidebar',
-	imports: [RouterLink, FastSvgComponent],
+	imports: [RouterLink, FastSvgComponent, UnwrapSignalPipe],
 	templateUrl: './sidebar.component.html',
 	styleUrl: './sidebar.component.scss'
 })

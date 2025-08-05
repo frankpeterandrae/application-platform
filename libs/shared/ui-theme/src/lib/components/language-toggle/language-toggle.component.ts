@@ -15,7 +15,8 @@ import { IconDefinition } from '../../enums';
 @Component({
 	selector: 'theme-language-toggle',
 	imports: [FastSvgComponent],
-	templateUrl: './language-toggle.component.html'
+	templateUrl: './language-toggle.component.html',
+	styleUrls: ['./language-toggle.component.scss']
 })
 export class LanguageToggleComponent {
 	/** Service for handling translations and language changes. */

@@ -5,7 +5,7 @@
 
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { LOGGER_SOURCE } from '@application-platform/services';
+import { LOGGER_SOURCE } from '@application-platform/shared-ui';
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
@@ -32,11 +32,10 @@ describe('Error404Component', () => {
 	});
 
 	it('should set the sets the backToStartpage property with the translated string', async () => {
-		component.ngOnInit();
 		// wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		expect(component.backToStartpage).toBe('Error404Component.lbl.BackToStartpage');
+		expect(component.backToStart()).toBe('feature.Error404Component.lbl.BackToStartpage');
 	});
 
 	it('should navigate to home on routeToHome call', async () => {

@@ -8,11 +8,12 @@ import { Component, inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { BUILD_DATE, environment } from '@application-platform/config';
-import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { Logger } from '@application-platform/services';
 import type { MenuItem } from '@application-platform/shared/ui-theme';
 import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleComponent } from '@application-platform/shared/ui-theme';
-import { combineLatest } from 'rxjs';
+import { Logger } from '@application-platform/shared-ui';
+import { translateSignal } from '@jsverse/transloco';
+
+import { i18nTextModules } from './i18n/i18n';
 
 /**
  * The root component of the application.
@@ -24,14 +25,45 @@ import { combineLatest } from 'rxjs';
 	styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-	private readonly translocoService = inject(ScopedTranslationServiceInterface);
 	private readonly meta = inject(Meta);
 
+	private readonly homeLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.Home);
+	private readonly paintRack = translateSignal(i18nTextModules.AppComponent.menu.lbl.PaintRack);
+	private readonly inDevelopment = translateSignal(i18nTextModules.AppComponent.menu.lbl.InDevelopment);
+	private readonly test = translateSignal(i18nTextModules.AppComponent.menu.lbl.Test);
+
 	/**
-	 * The menu items to be displayed in the sidebar.
-	 * @type {MenuItem[]}
+	 * The menu items are provided via a getter that reads translation signals.
+	 * When the signals update (language change), Angular will re-evaluate the getter
+	 * and update the bound child component.
 	 */
-	public menuItems: MenuItem[] = [];
+	public get menuItems(): MenuItem[] {
+		return [
+			{
+				id: 'home',
+				label: this.homeLabel(),
+				icon: IconDefinition.HOUSE,
+				route: '/'
+			},
+			{
+				id: 'paint-rack',
+				label: this.paintRack(),
+				icon: IconDefinition.BRUSH,
+				route: '/paint-rack'
+			},
+			...(environment.production
+				? []
+				: [
+						{
+							id: 'dev',
+							label: this.inDevelopment(),
+							icon: IconDefinition.BRUSH,
+							route: '/dev',
+							children: [{ id: 'test', label: this.test(), route: '/dev/test' }]
+						}
+					])
+		];
+	}
 
 	/**
 	 * Creates an instance of AppComponent.
@@ -53,46 +85,5 @@ export class AppComponent implements OnInit {
 		if (environment.production) {
 			Logger.setProductionMode({ disable: true });
 		}
-
-		combineLatest([
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.Home'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.PaintRack'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.InDevelopment'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.Test')
-		]).subscribe(([home, paintRack, inDevelopment, test]) => {
-			this.initializeMenuItems(home, paintRack, inDevelopment, test);
-		});
-	}
-
-	/**
-	 * Initializes the menu items with the provided translations.
-	 * @param {string} home - The translation for the home menu item.
-	 * @param {string} paintRack - The translation for the paint rack menu item.
-	 * @param {string} inDevelopment - The translation for the in development menu item.
-	 * @param {string} test - The translation for the test menu item.
-	 */
-	private initializeMenuItems(home: string, paintRack: string, inDevelopment: string, test: string): void {
-		this.menuItems = [
-			{
-				label: home,
-				icon: IconDefinition.HOUSE,
-				route: '/'
-			},
-			{
-				label: paintRack,
-				icon: IconDefinition.BRUSH,
-				route: '/paint-rack'
-			},
-			...(environment.production
-				? []
-				: [
-						{
-							label: inDevelopment,
-							icon: IconDefinition.BRUSH,
-							route: '/dev',
-							children: [{ label: test, route: '/dev/test' }]
-						}
-					])
-		];
 	}
 }

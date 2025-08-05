@@ -69,8 +69,9 @@ describe('AppComponent', () => {
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
 
-		// environment.production is explicitly set to false above, so assert directly
-		expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(true);
+		expect(app.menuItems.some((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'In Development')).toBe(
+			true
+		);
 	});
 
 	it('should not include "In Development" menu item in production mode', async () => {
@@ -84,8 +85,9 @@ describe('AppComponent', () => {
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
 
-		// environment.production is explicitly set to true above, so assert directly
-		expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(false);
+		expect(app.menuItems.some((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'In Development')).toBe(
+			false
+		);
 	});
 
 	it('should have correct route for "Home" menu item', async () => {
@@ -96,7 +98,7 @@ describe('AppComponent', () => {
 		// wait for async translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		const homeItem = app.menuItems.find((item) => item.label === 'AppComponent.menu.lbl.Home');
+		const homeItem = app.menuItems.find((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'Home');
 		expect(homeItem?.route).toBe('/');
 	});
 
@@ -108,7 +110,7 @@ describe('AppComponent', () => {
 		// wait for async translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		const paintRackItem = app.menuItems.find((item) => item.label === 'AppComponent.menu.lbl.PaintRack');
+		const paintRackItem = app.menuItems.find((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'Paint rack');
 		expect(paintRackItem?.route).toBe('/paint-rack');
 	});
 });

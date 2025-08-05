@@ -80,4 +80,27 @@ describe('TopnavbarComponent', () => {
 		vi.spyOn(component.router, 'url', 'get').mockReturnValue('/current-route');
 		expect(component.getCurrentRoute()).toBe('/current-route');
 	});
+
+	it('should handle menu items with children', () => {
+		const menuItemsWithChildren = [
+			{
+				id: 'parent',
+				label: 'Parent',
+				route: '/parent',
+				children: [
+					{ id: 'child1', label: 'Child 1', route: '/parent/child1' },
+					{ id: 'child2', label: 'Child 2', route: '/parent/child2' }
+				]
+			}
+		];
+		fixture.componentRef.setInput('menuItems', menuItemsWithChildren);
+		fixture.detectChanges();
+
+		const menuItems = component.menuItems();
+		expect(menuItems.length).toBe(1);
+		expect(menuItems[0].children).toBeDefined();
+		expect(menuItems[0].children?.length).toBe(2);
+		expect(menuItems[0].children?.[0].route).toBe('/parent/child1');
+		expect(menuItems[0].children?.[1].route).toBe('/parent/child2');
+	});
 });

@@ -8,7 +8,7 @@ import type { ApplicationConfig } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { ScopedTranslationService } from '@application-platform/services';
+import { ScopedTranslationService } from '@application-platform/shared-ui';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
 
 import { appRoutes } from './app.routes';
