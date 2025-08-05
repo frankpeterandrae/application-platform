@@ -1,0 +1,15 @@
+<div class="fpa-mb-05 fpa-flex fpa-flex-row fpa-flex-align-items-center fpa-flex-justify-content-end">
+	@for (button of buttons(); track $index) {
+		<theme-button
+			class="fpa-mr-05"
+			(buttonClick)="button.callback()"
+			[buttonText]="button.buttonText"
+			[icon]="button.icon"
+			[color]="button.color"
+			[type]="button.type ?? 'button'"
+			[iconEnd]="button.iconEnd ?? false"
+			[disabled]="button.disabled ?? false"
+		>
+		</theme-button>
+	}
+</div>

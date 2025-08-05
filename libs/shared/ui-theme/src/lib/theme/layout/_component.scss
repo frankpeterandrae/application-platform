@@ -2,14 +2,15 @@
  * Copyright (c) 2024. Frank-Peter Andrä
  * All rights reserved.
  */
+@use '../base/prefix';
 @use '../electrons/colors';
 @use './flex';
 @use './dimension';
 @use './spacing';
 
 .fpa-content {
-	@extend %fpa-bg-ebony;
-	@extend %fpa-flex;
-	@extend %fpa-flex-column;
-	@extend %fpa-height-100;
+	@extend %#{prefix.$prefix}bg-ebony;
+	@extend %#{prefix.$prefix}flex;
+	@extend %#{prefix.$prefix}flex-column;
+	@extend %#{prefix.$prefix}height-100;
 }

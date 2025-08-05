@@ -6,7 +6,7 @@
 <div class="fpa-grid-12 fpa-mb-1 fpa-flex-justify-end">
 	<theme-input
 		class="fpa-grid-col-start-7 fpa-grid-col-end-6 fpa-grid-col-start-md-9 fpa-grid-col-end-md-4"
-		label="{{ 'ColorSearch.lbl.SearchColor' | fpaTranslate: 'color-rack' | async }}"
+		[label]="searchColor()"
 		(valueChange)="onSearchTermChange($event)"
 		[icon]="IconDefinition.SEARCH"
 	></theme-input>

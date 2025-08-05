@@ -3,12 +3,8 @@
  * All rights reserved.
  */
 
-@use '../../theme/base/variables';
-
-:host {
-	.card-border {
-		border: 1px solid #e0e0e0;
-		border-radius: variables.$border-radius;
-		overflow: hidden;
-	}
+.card-border {
+	border: 1px solid #e0e0e0;
+	border-radius: var(--border-radius);
+	overflow: hidden;
 }

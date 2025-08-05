@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { environment } from '@angular-apps/config';
 import { setupTestingModule } from '../test-setup';
 import { LanguageToggleComponent } from '@angular-apps/shared/ui-theme';
-import { MockedLanguageToggleComponent } from '@angular-apps/testing';
+import { LanguageToggleComponentMock } from '@angular-apps/testing';
 
 describe('AppComponent', () => {
 	let fixture: ComponentFixture<AppComponent>;
@@ -30,7 +30,7 @@ describe('AppComponent', () => {
 						}
 					}
 				},
-				{ provide: LanguageToggleComponent, useClass: MockedLanguageToggleComponent }
+				{ provide: LanguageToggleComponent, useClass: LanguageToggleComponentMock }
 			]
 		});
 
@@ -64,7 +64,9 @@ describe('AppComponent', () => {
 		fixture.detectChanges();
 
 		if (!environment.production) {
-			expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(true);
+			expect(app.menuItems.some((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'In Development')).toBe(
+				true
+			);
 		}
 	}));
 
@@ -79,7 +81,9 @@ describe('AppComponent', () => {
 		fixture.detectChanges();
 
 		if (environment.production) {
-			expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(false);
+			expect(app.menuItems.some((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'In Development')).toBe(
+				false
+			);
 		}
 	}));
 
@@ -91,11 +95,11 @@ describe('AppComponent', () => {
 		// Use `tick` to simulate the passage of time and completion of async tasks
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
-		const homeItem = app.menuItems.find((item) => item.label === 'AppComponent.menu.lbl.Home');
+		const homeItem = app.menuItems.find((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'Home');
 		expect(homeItem?.route).toBe('/');
 	}));
 
-	it('should have correct route for "Paint Rack" menu item', fakeAsync(() => {
+	it('should have correct route for "Paint rack" menu item', fakeAsync(() => {
 		const app = fixture.componentInstance;
 		app.ngOnInit();
 		fixture.detectChanges();
@@ -103,7 +107,7 @@ describe('AppComponent', () => {
 		// Use `tick` to simulate the passage of time and completion of async tasks
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
-		const paintRackItem = app.menuItems.find((item) => item.label === 'AppComponent.menu.lbl.PaintRack');
+		const paintRackItem = app.menuItems.find((item) => (typeof item.label === 'function' ? item.label() : item.label) === 'Paint rack');
 		expect(paintRackItem?.route).toBe('/paint-rack');
 	}));
 });

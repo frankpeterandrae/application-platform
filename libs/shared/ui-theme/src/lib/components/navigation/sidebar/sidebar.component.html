@@ -1,17 +1,17 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2025. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
-<nav class="fpa-bg-ebony-t2 fpa-height-100 fpa-dark-text">
+<nav class="fpa-bg-linen-t2 fpa-height-100 fpa-dark-text">
 	<ul class="menu fpa-m-0">
-		@for (item of menuItems(); track item) {
+		@for (item of menuItems(); track item.id) {
 			<li class="menu-item">
 				<a class="fpa-p-1 fpa-light-text fpa-link" [routerLink]="item.route">
 					@if (item.icon) {
 						<fast-svg class="fpa-color-crimson" [name]="item.icon" [size]="'32'"></fast-svg>
 					}
-					<span>{{ item.label }}</span>
+					<span>{{ item.label | themeUnwrapSignal }}</span>
 				</a>
 			</li>
 		}

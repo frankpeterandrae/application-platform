@@ -4,7 +4,7 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/view_sizes';
 
 $columns: 12;
 
@@ -20,7 +20,7 @@ $columns: 12;
 	}
 }
 
-@each $name, $width in variables.$breakpoints {
+@each $name, $width in view_sizes.$breakpoints {
 	$breakpoint-prefix: '-' + $name;
 	$min-width: $width;
 

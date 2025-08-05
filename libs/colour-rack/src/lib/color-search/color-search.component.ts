@@ -5,8 +5,9 @@
 
 import { IconDefinition, InputComponent } from '@angular-apps/shared/ui-theme';
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
-import { TranslationPipe } from '@angular-apps/services';
-import { AsyncPipe } from '@angular/common';
+import { BaseComponent, LOGGER_SOURCE, Scopes } from '@angular-apps/shared-ui';
+import { colorRackTextModules } from '../i18n/i18n';
+import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
 /**
  * Component for searching colors.
@@ -15,14 +16,17 @@ import { AsyncPipe } from '@angular/common';
 	selector: 'cr-color-search',
 	templateUrl: './color-search.component.html',
 	styleUrls: ['./color-search.component.scss'],
-	imports: [InputComponent, TranslationPipe, AsyncPipe],
+	imports: [InputComponent],
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorSearchComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSearchComponent {
+export class ColorSearchComponent extends BaseComponent {
 	/**
 	 * Event emitted when a search is performed.
 	 */
 	public readonly searchEvent = output<string>();
+
+	public readonly searchColor = translateSignal(colorRackTextModules.ColorSearch.lbl.SearchColor);
 
 	/**
 	 * Emits the search event with the current search text.

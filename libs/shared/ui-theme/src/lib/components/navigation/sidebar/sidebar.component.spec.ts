@@ -53,8 +53,8 @@ describe('SidebarComponent', () => {
 
 	it('should display menu items when provided', () => {
 		fixture.componentRef.setInput('menuItems', [
-			{ label: 'Dashboard', link: '/' },
-			{ label: 'Settings', link: '/settings' }
+			{ id: 'dashboard', label: 'Dashboard', link: '/' },
+			{ id: 'settings', label: 'Settings', link: '/settings' }
 		]);
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');

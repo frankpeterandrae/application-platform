@@ -10,7 +10,7 @@ require('@typescript-eslint/eslint-plugin');
 
 const compat = new FlatCompat({
 	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
+	recommendedConfig: js.configs.recommended
 });
 
 module.exports = [
@@ -26,47 +26,48 @@ module.exports = [
 					depConstraints: [
 						{
 							sourceTag: 'type:app',
-							onlyDependOnLibsWithTags: ['type:api', 'type:feature', 'type:ui', 'type:testing', 'type:util'],
+							onlyDependOnLibsWithTags: ['type:api', 'type:feature', 'type:ui', 'type:testing', 'type:util']
 						},
 						{
 							sourceTag: 'type:api',
-							onlyDependOnLibsWithTags: ['type:ui', 'type:testing', 'type:util'],
+							onlyDependOnLibsWithTags: ['type:ui', 'type:testing', 'type:util']
 						},
 						{
 							sourceTag: 'type:feature',
-							onlyDependOnLibsWithTags: ['type:ui', 'type:testing', 'type:util'],
+							onlyDependOnLibsWithTags: ['type:ui', 'type:testing', 'type:util']
 						},
 						{
 							sourceTag: 'type:ui',
-							onlyDependOnLibsWithTags: ['type:testing', 'type:util'],
+							onlyDependOnLibsWithTags: ['type:testing', 'type:util']
 						},
 						{
 							sourceTag: 'type:testing',
-							onlyDependOnLibsWithTags: ['type:util'],
+							onlyDependOnLibsWithTags: ['type:util']
 						},
 						{
-							sourceTag: 'lib:shared',
-							onlyDependOnLibsWithTags: ['lib:shared'],
+							sourceTag: 'scope:shared',
+							onlyDependOnLibsWithTags: ['scope:shared']
 						},
 						{
-							sourceTag: 'app:homepage',
-							onlyDependOnLibsWithTags: ['app:homepage', 'lib:shared'],
+							sourceTag: 'scope:web',
+							onlyDependOnLibsWithTags: ['scope:web', 'scope:shared']
 						},
 						{
-							sourceTag: 'app:demo',
-							onlyDependOnLibsWithTags: ['app:demo', 'lib:shared'],
-						},
-					],
-				},
-			],
-		},
+							sourceTag: 'scope:demo',
+							onlyDependOnLibsWithTags: ['scope:demo', 'scope:shared']
+						}
+					]
+				}
+			]
+		}
 	},
 	...compat.config({ extends: ['plugin:@nx/typescript', 'prettier'] }).map((config) => ({
 		...config,
+		ignores: ['**/*.spec.ts', '**/*.mock.ts'],
 		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 		rules: {
 			...config.rules,
-			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-explicit-any': 'warn',
 			'no-console': 'error',
 			'@/no-extra-semi': 'error',
 			'@typescript-eslint/explicit-function-return-type': 'error',
@@ -81,13 +82,13 @@ module.exports = [
 						'ngOnDestroy',
 						'ngAfterContentInit',
 						'onResize',
-						'ngDoCheck',
+						'ngDoCheck'
 					],
 					overrides: {
 						properties: 'explicit',
-						constructors: 'no-public',
-					},
-				},
+						constructors: 'no-public'
+					}
+				}
 			],
 			'jsdoc/check-access': ['error'],
 			'jsdoc/check-alignment': ['error'],
@@ -129,9 +130,9 @@ module.exports = [
 						ClassDeclaration: true,
 						ArrowFunctionExpression: true,
 						FunctionExpression: true,
-						ClassExpression: true,
-					},
-				},
+						ClassExpression: true
+					}
+				}
 			],
 			'jsdoc/require-param': ['error'],
 			'jsdoc/require-param-description': ['error'],
@@ -151,9 +152,9 @@ module.exports = [
 			'jsdoc/require-yields-check': ['error'],
 			'jsdoc/sort-tags': ['warn'],
 			'jsdoc/tag-lines': ['error'],
-			'jsdoc/valid-types': ['warn'],
+			'jsdoc/valid-types': ['warn']
 		},
-		settings: { jsdoc: { mode: 'typescript' } },
+		settings: { jsdoc: { mode: 'typescript' } }
 	})),
 	...compat.config({ extends: ['plugin:@nx/javascript'] }).map((config) => ({
 		...config,
@@ -161,8 +162,8 @@ module.exports = [
 		rules: {
 			...config.rules,
 			'@/no-extra-semi': 'error',
-			'no-extra-semi': 'off',
-		},
+			'no-extra-semi': 'off'
+		}
 	})),
 	...compat.config({ extends: ['plugin:@nx/javascript'] }).map((config) => ({
 		...config,
@@ -171,12 +172,12 @@ module.exports = [
 			...config.rules,
 			'@/no-extra-semi': 'error',
 			'no-extra-semi': 'off',
-			'@typescript-eslint/no-require-imports': 'off',
-		},
+			'@typescript-eslint/no-require-imports': 'off'
+		}
 	})),
-	...compat.config({ env: { jest: true } }).map((config) => ({
+	...compat.config({ extends: ['plugin:@nx/typescript', 'prettier'] }).map((config) => ({
 		...config,
-		files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx', '**/*jest.config.ts'],
+		files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx', '**/*jest.config.ts', '**/*.mock.ts'],
 		rules: {
 			...config.rules,
 			'jsdoc/check-access': ['off'],
@@ -229,21 +230,21 @@ module.exports = [
 			'jsdoc/require-yields-check': ['off'],
 			'jsdoc/sort-tags': ['off'],
 			'jsdoc/tag-lines': ['off'],
-			'jsdoc/valid-types': ['off'],
-		},
+			'jsdoc/valid-types': ['off']
+		}
 	})),
 	...compat.config({ env: { jest: true } }).map((config) => ({
 		...config,
 		files: ['**/*jest.config.ts'],
 		rules: {
 			...config.rules,
-			'@typescript-eslint/explicit-function-return-type': 'off',
-		},
+			'@typescript-eslint/explicit-function-return-type': 'off'
+		}
 	})),
 	{
 		files: ['**/*.ts'],
 		rules: {
-			'@angular-eslint/prefer-standalone': 'off',
-		},
-	},
+			'@angular-eslint/prefer-standalone': 'off'
+		}
+	}
 ];

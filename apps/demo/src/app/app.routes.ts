@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -14,6 +14,14 @@ export const appRoutes: Route[] = [
 		 * @returns {Promise<any>} A promise that resolves to the DemoButtonComponent.
 		 */
 		loadComponent: (): Promise<any> => import('@angular-apps/demo-feature').then((m) => m.ButtonDemoComponent)
+	},
+	{
+		path: 'checkbox',
+		/**
+		 * Lazy loads the CheckboxDemoComponent from the demo-feature module.
+		 * @returns {Promise<any>} A promise that resolves to the CheckboxDemoComponent.
+		 */
+		loadComponent: (): Promise<any> => import('@angular-apps/demo-feature').then((m) => m.CheckboxDemoComponent)
 	},
 	{
 		path: 'colors',

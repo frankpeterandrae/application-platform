@@ -5,20 +5,16 @@
 
 <div class="hero-background fpa-overflow-auto fpa-content">
 	<h1 class="fpa-flex-align-self-center fpa-my-3 fpa-dark-text fpa-text-shadow-light-small">
-		{{ 'HeroComponent.lbl.Title' | fpaTranslate: 'feature' | async }}
+		<span [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.Title"></span>
 	</h1>
 	<div class="fpa-flex-align-self-start fpa-width-100 fpa-p-1 fpa-my-3 fpa-width-md-50">
-		<p class="h4 fpa-my-2 fpa-text-shadow-dark" [innerHTML]="paragraph"></p>
-		<p class="h4 fpa-my-2 fpa-text-shadow-dark">
-			{{ 'HeroComponent.lbl.Paragraph2' | fpaTranslate: 'feature' | async }}
-		</p>
-		<p class="h4 fpa-my-2 fpa-text-shadow-dark">
-			{{ 'HeroComponent.lbl.Paragraph3' | fpaTranslate: 'feature' | async }}
-		</p>
-		<p class="h4 fpa-my-4 fpa-text-shadow-dark">„{{ 'HeroComponent.lbl.Quote' | fpaTranslate: 'feature' | async }}“</p>
-		<p class="fpa-text-shadow-dark">{{ 'HeroComponent.lbl.ReworkHint' | fpaTranslate: 'feature' | async }}</p>
-		<p class="fpa-text-shadow-dark">
-			{{ 'HeroComponent.lbl.Contact' | fpaTranslate: 'feature' | async }}
+		<p class="fpa-my-2 fpa-text-shadow-dark" [innerHTML]="paragraph()"></p>
+		<p class="fpa-my-2 fpa-text-shadow-dark" [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.Paragraph2"></p>
+		<p class="fpa-my-2 fpa-text-shadow-dark" [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.Paragraph3"></p>
+		<p class="fpa-my-4 fpa-text-shadow-dark">„<span [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.Quote"></span>“</p>
+		<p class="fpa-text-shadow-dark fpa-tiny" [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.ReworkHint"></p>
+		<p class="fpa-text-shadow-dark fpa-tiny">
+			<span [fpaSharedUiTranslate]="featureTextModules.HeroComponent.lbl.Contact"></span>
 			<a class="fpa-link" href="mailto:admin@frankpeterandrae.de"><span class="fpa-mail">admin&#64;frankpeterandrae.de</span></a
 			>.
 		</p>

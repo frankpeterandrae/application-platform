@@ -8,7 +8,7 @@
 	[ngClass]="{ 'fpa-input-group-dynamic': isDynamic(), 'fpa-is-filled': isFilled(), 'fpa-is-focused': inputFocused }"
 >
 	@if (label()) {
-		<label class="fpa-input-label" for="search-input">{{ label() }}</label>
+		<label themeFloatingLabel [floating]="isFloating() || isFilled()" class="fpa-input-label" [for]="id()">{{ label() }}</label>
 	}
 	@if (icon()) {
 		<span class="fpa-input-icon">
@@ -16,14 +16,16 @@
 		</span>
 	}
 	<input
-		#searchInput
+		#input
 		class="fpa-input"
-		id="search-input"
+		[ngClass]="{ 'fpa-dark-text': darkText() }"
+		[id]="id()"
 		[type]="type()"
 		[placeholder]="placeholder()"
 		[value]="value"
 		(focus)="onFocus()"
 		(blur)="onBlur()"
 		(input)="onInput($event)"
+		[disabled]="disabled()"
 	/>
 </div>

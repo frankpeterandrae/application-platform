@@ -20,7 +20,7 @@
 			"@angular-apps/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
 			"@angular-apps/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
 			"@angular-apps/interfaces": ["libs/shared/interfaces/src/index.ts"],
-			"@angular-apps/services": ["libs/shared/services/src/index.ts"],
+			"@angular-apps/shared-ui": ["libs/shared/shared-ui/src/index.ts"],
 			"@angular-apps/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
 			"@angular-apps/testing": ["libs/shared/testing/src/index.ts"]
 		}

@@ -4,19 +4,19 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/view_sizes';
 @use '../electrons/colors';
 
 html,
 body {
 	height: 100%;
-	font-family: #{variables.$font-family};
+	font-family: var(--font-family);
 
 	@extend %#{prefix.$prefix}bg-ebony;
 	@extend %#{prefix.$prefix}light-text;
 }
 
-@each $name, $width in variables.$breakpoints {
+@each $name, $width in view_sizes.$breakpoints {
 	$breakpoint-prefix: '-' + $name;
 	$min-width: $width;
 

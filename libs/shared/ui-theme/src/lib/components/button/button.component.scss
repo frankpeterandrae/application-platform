@@ -1,0 +1,68 @@
+/*!
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
+ * All rights reserved.
+ */
+@use '../../theme/base/prefix';
+
+.#{prefix.$prefix}button {
+	border: none;
+	border-radius: 3px;
+	position: relative;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0;
+	will-change: box-shadow, transform;
+	transition:
+		box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1),
+		background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	cursor: pointer;
+
+	span {
+		margin: 3px;
+		height: 16px;
+	}
+}
+
+.#{prefix.$prefix}button:active {
+	position: relative;
+	top: 1px;
+}
+
+.#{prefix.$prefix}default {
+	background-color: var(--default);
+	color: var(--dark-text);
+}
+
+.#{prefix.$prefix}primary {
+	background-color: var(--primary);
+	color: var(--light-text);
+}
+
+.#{prefix.$prefix}info {
+	background-color: var(--info);
+	color: var(--light-text);
+}
+
+.#{prefix.$prefix}success {
+	background-color: var(--success);
+	color: var(--light-text);
+}
+
+.#{prefix.$prefix}warning {
+	background-color: var(--warning);
+	color: var(--light-text);
+}
+
+.#{prefix.$prefix}danger {
+	background-color: var(--danger);
+	color: var(--light-text);
+}
+
+.#{prefix.$prefix}disabled {
+	background-color: var(--default);
+	cursor: not-allowed;
+}
+
+.#{prefix.$prefix}no-color {
+	background-color: transparent;
+}

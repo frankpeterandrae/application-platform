@@ -4,8 +4,8 @@
  */
 
 import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
-import en from './assets/i18n/color-rack/en.json';
-import de from './assets/i18n/color-rack/de.json';
+import en from './assets/i18n/colorRack/en.json';
+import de from './assets/i18n/colorRack/de.json';
 import { TestModuleMetadata } from '@angular/core/testing';
 import { sharedSetupTestingModule } from '@angular-apps/testing';
 

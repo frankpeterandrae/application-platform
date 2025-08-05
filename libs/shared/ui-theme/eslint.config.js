@@ -43,6 +43,12 @@ module.exports = [
 						prefix: 'theme',
 						style: 'kebab-case'
 					}
+				],
+				'@angular-eslint/pipe-prefix': [
+					'error',
+					{
+						prefixes: ['theme']
+					}
 				]
 			}
 		})),

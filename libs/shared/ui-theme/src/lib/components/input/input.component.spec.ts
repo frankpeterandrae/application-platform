@@ -16,8 +16,18 @@ describe('InputComponent', () => {
 			imports: [InputComponent]
 		});
 
+		/* TODO with Angular 20.1
+			const testedComponentInput = signal('value');
+		fixture = TestBed.createComponent(InputComponent,  {
+			bindings: [
+				inputBinding('signal-input-name', testedComponentInput)
+			]
+		});
+		 */
 		fixture = TestBed.createComponent(InputComponent);
 		component = fixture.componentInstance;
+		fixture.componentRef.setInput('label', 'value');
+
 		fixture.detectChanges();
 	});
 

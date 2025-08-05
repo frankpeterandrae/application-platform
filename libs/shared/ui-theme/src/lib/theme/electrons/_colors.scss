@@ -4,33 +4,33 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/color_definition';
 @use '../base/utility';
 
 $colors: (
-	crimson-highlight: variables.$crimson-highlight,
-	crimson: variables.$crimson,
-	danger: variables.$danger,
-	default: variables.$default,
-	ebony-highlight: variables.$ebony-highlight,
-	ebony: variables.$ebony,
-	info: variables.$info,
-	linen-highlight: variables.$linen-highlight,
-	linen: variables.$linen,
-	primary: variables.$primary,
-	sandy-brown-highligh: variables.$sandy-brown-highlight,
-	sandy-brown: variables.$sandy-brown,
-	slate-gray-highlight: variables.$slate-gray-highlight,
-	slate-gray: variables.$slate-gray,
-	success: variables.$success,
-	warning: variables.$warning
+	crimson-highlight: color_definition.$crimson-highlight,
+	crimson: color_definition.$crimson,
+	danger: color_definition.$danger,
+	default: color_definition.$default,
+	ebony-highlight: color_definition.$ebony-highlight,
+	ebony: color_definition.$ebony,
+	info: color_definition.$info,
+	linen-highlight: color_definition.$linen-highlight,
+	linen: color_definition.$linen,
+	primary: color_definition.$primary,
+	sandy-brown-highligh: color_definition.$sandy-brown-highlight,
+	sandy-brown: color_definition.$sandy-brown,
+	slate-gray-highlight: color_definition.$slate-gray-highlight,
+	slate-gray: color_definition.$slate-gray,
+	success: color_definition.$success,
+	warning: color_definition.$warning
 );
 $colors-with-variants: (
-	linen: variables.$linen,
-	sandy-brown: variables.$sandy-brown,
-	crimson: variables.$crimson,
-	slate-gray: variables.$slate-gray,
-	ebony: variables.$ebony
+	linen: color_definition.$linen,
+	sandy-brown: color_definition.$sandy-brown,
+	crimson: color_definition.$crimson,
+	slate-gray: color_definition.$slate-gray,
+	ebony: color_definition.$ebony
 );
 
 @each $name, $color in $colors {
@@ -77,30 +77,30 @@ $tints-count: 9;
 
 .#{prefix.$prefix}light-text,
 %#{prefix.$prefix}light-text {
-	color: variables.$light-text;
+	color: var(--light-text);
 }
 
 .#{prefix.$prefix}dark-text,
 %#{prefix.$prefix}dark-text {
-	color: variables.$dark-text;
+	color: var(--dark-text);
 }
 
 .#{prefix.$prefix}text-shadow-light {
-	-webkit-text-stroke: 2px variables.$linen;
+	-webkit-text-stroke: 2px color_definition.$linen;
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-light-small {
-	-webkit-text-stroke: 1px variables.$linen;
+	-webkit-text-stroke: 1px color_definition.$linen;
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-dark {
-	-webkit-text-stroke: 2px variables.$ebony;
+	-webkit-text-stroke: 2px var(--ebony);
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-dark-small {
-	-webkit-text-stroke: 1px variables.$ebony;
+	-webkit-text-stroke: 1px var(--ebony);
 	paint-order: stroke fill;
 }

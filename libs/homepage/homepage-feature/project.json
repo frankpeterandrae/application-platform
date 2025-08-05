@@ -4,7 +4,7 @@
 	"sourceRoot": "libs/homepage/homepage-feature/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["app:homepage", "type:feature"],
+	"tags": ["scope:web", "type:feature"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",

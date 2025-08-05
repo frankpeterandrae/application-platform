@@ -4,14 +4,14 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/view_sizes';
 
 .#{prefix.$prefix}flex,
 %#{prefix.$prefix}flex {
 	display: flex;
 }
 
-@each $name, $width in variables.$breakpoints {
+@each $name, $width in view_sizes.$breakpoints {
 	$breakpoint-prefix: '-' + $name;
 	$min-width: $width;
 

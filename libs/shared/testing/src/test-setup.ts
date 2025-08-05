@@ -3,23 +3,23 @@
  * All rights reserved.
  */
 
-import { HashMap, Translation, TranslocoConfig, TranslocoTestingModule } from '@jsverse/transloco';
+import { HashMap, translateSignal, Translation, TranslocoConfig, TranslocoTestingModule } from '@jsverse/transloco';
 import { TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { ModuleWithProviders, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
-import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translation-service';
+import { ScopedTranslationServiceMock, TranslateSignalMock } from './lib/mocks/scoped-translation.service.mock';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 /**
  * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
+ * @param {TestModuleMetadata} metadata - The metadata for the test module, including imports, providers, and declarations.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
  * @returns {Promise<any>} A promise that resolves when the test module is compiled.
  */
 export function sharedSetupTestingModule(
-	{ imports = [], providers = [], declarations }: TestModuleMetadata,
+	metadata: TestModuleMetadata,
 	langs: HashMap<Translation> = {
 		en: { hello: 'Hello' },
 		de: { hello: 'Hallo' }
@@ -27,15 +27,16 @@ export function sharedSetupTestingModule(
 	config: Partial<TranslocoConfig> = {}
 ): Promise<any> {
 	return TestBed.configureTestingModule({
-		imports: [translocoTestingModulFactory(config, langs), ...imports],
+		...metadata,
+		imports: [translocoTestingModulFactory(config, langs), ...(metadata.imports || [])],
 		providers: [
-			{ provide: ScopedTranslationServiceInterface, useClass: MockScopedTranslationService },
+			{ provide: translateSignal, useValue: TranslateSignalMock },
+			{ provide: ScopedTranslationServiceInterface, useClass: ScopedTranslationServiceMock },
 			provideHttpClient(),
 			provideHttpClientTesting(),
-			...providers
+			...(metadata.providers || [])
 		],
-		declarations,
-		schemas: [NO_ERRORS_SCHEMA]
+		schemas: [NO_ERRORS_SCHEMA, ...(metadata.schemas || [])]
 	}).compileComponents();
 }
 

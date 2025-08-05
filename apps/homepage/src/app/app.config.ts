@@ -9,7 +9,7 @@ import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
 import { provideTransloco } from '@jsverse/transloco';
-import { ScopedTranslationService, TranslocoHttpLoader } from '@angular-apps/services';
+import { ScopedTranslationService, TranslocoHttpLoader } from '@angular-apps/shared-ui';
 import { translocoConfigFactory } from '@angular-apps/config';
 import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
 

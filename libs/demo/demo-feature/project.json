@@ -4,7 +4,7 @@
 	"sourceRoot": "libs/demo/demo-feature/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["app:demo", "type:feature"],
+	"tags": ["scope:demo", "type:feature"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",

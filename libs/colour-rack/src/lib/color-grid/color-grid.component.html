@@ -2,7 +2,7 @@
   ~ Copyright (c) 2024. Frank-Peter Andrä
   ~ All rights reserved.
   -->
-<h2>{{ 'ColorGridComponent.lbl.TwoThinCoats' | fpaTranslate: 'color-rack' | async }}</h2>
+<h2><span [fpaSharedUiTranslate]="colorRackTextModules.ColorGridComponent.lbl.TwoThinCoats"></span></h2>
 <cdk-virtual-scroll-viewport [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" class="mobile-height">
 	<div *cdkVirtualFor="let colorItems of colors()" class="fpa-grid-12 fpa-grid-gap fpa-mb-05 fpa-mr-05">
 		@for (color of colorItems; track color.name) {

@@ -3,30 +3,28 @@
  * All rights reserved.
  */
 
-:host {
-	.image-container {
-		position: relative;
-		width: 100%;
-		height: auto;
-		overflow: hidden;
-	}
+.image-container {
+	position: relative;
+	width: 100%;
+	height: auto;
+	overflow: hidden;
+}
 
-	img {
-		width: 100%;
-		height: auto;
-		display: block;
-		transition: opacity 0.3s ease-in-out;
-		opacity: 0;
-	}
+img {
+	width: 100%;
+	height: auto;
+	display: block;
+	transition: opacity 0.3s ease-in-out;
+	opacity: 0;
+}
 
-	img.loaded {
-		opacity: 1;
-	}
+img.loaded {
+	opacity: 1;
+}
 
-	.fpa-spinner {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-	}
+.fpa-spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }

@@ -4,49 +4,38 @@
  */
 
 @use './utility';
+@use './color_definition';
 
-// base colors
-$linen: #f0e8e6;
-$linen-highlight: #f0e8e6;
-$sandy-brown: #e8a554;
-$sandy-brown-highlight: #ffb55d;
-$crimson: #c93642;
-$crimson-highlight: #c93642;
-$slate-gray: #968e8b;
-$slate-gray-highlight: #a59c99;
-$ebony: #2b222d;
-$ebony-highlight: #2f2531;
-$default: #999;
-$primary: #c93642;
-$info: #0f0d0f;
-$success: #728b4c;
-$warning: #ef7b14;
-$danger: #c93642;
+:root {
+	// base colors
+	--crimson-highlight: #{color_definition.$crimson-highlight};
+	--crimson: #{color_definition.$crimson};
+	--danger: #{color_definition.$danger};
+	--default: #{color_definition.$default};
+	--ebony-highlight: #{color_definition.$ebony-highlight};
+	--ebony: #{color_definition.$ebony};
+	--info: #{color_definition.$info};
+	--line: #{color_definition.$linen};
+	--linen-highlight: #{color_definition.$linen-highlight};
+	--primary: #{color_definition.$primary};
+	--sandy-brown-highlight: #{color_definition.$sandy-brown-highlight};
+	--sandy-brown: #{color_definition.$sandy-brown};
+	--slate-gray-highlight: #{color_definition.$slate-gray-highlight};
+	--slate-gray: #{color_definition.$slate-gray};
+	--success: #{color_definition.$success};
+	--warning: #{color_definition.$warning};
 
-// text colors
-$light-text: utility.tint($linen, 8);
-$dark-text: utility.shade($ebony, 8);
-$font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
+	// text colors
+	--light-text: #{utility.tint(color_definition.$linen, 8)};
+	--dark-text: #{utility.shade(color_definition.$ebony, 8)};
+	--font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
 
-// standard radius
-$border-radius: 0.5rem;
-$border-radius-small: 0.25rem;
+	// standard radius
+	--border-radius: 0.5rem;
+	--border-radius-small: 0.25rem;
 
-// viewport sizes
-$small-mobile: 0; // Ideal for smaller smartphones, especially in landscape mode.
-$tablet-portrait: 40rem; // Suitable for tablets in portrait orientation. 40*16 = 640px
-$tablet-landscape: 56.25rem; // Fits larger tablets or smaller desktop screens. 56.25*16 = 900px
-$desktop: 78.125rem; // Common resolution for standard desktop monitors. 78.125*16 = 1250px
-$full-hd: 100rem; // Standard Full HD resolution for desktops. 100*16 = 1600px
-$ultra-wide: 120rem; // Suitable for ultra-wide monitors and high-resolution displays. 120*16 = 1920px
-$ultra-ultra-wide: 160rem; // Ideal for 4K and 5K displays. 160*16 = 2560px
-
-$breakpoints: (
-	xs: $small-mobile,
-	sm: $tablet-portrait,
-	md: $tablet-landscape,
-	lg: $desktop,
-	xl: $full-hd,
-	xxl: $ultra-wide,
-	xxxl: $ultra-ultra-wide
-);
+	// layout
+	--header-height: 9vh;
+	--footer-height: 2vh;
+	--content-height: 100vh - var(--header-height) - var(--footer-height) - 4rem;
+}

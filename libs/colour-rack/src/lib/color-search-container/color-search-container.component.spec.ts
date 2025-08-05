@@ -60,10 +60,10 @@ describe('ColorSearchContainerComponent', () => {
 		component.ngOnInit();
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
-		expect(mockTitle.setTitle).toHaveBeenCalledWith('ColorSearchContainerComponent.meta.Title');
+		expect(mockTitle.setTitle).toHaveBeenCalledWith('colorRack.ColorSearchContainerComponent.meta.Title');
 		expect(mockMeta.addTag).toHaveBeenCalledWith({
 			name: 'description',
-			content: 'ColorSearchContainerComponent.meta.Description'
+			content: 'colorRack.ColorSearchContainerComponent.meta.Description'
 		});
 	}));
 });

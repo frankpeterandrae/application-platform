@@ -1,0 +1,33 @@
+<!--
+  A dropdown component for single or multi-select.
+-->
+<div class="fpa-select-group fpa-mt-1" [ngClass]="{ 'fpa-select-group-dynamic': isDynamic() }">
+	@if (label()) {
+		<label themeFloatingLabel [floating]="isFloating() || isFilled() || selectFocused" class="fpa-select-label" [for]="id()">{{
+			label()
+		}}</label>
+	}
+
+	<span class="fpa-select-icon">
+		<fast-svg [ngClass]="{ 'fpa-color-crimson': selectFocused }" [name]="'caret-down'" [size]="'16'"></fast-svg>
+	</span>
+
+	<select
+		class="fpa-select"
+		[ngClass]="{ 'fpa-dark-text': darkText() }"
+		[id]="id()"
+		[attr.multiple]="multiple() ? '' : null"
+		(change)="onSelectChange($event)"
+		(focus)="onFocus()"
+		(blur)="onBlur()"
+	>
+		@if (emptySelection()) {
+			<option [ngClass]="{ 'fpa-dark-text': darkText() }" value="" disabled selected></option>
+		}
+		@for (opt of options(); track opt.value) {
+			<option [ngClass]="{ 'fpa-dark-text': darkText() }" [value]="opt.value">
+				{{ opt.label }}
+			</option>
+		}
+	</select>
+</div>

@@ -10,7 +10,7 @@ import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
 import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
-import { ScopedTranslationService } from '@angular-apps/services';
+import { ScopedTranslationService } from '@angular-apps/shared-ui';
 
 export const appConfig: ApplicationConfig = {
 	providers: [

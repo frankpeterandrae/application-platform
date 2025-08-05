@@ -6,7 +6,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { HeroComponent } from '../hero/hero.component';
 import { Meta, Title } from '@angular/platform-browser';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import { featureTextModules } from '../../i18n/i18n';
+import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
+import { BaseComponent, LOGGER_SOURCE, Scopes } from '@angular-apps/shared-ui';
 
 /**
  * Component representing the homepage feature.
@@ -14,24 +16,22 @@ import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
 @Component({
 	selector: 'homepage-feature',
 	imports: [HeroComponent],
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'HomeComponent' }, provideTranslocoScope(Scopes.FEATURE)],
 	templateUrl: './home.component.html'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent extends BaseComponent implements OnInit {
 	private readonly meta = inject(Meta);
 	private readonly title = inject(Title);
-	private readonly translocoService = inject(ScopedTranslationServiceInterface);
+
+	private readonly metaTitle = translateSignal(featureTextModules.HomeComponent.meta.Title);
+	private readonly metaDescription = translateSignal(featureTextModules.HomeComponent.meta.Description);
 
 	/**
 	 * Lifecycle hook that is called after data-bound properties of a directive are initialized.
 	 * Initializes the component by setting the title and meta description using translations.
 	 */
 	ngOnInit(): void {
-		this.translocoService.selectTranslate('HomeComponent.meta.Title', 'feature').subscribe((translation) => {
-			this.title.setTitle(translation);
-		});
-
-		this.translocoService.selectTranslate('HomeComponent.meta.Description', 'feature').subscribe((translation) => {
-			this.meta.addTag({ name: 'description', content: translation });
-		});
+		this.title.setTitle(this.metaTitle());
+		this.meta.addTag({ name: 'description', content: this.metaDescription() });
 	}
 }

@@ -1,0 +1,25 @@
+<div
+	class="fpa-textarea-group fpa-mt-1"
+	[ngClass]="{
+		'fpa-textarea-group-dynamic': isDynamic(),
+		'fpa-is-filled': isFilled(),
+		'fpa-is-focused': textareaFocused
+	}"
+>
+	@if (label()) {
+		<label themeFloatingLabel [floating]="isFloating() || isFilled()" class="fpa-textarea-label" [for]="id()">{{ label() }}</label>
+	}
+
+	<textarea
+		class="fpa-textarea"
+		#textarea
+		[ngClass]="{ 'fpa-dark-text': darkText() }"
+		[id]="id()"
+		[placeholder]="placeholder()"
+		[value]="value"
+		(focus)="onFocus()"
+		(blur)="onBlur()"
+		(input)="onInput($event)"
+	>
+	</textarea>
+</div>

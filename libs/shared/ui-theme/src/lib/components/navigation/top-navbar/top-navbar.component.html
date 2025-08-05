@@ -5,7 +5,7 @@
 
 <div class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-bg-crimson fpa-box-shadow">
 	<nav class="fpa-flex fpa-flex-row fpa-bg-crimson fpa-p-1 navbar">
-		@for (navigationItem of menuItems(); track navigationItem.label) {
+		@for (navigationItem of menuItems(); track navigationItem.id) {
 			<ng-container [ngTemplateOutlet]="navList" [ngTemplateOutletContext]="{ navigationItem }"></ng-container>
 		}
 	</nav>
@@ -27,16 +27,19 @@
 					[ngClass]="{ 'link-active': getCurrentRoute().includes(navigationItem.route) }"
 					(click)="toggleNavigation(navigationItem.route)"
 				>
-					<span>{{ navigationItem.label }}</span>
+					<span>{{ navigationItem.label | themeUnwrapSignal }}</span>
 				</a>
 				<div
 					class="dropdown-content fpa-bg-linen fpa-dark-text"
 					[ngClass]="{ 'nav-show-dropdown': showDropdown[navigationItem.route] }"
 				>
-					@for (navigationItemChild of navigationItem.children; track navigationItemChild) {
+					@for (navigationItemChild of navigationItem.children; track navigationItemChild.id) {
 						<ng-container
 							[ngTemplateOutlet]="navList"
-							[ngTemplateOutletContext]="{ navigationItem: navigationItemChild, color: ColorDefinition.CRIMSON }"
+							[ngTemplateOutletContext]="{
+								navigationItem: navigationItemChild,
+								color: ColorDefinition.CRIMSON
+							}"
 						></ng-container>
 					}
 				</div>
@@ -48,7 +51,7 @@
 				[ngClass]="{ 'link-active': getCurrentRoute() === navigationItem.route }"
 				(click)="resetDropdowns()"
 			>
-				<span>{{ navigationItem.label }}</span>
+				<span>{{ navigationItem.label | themeUnwrapSignal }}</span>
 			</a>
 		}
 	</li>

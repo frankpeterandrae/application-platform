@@ -3,11 +3,10 @@
  * All rights reserved.
  */
 @use '../base/prefix';
-@use '../base/variables';
 
 .#{prefix.$prefix}spinner {
-	border: 8px solid variables.$crimson;
-	border-top: 8px solid variables.$sandy-brown;
+	border: 8px solid var(--crimson);
+	border-top: 8px solid var(--sandy-brown);
 	border-radius: 50%;
 	width: 60px;
 	height: 60px;

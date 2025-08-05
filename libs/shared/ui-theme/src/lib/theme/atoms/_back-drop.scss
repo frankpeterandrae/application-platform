@@ -4,10 +4,9 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
 
 .#{prefix.$prefix}back-drop {
 	inset: 0;
-	background-color: rgba(variables.$info, 0.5);
+	background-color: rgba(var(--info), 0.5);
 	z-index: -1;
 }

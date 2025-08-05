@@ -4,7 +4,7 @@
  */
 
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/color_definition';
 @use '../base/utility';
 
 .#{prefix.$prefix}box-shadow {
@@ -13,7 +13,7 @@
 		0 3px 20px 0 rgb(0 0 0 / 12%),
 		0 8px 10px -5px rgb(0 0 0 / 20%);
 	border: 0;
-	border-radius: variables.$border-radius-small;
+	border-radius: var(--border-radius-small);
 }
 
 .#{prefix.$prefix}border-bottom {
@@ -33,21 +33,21 @@
 }
 
 .#{prefix.$prefix}border-grey-t6 {
-	border-color: utility.tint(variables.$info, 6);
+	border-color: utility.tint(color_definition.$info, 6);
 }
 
 .#{prefix.$prefix}border-primary {
-	border-color: variables.$primary;
+	border-color: var(--primary);
 }
 
 .#{prefix.$prefix}border-success {
-	border-color: variables.$success;
+	border-color: var(--success);
 }
 
 .#{prefix.$prefix}border-warning {
-	border-color: variables.$warning;
+	border-color: var(--warning);
 }
 
 .#{prefix.$prefix}border-danger {
-	border-color: variables.$danger;
+	border-color: var(--danger);
 }

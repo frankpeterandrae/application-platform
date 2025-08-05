@@ -1,0 +1,159 @@
+/*!
+ * Copyright (c) 2025. Frank-Peter Andrä
+ * All rights reserved.
+ */
+$default-primary-color: var(--crimson);
+$default-secondary-color: var(--sandy-brown);
+$default-check-color: var(--info);
+
+@mixin checkbox-color-variation(
+	$primary-color: $default-primary-color,
+	$secondary-color: $default-secondary-color,
+	$check-color: $default-check-color,
+	$variation-name: 'default'
+) {
+	.checkbox-wrapper--#{$variation-name} {
+		.cbx {
+			span {
+				&:first-child {
+					border: 1px solid $secondary-color;
+
+					svg {
+						stroke: $check-color;
+					}
+
+					&::before {
+						background: $primary-color;
+					}
+				}
+			}
+
+			&:hover {
+				span:first-child {
+					border-color: $primary-color;
+				}
+			}
+		}
+
+		.inp-cbx:checked + .cbx span:first-child {
+			background: $primary-color;
+			border-color: $primary-color;
+		}
+	}
+}
+
+.checkbox-wrapper {
+	input[type='checkbox'] {
+		display: none;
+		visibility: hidden;
+	}
+
+	.cbx {
+		margin: auto;
+		user-select: none;
+		cursor: pointer;
+
+		span {
+			display: inline-block;
+			vertical-align: middle;
+			transform: translate3d(0, 0, 0);
+
+			&:first-child {
+				position: relative;
+				width: 18px;
+				height: 18px;
+				border-radius: 3px;
+				transform: scale(1);
+				vertical-align: middle;
+				transition: all 0.2s ease;
+
+				svg {
+					position: absolute;
+					top: 3px;
+					left: 2px;
+					fill: none;
+					stroke-width: 2;
+					stroke-linecap: round;
+					stroke-linejoin: round;
+					stroke-dasharray: 16px;
+					stroke-dashoffset: 16px;
+					transition: all 0.3s ease;
+					transition-delay: 0.1s;
+					transform: translate3d(0, 0, 0);
+				}
+
+				&::before {
+					content: '';
+					width: 100%;
+					height: 100%;
+					display: block;
+					transform: scale(0);
+					opacity: 1;
+					border-radius: 50%;
+				}
+			}
+
+			&:last-child {
+				padding-left: 8px;
+			}
+		}
+	}
+
+	.inp-cbx:checked + .cbx span:first-child {
+		animation: wave 0.4s ease;
+
+		svg {
+			stroke-dashoffset: 0;
+		}
+
+		&::before {
+			transform: scale(3.5);
+			opacity: 0;
+			transition: all 0.6s ease;
+		}
+	}
+}
+
+@keyframes wave {
+	50% {
+		transform: scale(0.9);
+	}
+}
+
+@include checkbox-color-variation;
+@include checkbox-color-variation(
+	$primary-color: var(--linen),
+	$secondary-color: var(--info),
+	$check-color: var(--info),
+	$variation-name: 'linen'
+);
+@include checkbox-color-variation(
+	$primary-color: var(--sandy-brown),
+	$secondary-color: var(--warning),
+	$check-color: var(--info),
+	$variation-name: 'sandy-brown'
+);
+@include checkbox-color-variation(
+	$primary-color: var(--crimson),
+	$secondary-color: var(--crimson),
+	$check-color: var(--info),
+	$variation-name: 'crimson'
+);
+@include checkbox-color-variation(
+	$primary-color: var(--slate-gray),
+	$secondary-color: var(--slate-gray),
+	$check-color: var(--info),
+	$variation-name: 'slate-gray'
+);
+@include checkbox-color-variation(
+	$primary-color: var(--ebony),
+	$secondary-color: var(--ebony),
+	$check-color: var(--info),
+	$variation-name: 'ebony'
+);
+@include checkbox-color-variation(
+	$primary-color: var(--success),
+	$secondary-color: var(--success),
+	$check-color: var(--info),
+	$variation-name: 'success'
+);

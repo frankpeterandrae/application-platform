@@ -1,10 +1,9 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { Component } from '@angular/core';
-
 import { ButtonColorDefinition, ButtonComponent } from '@angular-apps/shared/ui-theme';
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -28,10 +28,11 @@ export class AppComponent {
 	 */
 	constructor() {
 		this.menuItems = [
-			{ label: 'Button', route: 'button' },
-			{ label: 'Colors', route: 'colors' },
-			{ label: 'Icons', route: 'icons' },
-			{ label: 'Typography', route: 'typography' }
+			{ id: 'button', label: 'Button', route: 'button' },
+			{ id: 'checkbox', label: 'Checkbox', route: 'checkbox' },
+			{ id: 'colors', label: 'Colors', route: 'colors' },
+			{ id: 'icons', label: 'Icons', route: 'icons' },
+			{ id: 'typography', label: 'Typography', route: 'typography' }
 		];
 	}
 }

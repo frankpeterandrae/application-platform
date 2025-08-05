@@ -14,7 +14,8 @@ import { TopNavbarComponent } from '../navigation/top-navbar/top-navbar.componen
 @Component({
 	selector: 'theme-header',
 	imports: [TopNavbarComponent],
-	templateUrl: './header.component.html'
+	templateUrl: './header.component.html',
+	styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
 	/**

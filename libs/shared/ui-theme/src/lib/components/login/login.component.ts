@@ -4,7 +4,7 @@
  */
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DataConnectionService } from '@angular-apps/services';
+import { DataConnectionService } from '@angular-apps/shared-ui';
 import { ButtonComponent } from '../button/button.component';
 import { ButtonColorDefinition } from '../../enums';
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -8,7 +8,8 @@
  */
 import { Route } from '@angular/router';
 import { environment } from '@angular-apps/config';
-import { EnvGuard } from '@angular-apps/services';
+import { EnvGuard, Scopes } from '@angular-apps/shared-ui';
+import { provideTranslocoScope } from '@jsverse/transloco';
 
 /**
  * Development-specific routes.
@@ -46,7 +47,8 @@ export const appRoutes: Route[] = [
 		 * Lazy loads the ColorSearchContainerComponent for the paint rack route.
 		 * @returns {Promise<any>} A promise that resolves to the ColorSearchContainerComponent.
 		 */
-		loadComponent: (): Promise<any> => import('@angular-apps/colour-rack').then((m) => m.ColorSearchContainerComponent)
+		loadComponent: (): Promise<any> => import('@angular-apps/colour-rack').then((m) => m.ColorSearchContainerComponent),
+		providers: [provideTranslocoScope(Scopes.COLOR_RACK)]
 	},
 	...(environment.production ? [] : devRoutes),
 	{

@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { IconDefinition } from '../../enums';
+import { FloatingLabelDirective } from '../../directives/floating-lable';
 
 /**
  * InputComponent is a custom Angular component that implements ControlValueAccessor
@@ -15,8 +16,9 @@ import { IconDefinition } from '../../enums';
  */
 @Component({
 	selector: 'theme-input',
-	imports: [CommonModule, FastSvgComponent, FormsModule, ReactiveFormsModule],
+	imports: [CommonModule, FastSvgComponent, FloatingLabelDirective, FormsModule, ReactiveFormsModule],
 	templateUrl: './input.component.html',
+	styleUrls: ['./input.component.scss'],
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
@@ -26,12 +28,18 @@ import { IconDefinition } from '../../enums';
 	]
 })
 export class InputComponent implements ControlValueAccessor {
-	public readonly searchInput = viewChild.required<ElementRef>('searchInput');
-	public label = input<string>('');
+	/** Optional id for the input element. */
+	public id = input<string>('');
+	/** Reference to the input element. */
+	public readonly inputElement = viewChild.required<ElementRef>('input');
+	public label = input.required<string>();
 	public type = input<string>('text');
 	public placeholder = input<string>('');
 	public icon = input<IconDefinition>(IconDefinition.NONE);
 	public isDynamic = input<boolean>(true);
+	/** When true, applies dark text color for light backgrounds. */
+	public darkText = input<boolean>(false);
+	public disabled = input<boolean>(false);
 
 	// Define output using the `output` function
 	public valueChange = output<string>();
@@ -61,6 +69,7 @@ export class InputComponent implements ControlValueAccessor {
 		this.onChange(this.value);
 		this.valueChange.emit(this.value);
 	}
+
 	/**
 	 * Checks if the input field is filled.
 	 * @returns {boolean} - True if the input field has a value, otherwise false.
@@ -68,6 +77,7 @@ export class InputComponent implements ControlValueAccessor {
 	public isFilled(): boolean {
 		return this.value.length > 0;
 	}
+
 	/**
 	 * Handles the focus event on the input field.
 	 */
@@ -116,5 +126,13 @@ export class InputComponent implements ControlValueAccessor {
 	 */
 	public writeValue(value: string): void {
 		this.value = value;
+	}
+
+	/**
+	 * Sets the disabled state of the input field.
+	 * @returns {boolean} - The disabled state.
+	 */
+	protected isFloating(): boolean {
+		return this.isDynamic() && this.inputFocused;
 	}
 }

@@ -3,39 +3,27 @@
  * All rights reserved.
  */
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ButtonColorDefinition, ButtonComponent, CardComponent } from '@angular-apps/shared/ui-theme';
 import { Router } from '@angular/router';
-import { Logger, LOGGER_SOURCE, TranslationPipe } from '@angular-apps/services';
-import { AsyncPipe } from '@angular/common';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@angular-apps/shared-ui';
+import { featureTextModules } from '../../i18n/i18n';
+import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
 /**
  * Component for displaying a 404 error page.
  */
 @Component({
 	selector: 'homepage-feature-error404',
-	imports: [ButtonComponent, CardComponent, TranslationPipe, AsyncPipe],
+	imports: [ButtonComponent, CardComponent, TranslationDirective],
 	templateUrl: './error404.component.html',
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'Error404Component' }]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'Error404Component' }, provideTranslocoScope(Scopes.FEATURE)]
 })
-export class Error404Component implements OnInit {
+export class Error404Component extends BaseComponent {
 	private readonly router = inject(Router);
-
-	private readonly translationService = inject(ScopedTranslationServiceInterface);
-	protected readonly ButtonColorDefinition = ButtonColorDefinition;
-	public backToStartpage: string | undefined;
-
-	private readonly logger = inject(Logger);
-
-	/**
-	 * Initializes the component and sets the backToStartpage property with the translated string.
-	 */
-	ngOnInit(): void {
-		this.translationService.selectTranslate('Error404Component.lbl.BackToStartpage', 'feature').subscribe((translation) => {
-			this.backToStartpage = translation;
-		});
-	}
+	public readonly featureTextModules = featureTextModules;
+	public readonly ButtonColorDefinition = ButtonColorDefinition;
+	public readonly backToStart = translateSignal(featureTextModules.Error404Component.lbl.BackToStartpage);
 
 	/**
 	 * Navigates to the home page.

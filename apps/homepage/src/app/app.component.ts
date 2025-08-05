@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -7,10 +7,10 @@ import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleCompone
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BUILD_DATE, environment } from '@angular-apps/config';
-import { Logger } from '@angular-apps/services';
-import { combineLatest } from 'rxjs';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import { Logger } from '@angular-apps/shared-ui';
 import { Meta } from '@angular/platform-browser';
+import { i18nTextModules } from './i18n/i18n';
+import { translateSignal } from '@jsverse/transloco';
 
 /**
  * The root component of the application.
@@ -22,9 +22,12 @@ import { Meta } from '@angular/platform-browser';
 	styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-	private readonly translocoService = inject(ScopedTranslationServiceInterface);
 	private readonly meta = inject(Meta);
 
+	protected homeLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.Home);
+	private paintRack = translateSignal(i18nTextModules.AppComponent.menu.lbl.PaintRack);
+	private inDevelopment = translateSignal(i18nTextModules.AppComponent.menu.lbl.InDevelopment);
+	private test = translateSignal(i18nTextModules.AppComponent.menu.lbl.Test);
 	/**
 	 * The menu items to be displayed in the sidebar.
 	 * @type {MenuItem[]}
@@ -51,43 +54,34 @@ export class AppComponent implements OnInit {
 		if (environment.production) {
 			Logger.setProductionMode({ disable: true });
 		}
-
-		combineLatest([
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.Home'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.PaintRack'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.InDevelopment'),
-			this.translocoService.selectTranslate('AppComponent.menu.lbl.Test')
-		]).subscribe(([home, paintRack, inDevelopment, test]) => {
-			this.initializeMenuItems(home, paintRack, inDevelopment, test);
-		});
+		this.initializeMenuItems();
 	}
 
 	/**
 	 * Initializes the menu items with the provided translations.
-	 * @param {string} home - The translation for the home menu item.
-	 * @param {string} paintRack - The translation for the paint rack menu item.
-	 * @param {string} inDevelopment - The translation for the in development menu item.
-	 * @param {string} test - The translation for the test menu item.
 	 */
-	private initializeMenuItems(home: string, paintRack: string, inDevelopment: string, test: string): void {
+	private initializeMenuItems(): void {
 		this.menuItems = [
 			{
-				label: home,
+				id: 'home',
+				label: this.homeLabel,
 				icon: IconDefinition.HOUSE,
 				route: '/'
 			},
 			{
-				label: paintRack,
+				id: 'paint-rack',
+				label: this.paintRack,
 				icon: IconDefinition.PALETTE,
 				route: '/paint-rack'
 			},
 			...(!environment.production
 				? [
 						{
-							label: inDevelopment,
+							id: 'dev',
+							label: this.inDevelopment,
 							icon: IconDefinition.PALETTE,
 							route: '/dev',
-							children: [{ label: test, route: '/dev/test' }]
+							children: [{ id: 'test', label: this.test, route: '/dev/test' }]
 						}
 					]
 				: [])

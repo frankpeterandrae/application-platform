@@ -1,0 +1,18 @@
+// viewport sizes
+$small-mobile: 0; // Ideal for smaller smartphones, especially in landscape mode.
+$tablet-portrait: 40rem; // Suitable for tablets in portrait orientation. 40*16 = 640px
+$tablet-landscape: 56.25rem; // Fits larger tablets or smaller desktop screens. 56.25*16 = 900px
+$desktop: 78.125rem; // Common resolution for standard desktop monitors. 78.125*16 = 1250px
+$full-hd: 100rem; // Standard Full HD resolution for desktops. 100*16 = 1600px
+$ultra-wide: 120rem; // Suitable for ultra-wide monitors and high-resolution displays. 120*16 = 1920px
+$ultra-ultra-wide: 160rem; // Ideal for 4K and 5K displays. 160*16 = 2560px
+
+$breakpoints: (
+	xs: $small-mobile,
+	sm: $tablet-portrait,
+	md: $tablet-landscape,
+	lg: $desktop,
+	xl: $full-hd,
+	xxl: $ultra-wide,
+	xxxl: $ultra-ultra-wide
+);

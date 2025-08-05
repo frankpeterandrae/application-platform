@@ -3,8 +3,11 @@
  * All rights reserved.
  */
 
+import { Signal } from '@angular/core';
+
 export interface MenuItem {
-	label: string;
+	id: string;
+	label: string | Signal<string>;
 	icon?: string;
 	route?: string;
 	children?: MenuItem[];

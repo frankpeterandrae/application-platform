@@ -14,7 +14,8 @@ import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 @Component({
 	selector: 'theme-button',
 	imports: [CommonModule, FastSvgComponent],
-	templateUrl: './button.component.html'
+	templateUrl: './button.component.html',
+	styleUrls: ['./button.component.scss']
 })
 export class ButtonComponent implements OnInit {
 	/** Event emitter for button click events. */

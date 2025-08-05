@@ -4,7 +4,7 @@
  */
 @use 'sass:meta';
 @use '../base/prefix';
-@use '../base/variables';
+@use '../base/view_sizes';
 
 @mixin margin($breakpoint-prefix, $map) {
 	@each $name, $margin in $map {
@@ -139,7 +139,7 @@ $values: (
 	padding: 0;
 }
 
-@each $name, $width in variables.$breakpoints {
+@each $name, $width in view_sizes.$breakpoints {
 	$breakpoint-prefix: '-' + $name;
 	$min-width: $width;
 

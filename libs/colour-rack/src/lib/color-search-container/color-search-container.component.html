@@ -5,29 +5,33 @@
 
 <div class="fpa-content">
 	<h1 class="fpa-flex-align-self-center">
-		{{ 'ColorSearchContainer.lbl.Titel' | fpaTranslate: 'color-rack' | async }}
+		<span [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.Titel"></span>
 	</h1>
-	<p>{{ 'ColorSearchContainer.lbl.Description' | fpaTranslate: 'color-rack' | async }}</p>
-	<p>{{ 'ColorSearchContainer.lbl.FunctionsDescription' | fpaTranslate: 'color-rack' | async }}:</p>
+	<p [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.Description"></p>
+	<p [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.FunctionsDescription">:</p>
 	<ol>
 		<li>
 			<p>
-				<span class="fpa-font-weight-bold">{{ 'ColorSearchContainer.lbl.ColorSearch' | fpaTranslate: 'color-rack' | async }}:</span>
-				{{ 'ColorSearchContainer.lbl.ColorSearchDescription' | fpaTranslate: 'color-rack' | async }}
+				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorSearch"
+					>:
+				</span>
+				<span [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorSearchDescription"></span>
 			</p>
 		</li>
 		<li>
 			<p>
-				<span class="fpa-font-weight-bold">{{ 'ColorSearchContainer.lbl.ColorGrid' | fpaTranslate: 'color-rack' | async }}:</span>
-				{{ 'ColorSearchContainer.lbl.ColorGridDescription' | fpaTranslate: 'color-rack' | async }}
+				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorGrid"
+					>:
+				</span>
+				<span [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorGridDescription"></span>
 			</p>
 		</li>
 		<li>
 			<p>
-				<span class="fpa-font-weight-bold"
-					>{{ 'ColorSearchContainer.lbl.ColorDetails' | fpaTranslate: 'color-rack' | async }}:</span
-				>
-				{{ 'ColorSearchContainer.lbl.ColorDetailsDescription' | fpaTranslate: 'color-rack' | async }}
+				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorDetails"
+					>:
+				</span>
+				<span [fpaSharedUiTranslate]="colorRackTextModules.ColorSearchContainer.lbl.ColorDetailsDescription"></span>
 			</p>
 		</li>
 	</ol>

@@ -1,0 +1,6 @@
+@use '../../theme/base/prefix';
+.#{prefix.$prefix}button-no-style {
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+}

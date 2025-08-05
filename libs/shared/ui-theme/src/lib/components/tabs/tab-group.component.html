@@ -1,0 +1,10 @@
+<ul class="fpa-flex fpa-flex-row fpa-flex-wrap fpa-list-reset tab-list">
+	@for (tab of tabs(); track tab) {
+		<li class="tab-list-item" [class.active]="tab.active" (click)="selectTab(tab)">
+			{{ tab.label() }}
+		</li>
+	}
+</ul>
+<theme-card>
+	<ng-content />
+</theme-card>

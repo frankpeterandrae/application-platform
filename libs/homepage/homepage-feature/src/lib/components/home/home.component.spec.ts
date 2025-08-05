@@ -45,7 +45,7 @@ describe('HomeComponent', () => {
 		component.ngOnInit();
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
-		expect(mockTitle.setTitle).toHaveBeenCalledWith('HomeComponent.meta.Title');
-		expect(mockMeta.addTag).toHaveBeenCalledWith({ name: 'description', content: 'HomeComponent.meta.Description' });
+		expect(mockTitle.setTitle).toHaveBeenCalledWith('feature.HomeComponent.meta.Title');
+		expect(mockMeta.addTag).toHaveBeenCalledWith({ name: 'description', content: 'feature.HomeComponent.meta.Description' });
 	}));
 });

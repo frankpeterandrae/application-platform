@@ -7,9 +7,9 @@
 	<theme-card>
 		<div class="fpa-flex fpa-flex-column fpa-flex-justify-center fpa-flex-align-items-center">
 			<h1 class="fpa-color-crimson">404</h1>
-			<h2>{{ 'Error404Component.lbl.PageNotFound' | fpaTranslate: 'feature' | async }}</h2>
-			<p class="fpa-mb-1">{{ 'Error404Component.lbl.PageNotFoundDescription' | fpaTranslate: 'feature' | async }}</p>
-			<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="backToStartpage" (buttonClick)="routeToHome()" />
+			<h2><span [fpaSharedUiTranslate]="featureTextModules.Error404Component.lbl.PageNotFound"></span></h2>
+			<p class="fpa-mb-1" [fpaSharedUiTranslate]="featureTextModules.Error404Component.lbl.PageNotFoundDescription"></p>
+			<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="backToStart()" (buttonClick)="routeToHome()" />
 		</div>
 	</theme-card>
 </div>

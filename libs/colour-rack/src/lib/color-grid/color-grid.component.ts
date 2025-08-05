@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { AsyncPipe, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { AfterViewInit, Component, HostListener, input, OnChanges, OnInit, signal, SimpleChanges, inject, viewChild } from '@angular/core';
 import { Color } from '../models/color.model';
 import { ColorService } from '../services/color.service';
@@ -11,7 +11,9 @@ import { DialogConfigModel, DialogService } from '@angular-apps/shared/ui-theme'
 import { ColorDetailsComponent } from '../color-details/color-details.component';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { NumberInput } from '@angular/cdk/coercion';
-import { TranslationPipe } from '@angular-apps/services';
+import { LOGGER_SOURCE, Scopes, TranslationDirective } from '@angular-apps/shared-ui';
+import { colorRackTextModules } from '../i18n/i18n';
+import { provideTranslocoScope } from '@jsverse/transloco';
 
 /**
  * Component representing a grid of colors.
@@ -20,11 +22,13 @@ import { TranslationPipe } from '@angular-apps/services';
 	selector: 'cr-color-grid',
 	templateUrl: './color-grid.component.html',
 	styleUrls: ['./color-grid.component.scss'],
-	imports: [NgStyle, CdkVirtualScrollViewport, CdkVirtualForOf, CdkFixedSizeVirtualScroll, AsyncPipe, TranslationPipe]
+	imports: [NgStyle, CdkVirtualScrollViewport, CdkVirtualForOf, CdkFixedSizeVirtualScroll, TranslationDirective],
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorGridComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)]
 })
 export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	private readonly colorService = inject(ColorService);
 	private readonly dialogService = inject(DialogService);
+	public readonly colorRackTextModules = colorRackTextModules;
 
 	public readonly viewPort = viewChild.required(CdkVirtualScrollViewport);
 	/**

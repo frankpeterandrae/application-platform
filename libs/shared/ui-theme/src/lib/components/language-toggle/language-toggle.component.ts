@@ -4,7 +4,6 @@
  */
 
 import { Component, inject } from '@angular/core';
-
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 import { IconDefinition } from '../../enums';
 import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
@@ -15,7 +14,8 @@ import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
 @Component({
 	selector: 'theme-language-toggle',
 	imports: [FastSvgComponent],
-	templateUrl: './language-toggle.component.html'
+	templateUrl: './language-toggle.component.html',
+	styleUrls: ['./language-toggle.component.scss']
 })
 export class LanguageToggleComponent {
 	/** Service for handling translations and language changes. */

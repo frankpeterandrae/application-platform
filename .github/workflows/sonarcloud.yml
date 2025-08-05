@@ -61,5 +61,5 @@ jobs:
             -Dsonar.organization=frankpeterandrae
             -Dsonar.sources=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test-setup.ts
-            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/demo-e2e/**,**/homepage-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
+            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/demo-e2e/**,**/homepage-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php,*.config.js
             -Dsonar.javascript.lcov.reportPaths=coverage/apps/demo/lcov.info,coverage/apps/homepage/lcov.info,coverage/libs/colour-rack/lcov.info,coverage/libs/demo/domain/lcov.info,coverage/libs/homepage/domain/lcov.info,coverage/libs/homepage/homepage-feature/lcov.info,coverage/libs/shared/config/lcov.info,coverage/libs/shared/services/lcov.info,coverage/libs/shared/ui-theme/lcov.info

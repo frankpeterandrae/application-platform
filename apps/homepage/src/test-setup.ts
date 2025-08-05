@@ -13,9 +13,9 @@ setupZoneTestEnv();
 
 /**
  * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
+ * @param {TestModuleMetadata} metadata - The metadata for the test module, including imports, providers, and declarations.
  * @returns {Promise<any>} A promise that resolves when the test module is compiled.
  */
-export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<any> {
-	return sharedSetupTestingModule({ imports, providers, declarations }, { en, de });
+export function setupTestingModule(metadata: TestModuleMetadata): Promise<any> {
+	return sharedSetupTestingModule(metadata, { en, de });
 }

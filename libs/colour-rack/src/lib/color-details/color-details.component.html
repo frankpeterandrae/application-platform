@@ -5,7 +5,7 @@
 <theme-dialog>
 	<div class="fpa-grid-12">
 		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.SKU' | fpaTranslate: 'color-rack' | async }}: </span>
+			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.SKU">: </span>
 		</div>
 		<div class="fpa-grid-col-end-10">
 			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
@@ -15,7 +15,7 @@
 
 		@if (data.componentData?.alternativeNames) {
 			<div class="fpa-grid-col-end-2">
-				<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.AlternativeNames' | fpaTranslate: 'color-rack' | async }}: </span>
+				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.AlternativeNames">:</span>
 			</div>
 			<div class="fpa-grid-col-end-10">
 				@for (alternativeNames of data.componentData?.alternativeNames; track alternativeNames; let idx = $index) {
@@ -27,7 +27,7 @@
 		}
 
 		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.Type' | fpaTranslate: 'color-rack' | async }}: </span>
+			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.Type">:</span>
 		</div>
 		<div class="fpa-grid-col-end-10">
 			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
@@ -36,7 +36,7 @@
 		</div>
 
 		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.Wave' | fpaTranslate: 'color-rack' | async }}: </span>
+			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.Wave">:</span>
 		</div>
 		<div class="fpa-grid-col-end-10">
 			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
@@ -45,7 +45,7 @@
 		</div>
 
 		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.Barcode' | fpaTranslate: 'color-rack' | async }}: </span>
+			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.Barcode">:</span>
 		</div>
 		<div class="fpa-grid-col-end-10">
 			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
@@ -54,7 +54,7 @@
 		</div>
 
 		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold">{{ 'ColorDetails.lbl.Position' | fpaTranslate: 'color-rack' | async }} : </span>
+			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="colorRackTextModules.ColorDetails.lbl.Position"></span>:
 		</div>
 		<div class="fpa-grid-col-end-10">
 			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">

@@ -5,16 +5,17 @@
 
 import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MenuItem } from '../../../model/menu-item.model';
+import { MenuItem } from '../../../model';
 import { Router, RouterLink } from '@angular/router';
 import { ColorDefinition } from '../../../enums';
+import { UnwrapSignalPipe } from '../../../pipes/unwrap-signal/unwrap-signal.pipe';
 
 /**
  * Component representing the top navigation bar.
  */
 @Component({
 	selector: 'theme-topnavbar',
-	imports: [CommonModule, RouterLink],
+	imports: [CommonModule, RouterLink, UnwrapSignalPipe],
 	templateUrl: './top-navbar.component.html',
 	styleUrl: './top-navbar.component.scss'
 })

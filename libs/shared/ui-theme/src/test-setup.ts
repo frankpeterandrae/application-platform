@@ -4,8 +4,8 @@
  */
 
 import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
-import en from './lib/theme/assets/i18n/theme/en.json';
-import de from './lib/theme/assets/i18n/theme/de.json';
+import en from './assets/i18n/theme/en.json';
+import de from './assets/i18n/theme/de.json';
 import { TestModuleMetadata } from '@angular/core/testing';
 import { sharedSetupTestingModule } from '@angular-apps/testing';
 

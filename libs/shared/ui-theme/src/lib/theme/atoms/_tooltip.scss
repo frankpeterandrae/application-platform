@@ -3,14 +3,14 @@
  * All rights reserved.
  */
 @use '../base/prefix';
-@use '../base/variables';
 @use '../electrons/typography';
+
 .#{prefix.$prefix}tooltip {
 	position: absolute;
-	background-color: variables.$slate-gray;
-	color: variables.$dark-text;
+	background-color: var(--slate-gray);
+	color: var(--dark-text);
 	padding: 5px;
-	border-radius: variables.$border-radius;
+	border-radius: var(--border-radius);
 	white-space: nowrap;
 	z-index: 1000;
 	pointer-events: none; /* Ensure the tooltip does not interfere with pointer events */

@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (c) 2025. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<div class="fpa-input-group fpa-mt-1">
+	@if (label()) {
+		<label class="fpa-input-label">{{ label() }}</label>
+	}
+	<div class="fpa-flex fpa-flex-row">
+		@for (checkbox of checkboxes(); track checkbox.id) {
+			<div class="checkbox-wrapper fpa-mr-1" [ngClass]="'checkbox-wrapper--' + (checkbox.color ?? 'default')">
+				<input
+					[value]="checkbox.value"
+					[attr.id]="checkbox.id"
+					[checked]="checkbox.checked"
+					[disabled]="disabled || checkbox.disabled"
+					(change)="onCheckChange($event, checkbox)"
+					(blur)="propagateTouch(checkbox.value)"
+					type="checkbox"
+					class="fpa-checkbox inp-cbx"
+				/>
+
+				<label [attr.for]="checkbox.id" class="cbx"
+					><span>
+						<svg viewBox="0 0 12 10" height="10px" width="12px">
+							<polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span
+					><span>{{ checkbox.label }}</span>
+				</label>
+			</div>
+		}
+	</div>
+</div>

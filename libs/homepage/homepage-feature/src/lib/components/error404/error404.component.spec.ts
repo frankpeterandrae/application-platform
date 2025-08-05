@@ -7,7 +7,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 
 import { Error404Component } from './error404.component';
 import { setupTestingModule } from '../../../test-setup';
-import { LOGGER_SOURCE } from '@angular-apps/services';
+import { LOGGER_SOURCE } from '@angular-apps/shared-ui';
 
 describe('Error404Component', () => {
 	let component: Error404Component;
@@ -29,10 +29,9 @@ describe('Error404Component', () => {
 	});
 
 	it('should set the sets the backToStartpage property with the translated string', fakeAsync(() => {
-		component.ngOnInit();
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
-		expect(component.backToStartpage).toBe('Error404Component.lbl.BackToStartpage');
+		expect(component.backToStart()).toBe('feature.Error404Component.lbl.BackToStartpage');
 	}));
 
 	it('should navigate to home on routeToHome call', () => {
