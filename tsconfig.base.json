@@ -26,7 +26,7 @@
 			"@application-platform/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
 			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
 			"@application-platform/interfaces": ["libs/shared/interfaces/src/index.ts"],
-			"@application-platform/services": ["libs/shared/services/src/index.ts"],
+			"@application-platform/shared-ui": ["libs/shared/shared-ui/src/index.ts"],
 			"@application-platform/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
 			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
 			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],

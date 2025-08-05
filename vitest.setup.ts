@@ -8,10 +8,6 @@ import '@angular/compiler';
 
 /// <reference types="vitest" />
 import { afterEach, beforeEach } from 'vitest';
-/*
- * Copyright (c) 2026. Frank-Peter Andrä
- * All rights reserved.
- */
 
 // Global Vitest setup: TestBed reset helpers
 // Keep global resets for Vitest mocks.

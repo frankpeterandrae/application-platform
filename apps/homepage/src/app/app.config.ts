@@ -9,7 +9,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { translocoConfigFactory } from '@application-platform/config';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/services';
+import { ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/shared-ui';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
 

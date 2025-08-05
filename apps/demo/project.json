@@ -13,7 +13,6 @@
 				"outputPath": "dist/apps/demo",
 				"index": "apps/demo/src/index.html",
 				"browser": "apps/demo/src/main.ts",
-				"polyfills": ["zone.js"],
 				"tsConfig": "apps/demo/tsconfig.app.json",
 				"inlineStyleLanguage": "scss",
 				"assets": [
@@ -23,7 +22,7 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/shared/ui-theme/src/lib/theme/assets",
+						"input": "libs/shared/ui-theme/src/assets",
 						"output": "assets"
 					}
 				],

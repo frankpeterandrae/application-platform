@@ -32,6 +32,13 @@ $font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
 $border-radius: 0.5rem;
 $border-radius-small: 0.25rem;
 
+// layout
+$header-height: 9vh;
+$footer-height: 2vh;
+
+// Use CSS calc with interpolation so Sass doesn't attempt arithmetic between incompatible units (vh and rem)
+$content-height: calc(100vh - #{$header-height} - #{$footer-height} - 4rem);
+
 // viewport sizes
 $small-mobile: 0; // Ideal for smaller smartphones, especially in landscape mode.
 $tablet-portrait: 40rem; // Suitable for tablets in portrait orientation. 40*16 = 640px

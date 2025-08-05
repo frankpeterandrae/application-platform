@@ -11,6 +11,6 @@
 	transition: color 0.3s;
 
 	&:hover {
-		color: var(--link-hover-color);
+		color: variables.$light-accent-highlight;
 	}
 }

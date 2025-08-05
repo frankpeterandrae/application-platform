@@ -16,7 +16,7 @@ export default defineConfig({
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: ['../../vitest.setup.ts'],
+		setupFiles: [resolve(process.cwd(), 'vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
 		outputFile: resolve(process.cwd(), 'test-result/libs/shared/ui-theme/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],

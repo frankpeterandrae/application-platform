@@ -7,6 +7,8 @@ import { TestBed } from '@angular/core/testing';
 import { CvNack, CvRead, CvResult, PROTOCOL_VERSION, type ClientToServer } from '@application-platform/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { setupTestingModule } from '../test-setup';
+
 import { WsClientService } from './ws-client.service';
 
 describe('WsClientService', () => {
@@ -31,12 +33,11 @@ describe('WsClientService', () => {
 	MockWebSocket.OPEN = 1;
 	MockWebSocket.CLOSED = 3;
 
-	beforeEach(() => {
+	beforeEach(async () => {
+		await setupTestingModule({ providers: [WsClientService] });
 		originalWebSocket = (global as any).WebSocket;
 		lastCreatedWs = undefined;
 		(global as any).WebSocket = MockWebSocket as any;
-
-		TestBed.configureTestingModule({ providers: [WsClientService] });
 	});
 
 	afterEach(() => {

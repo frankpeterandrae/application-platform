@@ -17,6 +17,14 @@ export const appRoutes: Route[] = [
 		loadComponent: (): Promise<Type<unknown>> => import('@application-platform/demo-feature').then((m) => m.ButtonDemoComponent)
 	},
 	{
+		path: 'checkbox',
+		/**
+		 * Lazy loads the CheckboxDemoComponent from the demo-feature module.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the CheckboxDemoComponent.
+		 */
+		loadComponent: (): Promise<Type<unknown>> => import('@application-platform/demo-feature').then((m) => m.CheckboxDemoComponent)
+	},
+	{
 		path: 'colors',
 		/**
 		 * Lazy loads the ColorsComponent from the demo-feature module.

@@ -5,13 +5,13 @@
 
 <nav class="fpa-bg-dark-shades-t2 fpa-height-100 fpa-dark-text">
 	<ul class="menu fpa-m-0">
-		@for (item of menuItems(); track item) {
+		@for (item of menuItems(); track item.id) {
 			<li class="menu-item">
 				<a class="fpa-p-1 fpa-light-text fpa-link" [routerLink]="item.route">
 					@if (item.icon) {
 						<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'"></fast-svg>
 					}
-					<span>{{ item.label }}</span>
+					<span>{{ item.label | themeUnwrapSignal }}</span>
 				</a>
 			</li>
 		}

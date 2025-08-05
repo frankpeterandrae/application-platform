@@ -3,10 +3,11 @@
  * All rights reserved.
  */
 
-import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
-import { TranslationPipe } from '@application-platform/services';
 import { IconDefinition, InputComponent } from '@application-platform/shared/ui-theme';
+import { translateSignal } from '@jsverse/transloco';
+
+import { colorRackTextModules } from '../i18n/i18n';
 
 /**
  * Component for searching colors.
@@ -15,7 +16,7 @@ import { IconDefinition, InputComponent } from '@application-platform/shared/ui-
 	selector: 'cr-color-search',
 	templateUrl: './color-search.component.html',
 	styleUrls: ['./color-search.component.scss'],
-	imports: [InputComponent, TranslationPipe, AsyncPipe],
+	imports: [InputComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSearchComponent {
@@ -24,6 +25,7 @@ export class ColorSearchComponent {
 	 */
 	public readonly searchEvent = output<string>();
 
+	public readonly searchColor = translateSignal(colorRackTextModules.ColorSearch.lbl.SearchColor);
 	/**
 	 * Emits the search event with the current search text.
 	 * @param {string} $event - The current search text.

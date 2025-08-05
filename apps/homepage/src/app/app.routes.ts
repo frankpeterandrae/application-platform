@@ -9,7 +9,8 @@
 import type { Type } from '@angular/core';
 import type { Route } from '@angular/router';
 import { environment } from '@application-platform/config';
-import { EnvGuard } from '@application-platform/services';
+import { EnvGuard, Scopes } from '@application-platform/shared-ui';
+import { provideTranslocoScope } from '@jsverse/transloco';
 
 /**
  * Development-specific routes.
@@ -17,15 +18,19 @@ import { EnvGuard } from '@application-platform/services';
  */
 const devRoutes: Route[] = [
 	{
-		path: 'dev/test',
-		/**
-		 * Lazy loads the Error404Component for the test route.
-		 * @returns {Promise<Type<unknown>>} A promise that resolves to the Error404Component.
-		 */
-		loadComponent: () => import('@application-platform/homepage-feature').then((m) => m.Error404Component),
-		canActivate: [EnvGuard]
+		path: 'dev',
+		children: [
+			{
+				path: 'test',
+				/**
+				 * Lazy loads the Error404Component for the test route.
+				 * @returns {Promise<Type<unknown>>} A promise that resolves to the Error404Component.
+				 */
+				loadComponent: () => import('@application-platform/homepage-feature').then((m) => m.Error404Component),
+				canActivate: [EnvGuard]
+			}
+		]
 	}
-	// Add more dev-specific routes here
 ];
 
 /**
@@ -48,7 +53,8 @@ export const appRoutes: Route[] = [
 		 * @returns {Promise<Type<unknown>>} A promise that resolves to the ColorSearchContainerComponent.
 		 */
 		loadComponent: (): Promise<Type<unknown>> =>
-			import('@application-platform/colour-rack').then((m) => m.ColorSearchContainerComponent)
+			import('@application-platform/colour-rack').then((m) => m.ColorSearchContainerComponent),
+		providers: [provideTranslocoScope(Scopes.COLOR_RACK)]
 	},
 	...(environment.production ? [] : devRoutes),
 	{

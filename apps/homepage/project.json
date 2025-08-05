@@ -26,12 +26,12 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/shared/ui-theme/src/lib/theme/assets",
+						"input": "libs/shared/ui-theme/src/assets",
 						"output": "assets"
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/homepage/homepage-feature/src/lib/assets",
+						"input": "libs/homepage/homepage-feature/src/assets",
 						"output": "assets"
 					}
 				],
@@ -145,12 +145,6 @@
 						"command": "npm run foss"
 					}
 				]
-			}
-		},
-		"extract-i18n": {
-			"executor": "@angular-devkit/build-angular:extract-i18n",
-			"options": {
-				"buildTarget": "homepage:build"
 			}
 		},
 		"test": {

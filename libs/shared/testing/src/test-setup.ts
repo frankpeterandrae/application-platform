@@ -10,13 +10,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { ModuleWithProviders } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import type { HashMap, Translation, TranslocoConfig } from '@jsverse/transloco';
-import { TranslocoTestingModule } from '@jsverse/transloco';
+import { translateSignal, TranslocoTestingModule } from '@jsverse/transloco';
 
-import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translation-service';
+import { ScopedTranslationServiceMock, TranslateSignalMock } from './lib/mocks/scoped-translation.service.mock';
 
 // Initialize TestBed environment for testing using non-deprecated APIs.
 // Use BrowserTestingModule instead of deprecated BrowserDynamicTestingModule.
@@ -27,19 +27,17 @@ getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting(),
 
 /**
  * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} _testModule - The metadata for the test module, including imports, providers, and declarations.
+ * @param {TestModuleMetadata} metadata - The metadata for the test module, including imports, providers, and declarations.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
  * @returns {Promise<void>} A promise that resolves when the test module is compiled and resources resolved.
  */
 export async function sharedSetupTestingModule(
-	// accept an untyped options object at runtime to avoid TypeScript-only syntax in test-setup
-	_testModule: any,
+	metadata: TestModuleMetadata,
 	langs?: HashMap<Translation>,
 	config: Partial<TranslocoConfig> = {}
 ): Promise<void> {
-	const { imports = [], declarations } = _testModule ?? {};
-	let providers: any[] = _testModule?.providers || [];
+	let providers: any[] = metadata?.providers || [];
 
 	// Dynamically import Angular common tokens after the compiler is loaded to avoid
 	// triggering their static initializers during module load. Then provide lightweight
@@ -88,6 +86,10 @@ export async function sharedSetupTestingModule(
 	};
 
 	providers = [
+		{ provide: translateSignal, useValue: TranslateSignalMock },
+		{ provide: ScopedTranslationServiceInterface, useClass: ScopedTranslationServiceMock },
+		provideHttpClient(),
+		provideHttpClientTesting(),
 		{ provide: PlatformLocation, useValue: platformLocationStub },
 		{ provide: Location, useValue: locationStub },
 		{ provide: PathLocationStrategy, useValue: pathLocationStrategyStub },
@@ -103,15 +105,10 @@ export async function sharedSetupTestingModule(
 
 	// Configure and compile the testing module
 	await TestBed.configureTestingModule({
-		imports: [translocoTestingModulFactory(config, usedLangs), ...imports],
-		providers: [
-			{ provide: ScopedTranslationServiceInterface, useClass: MockScopedTranslationService },
-			provideHttpClient(),
-			provideHttpClientTesting(),
-			...providers
-		],
-		declarations,
-		schemas: [NO_ERRORS_SCHEMA]
+		imports: [translocoTestingModulFactory(config, usedLangs), ...(metadata.imports || [])],
+		providers: providers,
+		declarations: [...(metadata.declarations || [])],
+		schemas: [NO_ERRORS_SCHEMA, ...(metadata.schemas || [])]
 	}).compileComponents();
 
 	// Some Angular runtimes expose resolveComponentResources to load external templateUrl/styleUrls for components.

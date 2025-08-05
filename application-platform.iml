@@ -12,7 +12,7 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/homepage/colour-rack/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/homepage/homepage-feature/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/shared/interfaces/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/libs/shared/services/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/shared/shared-ui/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/shared/testing/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/shared/ui-theme/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/z21-suite/domain/src" isTestSource="false" />

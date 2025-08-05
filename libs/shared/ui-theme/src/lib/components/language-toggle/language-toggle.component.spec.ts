@@ -6,7 +6,7 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import type { MockScopedTranslationService } from '@application-platform/testing';
+import { ScopedTranslationServiceMock } from '@application-platform/testing';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -15,7 +15,7 @@ import { LanguageToggleComponent } from './language-toggle.component';
 describe('LanguageToggleComponent', () => {
 	let component: LanguageToggleComponent;
 	let fixture: ComponentFixture<LanguageToggleComponent>;
-	let mockTranslationService: MockScopedTranslationService;
+	let mockTranslationService: ScopedTranslationServiceMock;
 
 	beforeEach(async () => {
 		await setupTestingModule({
@@ -24,7 +24,7 @@ describe('LanguageToggleComponent', () => {
 
 		fixture = TestBed.createComponent(LanguageToggleComponent);
 		component = fixture.componentInstance;
-		mockTranslationService = TestBed.inject(ScopedTranslationServiceInterface) as unknown as MockScopedTranslationService;
+		mockTranslationService = TestBed.inject(ScopedTranslationServiceInterface) as unknown as ScopedTranslationServiceMock;
 
 		fixture.detectChanges();
 	});

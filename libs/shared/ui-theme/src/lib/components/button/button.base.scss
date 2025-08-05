@@ -1,0 +1,37 @@
+/*!
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../../theme/base/prefix';
+@use '../../theme/base/variables';
+
+.#{prefix.$prefix}button-no-style {
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+}
+
+.#{prefix.$prefix}button {
+	border: none;
+	border-radius: variables.$border-radius-small;
+	position: relative;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0;
+	will-change: box-shadow, transform;
+	transition:
+		box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1),
+		background-color 0.2s cubic-bezier(0.4, 0, 0.2, 2);
+	cursor: pointer;
+
+	span {
+		margin: 3px;
+		height: 1rem;
+	}
+}
+
+.#{prefix.$prefix}button:active {
+	position: relative;
+	top: 1px;
+}

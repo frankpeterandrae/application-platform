@@ -17,7 +17,7 @@ import {
 	signal,
 	viewChild
 } from '@angular/core';
-import { Logger } from '@application-platform/services';
+import { Logger } from '@application-platform/shared-ui';
 
 import { IconDefinition } from '../../enums';
 import { ButtonComponent } from '../button/button.component';
