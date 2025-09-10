@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2025. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { ProviderScope, translateSignal, TRANSLOCO_SCOPE, TranslocoScope } from '@jsverse/transloco';
 
 import { Directive, ElementRef, OnInit, effect, runInInjectionContext, inject, Injector, input } from '@angular/core';

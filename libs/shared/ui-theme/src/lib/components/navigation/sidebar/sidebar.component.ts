@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -23,5 +23,5 @@ export class SidebarComponent {
 	/**
 	 * An array of menu items to be displayed in the sidebar.
 	 */
-	public menuItems = input.required<MenuItem[]>();
+	public readonly menuItems = input<MenuItem[]>([]);
 }

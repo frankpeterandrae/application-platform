@@ -1,10 +1,10 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2025. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
 <div class="fpa-flex fpa-flex-column fpa-height-100">
-	<theme-header class="fpa-flex-shrink-1" [menuItems]="menuItems">
+	<theme-header class="fpa-flex-shrink-1" [menuItems]="menuItems()">
 		<theme-language-toggle></theme-language-toggle>
 	</theme-header>
 
@@ -13,5 +13,5 @@
 			<router-outlet></router-outlet>
 		</div>
 	</div>
-	<theme-footer class="fpa-flex-shrink-1"></theme-footer>
+	<theme-footer class="fpa-flex-shrink-1" [menuIems]="footerMenuItems()"></theme-footer>
 </div>

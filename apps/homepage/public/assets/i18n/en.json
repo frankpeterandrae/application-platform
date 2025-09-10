@@ -3,8 +3,10 @@
 		"menu": {
 			"lbl": {
 				"Home": "Home",
+				"Imprint": "Imprint",
 				"InDevelopment": "In Development",
 				"PaintRack": "Paint rack",
+				"Privacy": "Privacy",
 				"Test": "Test"
 			}
 		}

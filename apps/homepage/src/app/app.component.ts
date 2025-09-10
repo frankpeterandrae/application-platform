@@ -4,7 +4,7 @@
  */
 
 import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleComponent, MenuItem } from '@angular-apps/shared/ui-theme';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BUILD_DATE, environment } from '@angular-apps/config';
 import { Logger } from '@angular-apps/shared-ui';
@@ -24,15 +24,57 @@ import { translateSignal } from '@jsverse/transloco';
 export class AppComponent implements OnInit {
 	private readonly meta = inject(Meta);
 
-	protected homeLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.Home);
+	private homeLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.Home);
 	private paintRack = translateSignal(i18nTextModules.AppComponent.menu.lbl.PaintRack);
 	private inDevelopment = translateSignal(i18nTextModules.AppComponent.menu.lbl.InDevelopment);
 	private test = translateSignal(i18nTextModules.AppComponent.menu.lbl.Test);
+	private imprint = translateSignal(i18nTextModules.AppComponent.menu.lbl.Imprint);
+	private privacy = translateSignal(i18nTextModules.AppComponent.menu.lbl.Privacy);
+
 	/**
-	 * The menu items to be displayed in the sidebar.
-	 * @type {MenuItem[]}
+	 * The menu items to be displayed in the header.
+	 * Implemented as a computed signal so it reacts when translation signals change.
 	 */
-	public menuItems: MenuItem[] = [];
+	public menuItems = computed<MenuItem[]>(() => [
+		{
+			id: 'home',
+			label: this.homeLabel(),
+			icon: IconDefinition.HOUSE,
+			route: '/'
+		},
+		{
+			id: 'paint-rack',
+			label: this.paintRack(),
+			icon: IconDefinition.PALETTE,
+			route: '/paint-rack'
+		},
+		...(!environment.production
+			? [
+					{
+						id: 'dev',
+						label: this.inDevelopment(),
+						icon: IconDefinition.PALETTE,
+						route: '/dev',
+						children: [{ id: 'test', label: this.test(), route: '/dev/test' }]
+					}
+				]
+			: [])
+	]);
+
+	public footerMenuItems = computed<MenuItem[]>(() => [
+		{
+			id: 'home',
+			label: this.homeLabel(),
+			icon: IconDefinition.HOUSE,
+			route: '/'
+		},
+		{
+			id: 'paint-rack',
+			label: this.paintRack(),
+			icon: IconDefinition.PALETTE,
+			route: '/paint-rack'
+		}
+	]);
 
 	/**
 	 * Creates an instance of AppComponent.
@@ -54,37 +96,5 @@ export class AppComponent implements OnInit {
 		if (environment.production) {
 			Logger.setProductionMode({ disable: true });
 		}
-		this.initializeMenuItems();
-	}
-
-	/**
-	 * Initializes the menu items with the provided translations.
-	 */
-	private initializeMenuItems(): void {
-		this.menuItems = [
-			{
-				id: 'home',
-				label: this.homeLabel,
-				icon: IconDefinition.HOUSE,
-				route: '/'
-			},
-			{
-				id: 'paint-rack',
-				label: this.paintRack,
-				icon: IconDefinition.PALETTE,
-				route: '/paint-rack'
-			},
-			...(!environment.production
-				? [
-						{
-							id: 'dev',
-							label: this.inDevelopment,
-							icon: IconDefinition.PALETTE,
-							route: '/dev',
-							children: [{ id: 'test', label: this.test, route: '/dev/test' }]
-						}
-					]
-				: [])
-		];
 	}
 }

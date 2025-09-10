@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -21,5 +21,5 @@ export class HeaderComponent {
 	/**
 	 * An array of MenuItem objects that represent the items to be displayed in the menu.
 	 */
-	public menuItems = input.required<MenuItem[]>();
+	public menuItems = input<MenuItem[]>([]);
 }

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2025. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component, input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from '../../../model';
 import { Router, RouterLink } from '@angular/router';
@@ -25,7 +25,7 @@ export class TopNavbarComponent {
 	/**
 	 * Array of menu items to be displayed in the navigation bar.
 	 */
-	public menuItems = input.required<MenuItem[]>();
+	public menuItems = input<MenuItem[]>([]);
 
 	/**
 	 * Enum for color definitions.

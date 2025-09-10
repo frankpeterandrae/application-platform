@@ -3,8 +3,10 @@
 		"menu": {
 			"lbl": {
 				"Home": "Startseite",
+				"Imprint": "Impressum",
 				"InDevelopment": "In Entwicklung",
 				"PaintRack": "Farbregal",
+				"Privacy": "Datenschutz",
 				"Test": "Test"
 			}
 		}

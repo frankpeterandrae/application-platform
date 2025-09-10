@@ -35,7 +35,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=frankpeterandrae_angular-apps
+            -Dsonar.projectKey=${{ secrets.PROJECT_KEY }}
             -Dsonar.organization=frankpeterandrae
             -Dsonar.sources=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test-setup.ts
