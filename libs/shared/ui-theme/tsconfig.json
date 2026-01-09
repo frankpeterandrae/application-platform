@@ -4,7 +4,8 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"module": "preserve",
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"lib": ["dom", "es2022"]
 	},
 	"files": [],
 	"include": [],
