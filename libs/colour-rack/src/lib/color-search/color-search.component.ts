@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { IconDefinition, InputComponent } from '@angular-apps/shared/ui-theme';
-import { ChangeDetectionStrategy, Component, output } from '@angular/core';
-import { TranslationPipe } from '@angular-apps/services';
 import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, output } from '@angular/core';
+import { TranslationPipe } from '@application-platform/services';
+import { IconDefinition, InputComponent } from '@application-platform/shared/ui-theme';
 
 /**
  * Component for searching colors.
@@ -29,7 +29,7 @@ export class ColorSearchComponent {
 	 * @param {string} $event - The current search text.
 	 */
 	public onSearchTermChange($event: string): void {
-		if ($event != null) {
+		if ($event) {
 			this.searchEvent.emit($event);
 		}
 	}

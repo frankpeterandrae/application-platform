@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { TooltipDirective } from '@angular-apps/shared/ui-theme';
+import { Component } from '@angular/core';
+import { TooltipDirective } from '@application-platform/shared/ui-theme';
 
 /**
  * Component representing a color palette with various shades.

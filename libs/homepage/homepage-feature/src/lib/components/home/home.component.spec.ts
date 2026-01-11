@@ -1,13 +1,17 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { HomeComponent } from './home.component';
-import { HeroComponent } from '../hero/hero.component';
-import { setupTestingModule } from '../../../test-setup';
+import type { ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
+
+import { setupTestingModule } from '../../../test-setup';
+import { HeroComponent } from '../hero/hero.component';
+
+import { HomeComponent } from './home.component';
+
 import Mocked = jest.Mocked;
 
 describe('HomeComponent', () => {

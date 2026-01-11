@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { Component } from '@angular/core';
-
+import { TooltipDirective } from '@application-platform/shared/ui-theme';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
-import { TooltipDirective } from '@angular-apps/shared/ui-theme';
 
 /**
  *

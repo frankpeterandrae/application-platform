@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { HttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { DataConnectionService } from './data.connection.service';
+import { of } from 'rxjs';
+
 import { setupTestingModule } from '../../../test-setup';
+
+import { DataConnectionService } from './data.connection.service';
 
 /**
  * Test suite for DataConnectionService.

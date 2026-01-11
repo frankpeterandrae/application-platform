@@ -1,16 +1,17 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { provideHttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import type { ApplicationConfig } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { ScopedTranslationService } from '@application-platform/services';
+import { provideFastSVG } from '@push-based/ngx-fast-svg';
 
 import { appRoutes } from './app.routes';
-import { provideFastSVG } from '@push-based/ngx-fast-svg';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
-import { ScopedTranslationService } from '@angular-apps/services';
 
 export const appConfig: ApplicationConfig = {
 	providers: [

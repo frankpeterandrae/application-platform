@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { HeroComponent } from './hero.component';
+import type { ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+
 import { setupTestingModule } from '../../../test-setup';
+
+import { HeroComponent } from './hero.component';
 
 describe('HeroComponent', () => {
 	let component: HeroComponent;

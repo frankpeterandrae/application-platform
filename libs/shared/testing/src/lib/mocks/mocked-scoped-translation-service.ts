@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { delay, Observable, of } from 'rxjs';
 import { signal } from '@angular/core';
 import * as jestMock from 'jest-mock';
+import type { Observable } from 'rxjs';
+import { delay, of } from 'rxjs';
 
 /**
  * Mock service for ScopedTranslationService.

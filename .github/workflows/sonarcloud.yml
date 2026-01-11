@@ -2,8 +2,7 @@ name: SonarCloud Scan
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -15,43 +14,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch the entire history and all branches
-
-      # Fetch the base branch explicitly to ensure it is available
-      - name: Checkout main in detached HEAD
-        run: |
-          git checkout --detach
-          if [ -n "$GITHUB_BASE_REF" ]; then
-            git fetch origin $GITHUB_BASE_REF:$GITHUB_BASE_REF
-          else
-            git fetch origin main:main
-          fi
-
-      # Set base commit
-      - name: Set base commit
-        run: |
-          if [ -n "$GITHUB_BASE_REF" ]; then
-            BASE_COMMIT=$GITHUB_BASE_REF
-          else
-            BASE_COMMIT=main
-          fi
-          echo "BASE_COMMIT=$BASE_COMMIT" >> $GITHUB_ENV
+          fetch-depth: 0
 
       # Set up Node.js (required for NX)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
 
       # Install dependencies
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci
+
+      - name: Derive Nx SHAs
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: main
 
       # Run tests for affected apps and libs
-      - name: Run tests and collect coverage
-        run: npx nx affected --target=test --base=$BASE_COMMIT --head=HEAD
+      - name: Run affected tests with coverage
+        run: npx nx affected --target=test --base=$NX_BASE --head=$NX_HEAD --codeCoverage
 
-      - name: Upload coverage to SonarCloud
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -60,6 +45,7 @@ jobs:
             -Dsonar.projectKey=${{ secrets.PROJECT_KEY }}
             -Dsonar.organization=frankpeterandrae
             -Dsonar.sources=apps,libs
+            -Dsonar.tests=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test-setup.ts
             -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/demo-e2e/**,**/homepage-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
-            -Dsonar.javascript.lcov.reportPaths=coverage/apps/demo/lcov.info,coverage/apps/homepage/lcov.info,coverage/libs/colour-rack/lcov.info,coverage/libs/demo/domain/lcov.info,coverage/libs/homepage/domain/lcov.info,coverage/libs/homepage/homepage-feature/lcov.info,coverage/libs/shared/config/lcov.info,coverage/libs/shared/services/lcov.info,coverage/libs/shared/ui-theme/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=coverage/**/lcov.info

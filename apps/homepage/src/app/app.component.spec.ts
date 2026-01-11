@@ -1,16 +1,19 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import type { ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '@application-platform/config';
+import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
+import { MockedLanguageToggleComponent } from '@application-platform/testing';
 import { of } from 'rxjs';
-import { environment } from '@angular-apps/config';
+
 import { setupTestingModule } from '../test-setup';
-import { LanguageToggleComponent } from '@angular-apps/shared/ui-theme';
-import { MockedLanguageToggleComponent } from '@angular-apps/testing';
+
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
 	let fixture: ComponentFixture<AppComponent>;
@@ -57,20 +60,21 @@ describe('AppComponent', () => {
 	it('should include "In Development" menu item in non-production mode', fakeAsync(() => {
 		environment.production = false;
 		const app = fixture.componentInstance;
+		app.ngOnInit();
 		fixture.detectChanges();
 
 		// Use `tick` to simulate the passage of time and completion of async tasks
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
 
-		if (!environment.production) {
-			expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(true);
-		}
+		// environment.production is explicitly set to false above, so assert directly
+		expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(true);
 	}));
 
 	it('should not include "In Development" menu item in production mode', fakeAsync(() => {
 		const app = fixture.componentInstance;
 		environment.production = true;
+		app.ngOnInit();
 
 		fixture.detectChanges();
 
@@ -78,9 +82,8 @@ describe('AppComponent', () => {
 		tick(100); // Simulate the delay in `translate`
 		fixture.detectChanges();
 
-		if (environment.production) {
-			expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(false);
-		}
+		// environment.production is explicitly set to true above, so assert directly
+		expect(app.menuItems.some((item) => item.label === 'AppComponent.menu.lbl.InDevelopment')).toBe(false);
 	}));
 
 	it('should have correct route for "Home" menu item', fakeAsync(() => {

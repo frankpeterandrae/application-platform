@@ -1,17 +1,20 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { AsyncPipe, NgStyle } from '@angular/common';
-import { AfterViewInit, Component, HostListener, input, OnChanges, OnInit, signal, SimpleChanges, inject, viewChild } from '@angular/core';
-import { Color } from '../models/color.model';
-import { ColorService } from '../services/color.service';
-import { DialogConfigModel, DialogService } from '@angular-apps/shared/ui-theme';
-import { ColorDetailsComponent } from '../color-details/color-details.component';
+import type { NumberInput } from '@angular/cdk/coercion';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { NumberInput } from '@angular/cdk/coercion';
-import { TranslationPipe } from '@angular-apps/services';
+import { AsyncPipe, NgStyle } from '@angular/common';
+import type { AfterViewInit, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, input, signal, inject, viewChild } from '@angular/core';
+import { TranslationPipe } from '@application-platform/services';
+import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
+import { DialogService } from '@application-platform/shared/ui-theme';
+
+import { ColorDetailsComponent } from '../color-details/color-details.component';
+import type { Color } from '../models/color.model';
+import { ColorService } from '../services/color.service';
 
 /**
  * Component representing a grid of colors.
@@ -62,9 +65,7 @@ export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	 * @param {SimpleChanges} changes - The changes in the data-bound properties.
 	 */
 	ngOnChanges(changes: SimpleChanges): void {
-		if (changes['searchQuery']) {
-			this.highlightMatchingColors(this.searchQuery() || '');
-		}
+		this.highlightMatchingColors(this.searchQuery() || '');
 	}
 
 	/**
@@ -72,11 +73,9 @@ export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	 * This is used to perform any additional initialization tasks that require the view to be fully rendered.
 	 */
 	public ngAfterViewInit(): void {
-		if (this.viewPort()) {
-			setTimeout(() => {
-				this.updateItemSize();
-			});
-		}
+		setTimeout(() => {
+			this.updateItemSize();
+		});
 	}
 
 	/**
@@ -138,8 +137,8 @@ export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	private updateItemSize(): void {
 		const firstCard: HTMLElement | null = this.viewPort().elementRef.nativeElement.querySelector('.color-tile');
 		if (firstCard) {
-			const marginTop = parseInt(window.getComputedStyle(firstCard).marginTop, 10);
-			const marginBottom = parseInt(window.getComputedStyle(firstCard).marginBottom, 10);
+			const marginTop = Number.parseInt((globalThis as unknown as Window).getComputedStyle(firstCard).marginTop, 10);
+			const marginBottom = Number.parseInt((globalThis as unknown as Window).getComputedStyle(firstCard).marginBottom, 10);
 			this.itemSize = firstCard.offsetHeight + marginTop + marginBottom;
 		}
 		this.updateChunkSize();
@@ -149,7 +148,8 @@ export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	 * Calculates the chunk size based on the screen width.
 	 */
 	private updateChunkSize(): void {
-		const screenWidth = window.innerWidth / parseFloat(getComputedStyle(document.documentElement).fontSize);
+		const win = globalThis as unknown as Window;
+		const screenWidth = win.innerWidth / Number.parseFloat(win.getComputedStyle(document.documentElement).fontSize);
 		if (screenWidth <= 40) {
 			//40*16 = 640
 			this.chunkSize = 2; // xs

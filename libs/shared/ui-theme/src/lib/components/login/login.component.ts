@@ -1,12 +1,14 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DataConnectionService } from '@angular-apps/services';
-import { ButtonComponent } from '../button/button.component';
+import type { FormGroup } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DataConnectionService } from '@application-platform/services';
+
 import { ButtonColorDefinition } from '../../enums';
+import { ButtonComponent } from '../button/button.component';
 
 /**
  * Component for the login form.

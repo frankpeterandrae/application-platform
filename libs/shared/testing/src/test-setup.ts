@@ -1,33 +1,44 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { HashMap, Translation, TranslocoConfig, TranslocoTestingModule } from '@jsverse/transloco';
-import { TestBed, TestModuleMetadata } from '@angular/core/testing';
-import { ModuleWithProviders, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
-import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translation-service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import type { ModuleWithProviders } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+// Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
+import '@angular/compiler';
+
+import type { TestModuleMetadata } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import type { HashMap, Translation, TranslocoConfig } from '@jsverse/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
+
+import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translation-service';
 
 /**
  * Sets up the Angular testing module with the provided metadata.
  * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
- * @returns {Promise<any>} A promise that resolves when the test module is compiled.
+ * @returns {Promise<void>} A promise that resolves when the test module is compiled.
  */
 export function sharedSetupTestingModule(
 	{ imports = [], providers = [], declarations }: TestModuleMetadata,
-	langs: HashMap<Translation> = {
+	langs?: HashMap<Translation>,
+	config: Partial<TranslocoConfig> = {}
+): Promise<void> {
+	// Create a fresh default object to avoid shared mutable defaults
+	const defaultLangs: HashMap<Translation> = {
 		en: { hello: 'Hello' },
 		de: { hello: 'Hallo' }
-	},
-	config: Partial<TranslocoConfig> = {}
-): Promise<any> {
+	};
+	const usedLangs = langs ?? defaultLangs;
+
 	return TestBed.configureTestingModule({
-		imports: [translocoTestingModulFactory(config, langs), ...imports],
+		imports: [translocoTestingModulFactory(config, usedLangs), ...imports],
 		providers: [
 			{ provide: ScopedTranslationServiceInterface, useClass: MockScopedTranslationService },
 			provideHttpClient(),
@@ -47,13 +58,16 @@ export function sharedSetupTestingModule(
  */
 function translocoTestingModulFactory(
 	config: Partial<TranslocoConfig>,
-	langs: HashMap<Translation> = {
+	langs?: HashMap<Translation>
+): ModuleWithProviders<TranslocoTestingModule> {
+	const defaultLangs: HashMap<Translation> = {
 		en: { hello: 'Hello' },
 		de: { hello: 'Hallo' }
-	}
-): ModuleWithProviders<TranslocoTestingModule> {
+	};
+	const usedLangs = langs ?? defaultLangs;
+
 	return TranslocoTestingModule.forRoot({
-		langs: langs,
+		langs: usedLangs,
 		translocoConfig: { availableLangs: ['en', 'de'], defaultLang: 'en', ...config }
 	});
 }

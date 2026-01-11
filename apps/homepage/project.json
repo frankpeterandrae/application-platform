@@ -4,7 +4,7 @@
 	"projectType": "application",
 	"prefix": "fpa",
 	"sourceRoot": "apps/homepage/src",
-	"tags": ["app:homepage", "type:app"],
+	"tags": ["type:app", "scope:homepage", "platform:browser"],
 	"targets": {
 		"build": {
 			"executor": "@angular-devkit/build-angular:application",
@@ -98,6 +98,7 @@
 			"continuous": true
 		},
 		"build-production": {
+			"outputs": ["dist/production"],
 			"executor": "nx:run-commands",
 			"options": {
 				"parallel": false,
@@ -158,18 +159,13 @@
 		},
 		"test": {
 			"executor": "@nx/jest:jest",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"jestConfig": "apps/homepage/jest.config.ts",
 				"tsConfig": "apps/homepage/tsconfig.spec.json"
 			}
 		},
 		"stylelint": {
-			"executor": "nx-stylelint:lint",
-			"outputs": ["{options.outputFile}"],
-			"options": {
-				"lintFilePatterns": ["apps/homepage/**/*.css", "apps/homepage/**/*.scss"]
-			}
+			"executor": "nx-stylelint:lint"
 		}
 	}
 }

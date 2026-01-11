@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DIALOG_DATA, DialogComponent, DialogConfigModel } from '@angular-apps/shared/ui-theme';
+import { Component, inject } from '@angular/core';
+import { TranslationPipe } from '@application-platform/services';
+import { DIALOG_DATA, DialogComponent } from '@application-platform/shared/ui-theme';
+import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
+
 import { ColorType } from '../models/color-type.enum';
-import { Color } from '../models/color.model';
-import { TranslationPipe } from '@angular-apps/services';
+import type { Color } from '../models/color.model';
 
 /**
  * Component representing the details of a color.
@@ -26,7 +28,8 @@ export class ColorDetailsComponent {
 	 * @returns {string} - The color type as a string.
 	 */
 	public colorType(): string {
-		const types = this.data.componentData?.type?.split('-');
+		// Guard the split call: ensure `type` is a string before calling split
+		const types = this.data.componentData?.type.split('-');
 
 		if (types?.every((type) => type in ColorType)) {
 			return types.map((type) => ColorType[type as keyof typeof ColorType]).join('-');

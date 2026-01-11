@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2025. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-const nx = require('@nx/eslint-plugin');
-const baseConfig = require('../../eslint.config.js');
-require('@typescript-eslint/eslint-plugin');
+import nx from '@nx/eslint-plugin';
+import baseConfig from '../../../eslint.config.mjs';
+import '@typescript-eslint/eslint-plugin';
 
-module.exports = [
+export default [
 	...baseConfig,
 	...nx.configs['flat/angular'],
 	...nx.configs['flat/angular-template'],
@@ -18,7 +18,7 @@ module.exports = [
 				'error',
 				{
 					type: 'attribute',
-					prefix: 'cr',
+					prefix: 'sharedServices',
 					style: 'camelCase'
 				}
 			],
@@ -26,20 +26,16 @@ module.exports = [
 				'error',
 				{
 					type: 'element',
-					prefix: 'cr',
+					prefix: 'shared-services',
 					style: 'kebab-case'
 				}
-			]
-		}
-	},
-	{
-		files: ['**/*.html'],
-		// Override or add rules here
-		rules: {}
-	},
-	{
-		files: ['**/*.ts'],
-		rules: {
+			],
+			'@angular-eslint/pipe-prefix': [
+				'error',
+				{
+					prefixes: ['fpa']
+				}
+			],
 			'@angular-eslint/prefer-standalone': 'off'
 		}
 	}

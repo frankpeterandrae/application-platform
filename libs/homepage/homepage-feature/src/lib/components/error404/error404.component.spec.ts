@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { LOGGER_SOURCE } from '@application-platform/services';
+
+import { setupTestingModule } from '../../../test-setup';
 
 import { Error404Component } from './error404.component';
-import { setupTestingModule } from '../../../test-setup';
-import { LOGGER_SOURCE } from '@angular-apps/services';
 
 describe('Error404Component', () => {
 	let component: Error404Component;
@@ -45,7 +47,9 @@ describe('Error404Component', () => {
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 		const navigateSpy = jest.spyOn(component['router'], 'navigate').mockImplementation(() => Promise.reject('Navigation Error'));
-		await component.routeToHome();
+		component.routeToHome();
+		// wait for the navigation promise rejection to be handled in the next microtask
+		await Promise.resolve();
 		expect(navigateSpy).toHaveBeenCalledWith(['/']);
 		expect(consoleErrorSpy).toHaveBeenCalledWith('[Error404Component]', 'Error while navigating to home page', 'Navigation Error');
 	});

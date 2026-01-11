@@ -4,7 +4,7 @@
  */
 
 const fs = require('fs');
-const path = require('path');
+const path = require('node:path');
 
 const filePaths = process.argv.slice(2); // Get the file paths passed by lint-staged
 

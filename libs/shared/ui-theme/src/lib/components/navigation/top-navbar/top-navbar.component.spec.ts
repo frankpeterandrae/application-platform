@@ -1,13 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TopNavbarComponent } from './top-navbar.component';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+
 import { setupTestingModule } from '../../../../test-setup';
+
+import { TopNavbarComponent } from './top-navbar.component';
 
 describe('TopnavbarComponent', () => {
 	let component: TopNavbarComponent;

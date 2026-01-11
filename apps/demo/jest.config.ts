@@ -1,26 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
+// Import the JS companion at runtime so Node's ESM loader can resolve it when parsing jest configs.
+// TypeScript will still pick up the original .ts for type information during dev builds.
+import { angularJestBase } from '../../tools/jest/angular-jest.base.js';
+
 export default {
+	...angularJestBase,
 	displayName: 'demo',
 	preset: '../../jest.preset.js',
-	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '<rootDir>/../../coverage/apps/demo',
-	transform: {
-		'^.+\\.(ts|mjs|js|html)$': [
-			'jest-preset-angular',
-			{
-				tsconfig: '<rootDir>/tsconfig.spec.json',
-				stringifyContentPathRegex: '\\.(html|svg)$'
-			}
-		]
-	},
-	transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
-	snapshotSerializers: [
-		'jest-preset-angular/build/serializers/no-ng-attributes',
-		'jest-preset-angular/build/serializers/ng-snapshot',
-		'jest-preset-angular/build/serializers/html-comment'
-	]
+	coverageDirectory: '<rootDir>/../../coverage/apps/demo'
 };

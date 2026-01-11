@@ -1,14 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 /**
  * Import necessary modules and services.
  */
-import { Route } from '@angular/router';
-import { environment } from '@angular-apps/config';
-import { EnvGuard } from '@angular-apps/services';
+import type { Type } from '@angular/core';
+import type { Route } from '@angular/router';
+import { environment } from '@application-platform/config';
+import { EnvGuard } from '@application-platform/services';
 
 /**
  * Development-specific routes.
@@ -19,9 +20,9 @@ const devRoutes: Route[] = [
 		path: 'dev/test',
 		/**
 		 * Lazy loads the Error404Component for the test route.
-		 * @returns {Promise<any>} A promise that resolves to the Error404Component.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the Error404Component.
 		 */
-		loadComponent: () => import('@angular-apps/homepage-feature').then((m) => m.Error404Component),
+		loadComponent: () => import('@application-platform/homepage-feature').then((m) => m.Error404Component),
 		canActivate: [EnvGuard]
 	}
 	// Add more dev-specific routes here
@@ -36,25 +37,26 @@ export const appRoutes: Route[] = [
 		path: '',
 		/**
 		 * Lazy loads the HomeComponent for the home route.
-		 * @returns {Promise<any>} A promise that resolves to the HomeComponent.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the HomeComponent.
 		 */
-		loadComponent: (): Promise<any> => import('@angular-apps/homepage-feature').then((m) => m.HomeComponent)
+		loadComponent: (): Promise<Type<unknown>> => import('@application-platform/homepage-feature').then((m) => m.HomeComponent)
 	},
 	{
 		path: 'paint-rack',
 		/**
 		 * Lazy loads the ColorSearchContainerComponent for the paint rack route.
-		 * @returns {Promise<any>} A promise that resolves to the ColorSearchContainerComponent.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the ColorSearchContainerComponent.
 		 */
-		loadComponent: (): Promise<any> => import('@angular-apps/colour-rack').then((m) => m.ColorSearchContainerComponent)
+		loadComponent: (): Promise<Type<unknown>> =>
+			import('@application-platform/colour-rack').then((m) => m.ColorSearchContainerComponent)
 	},
 	...(environment.production ? [] : devRoutes),
 	{
 		path: '**',
 		/**
 		 * Lazy loads the Error404Component for handling unknown routes.
-		 * @returns {Promise<any>} A promise that resolves to the Error404Component.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the Error404Component.
 		 */
-		loadComponent: (): Promise<any> => import('@angular-apps/homepage-feature').then((m) => m.Error404Component)
+		loadComponent: (): Promise<Type<unknown>> => import('@application-platform/homepage-feature').then((m) => m.Error404Component)
 	}
 ];
