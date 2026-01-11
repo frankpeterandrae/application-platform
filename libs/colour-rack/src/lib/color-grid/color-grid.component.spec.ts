@@ -1,16 +1,19 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { ColorGridComponent } from './color-grid.component';
-import { ColorService } from '../services/color.service';
-import { Color } from '../models/color.model';
-import { ColorType } from '../models/color-type.enum';
-import { ColorDetailsComponent } from '../color-details/color-details.component';
+
 import { setupTestingModule } from '../../test-setup';
+import { ColorDetailsComponent } from '../color-details/color-details.component';
+import { ColorType } from '../models/color-type.enum';
+import type { Color } from '../models/color.model';
+import { ColorService } from '../services/color.service';
+
+import { ColorGridComponent } from './color-grid.component';
 
 describe('ColorGridComponent', () => {
 	let component: ColorGridComponent;

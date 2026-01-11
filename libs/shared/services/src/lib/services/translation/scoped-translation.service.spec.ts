@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { TestBed } from '@angular/core/testing';
-import { ScopedTranslationService } from './scoped-translation.service';
+import type { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import { TranslocoService } from '@jsverse/transloco';
 import { of } from 'rxjs';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+
 import { setupTestingModule } from '../../../test-setup';
+
+import { ScopedTranslationService } from './scoped-translation.service';
 
 describe('ScopedTranslationService', () => {
 	let service: ScopedTranslationServiceInterface;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -18,11 +18,8 @@ export enum LogLevel {
 
 /**
  * Type definition for log output function.
- * @param {string | undefined} source - The source of the log message.
- * @param {LogLevel} level - The log level.
- * @param {...any} objects - The objects to log.
  */
-export type LogOutput = (source: string | undefined, level: LogLevel, ...objects: any[]) => void;
+export type LogOutput = (source: string | undefined, level: LogLevel, ...objects: unknown[]) => void;
 
 /**
  * Injection token for the logger source.
@@ -32,74 +29,79 @@ export const LOGGER_SOURCE = new InjectionToken<string>('LOGGER_SOURCE');
 /**
  * Logger service for logging messages with different log levels.
  */
-@Injectable({
-	providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class Logger {
 	private readonly source = inject(LOGGER_SOURCE, { optional: true });
 
 	private static disabled = false;
-
 	private static readonly level: LogLevel = LogLevel.Debug;
-
 	private static readonly outputs: LogOutput[] = [];
 
 	/**
-	 * Sets the logger to production mode, disabling logging if in production environment.
-	 * @param {object} setting - The production mode settings.
-	 * @param {boolean} setting.disable - Flag to disable logging.
+	 *
 	 */
 	public static setProductionMode(setting: { disable: boolean }): void {
 		Logger.disabled = setting.disable;
 	}
 
 	/**
-	 * Logs an info message.
-	 * @param {...any} objects - The objects to log.
+	 *
 	 */
-	public info(...objects: any[]): void {
-		// eslint-disable-next-line no-console
-		this.log(console.info, LogLevel.Info, objects);
+	public static addOutput(output: LogOutput): void {
+		Logger.outputs.push(output);
 	}
 
 	/**
-	 * Logs a warning message.
-	 * @param {...any} objects - The objects to log.
+	 *
 	 */
-	public warn(...objects: any[]): void {
-		// eslint-disable-next-line no-console
-		this.log(console.warn, LogLevel.Warn, objects);
+	public info(...objects: unknown[]): void {
+		this.log('info', LogLevel.Info, objects);
 	}
 
 	/**
-	 * Logs an error message.
-	 * @param {...any} objects - The objects to log.
+	 *
 	 */
-	public error(...objects: any[]): void {
-		// eslint-disable-next-line no-console
-		this.log(console.error, LogLevel.Error, objects);
+	public warn(...objects: unknown[]): void {
+		this.log('warn', LogLevel.Warn, objects);
 	}
 
 	/**
-	 * Logs a debug message.
-	 * @param {...any} objects - The objects to log.
+	 *
 	 */
-	public debug(...objects: any[]): void {
-		// eslint-disable-next-line no-console
-		this.log(console.debug, LogLevel.Debug, objects);
+	public error(...objects: unknown[]): void {
+		this.log('error', LogLevel.Error, objects);
 	}
 
 	/**
-	 * Logs a message with the specified log level.
-	 * @param {Function} func - The console function to use for logging.
-	 * @param {LogLevel} level - The log level.
-	 * @param {...any} objects - The objects to log.
+	 *
 	 */
-	private log(func: (...args: any[]) => void, level: LogLevel, objects: any[]): void {
-		if (!Logger.disabled && level <= Logger.level) {
-			const log = this.source ? ['[' + this.source + ']'].concat(objects) : objects;
-			func.apply(console, log);
-			Logger.outputs.forEach((output) => output.apply(output, [this.source ?? undefined, level, ...objects]));
+	public debug(...objects: unknown[]): void {
+		this.log('debug', LogLevel.Debug, objects);
+	}
+
+	/**
+	 *
+	 */
+	private log(method: 'info' | 'warn' | 'error' | 'debug', level: LogLevel, objects: unknown[]): void {
+		if (Logger.disabled || level > Logger.level) return;
+
+		const prefix = this.source ? `[${this.source}]` : undefined;
+		const args = prefix ? [prefix, ...objects] : [...objects];
+
+		// Call the console method in a type-safe way.
+		const consoleMethod = (console as unknown as Record<string, (...a: unknown[]) => void>)[method];
+		try {
+			consoleMethod(...args);
+		} catch {
+			// Ignore console errors
+		}
+
+		for (const output of Logger.outputs) {
+			try {
+				output(this.source ?? undefined, level, ...objects);
+			} catch {
+				// Ignore output errors to avoid breaking application flow
+			}
 		}
 	}
 }

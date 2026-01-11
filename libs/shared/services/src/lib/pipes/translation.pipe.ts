@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { inject, Pipe, PipeTransform } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import type { PipeTransform } from '@angular/core';
+import { inject, Pipe } from '@angular/core';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import type { Observable } from 'rxjs';
 
 /**
  * TranslationPipe is an Angular pipe that transforms a given string value

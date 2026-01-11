@@ -2,28 +2,44 @@
 	"compileOnSave": false,
 	"compilerOptions": {
 		"rootDir": ".",
+		"baseUrl": ".",
+		"paths": {
+			"@application-platform/colour-rack": ["libs/colour-rack/src/index.ts"],
+			"@application-platform/config": ["libs/shared/config/src/index.ts"],
+			"@application-platform/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
+			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
+			"@application-platform/interfaces": ["libs/shared/interfaces/src/index.ts"],
+			"@application-platform/services": ["libs/shared/services/src/index.ts"],
+			"@application-platform/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
+			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
+			"@angular/cdk": ["node_modules/@angular/cdk/types/cdk.d.ts"],
+			"@angular/cdk/*": ["node_modules/@angular/cdk/types/*"]
+		},
+
+		"target": "ES2022",
+		"module": "preserve",
+		"moduleResolution": "node16",
+		"lib": ["DOM", "ES2022"],
+
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+
 		"sourceMap": true,
 		"declaration": false,
-		"moduleResolution": "node",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
-		"target": "es2015",
-		"module": "esnext",
-		"lib": ["es2020", "dom"],
+
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-		"baseUrl": ".",
-		"paths": {
-			"@angular-apps/colour-rack": ["libs/colour-rack/src/index.ts"],
-			"@angular-apps/config": ["libs/shared/config/src/index.ts"],
-			"@angular-apps/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
-			"@angular-apps/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
-			"@angular-apps/interfaces": ["libs/shared/interfaces/src/index.ts"],
-			"@angular-apps/services": ["libs/shared/services/src/index.ts"],
-			"@angular-apps/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
-			"@angular-apps/testing": ["libs/shared/testing/src/index.ts"]
-		}
+
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true
 	},
-	"exclude": ["node_modules", "tmp"]
+	"exclude": ["node_modules", "tmp"],
+	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js"]
 }

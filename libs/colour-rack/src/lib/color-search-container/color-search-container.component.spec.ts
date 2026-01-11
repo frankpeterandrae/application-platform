@@ -1,14 +1,18 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ColorSearchContainerComponent } from './color-search-container.component';
+import type { ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Meta, Title } from '@angular/platform-browser';
+
+import { setupTestingModule } from '../../test-setup';
 import { ColorGridComponent } from '../color-grid/color-grid.component';
 import { ColorSearchComponent } from '../color-search/color-search.component';
-import { setupTestingModule } from '../../test-setup';
-import { Meta, Title } from '@angular/platform-browser';
+
+import { ColorSearchContainerComponent } from './color-search-container.component';
+
 import Mocked = jest.Mocked;
 
 describe('ColorSearchContainerComponent', () => {

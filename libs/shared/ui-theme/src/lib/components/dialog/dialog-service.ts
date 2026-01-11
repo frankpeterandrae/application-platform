@@ -1,13 +1,18 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Injectable, Injector, inject } from '@angular/core';
-import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import type { OverlayConfig } from '@angular/cdk/overlay';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
+import type { ComponentType } from '@angular/cdk/portal';
+import { Injectable, Injector, inject } from '@angular/core';
+import { tap } from 'rxjs/operators';
+
+import type { DialogConfigModel } from '../../model/dialog-config.model';
+
 import { DIALOG_DATA } from './dialog-tokens';
-import { DialogConfigModel } from '../../model/dialog-config.model';
 
 /**
  * Service to manage dialog operations.
@@ -21,11 +26,11 @@ export class DialogService {
 
 	/**
 	 * Opens a dialog with the specified component and data.
-	 * @param {any} component - The component to be displayed in the dialog.
-	 * @param {DialogConfigModel<any>} data - The configuration data for the dialog.
+	 * @param component - The component to be displayed in the dialog.
+	 * @param data - The configuration data for the dialog.
 	 * @returns {OverlayRef} The reference to the created overlay.
 	 */
-	public open(component: any, data: DialogConfigModel<any>): OverlayRef {
+	public open<C = unknown, T = unknown>(component: ComponentType<C>, data: DialogConfigModel<T>): OverlayRef {
 		const config: OverlayConfig = {
 			hasBackdrop: true,
 			backdropClass: 'dark-backdrop',
@@ -46,7 +51,19 @@ export class DialogService {
 		const componentPortal = new ComponentPortal(component, null, customInjector);
 		overlayRef.attach(componentPortal);
 
-		overlayRef.backdropClick().subscribe(() => overlayRef.dispose());
+		// The following intentionally calls a void-returning dispose() inside the
+		// observable pipeline; silence the confusing-void-expression rule for this
+		// line because we explicitly want the side-effect and do not need the
+		// Subscription object.
+
+		overlayRef
+			.backdropClick()
+			.pipe(
+				tap(() => {
+					overlayRef.dispose();
+				})
+			)
+			.subscribe();
 
 		return overlayRef;
 	}

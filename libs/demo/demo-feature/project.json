@@ -4,11 +4,10 @@
 	"sourceRoot": "libs/demo/demo-feature/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["app:demo", "type:feature"],
+	"tags": ["type:feature", "scope:demo", "platform:browser"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"jestConfig": "libs/demo/demo-feature/jest.config.ts",
 				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json"
@@ -18,11 +17,7 @@
 			"executor": "@nx/eslint:lint"
 		},
 		"stylelint": {
-			"executor": "nx-stylelint:lint",
-			"outputs": ["{options.outputFile}"],
-			"options": {
-				"lintFilePatterns": ["libs/demo-feature/**/*.css", "libs/demo-feature/**/*.scss"]
-			}
+			"executor": "nx-stylelint:lint"
 		}
 	}
 }

@@ -1,32 +1,9 @@
 {
-	"compilerOptions": {
-		"target": "es2022",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"noImplicitOverride": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"resolveJsonModule": true,
-		"module": "preserve",
-		"moduleResolution": "bundler",
-		"lib": ["dom", "es2022"]
-	},
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {},
 	"files": [],
 	"include": [],
-	"references": [
-		{
-			"path": "./tsconfig.editor.json"
-		},
-		{
-			"path": "./tsconfig.app.json"
-		},
-		{
-			"path": "./tsconfig.spec.json"
-		}
-	],
-	"extends": "../../tsconfig.base.json",
+	"references": [{ "path": "./tsconfig.editor.json" }, { "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }],
 	"angularCompilerOptions": {
 		"enableI18nLegacyMessageIdFormat": false,
 		"strictInjectionParameters": true,

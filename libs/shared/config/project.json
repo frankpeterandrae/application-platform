@@ -4,11 +4,10 @@
 	"sourceRoot": "libs/shared/config/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["lib:shared", "type:util"],
+	"tags": ["type:util", "scope:shared", "platform:agnostic"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"jestConfig": "libs/shared/config/jest.config.ts",
 				"tsConfig": "libs/shared/config/tsconfig.spec.json"

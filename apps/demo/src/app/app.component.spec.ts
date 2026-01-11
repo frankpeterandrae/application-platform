@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+
 import { setupTestingModule } from '../test-setup';
+
+import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
 	beforeEach(async () => {

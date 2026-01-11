@@ -1,14 +1,17 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogComponent } from './dialog.component';
 import { OverlayRef } from '@angular/cdk/overlay';
-import { DIALOG_DATA } from './dialog-tokens';
-import { DialogConfigModel } from '../../model/dialog-config.model';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { setupTestingModule } from '../../../test-setup';
+import type { DialogConfigModel } from '../../model/dialog-config.model';
+
+import { DIALOG_DATA } from './dialog-tokens';
+import { DialogComponent } from './dialog.component';
 
 describe('DialogComponent', () => {
 	let component: DialogComponent;

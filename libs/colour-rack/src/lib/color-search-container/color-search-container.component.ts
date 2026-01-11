@@ -1,15 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
+import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { TranslationPipe } from '@application-platform/services';
+
 import { ColorGridComponent } from '../color-grid/color-grid.component';
 import { ColorSearchComponent } from '../color-search/color-search.component';
-import { TranslationPipe } from '@angular-apps/services';
-import { AsyncPipe } from '@angular/common';
-import { Meta, Title } from '@angular/platform-browser';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
 
 /**
  * Component for the color search container.

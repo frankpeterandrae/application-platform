@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component } from '@angular/core';
-import { TranslationPipe } from '@angular-apps/services';
 import { AsyncPipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { TranslationPipe } from '@application-platform/services';
 
 /**
  * FooterComponent is a standalone Angular component that represents the footer section of the theme.

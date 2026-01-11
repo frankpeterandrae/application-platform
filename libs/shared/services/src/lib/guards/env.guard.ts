@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { Injectable, inject } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { environment } from '@angular-apps/config';
+import { Router } from '@angular/router';
+import type { CanActivate } from '@angular/router';
+import { environment } from '@application-platform/config';
 
 /**
  * Guard to check if the environment is in production mode.
@@ -25,7 +26,7 @@ export class EnvGuard implements CanActivate {
 		if (!environment.production) {
 			return true;
 		} else {
-			this.router.navigate(['/404']);
+			void this.router.navigate(['/404']);
 			return false;
 		}
 	}

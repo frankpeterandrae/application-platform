@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { TestBed } from '@angular/core/testing';
-import { TranslationPipe } from './translation.pipe';
+
 import { setupTestingModule } from '../../test-setup';
+
+import { TranslationPipe } from './translation.pipe';
 
 describe('TranslationPipe', () => {
 	let pipe: TranslationPipe;

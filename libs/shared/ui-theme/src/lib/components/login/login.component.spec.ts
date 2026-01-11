@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+
+import { setupTestingModule } from '../../../test-setup';
 
 import { LoginComponent } from './login.component';
-import { of } from 'rxjs';
-import { setupTestingModule } from '../../../test-setup';
 
 describe('LoginComponent', () => {
 	let component: LoginComponent;
@@ -34,20 +36,20 @@ describe('LoginComponent', () => {
 
 	it('should mark email control as invalid if empty', () => {
 		const emailControl = component.loginForm.get('email');
-		emailControl.setValue('');
-		expect(emailControl.invalid).toBeTruthy();
+		emailControl?.setValue('');
+		expect(emailControl?.invalid).toBeTruthy();
 	});
 
 	it('should mark email control as invalid if not a valid email', () => {
 		const emailControl = component.loginForm.get('email');
-		emailControl.setValue('invalid-email');
-		expect(emailControl.invalid).toBeTruthy();
+		emailControl?.setValue('invalid-email');
+		expect(emailControl?.invalid).toBeTruthy();
 	});
 
 	it('should mark password control as invalid if empty', () => {
 		const passwordControl = component.loginForm.get('password');
-		passwordControl.setValue('');
-		expect(passwordControl.invalid).toBeTruthy();
+		passwordControl?.setValue('');
+		expect(passwordControl?.invalid).toBeTruthy();
 	});
 
 	it('should call dataConnection.login with form values if form is valid', () => {

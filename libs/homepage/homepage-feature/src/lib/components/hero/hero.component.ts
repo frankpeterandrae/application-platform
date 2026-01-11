@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component, inject, OnInit } from '@angular/core';
-import { TranslationPipe } from '@angular-apps/services';
 import { AsyncPipe } from '@angular/common';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import type { OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { TranslationPipe } from '@application-platform/services';
 
 /**
  * Component decorator for defining the HeroComponent.

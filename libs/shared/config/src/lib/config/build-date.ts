@@ -1,6 +1,1 @@
-/*
- * Copyright (c) 2024. Frank-Peter Andrä
- * All rights reserved.
- */
-
-export const BUILD_DATE = 'PLACEHOLDER_DATE';
+export const BUILD_DATE = '2026-01-11T06:23:25.580Z';

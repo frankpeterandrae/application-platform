@@ -5,7 +5,7 @@
 
 const sass = require('sass');
 const fs = require('fs').promises;
-const path = require('path');
+const path = require('node:path');
 
 // Function to compile SCSS
 function compileSass() {

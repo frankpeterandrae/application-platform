@@ -1,7 +1,7 @@
 <!--
-~ Copyright (c) 2024. Frank-Peter Andrä
-~ All rights reserved.
--->
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
 
 <div class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-bg-crimson fpa-box-shadow">
 	<nav class="fpa-flex fpa-flex-row fpa-bg-crimson fpa-p-1 navbar">
@@ -22,18 +22,21 @@
 	<li>
 		@if (navigationItem.children) {
 			<div class="nva-dropdown">
-				<a
-					class="nva-dropdown fpa-p-1 fpa-light-text fpa-link"
+				<button
+					class="nva-dropdown fpa-button-no-style fpa-p-1 fpa-light-text fpa-link"
 					[ngClass]="{ 'link-active': getCurrentRoute().includes(navigationItem.route) }"
 					(click)="toggleNavigation(navigationItem.route)"
+					(keyup.enter)="toggleNavigation(navigationItem.route)"
+					aria-haspopup="menu"
+					[attr.aria-expanded]="showDropdown[navigationItem.route] ? 'true' : 'false'"
 				>
 					<span>{{ navigationItem.label }}</span>
-				</a>
+				</button>
 				<div
 					class="dropdown-content fpa-bg-linen fpa-dark-text"
 					[ngClass]="{ 'nav-show-dropdown': showDropdown[navigationItem.route] }"
 				>
-					@for (navigationItemChild of navigationItem.children; track navigationItemChild) {
+					@for (navigationItemChild of toArray(navigationItem.children); track navigationItemChild) {
 						<ng-container
 							[ngTemplateOutlet]="navList"
 							[ngTemplateOutletContext]="{ navigationItem: navigationItemChild, color: ColorDefinition.CRIMSON }"
@@ -52,11 +55,4 @@
 			</a>
 		}
 	</li>
-
-	<div
-		class="nav-backdrop"
-		(click)="resetDropdowns()"
-		(keyup)="resetDropdowns()"
-		[ngClass]="{ 'nav-show-backdrop': showDropdown[navigationItem.route] }"
-	></div>
 </ng-template>

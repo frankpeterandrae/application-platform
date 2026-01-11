@@ -4,11 +4,10 @@
 	"sourceRoot": "libs/homepage/homepage-feature/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["app:homepage", "type:feature"],
+	"tags": ["type:feature", "scope:homepage", "platform:browser"],
 	"targets": {
 		"test": {
 			"executor": "@nx/jest:jest",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"jestConfig": "libs/homepage/homepage-feature/jest.config.ts",
 				"tsConfig": "libs/homepage/homepage-feature/tsconfig.spec.json"
@@ -18,11 +17,7 @@
 			"executor": "@nx/eslint:lint"
 		},
 		"stylelint": {
-			"executor": "nx-stylelint:lint",
-			"outputs": ["{options.outputFile}"],
-			"options": {
-				"lintFilePatterns": ["libs/homepage-feature/**/*.css", "libs/homepage-feature/**/*.scss"]
-			}
+			"executor": "nx-stylelint:lint"
 		}
 	}
 }

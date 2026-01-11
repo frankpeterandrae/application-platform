@@ -1,26 +1,13 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
+import { angularJestBase } from '../../../tools/jest/angular-jest.base.js';
+
 export default {
-	displayName: 'shared-ui-theme',
+	...angularJestBase,
+	displayName: 'ui-theme',
 	preset: '../../../jest.preset.js',
-	setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-	coverageDirectory: '<rootDir>/../../../coverage/libs/shared/ui-theme',
-	transform: {
-		'^.+\\.(ts|mjs|js|html)$': [
-			'jest-preset-angular',
-			{
-				tsconfig: '<rootDir>/tsconfig.spec.json',
-				stringifyContentPathRegex: '\\.(html|svg)$'
-			}
-		]
-	},
-	transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
-	snapshotSerializers: [
-		'jest-preset-angular/build/serializers/no-ng-attributes',
-		'jest-preset-angular/build/serializers/ng-snapshot',
-		'jest-preset-angular/build/serializers/html-comment'
-	]
+	coverageDirectory: '<rootDir>/../../../coverage/libs/shared/ui-theme'
 };
