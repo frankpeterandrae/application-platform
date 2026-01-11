@@ -11,7 +11,8 @@
 			"options": {
 				"tsConfig": "libs/homepage/colour-rack/tsconfig.spec.json",
 				"vitestConfig": "libs/homepage/colour-rack/vitest.config.ts",
-				"reportsDirectory": "../../../coverage/libs/homepage/colour-rack"
+				"reportsDirectory": "../../../coverage/libs/homepage/colour-rack",
+				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
 		},

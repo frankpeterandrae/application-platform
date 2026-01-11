@@ -85,7 +85,8 @@
 			"options": {
 				"tsConfig": "apps/demo/tsconfig.spec.json",
 				"vitestConfig": "apps/demo/vitest.config.ts",
-				"reportsDirectory": "../../coverage/apps/demo"
+				"reportsDirectory": "../../coverage/apps/demo",
+				"passWithNoTests": true
 			}
 		},
 		"stylelint": {

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 // Global Vitest setup: provide jest->vi compatibility and TestBed reset helpers
 // Map commonly used jest globals to Vitest 'vi' so existing tests don't need changes.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

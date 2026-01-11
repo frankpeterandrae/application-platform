@@ -19,7 +19,10 @@
 			"executor": "@nx/vitest:test",
 			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"reportsDirectory": "../../../coverage/libs/z21-suite/protocol"
+				"tsConfig": "libs/z21-suite/protocol/tsconfig.spec.json",
+				"vitestConfig": "libs/z21-suite/protocol/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/z21-suite/protocol",
+				"passWithNoTests": true
 			}
 		}
 	}

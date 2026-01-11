@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -15,15 +15,8 @@ import { sharedSetupTestingModule } from '@application-platform/testing';
 // Initialize TestBed environment for dynamic compilation (templateUrl/styleUrls)
 getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
 
-// Use Vitest globals directly (vi) instead of a jest->vi shim
-
 beforeEach((): void => {
 	TestBed.resetTestingModule();
-	vi.resetAllMocks();
-});
-
-afterEach((): void => {
-	vi.resetAllMocks();
 });
 
 /**

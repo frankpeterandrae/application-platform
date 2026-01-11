@@ -9,9 +9,10 @@
 		"test": {
 			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/shared/testing/tsconfig.spec.json",
-				"passWithNoTests": true,
-				"reportsDirectory": "../../../coverage/libs/shared/testing"
+				"tsConfig": "libs/shared/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/shared/testing",
+				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
 		},

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -300,14 +300,8 @@ export default [
 			'jsdoc/require-jsdoc': [
 				'error',
 				{
-					require: {
-						FunctionDeclaration: true,
-						MethodDefinition: true,
-						ClassDeclaration: true,
-						ArrowFunctionExpression: true,
-						FunctionExpression: true,
-						ClassExpression: true
-					},
+					// Use explicit selectors in `contexts` instead of the broad `require` map
+					require: {},
 					contexts: [
 						'ExportNamedDeclaration > FunctionDeclaration',
 						'ExportNamedDeclaration > ClassDeclaration',

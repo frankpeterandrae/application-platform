@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { resolve } from 'node:path';
 
 import angular from '@analogjs/vite-plugin-angular';
@@ -8,12 +13,6 @@ export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/demo-feature'),
 	plugins: [angular(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			'@application-platform/testing': resolve(process.cwd(), 'libs/shared/testing/src/index.ts'),
-			'@application-platform/config': resolve(process.cwd(), 'libs/homepage/config/src/index.ts')
-		}
-	},
 	test: {
 		environment: 'jsdom',
 		globals: true,
