@@ -1,15 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { DIALOG_DATA } from './dialog-tokens';
-import { DialogConfigModel } from '../../model/dialog-config.model';
-import { ButtonComponent } from '../button/button.component';
 import { ButtonColorDefinition } from '../../enums';
+import type { DialogConfigModel } from '../../model/dialog-config.model';
+import { ButtonComponent } from '../button/button.component';
+
+import { DIALOG_DATA } from './dialog-tokens';
 
 /**
  * This component serves as a dialog container.
@@ -23,7 +24,7 @@ import { ButtonColorDefinition } from '../../enums';
 })
 export class DialogComponent {
 	private readonly overlayRef = inject(OverlayRef);
-	public data = inject<DialogConfigModel<any>>(DIALOG_DATA);
+	public data = inject<DialogConfigModel<unknown>>(DIALOG_DATA);
 
 	/**
 	 * Closes the dialog by disposing of the overlay reference.

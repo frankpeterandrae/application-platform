@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { Component, inject } from '@angular/core';
-
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
+
 import { IconDefinition } from '../../enums';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
 
 /**
  * Component for toggling the language of the application.

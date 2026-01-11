@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const fs = require('fs');
+const fs = require('node:fs');
 
 // Read both JSON files
 const licenseCheckerData = JSON.parse(fs.readFileSync('tmp/foss-licenses.json', 'utf-8'));
@@ -12,7 +12,7 @@ const fontLicenseData = JSON.parse(fs.readFileSync('licenses/font-licenses.json'
 // Merge the data
 const combinedLicenses = {
 	...licenseCheckerData,
-	fonts: fontLicenseData.fonts,
+	fonts: fontLicenseData.fonts
 };
 
 // Ensure the directory exists

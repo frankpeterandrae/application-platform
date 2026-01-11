@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const fs = require('fs');
+const fs = require('node:fs');
 const ts = require('typescript');
 
 const filePath = './apps/homepage/src/app/app.routes.ts';

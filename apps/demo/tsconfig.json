@@ -1,17 +1,13 @@
 {
 	"compilerOptions": {
-		"target": "es2022",
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"strict": true,
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"resolveJsonModule": true,
-		"module": "preserve",
-		"moduleResolution": "bundler",
-		"lib": ["dom", "es2022"]
+		"moduleResolution": "bundler"
 	},
 	"files": [],
 	"include": [],

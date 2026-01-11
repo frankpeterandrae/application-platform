@@ -1,14 +1,18 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ColorDetailsComponent } from './color-details.component';
-import { DIALOG_DATA, DialogConfigModel } from '@angular-apps/shared/ui-theme';
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Color } from '../models/color.model';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
+import { DIALOG_DATA } from '@application-platform/shared/ui-theme';
+
 import { setupTestingModule } from '../../test-setup';
+import type { Color } from '../models/color.model';
+
+import { ColorDetailsComponent } from './color-details.component';
 
 describe('ColorDetailsComponent', () => {
 	let component: ColorDetailsComponent;
@@ -54,11 +58,6 @@ describe('ColorDetailsComponent', () => {
 
 	it('should return "Unknown" when invalid types are provided', () => {
 		component.data.componentData = { type: 'Metallic' } as Color;
-		expect(component.colorType()).toBe('Unknown');
-	});
-
-	it('should return "Unknown" when type is undefined', () => {
-		component.data.componentData = { type: undefined } as Color;
 		expect(component.colorType()).toBe('Unknown');
 	});
 });

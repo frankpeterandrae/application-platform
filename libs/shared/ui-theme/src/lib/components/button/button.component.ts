@@ -1,12 +1,14 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, input, OnInit, output } from '@angular/core';
-import { ButtonColorDefinition } from '../../enums';
+import type { OnInit } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
+
+import type { ButtonColorDefinition } from '../../enums';
 
 /**
  * ButtonComponent is a reusable button component with customizable properties.

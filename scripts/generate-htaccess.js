@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-const fs = require('fs');
+const fs = require('node:fs');
 const ts = require('typescript');
 
 const filePath = './apps/homepage/src/app/app.routes.ts';
@@ -30,7 +30,7 @@ function extractRoutes(node) {
 extractRoutes(sourceFile);
 
 // Generate .htaccess rules
-let htaccessContent = `
+let htaccessContent = String.raw`
 # Set expiration headers for static assets
 <IfModule mod_expires.c>
     ExpiresActive On

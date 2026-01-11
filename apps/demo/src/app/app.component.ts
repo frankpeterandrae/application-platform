@@ -3,9 +3,10 @@
  * All rights reserved.
  */
 
-import { MenuItem, SidebarComponent } from '@angular-apps/shared/ui-theme';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import type { MenuItem } from '@application-platform/shared/ui-theme';
+import { SidebarComponent } from '@application-platform/shared/ui-theme';
 
 /**
  * The root component of the demo application.

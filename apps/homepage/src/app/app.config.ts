@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { provideHttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import type { ApplicationConfig } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { appRoutes } from './app.routes';
-import { provideFastSVG } from '@push-based/ngx-fast-svg';
+import { translocoConfigFactory } from '@application-platform/config';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/services';
 import { provideTransloco } from '@jsverse/transloco';
-import { ScopedTranslationService, TranslocoHttpLoader } from '@angular-apps/services';
-import { translocoConfigFactory } from '@angular-apps/config';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import { provideFastSVG } from '@push-based/ngx-fast-svg';
+
+import { appRoutes } from './app.routes';
 
 /**
  * Application configuration object.

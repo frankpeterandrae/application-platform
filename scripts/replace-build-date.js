@@ -2,8 +2,8 @@
  * Copyright (c) 2024. Frank-Peter Andrä
  * All rights reserved.
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const filePath = path.join(__dirname, '../libs/shared/config/src/lib/config/build-date.ts');
 const currentDate = new Date().toISOString();

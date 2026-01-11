@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { Component, input } from '@angular/core';
-import { MenuItem } from '../../model/menu-item.model';
+
+import type { MenuItem } from '../../model/menu-item.model';
 import { TopNavbarComponent } from '../navigation/top-navbar/top-navbar.component';
 
 /**

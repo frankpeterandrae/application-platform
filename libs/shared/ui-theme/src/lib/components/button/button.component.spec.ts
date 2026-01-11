@@ -1,12 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ButtonComponent } from './button.component';
-import { ButtonColorDefinition } from '../../enums';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { setupTestingModule } from '../../../test-setup';
+import { ButtonColorDefinition } from '../../enums';
+
+import { ButtonComponent } from './button.component';
 
 describe('ButtonComponent', () => {
 	let component: ButtonComponent;

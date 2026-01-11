@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { AfterViewInit, Component, computed, ElementRef, input, OnDestroy, DOCUMENT, inject } from '@angular/core';
-
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import type { AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, computed, ElementRef, input, DOCUMENT, inject } from '@angular/core';
+import type { SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  *
@@ -123,9 +124,7 @@ export class ImageLoaderComponent implements AfterViewInit, OnDestroy {
 	 * Lifecycle hook that is called when the component is destroyed.
 	 */
 	ngOnDestroy(): void {
-		if (this.observer) {
-			this.observer.disconnect();
-		}
+		this.observer.disconnect();
 	}
 
 	/**

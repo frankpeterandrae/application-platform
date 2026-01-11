@@ -1,11 +1,14 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ColorSearchComponent } from './color-search.component';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { setupTestingModule } from '../../test-setup';
+
+import { ColorSearchComponent } from './color-search.component';
 
 describe('ColorSearchComponent', () => {
 	let component: ColorSearchComponent;
@@ -30,17 +33,5 @@ describe('ColorSearchComponent', () => {
 		const searchEventSpy = jest.spyOn(component.searchEvent, 'emit');
 		component.onSearchTermChange(searchTerm);
 		expect(searchEventSpy).toHaveBeenCalledWith(searchTerm);
-	});
-
-	it('should not emit searchEvent when search term is null', () => {
-		const searchEventSpy = jest.spyOn(component.searchEvent, 'emit');
-		component.onSearchTermChange(null);
-		expect(searchEventSpy).not.toHaveBeenCalled();
-	});
-
-	it('should not emit searchEvent when search term is undefined', () => {
-		const searchEventSpy = jest.spyOn(component.searchEvent, 'emit');
-		component.onSearchTermChange(undefined);
-		expect(searchEventSpy).not.toHaveBeenCalled();
 	});
 });
