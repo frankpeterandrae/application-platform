@@ -76,7 +76,7 @@ describe('TopnavbarComponent', () => {
 	});
 
 	it('should return the current route URL', () => {
-		jest.spyOn(component.router, 'url', 'get').mockReturnValue('/current-route');
+		vi.spyOn(component.router, 'url', 'get').mockReturnValue('/current-route');
 		expect(component.getCurrentRoute()).toBe('/current-route');
 	});
 });

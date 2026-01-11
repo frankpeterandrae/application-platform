@@ -7,11 +7,13 @@
 	"tags": ["type:util", "scope:shared", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"options": {
-				"jestConfig": "libs/shared/services/jest.config.ts",
-				"tsConfig": "libs/shared/services/tsconfig.spec.json"
-			}
+				"tsConfig": "libs/shared/services/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/services/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/shared/services"
+			},
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"lint": {
 			"executor": "@nx/eslint:lint"

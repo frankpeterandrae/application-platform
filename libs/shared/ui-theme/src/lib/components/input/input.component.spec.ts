@@ -29,7 +29,7 @@ describe('InputComponent', () => {
 	});
 
 	it('should update value and emit valueChange on input event', () => {
-		const valueChangeSpy = jest.spyOn(component.valueChange, 'emit');
+		const valueChangeSpy = vi.spyOn(component.valueChange, 'emit');
 		const inputElement = document.createElement('input');
 		inputElement.value = 'new value';
 		const inputEvent = new Event('input');
@@ -55,7 +55,7 @@ describe('InputComponent', () => {
 	});
 
 	it('should set inputFocused to false and call onTouched on blur event', () => {
-		const onTouchedSpy = jest.spyOn(component, 'onTouched');
+		const onTouchedSpy = vi.spyOn(component, 'onTouched');
 		component.onBlur();
 		expect(component.inputFocused).toBe(false);
 		expect(onTouchedSpy).toHaveBeenCalled();
@@ -67,14 +67,14 @@ describe('InputComponent', () => {
 	});
 
 	it('should register onChange callback', () => {
-		const fn = jest.fn();
+		const fn = vi.fn();
 		component.registerOnChange(fn);
 		component.onChange('new value');
 		expect(fn).toHaveBeenCalledWith('new value');
 	});
 
 	it('should register onTouched callback', () => {
-		const fn = jest.fn();
+		const fn = vi.fn();
 		component.registerOnTouched(fn);
 		component.onTouched();
 		expect(fn).toHaveBeenCalled();

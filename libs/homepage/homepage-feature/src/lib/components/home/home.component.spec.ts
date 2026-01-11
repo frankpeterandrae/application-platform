@@ -4,15 +4,17 @@
  */
 
 import type { ComponentFixture } from '@angular/core/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
+import type { Mocked } from '@application-platform/testing';
+import { createMock } from '@application-platform/testing';
 
 import { setupTestingModule } from '../../../test-setup';
 import { HeroComponent } from '../hero/hero.component';
 
 import { HomeComponent } from './home.component';
 
-import Mocked = jest.Mocked;
+// use `any` for mocked browser services
 
 describe('HomeComponent', () => {
 	let component: HomeComponent;
@@ -21,12 +23,8 @@ describe('HomeComponent', () => {
 	let mockTitle: Mocked<Title>;
 
 	beforeEach(async () => {
-		mockMeta = {
-			addTag: jest.fn()
-		} as unknown as jest.Mocked<Meta>;
-		mockTitle = {
-			setTitle: jest.fn()
-		} as unknown as jest.Mocked<Title>;
+		mockMeta = createMock<Meta>({ addTag: vi.fn() });
+		mockTitle = createMock<Title>({ setTitle: vi.fn() });
 
 		await setupTestingModule({
 			imports: [HomeComponent, HeroComponent],
@@ -45,11 +43,12 @@ describe('HomeComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should set the title and meta description', fakeAsync(() => {
+	it('should set the title and meta description', async () => {
 		component.ngOnInit();
-		tick(100); // Simulate the delay in `translate`
+		// wait for translation simulation
+		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
 		expect(mockTitle.setTitle).toHaveBeenCalledWith('HomeComponent.meta.Title');
 		expect(mockMeta.addTag).toHaveBeenCalledWith({ name: 'description', content: 'HomeComponent.meta.Description' });
-	}));
+	});
 });

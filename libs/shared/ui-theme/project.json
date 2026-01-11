@@ -7,11 +7,14 @@
 	"tags": ["type:ui", "scope:shared", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"options": {
-				"jestConfig": "libs/shared/ui-theme/jest.config.ts",
-				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json"
-			}
+				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/ui-theme/vitest.config.ts",
+				"passWithNoTests": true,
+				"reportsDirectory": "../../../coverage/libs/shared/ui-theme"
+			},
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"lint": {
 			"executor": "@nx/eslint:lint"

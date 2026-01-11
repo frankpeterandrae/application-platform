@@ -7,11 +7,13 @@
 	"tags": ["type:feature", "scope:demo", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"options": {
-				"jestConfig": "libs/demo/demo-feature/jest.config.ts",
-				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json"
-			}
+				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json",
+				"vitestConfig": "libs/demo/demo-feature/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/demo/demo-feature"
+			},
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"lint": {
 			"executor": "@nx/eslint:lint"

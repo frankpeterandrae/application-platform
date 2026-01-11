@@ -43,7 +43,7 @@ describe('NetworkStatusServiceService', () => {
 	 * Resets all mocks after each test to avoid interference.
 	 */
 	afterEach(() => {
-		jest.resetAllMocks();
+		vi.resetAllMocks();
 	});
 
 	/**
@@ -57,7 +57,7 @@ describe('NetworkStatusServiceService', () => {
 	 * Test to check if the service emits the initial online status.
 	 * @param done - Callback to indicate the test is complete.
 	 */
-	it('should emit the initial online status', (done) => {
+	it('should emit the initial online status', async () => {
 		mockNavigatorOnLine(true);
 
 		TestBed.resetTestingModule();
@@ -66,9 +66,11 @@ describe('NetworkStatusServiceService', () => {
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
 
-		service.status$.pipe(take(1)).subscribe((status) => {
-			expect(status).toBe(true);
-			done();
+		await new Promise<void>((resolve) => {
+			service.status$.pipe(take(1)).subscribe((status) => {
+				expect(status).toBe(true);
+				resolve();
+			});
 		});
 	});
 
@@ -76,7 +78,7 @@ describe('NetworkStatusServiceService', () => {
 	 * Test to check if the service emits the initial offline status.
 	 * @param done - Callback to indicate the test is complete.
 	 */
-	it('should emit the initial offline status', (done) => {
+	it('should emit the initial offline status', async () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
@@ -85,9 +87,11 @@ describe('NetworkStatusServiceService', () => {
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
 
-		service.status$.pipe(take(1)).subscribe((status) => {
-			expect(status).toBe(false);
-			done();
+		await new Promise<void>((resolve) => {
+			service.status$.pipe(take(1)).subscribe((status) => {
+				expect(status).toBe(false);
+				resolve();
+			});
 		});
 	});
 
@@ -95,7 +99,7 @@ describe('NetworkStatusServiceService', () => {
 	 * Test to check if the service emits true when the online event is dispatched.
 	 * @param done - Callback to indicate the test is complete.
 	 */
-	it('should emit true when online event is dispatched', (done) => {
+	it('should emit true when online event is dispatched', async () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
@@ -106,23 +110,26 @@ describe('NetworkStatusServiceService', () => {
 
 		const emittedStatuses: boolean[] = [];
 
-		const subscription = service.status$.subscribe((status) => {
-			emittedStatuses.push(status);
-			if (emittedStatuses.length === 2) {
-				expect(emittedStatuses).toEqual([false, true]);
-				subscription.unsubscribe();
-				done();
-			}
+		const p = new Promise<void>((resolve) => {
+			const subscription = service.status$.subscribe((status) => {
+				emittedStatuses.push(status);
+				if (emittedStatuses.length === 2) {
+					expect(emittedStatuses).toEqual([false, true]);
+					subscription.unsubscribe();
+					resolve();
+				}
+			});
 		});
 
 		window.dispatchEvent(new Event('online'));
+		await p;
 	});
 
 	/**
 	 * Test to check if the service emits false when the offline event is dispatched.
 	 * @param done - Callback to indicate the test is complete.
 	 */
-	it('should emit false when offline event is dispatched', (done) => {
+	it('should emit false when offline event is dispatched', async () => {
 		mockNavigatorOnLine(true);
 
 		TestBed.resetTestingModule();
@@ -133,23 +140,26 @@ describe('NetworkStatusServiceService', () => {
 
 		const emittedStatuses: boolean[] = [];
 
-		const subscription = service.status$.subscribe((status) => {
-			emittedStatuses.push(status);
-			if (emittedStatuses.length === 2) {
-				expect(emittedStatuses).toEqual([true, false]);
-				subscription.unsubscribe();
-				done();
-			}
+		const p = new Promise<void>((resolve) => {
+			const subscription = service.status$.subscribe((status) => {
+				emittedStatuses.push(status);
+				if (emittedStatuses.length === 2) {
+					expect(emittedStatuses).toEqual([true, false]);
+					subscription.unsubscribe();
+					resolve();
+				}
+			});
 		});
 
 		window.dispatchEvent(new Event('offline'));
+		await p;
 	});
 
 	/**
 	 * Test to check if the service handles multiple online and offline events correctly.
 	 * @param done - Callback to indicate the test is complete.
 	 */
-	it('should handle multiple online and offline events correctly', (done) => {
+	it('should handle multiple online and offline events correctly', async () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
@@ -161,17 +171,20 @@ describe('NetworkStatusServiceService', () => {
 		const expectedStatuses = [false, true, false, true];
 		const receivedStatuses: boolean[] = [];
 
-		const subscription = service.status$.subscribe((status) => {
-			receivedStatuses.push(status);
-			if (receivedStatuses.length === expectedStatuses.length) {
-				expect(receivedStatuses).toEqual(expectedStatuses);
-				subscription.unsubscribe();
-				done();
-			}
+		const p = new Promise<void>((resolve) => {
+			const subscription = service.status$.subscribe((status) => {
+				receivedStatuses.push(status);
+				if (receivedStatuses.length === expectedStatuses.length) {
+					expect(receivedStatuses).toEqual(expectedStatuses);
+					subscription.unsubscribe();
+					resolve();
+				}
+			});
 		});
 
 		window.dispatchEvent(new Event('online'));
 		window.dispatchEvent(new Event('offline'));
 		window.dispatchEvent(new Event('online'));
+		await p;
 	});
 });
