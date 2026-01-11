@@ -1,12 +1,14 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { TranslocoHttpLoader } from './transloco.loader';
-import { Translation } from '@jsverse/transloco';
+import { TestBed } from '@angular/core/testing';
+import type { Translation } from '@jsverse/transloco';
+
 import { setupTestingModule } from '../../../test-setup';
+
+import { TranslocoHttpLoader } from './transloco.loader';
 
 describe('TranslocoHttpLoader', () => {
 	let loader: TranslocoHttpLoader;

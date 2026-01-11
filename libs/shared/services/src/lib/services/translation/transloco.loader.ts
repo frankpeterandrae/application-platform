@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { inject, Injectable } from '@angular/core';
-import { Translation, TranslocoLoader } from '@jsverse/transloco';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import type { Translation, TranslocoLoader } from '@jsverse/transloco';
+import type { Observable } from 'rxjs';
 
 /**
  * TranslocoHttpLoader is an Angular service that implements the TranslocoLoader interface.

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 interface DialogSettings {
 	title?: string;
-	onClose?: () => any;
-	onAccept?: () => any;
-	onDecline?: () => any;
+	onClose?: () => void;
+	onAccept?: () => void;
+	onDecline?: () => void;
 }
 
 export interface DialogConfigModel<T> {
 	componentData: T | undefined;
-	settings: DialogSettings;
+	settings: DialogSettings | undefined;
 }

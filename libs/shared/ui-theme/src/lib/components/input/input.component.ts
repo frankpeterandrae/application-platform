@@ -1,12 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component, ElementRef, forwardRef, input, output, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import type { ElementRef } from '@angular/core';
+import { Component, forwardRef, input, output, viewChild } from '@angular/core';
+import type { ControlValueAccessor } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+
 import { IconDefinition } from '../../enums';
 
 /**
@@ -96,7 +99,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @internal
 	 * @param {any} fn - The callback function.
 	 */
-	public registerOnChange(fn: any): void {
+	public registerOnChange(fn: (value: string) => void): void {
 		this.onChange = fn;
 	}
 
@@ -105,7 +108,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @internal
 	 * @param {any} fn - The callback function.
 	 */
-	public registerOnTouched(fn: any): void {
+	public registerOnTouched(fn: () => void): void {
 		this.onTouched = fn;
 	}
 

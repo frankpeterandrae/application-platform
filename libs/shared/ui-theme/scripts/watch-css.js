@@ -4,8 +4,8 @@
  */
 
 const sass = require('sass');
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require('node:fs').promises;
+const path = require('node:path');
 
 // Function to compile SCSS
 function compileSass() {
@@ -22,7 +22,7 @@ function compileSass() {
 				// Include additional options if necessary
 			});
 
-			result.css = result.css.replace(/\/\*!.*?Frank-Peter Andrä.*?\*\//gs, '');
+			result.css = result.css.replaceAll(/\/\*!.*?Frank-Peter Andrä.*?\*\//gs, '');
 			// Write the compiled CSS to the desired output file
 			await fs.writeFile(path.join(path.dirname(cssOutputPath), outputFileName), result.css);
 

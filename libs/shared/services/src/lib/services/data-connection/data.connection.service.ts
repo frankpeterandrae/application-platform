@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '@angular-apps/config';
+import { environment } from '@application-platform/config';
+import type { Observable } from 'rxjs';
 
 /**
  * Injectable service for data connection operations.
@@ -25,7 +25,7 @@ export class DataConnectionService {
 	 * Fetches data from the server.
 	 * @returns {Observable<any>} An observable containing the server response.
 	 */
-	public getData(): Observable<any> {
+	public getData(): Observable<unknown> {
 		return this.http.get(`${environment.baseUrl}${this.apiUrl}`, { params: { action: 'getData' } });
 	}
 
@@ -34,7 +34,7 @@ export class DataConnectionService {
 	 * @param {string} list - The data to be added.
 	 * @returns {Observable<any>} An observable containing the server response.
 	 */
-	public addData(list: string): Observable<any> {
+	public addData(list: string): Observable<unknown> {
 		const body = new FormData();
 		body.append('action', 'addData');
 		body.append('list', list);
@@ -48,7 +48,7 @@ export class DataConnectionService {
 	 * @param {number} id - The ID of the data to be deleted.
 	 * @returns {Observable<any>} An observable containing the server response.
 	 */
-	public deleteData(id: number): Observable<any> {
+	public deleteData(id: number): Observable<unknown> {
 		const body = new FormData();
 		body.append('action', 'deleteData');
 		body.append('id', id.toString());
@@ -64,7 +64,7 @@ export class DataConnectionService {
 	 * @param {string} userInfo.email - The email address.
 	 * @returns {Observable<any>} An observable containing the server response.
 	 */
-	public addUser(userInfo: { user: string; password: string; email: string }): Observable<any> {
+	public addUser(userInfo: { user: string; password: string; email: string }): Observable<unknown> {
 		const body = new FormData();
 		body.append('action', 'addUser');
 		body.append('username', userInfo.user);
@@ -81,7 +81,7 @@ export class DataConnectionService {
 	 * @param {string} param.email - The email address.
 	 * @returns {Observable<any>} An observable containing the server response.
 	 */
-	public login(param: { password: string; email: string }): Observable<any> {
+	public login(param: { password: string; email: string }): Observable<unknown> {
 		const body = new FormData();
 		body.append('action', 'login');
 		body.append('email', param.email);

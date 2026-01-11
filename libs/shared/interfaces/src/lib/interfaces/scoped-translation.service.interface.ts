@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Observable } from 'rxjs';
-import { Signal } from '@angular/core';
+import type { Signal } from '@angular/core';
+import type { Observable } from 'rxjs';
 
 /**
  *

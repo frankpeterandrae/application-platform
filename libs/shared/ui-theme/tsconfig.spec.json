@@ -2,11 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../../dist/out-tsc",
-		"module": "preserve",
-		"target": "es2016",
 		"types": ["jest", "node"],
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
 		"moduleResolution": "bundler",
 		"isolatedModules": true
 	},

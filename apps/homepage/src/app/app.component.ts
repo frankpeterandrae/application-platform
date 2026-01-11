@@ -1,16 +1,18 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleComponent, MenuItem } from '@angular-apps/shared/ui-theme';
-import { Component, OnInit, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { BUILD_DATE, environment } from '@angular-apps/config';
-import { Logger } from '@angular-apps/services';
-import { combineLatest } from 'rxjs';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import type { OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
+import { RouterOutlet } from '@angular/router';
+import { BUILD_DATE, environment } from '@application-platform/config';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { Logger } from '@application-platform/services';
+import type { MenuItem } from '@application-platform/shared/ui-theme';
+import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleComponent } from '@application-platform/shared/ui-theme';
+import { combineLatest } from 'rxjs';
 
 /**
  * The root component of the application.

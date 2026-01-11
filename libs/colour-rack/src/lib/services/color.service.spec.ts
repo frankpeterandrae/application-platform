@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ColorService } from './color.service';
-import { Color } from '../models/color.model';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { ColorType } from '../models/color-type.enum';
+import type { Color } from '../models/color.model';
+
+import { ColorService } from './color.service';
 
 describe('ColorService', () => {
 	let service: ColorService;

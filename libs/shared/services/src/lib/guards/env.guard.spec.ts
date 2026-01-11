@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { environment } from '@application-platform/config';
+
 import { EnvGuard } from './env.guard';
-import { environment } from '@angular-apps/config';
 
 /**
  * Test suite for DataConnectionService.

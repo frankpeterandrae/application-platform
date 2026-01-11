@@ -11,13 +11,13 @@ module.exports = {
 	coverageDirectory: '<rootDir>/coverage',
 	coverageReporters: ['text', 'lcov', 'html'],
 	transform: {
-		'^.+\\.tsx?$': 'ts-jest', // Ensure ts-jest transforms TypeScript files
+		'^.+\\.tsx?$': 'ts-jest' // Ensure ts-jest transforms TypeScript files
 	},
 	transformIgnorePatterns: [
-		'node_modules/(?!flat)', // Allow Jest to process the `flat` package
-		'\\.d\\.ts$', // Ignore TypeScript declaration files explicitly
+		'node_modules/(?!(.*\\.mjs$|flat))', // Allow Jest to process the `flat` package
+		'\\.d\\.ts$' // Ignore TypeScript declaration files explicitly
 	],
 	moduleNameMapper: {
-		'^flat$': 'node_modules/flat/index.js', // Map flat to its JS entry
-	},
+		'^flat$': 'node_modules/flat/index.js' // Map flat to its JS entry
+	}
 };

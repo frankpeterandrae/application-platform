@@ -1,14 +1,15 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { Component, inject, OnInit } from '@angular/core';
-import { ButtonColorDefinition, ButtonComponent, CardComponent } from '@angular-apps/shared/ui-theme';
-import { Router } from '@angular/router';
-import { Logger, LOGGER_SOURCE, TranslationPipe } from '@angular-apps/services';
 import { AsyncPipe } from '@angular/common';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import type { OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { Logger, LOGGER_SOURCE, TranslationPipe } from '@application-platform/services';
+import { ButtonColorDefinition, ButtonComponent, CardComponent } from '@application-platform/shared/ui-theme';
 
 /**
  * Component for displaying a 404 error page.
@@ -40,7 +41,11 @@ export class Error404Component implements OnInit {
 	/**
 	 * Navigates to the home page.
 	 */
-	public routeToHome(): void {
-		this.router.navigate(['/']).catch((error) => this.logger.error('Error while navigating to home page', error));
+	public async routeToHome(): Promise<void> {
+		try {
+			await this.router.navigate(['/']);
+		} catch (error) {
+			this.logger.error('Error while navigating to home page', error);
+		}
 	}
 }

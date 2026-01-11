@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
-import { TranslocoService } from '@jsverse/transloco';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ScopedTranslationServiceInterface } from '@angular-apps/interfaces';
+import type { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import { TranslocoService } from '@jsverse/transloco';
+import type { Observable } from 'rxjs';
 
 /**
  * ScopedTranslationService is an Angular service that provides scoped translation functionality.
