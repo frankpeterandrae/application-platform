@@ -26,7 +26,10 @@ export default [
 			'**/.angular',
 			'**/jest.config.ts',
 			'**/vitest.config.*.timestamp*',
-			'**/tools/**'
+			'**/tools/**',
+			'vitest.workspace.*',
+			'./vitest.workspace.*',
+			'scripts/**'
 		]
 	},
 
@@ -214,16 +217,39 @@ export default [
 	},
 
 	// -----------------------------
-	// Shared TS rules (non-type-aware, fast)
+	// workspace helper files: no special parser override — allow TS project service to include them
+	// (vitest.workspace.ts is included in tsconfig.tools.json so the project service will find it)
 	// -----------------------------
+
+	// -----------------------------
+	// Ensure vitest.workspace.ts is parsed with the tools tsconfig (use absolute paths)
 	{
-		files: ['**/*.ts'],
+		files: ['vitest.workspace.ts', './vitest.workspace.ts', 'D:/dev/src/application-platform/vitest.workspace.ts'],
+		languageOptions: {
+			parserOptions: {
+				projectService: true,
+				tsconfigRootDir: 'D:/dev/src/application-platform',
+				project: ['D:/dev/src/application-platform/tsconfig.tools.json'],
+				allowDefaultProject: ['D:/dev/src/application-platform/vitest.workspace.ts'],
+				createDefaultProgram: true
+			}
+		}
+	},
+
+	// -----------------------------
+	// Shared TS rules (non-type-aware, fast)
+	{
+		files: ['**/*.ts', '!**/vitest.workspace.ts', '!**/vite*.workspace.ts'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
 				project: ['./tsconfig.tools.json'],
-				allowDefaultProject: ['tools/jest/angular-jest.base.ts']
+				allowDefaultProject: [
+					'tools/jest/angular-jest.base.ts',
+					'./vitest.workspace.ts',
+					'D:/dev/src/application-platform/vitest.workspace.ts'
+				]
 			}
 		},
 		plugins: {
@@ -291,7 +317,7 @@ export default [
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
 				project: ['./tsconfig.tools.json'],
-				allowDefaultProject: ['tools/jest/angular-jest.base.ts']
+				allowDefaultProject: ['tools/jest/angular-jest.base.ts', './vitest.workspace.ts']
 			}
 		},
 		rules: {

@@ -1,4 +1,8 @@
 {
 	"extends": "./tsconfig.base.json",
-	"include": ["tools/**/*"]
+	"compilerOptions": {
+		"module": "Node16"
+	},
+	"files": ["./vitest.workspace.ts"],
+	"include": ["tools/**/*", "./vitest.workspace.ts"]
 }

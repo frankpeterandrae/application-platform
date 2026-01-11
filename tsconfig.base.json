@@ -4,8 +4,8 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
-			"@application-platform/colour-rack": ["libs/colour-rack/src/index.ts"],
-			"@application-platform/config": ["libs/shared/config/src/index.ts"],
+			"@application-platform/colour-rack": ["libs/homepage/colour-rack/src/index.ts"],
+			"@application-platform/config": ["libs/homepage/config/src/index.ts"],
 			"@application-platform/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
 			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
 			"@application-platform/interfaces": ["libs/shared/interfaces/src/index.ts"],
@@ -13,26 +13,24 @@
 			"@application-platform/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
 			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
 			"@angular/cdk": ["node_modules/@angular/cdk/types/cdk.d.ts"],
-			"@angular/cdk/*": ["node_modules/@angular/cdk/types/*"]
+			"@angular/cdk/*": ["node_modules/@angular/cdk/types/*"],
+			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],
+			"@application-platform/protocol": ["libs/z21-suite/protocol/src/index.ts"],
+			"@application-platform/z21": ["libs/z21-suite/z21/src/index.ts"]
 		},
-
 		"target": "ES2022",
 		"module": "preserve",
 		"moduleResolution": "node16",
 		"lib": ["DOM", "ES2022"],
-
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-
 		"sourceMap": true,
 		"declaration": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
-
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-
 		"forceConsistentCasingInFileNames": true,
 		"strict": true,
 		"noImplicitOverride": true,
@@ -41,5 +39,5 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js"]
+	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js", "vitest.workspace.ts"]
 }

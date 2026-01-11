@@ -34,7 +34,7 @@ jobs:
 
       # Run tests for affected apps and libs
       - name: Run affected tests with coverage
-        run: npx nx affected --target=test --base=$NX_BASE --head=$NX_HEAD --codeCoverage
+        run: npx nx affected --target=test --base=$NX_BASE --head=$NX_HEAD --configuration=ci
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2

@@ -1,0 +1,22 @@
+{
+	"name": "protocol",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/z21-suite/protocol/src",
+	"projectType": "library",
+	"tags": [],
+	"targets": {
+		"build": {
+			"executor": "@nx/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/libs/z21-suite/protocol",
+				"main": "libs/z21-suite/protocol/src/index.ts",
+				"tsConfig": "libs/z21-suite/protocol/tsconfig.lib.json",
+				"assets": ["libs/z21-suite/protocol/*.md"]
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test"
+		}
+	}
+}

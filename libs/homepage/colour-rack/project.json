@@ -1,0 +1,23 @@
+{
+	"name": "colour-rack",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/homepage/colour-rack/src",
+	"prefix": "lib",
+	"projectType": "library",
+	"tags": ["type:feature", "scope:homepage", "platform:browser"],
+	"targets": {
+		"test": {
+			"executor": "@nx/jest:jest",
+			"options": {
+				"jestConfig": "libs/homepage/colour-rack/jest.config.ts",
+				"tsConfig": "libs/homepage/colour-rack/tsconfig.spec.json"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		},
+		"stylelint": {
+			"executor": "nx-stylelint:lint"
+		}
+	}
+}

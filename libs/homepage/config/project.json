@@ -1,0 +1,20 @@
+{
+	"name": "config",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/homepage/config/src",
+	"prefix": "lib",
+	"projectType": "library",
+	"tags": ["type:util", "scope:shared", "platform:agnostic"],
+	"targets": {
+		"test": {
+			"executor": "@nx/jest:jest",
+			"options": {
+				"jestConfig": "libs/homepage/config/jest.config.ts",
+				"tsConfig": "libs/homepage/config/tsconfig.spec.json"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		}
+	}
+}

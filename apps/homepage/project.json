@@ -23,7 +23,7 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/colour-rack/src/assets",
+						"input": "libs/homepage/colour-rack/src/assets",
 						"output": "assets"
 					},
 					{
@@ -57,8 +57,8 @@
 					"baseHref": "/",
 					"fileReplacements": [
 						{
-							"replace": "libs/shared/config/src/lib/config/environments/environment.ts",
-							"with": "libs/shared/config/src/lib/config/environments/environment.prod.ts"
+							"replace": "libs/homepage/config/src/lib/config/environments/environment.ts",
+							"with": "libs/homepage/config/src/lib/config/environments/environment.prod.ts"
 						}
 					],
 					"budgets": [
@@ -128,19 +128,19 @@
 						"command": "node ./scripts/generate-htaccess.js"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/htaccess/.htaccess dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/htaccess/.htaccess dist/production/"
 					},
 					{
 						"command": "node ./scripts/generate-sitemap.js"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/sitemap/sitemap.xml dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/sitemap/sitemap.xml dist/production/"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/robots/robots.txt dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/robots/robots.txt dist/production/"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/config/google1fa4ec9361425ee2.html dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/config/google1fa4ec9361425ee2.html dist/production/"
 					},
 					{
 						"command": "npm run foss"

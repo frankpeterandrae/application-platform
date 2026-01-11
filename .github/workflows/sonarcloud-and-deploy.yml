@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: npx nx run-many --target=test --all --codeCoverage
+        run: npx nx run-many --target=test --all --configuration=ci
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2

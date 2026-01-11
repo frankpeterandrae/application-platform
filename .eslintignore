@@ -1,0 +1,17 @@
+# Ignore generated/dist and helper files that shouldn't be type-checked
+node_modules/
+dist/
+coverage/
+
+# Workspace helper configs (vitest, vite, etc.)
+vitest.workspace.*
+vite*.workspace.*
+
+# Local tooling scripts
+scripts/
+.tools/
+
+# Misc
+*.log
+.tmp/
+
