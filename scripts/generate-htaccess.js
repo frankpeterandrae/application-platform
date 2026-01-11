@@ -110,6 +110,6 @@ RewriteRule ^ /index.html [R=404,L]
 ErrorDocument 404 /index.html
 `;
 
-fs.mkdirSync('./libs/shared/config/src/lib/htaccess', { recursive: true });
-fs.writeFileSync('./libs/shared/config/src/lib/htaccess/.htaccess', htaccessContent);
+fs.mkdirSync('./libs/homepage/config/src/lib/htaccess', { recursive: true });
+fs.writeFileSync('./libs/homepage/config/src/lib/htaccess/.htaccess', htaccessContent);
 console.log('.htaccess file has been updated.');

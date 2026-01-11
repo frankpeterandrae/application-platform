@@ -13,15 +13,15 @@ describe('Logger', () => {
 	let logger: Logger;
 
 	beforeEach(async () => {
-		jest.clearAllMocks();
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		jest.spyOn(console, 'info').mockImplementation(() => {});
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		jest.spyOn(console, 'warn').mockImplementation(() => {});
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		jest.spyOn(console, 'error').mockImplementation(() => {});
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		jest.spyOn(console, 'debug').mockImplementation(() => {});
+		vi.clearAllMocks();
+
+		vi.spyOn(console, 'info').mockImplementation(() => undefined);
+
+		vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+		vi.spyOn(console, 'debug').mockImplementation(() => undefined);
 
 		await setupTestingModule({
 			providers: [{ provide: LOGGER_SOURCE, useValue: 'TestSource' }]
@@ -36,28 +36,28 @@ describe('Logger', () => {
 	});
 
 	it('should log info messages', () => {
-		jest.spyOn(console, 'info');
+		vi.spyOn(console, 'info');
 		logger.info('Info message');
 
 		expect(console.info).toHaveBeenCalledWith('[TestSource]', 'Info message');
 	});
 
 	it('should log warning messages', () => {
-		jest.spyOn(console, 'warn');
+		vi.spyOn(console, 'warn');
 		logger.warn('Warning message');
 
 		expect(console.warn).toHaveBeenCalledWith('[TestSource]', 'Warning message');
 	});
 
 	it('should log error messages', () => {
-		jest.spyOn(console, 'error');
+		vi.spyOn(console, 'error');
 		logger.error('Error message');
 
 		expect(console.error).toHaveBeenCalledWith('[TestSource]', 'Error message');
 	});
 
 	it('should log debug messages', () => {
-		jest.spyOn(console, 'debug');
+		vi.spyOn(console, 'debug');
 		logger.debug('Debug message');
 
 		expect(console.debug).toHaveBeenCalledWith('[TestSource]', 'Debug message');
@@ -65,7 +65,7 @@ describe('Logger', () => {
 
 	it('should not log messages if disabled', () => {
 		Logger.setProductionMode({ disable: true });
-		jest.spyOn(console, 'info');
+		vi.spyOn(console, 'info');
 		logger.info('No Info message');
 
 		expect(console.info).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('Logger', () => {
 		TestBed.resetTestingModule();
 		TestBed.configureTestingModule({});
 		logger = TestBed.inject(Logger);
-		jest.spyOn(console, 'info');
+		vi.spyOn(console, 'info');
 		logger.info('Info message');
 
 		expect(console.info).toHaveBeenCalledWith('Info message');

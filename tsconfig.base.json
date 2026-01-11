@@ -6,13 +6,12 @@
 		"strict": true,
 		"sourceMap": true,
 		"declaration": false,
-		"moduleResolution": "node",
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
-		"target": "es2022",
-		"module": "esnext",
-		"lib": ["es2022", "dom"],
+		"module": "preserve",
+		"moduleResolution": "node",
+		"lib": ["DOM", "ES2022"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
 		"strictNullChecks": true,
@@ -20,15 +19,23 @@
 		"esModuleInterop": true,
 		"baseUrl": ".",
 		"paths": {
-			"@application-platform/colour-rack": ["libs/colour-rack/src/index.ts"],
-			"@application-platform/config": ["libs/shared/config/src/index.ts"],
+			"@application-platform/colour-rack": ["libs/homepage/colour-rack/src/index.ts"],
+			"@application-platform/config": ["libs/homepage/config/src/index.ts"],
 			"@application-platform/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
 			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
 			"@application-platform/interfaces": ["libs/shared/interfaces/src/index.ts"],
 			"@application-platform/services": ["libs/shared/services/src/index.ts"],
 			"@application-platform/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
-			"@application-platform/testing": ["libs/shared/testing/src/index.ts"]
-		}
+			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
+			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],
+			"@application-platform/protocol": ["libs/z21-suite/protocol/src/index.ts"],
+			"@application-platform/z21": ["libs/z21-suite/z21/src/index.ts"]
+		},
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true
 	},
-	"exclude": ["node_modules", "tmp"]
+	"exclude": ["node_modules", "tmp"],
+	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js", "vitest.workspace.ts"]
 }

@@ -7,11 +7,13 @@
 	"tags": ["type:feature", "scope:homepage", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"options": {
-				"jestConfig": "libs/homepage/homepage-feature/jest.config.ts",
-				"tsConfig": "libs/homepage/homepage-feature/tsconfig.spec.json"
-			}
+				"tsConfig": "libs/homepage/homepage-feature/tsconfig.spec.json",
+				"vitestConfig": "libs/homepage/homepage-feature/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/homepage/homepage-feature"
+			},
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"lint": {
 			"executor": "@nx/eslint:lint"

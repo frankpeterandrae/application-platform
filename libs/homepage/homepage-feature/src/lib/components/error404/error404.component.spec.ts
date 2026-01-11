@@ -4,7 +4,7 @@
  */
 
 import type { ComponentFixture } from '@angular/core/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { LOGGER_SOURCE } from '@application-platform/services';
 
 import { setupTestingModule } from '../../../test-setup';
@@ -30,26 +30,25 @@ describe('Error404Component', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should set the sets the backToStartpage property with the translated string', fakeAsync(() => {
+	it('should set the sets the backToStartpage property with the translated string', async () => {
 		component.ngOnInit();
-		tick(100); // Simulate the delay in `translate`
+		// wait for translation simulation
+		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
 		expect(component.backToStartpage).toBe('Error404Component.lbl.BackToStartpage');
-	}));
+	});
 
-	it('should navigate to home on routeToHome call', () => {
-		const navigateSpy = jest.spyOn(component['router'], 'navigate').mockImplementation(() => Promise.resolve(true));
-		void component.routeToHome();
+	it('should navigate to home on routeToHome call', async () => {
+		const navigateSpy = vi.spyOn(component['router'], 'navigate').mockImplementation(() => Promise.resolve(true));
+		await component.routeToHome();
 		expect(navigateSpy).toHaveBeenCalledWith(['/']);
 	});
 
 	it('should log error if navigation to home fails', async () => {
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-		const navigateSpy = jest.spyOn(component['router'], 'navigate').mockImplementation(() => Promise.reject('Navigation Error'));
-		void component.routeToHome();
-		// wait for the navigation promise rejection to be handled in the next microtask
-		await Promise.resolve();
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+		const navigateSpy = vi.spyOn(component['router'], 'navigate').mockImplementation(() => Promise.reject('Navigation Error'));
+		await component.routeToHome();
+		// wait for the navigation promise rejection to be handled in the next microtask (component handles and logs it)
 		expect(navigateSpy).toHaveBeenCalledWith(['/']);
 		expect(consoleErrorSpy).toHaveBeenCalledWith('[Error404Component]', 'Error while navigating to home page', 'Navigation Error');
 	});

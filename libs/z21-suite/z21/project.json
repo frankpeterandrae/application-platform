@@ -1,0 +1,26 @@
+{
+	"name": "z21",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/z21-suite/z21/src",
+	"projectType": "library",
+	"tags": ["type:integration", "scope:z21", "platform:node"],
+	"targets": {
+		"build": {
+			"executor": "@nx/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/libs/z21-suite/z21",
+				"main": "libs/z21-suite/z21/src/index.ts",
+				"tsConfig": "libs/z21-suite/z21/tsconfig.lib.json",
+				"assets": ["libs/z21-suite/z21/*.md"]
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"reportsDirectory": "../../../coverage/libs/z21-suite/z21"
+			}
+		}
+	}
+}

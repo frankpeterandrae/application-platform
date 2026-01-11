@@ -20,7 +20,7 @@ describe('DataConnectionService', () => {
 
 	beforeEach(async () => {
 		await setupTestingModule({
-			providers: [DataConnectionService, { provide: HttpClient, useValue: { get: jest.fn(), post: jest.fn() } }]
+			providers: [DataConnectionService, { provide: HttpClient, useValue: { get: vi.fn(), post: vi.fn() } }]
 		});
 		httpClient = TestBed.inject(HttpClient);
 		service = TestBed.inject(DataConnectionService);
@@ -28,7 +28,7 @@ describe('DataConnectionService', () => {
 
 	it('should fetch data from the server', () => {
 		const mockResponse = { data: 'test data' };
-		jest.spyOn(httpClient, 'get').mockReturnValue(of(mockResponse));
+		vi.spyOn(httpClient, 'get').mockReturnValue(of(mockResponse));
 		service.getData().subscribe((response) => {
 			expect(response).toEqual(mockResponse);
 		});
@@ -36,7 +36,7 @@ describe('DataConnectionService', () => {
 
 	it('should add data to the server', () => {
 		const mockResponse = { success: true };
-		jest.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
+		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
 		service.addData('test list').subscribe((response) => {
 			expect(response).toEqual(mockResponse);
 		});
@@ -44,7 +44,7 @@ describe('DataConnectionService', () => {
 
 	it('should delete data from the server', () => {
 		const mockResponse = { success: true };
-		jest.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
+		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
 		service.deleteData(1).subscribe((response) => {
 			expect(response).toEqual(mockResponse);
 		});
@@ -52,7 +52,7 @@ describe('DataConnectionService', () => {
 
 	it('should add a new user to the server', () => {
 		const mockResponse = { success: true };
-		jest.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
+		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
 		service.addUser({ user: 'testUser', password: 'testPassword', email: 'test@example.com' }).subscribe((response) => {
 			expect(response).toEqual(mockResponse);
 		});
@@ -60,7 +60,7 @@ describe('DataConnectionService', () => {
 
 	it('should log in a user', () => {
 		const mockResponse = { success: true };
-		jest.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
+		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
 		service.login({ email: 'test@example.com', password: 'testPassword' }).subscribe((response) => {
 			expect(response).toEqual(mockResponse);
 		});

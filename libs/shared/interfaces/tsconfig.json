@@ -1,23 +1,7 @@
 {
-	"compilerOptions": {
-		"noImplicitOverride": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"moduleResolution": "bundler"
-	},
-	"files": [],
-	"include": [],
-	"references": [
-		{
-			"path": "./tsconfig.lib.json"
-		}
-	],
 	"extends": "../../../tsconfig.base.json",
-	"angularCompilerOptions": {
-		"enableI18nLegacyMessageIdFormat": false,
-		"strictInjectionParameters": true,
-		"strictInputAccessModifiers": true,
-		"strictTemplates": true
-	}
+	"compilerOptions": {
+		"allowJs": true
+	},
+	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"]
 }

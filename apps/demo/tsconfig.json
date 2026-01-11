@@ -7,10 +7,11 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"resolveJsonModule": true,
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"allowJs": true
 	},
 	"files": [],
-	"include": [],
+	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
 	"references": [
 		{
 			"path": "./tsconfig.editor.json"

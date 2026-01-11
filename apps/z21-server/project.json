@@ -1,0 +1,89 @@
+{
+	"name": "z21-server",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/z21-server/src",
+	"projectType": "application",
+	"tags": ["type:app", "scope:z21", "platform:node"],
+	"targets": {
+		"build": {
+			"executor": "@nx/esbuild:esbuild",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"platform": "node",
+				"outputPath": "dist/apps/z21-server",
+				"format": ["cjs"],
+				"bundle": false,
+				"main": "apps/z21-server/src/main.ts",
+				"tsConfig": "apps/z21-server/tsconfig.app.json",
+				"assets": ["apps/z21-server/src/assets"],
+				"generatePackageJson": true,
+				"esbuildOptions": {
+					"sourcemap": true,
+					"outExtension": {
+						".js": ".js"
+					}
+				}
+			},
+			"configurations": {
+				"development": {},
+				"production": {
+					"esbuildOptions": {
+						"sourcemap": false,
+						"outExtension": {
+							".js": ".js"
+						}
+					}
+				}
+			}
+		},
+		"prune-lockfile": {
+			"dependsOn": ["build"],
+			"cache": true,
+			"executor": "@nx/js:prune-lockfile",
+			"outputs": ["{workspaceRoot}/dist/apps/z21-server/package.json", "{workspaceRoot}/dist/apps/z21-server/package-lock.json"],
+			"options": {
+				"buildTarget": "build"
+			}
+		},
+		"copy-workspace-modules": {
+			"dependsOn": ["build"],
+			"cache": true,
+			"outputs": ["{workspaceRoot}/dist/apps/z21-server/workspace_modules"],
+			"executor": "@nx/js:copy-workspace-modules",
+			"options": {
+				"buildTarget": "build"
+			}
+		},
+		"prune": {
+			"dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+			"executor": "nx:noop"
+		},
+		"serve": {
+			"continuous": true,
+			"executor": "@nx/js:node",
+			"defaultConfiguration": "development",
+			"dependsOn": ["build"],
+			"options": {
+				"buildTarget": "z21-server:build",
+				"runBuildTargetDependencies": false
+			},
+			"configurations": {
+				"development": {
+					"buildTarget": "z21-server:build:development"
+				},
+				"production": {
+					"buildTarget": "z21-server:build:production"
+				}
+			}
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/z21-server/jest.config.cts",
+				"passWithNoTests": true
+			}
+		}
+	}
+}
