@@ -5,7 +5,7 @@
 
 import { provideHttpClient } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
-import { provideZoneChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { translocoConfigFactory } from '@application-platform/config';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
@@ -21,9 +21,9 @@ import { appRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
 	providers: [
 		/**
-		 * Provides zone change detection with event coalescing enabled.
+		 * Provides zone less change detection
 		 */
-		provideZoneChangeDetection({ eventCoalescing: true }),
+		provideZonelessChangeDetection(),
 
 		/**
 		 * Provides the router configuration.

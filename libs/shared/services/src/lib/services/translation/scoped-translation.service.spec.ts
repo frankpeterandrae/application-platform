@@ -5,6 +5,8 @@
 
 import { TestBed } from '@angular/core/testing';
 import type { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
+import type { Mocked } from '@application-platform/testing';
+import { createMock } from '@application-platform/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { of } from 'rxjs';
 
@@ -14,25 +16,25 @@ import { ScopedTranslationService } from './scoped-translation.service';
 
 describe('ScopedTranslationService', () => {
 	let service: ScopedTranslationServiceInterface;
-	let translocoService: jest.Mocked<TranslocoService>;
+	let translocoService: Mocked<TranslocoService>;
 
 	beforeEach(async () => {
-		const translocoServiceMock = {
-			setActiveLang: jest.fn(),
-			selectTranslate: jest.fn(),
-			getAvailableLangs: jest.fn(),
-			getActiveLang: jest.fn()
-		};
+		const translocoServiceMock = createMock<TranslocoService>({
+			setActiveLang: vi.fn(),
+			selectTranslate: vi.fn(),
+			getAvailableLangs: vi.fn(),
+			getActiveLang: vi.fn()
+		});
 
 		await setupTestingModule({
 			providers: [ScopedTranslationService, { provide: TranslocoService, useValue: translocoServiceMock }]
 		});
 
 		service = TestBed.inject(ScopedTranslationService);
-		translocoService = TestBed.inject(TranslocoService) as jest.Mocked<TranslocoService>;
+		translocoService = TestBed.inject(TranslocoService) as Mocked<TranslocoService>;
 	});
 
-	it('translates a key within a scope', (done) => {
+	it('translates a key within a scope', async () => {
 		const key = 'hello';
 		const scope = 'common';
 		const params = {};
@@ -40,13 +42,15 @@ describe('ScopedTranslationService', () => {
 
 		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
 
-		service.selectTranslate(key, scope, params).subscribe((result) => {
-			expect(result).toBe(translatedValue);
-			done();
+		await new Promise<void>((resolve) => {
+			service.selectTranslate(key, scope, params).subscribe((result) => {
+				expect(result).toBe(translatedValue);
+				resolve();
+			});
 		});
 	});
 
-	it('translates a key with parameters', (done) => {
+	it('translates a key with parameters', async () => {
 		const key = 'greeting';
 		const scope = 'common';
 		const params = { name: 'John' };
@@ -54,13 +58,15 @@ describe('ScopedTranslationService', () => {
 
 		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
 
-		service.selectTranslate(key, scope, params).subscribe((result) => {
-			expect(result).toBe(translatedValue);
-			done();
+		await new Promise<void>((resolve) => {
+			service.selectTranslate(key, scope, params).subscribe((result) => {
+				expect(result).toBe(translatedValue);
+				resolve();
+			});
 		});
 	});
 
-	it('translates a key with undefined scope', (done) => {
+	it('translates a key with undefined scope', async () => {
 		const key = 'hello';
 		const scope = undefined;
 		const params = {};
@@ -68,13 +74,15 @@ describe('ScopedTranslationService', () => {
 
 		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
 
-		service.selectTranslate(key, scope, params).subscribe((result) => {
-			expect(result).toBe(translatedValue);
-			done();
+		await new Promise<void>((resolve) => {
+			service.selectTranslate(key, scope, params).subscribe((result) => {
+				expect(result).toBe(translatedValue);
+				resolve();
+			});
 		});
 	});
 
-	it('translates a key with null parameters', (done) => {
+	it('translates a key with null parameters', async () => {
 		const key = 'hello';
 		const scope = 'common';
 		const params = undefined;
@@ -82,9 +90,11 @@ describe('ScopedTranslationService', () => {
 
 		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
 
-		service.selectTranslate(key, scope, params).subscribe((result) => {
-			expect(result).toBe(translatedValue);
-			done();
+		await new Promise<void>((resolve) => {
+			service.selectTranslate(key, scope, params).subscribe((result) => {
+				expect(result).toBe(translatedValue);
+				resolve();
+			});
 		});
 	});
 

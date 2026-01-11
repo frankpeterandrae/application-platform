@@ -7,13 +7,11 @@
 	"tags": ["type:app", "scope:homepage", "platform:browser"],
 	"targets": {
 		"build": {
-			"executor": "@angular-devkit/build-angular:application",
+			"executor": "@angular/build:application",
 			"outputs": ["{options.outputPath}"],
 			"options": {
 				"outputPath": "dist/apps/homepage",
-				"index": "apps/homepage/src/index.html",
 				"browser": "apps/homepage/src/main.ts",
-				"polyfills": ["zone.js"],
 				"tsConfig": "apps/homepage/tsconfig.app.json",
 				"inlineStyleLanguage": "scss",
 				"assets": [
@@ -23,7 +21,7 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/colour-rack/src/assets",
+						"input": "libs/homepage/colour-rack/src/assets",
 						"output": "assets"
 					},
 					{
@@ -57,8 +55,8 @@
 					"baseHref": "/",
 					"fileReplacements": [
 						{
-							"replace": "libs/shared/config/src/lib/config/environments/environment.ts",
-							"with": "libs/shared/config/src/lib/config/environments/environment.prod.ts"
+							"replace": "libs/homepage/config/src/lib/config/environments/environment.ts",
+							"with": "libs/homepage/config/src/lib/config/environments/environment.prod.ts"
 						}
 					],
 					"budgets": [
@@ -82,7 +80,7 @@
 			"defaultConfiguration": "production"
 		},
 		"serve": {
-			"executor": "@angular-devkit/build-angular:dev-server",
+			"executor": "@angular/build:dev-server",
 			"options": {
 				"port": 4200
 			},
@@ -128,19 +126,19 @@
 						"command": "node ./scripts/generate-htaccess.js"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/htaccess/.htaccess dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/htaccess/.htaccess dist/production/"
 					},
 					{
 						"command": "node ./scripts/generate-sitemap.js"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/sitemap/sitemap.xml dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/sitemap/sitemap.xml dist/production/"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/robots/robots.txt dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/robots/robots.txt dist/production/"
 					},
 					{
-						"command": "shx cp -r libs/shared/config/src/lib/config/google1fa4ec9361425ee2.html dist/production/"
+						"command": "shx cp -r libs/homepage/config/src/lib/config/google1fa4ec9361425ee2.html dist/production/"
 					},
 					{
 						"command": "npm run foss"
@@ -158,10 +156,23 @@
 			"executor": "@nx/eslint:lint"
 		},
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"jestConfig": "apps/homepage/jest.config.ts",
-				"tsConfig": "apps/homepage/tsconfig.spec.json"
+				"tsConfig": "apps/homepage/tsconfig.spec.json",
+				"vitestConfig": "apps/homepage/vitest.config.ts",
+				"reportsDirectory": "../../coverage/apps/homepage",
+				"passWithNoTests": true
+			}
+		},
+		"serve-static": {
+			"continuous": true,
+			"executor": "@nx/web:file-server",
+			"options": {
+				"buildTarget": "homepage:build",
+				"port": 4200,
+				"staticFilePath": "dist/apps/homepage/browser",
+				"spa": true
 			}
 		},
 		"stylelint": {

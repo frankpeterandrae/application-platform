@@ -6,10 +6,6 @@
 			"dependsOn": ["^build"],
 			"inputs": ["production", "^production"]
 		},
-		"test": {
-			"cache": true,
-			"inputs": ["default", "^production"]
-		},
 		"e2e": {
 			"cache": true,
 			"inputs": ["default", "^production"]
@@ -43,6 +39,34 @@
 			"options": {
 				"lintFilePatterns": ["{projectRoot}/**/*.css", "{projectRoot}/**/*.scss"]
 			}
+		},
+		"@angular/build:application": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["production", "^production"]
+		},
+		"@nx/esbuild:esbuild": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["production", "^production"]
+		},
+		"@nx/js:tsc": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["production", "^production"]
+		},
+		"@nx/vitest:test": {
+			"cache": true,
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"inputs": ["default", "^production"],
+			"options": {
+				"coverage": true
+			},
+			"configurations": {
+				"ci": {
+					"coverage": true
+				}
+			}
 		}
 	},
 	"namedInputs": {
@@ -61,6 +85,18 @@
 		"sharedGlobals": []
 	},
 	"plugins": [
+		{
+			"plugin": "@nx/playwright/plugin",
+			"options": {
+				"targetName": "e2e"
+			}
+		},
+		{
+			"plugin": "@nx/eslint/plugin",
+			"options": {
+				"targetName": "lint"
+			}
+		},
 		{
 			"plugin": "@nx/eslint/plugin",
 			"options": {

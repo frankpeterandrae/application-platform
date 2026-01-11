@@ -4,7 +4,7 @@
  */
 
 import type { ComponentFixture } from '@angular/core/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -28,11 +28,12 @@ describe('HeroComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should set the translated paragraph text on initialization', fakeAsync(() => {
+	it('should set the translated paragraph text on initialization', async () => {
 		component.ngOnInit();
 		fixture.detectChanges();
-		tick(100); // Simulate the delay in `translate`
+		// wait for translation simulation
+		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
 		expect(component.paragraph).toBe('HeroComponent.lbl.Paragraph1');
-	}));
+	});
 });
