@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Directive, ElementRef, HostListener, input, Renderer2, inject } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject, input, Renderer2 } from '@angular/core';
 
 /**
  * TooltipDirective is an Angular directive that adds a tooltip to an element.

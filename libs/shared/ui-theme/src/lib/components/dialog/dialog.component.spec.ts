@@ -16,12 +16,12 @@ import { DialogComponent } from './dialog.component';
 describe('DialogComponent', () => {
 	let component: DialogComponent;
 	let fixture: ComponentFixture<DialogComponent>;
-	let overlayRefMock: jest.Mocked<OverlayRef>;
+	let overlayRefMock: OverlayRef & { dispose?: ReturnType<typeof vi.fn> };
 
 	beforeEach(async () => {
 		overlayRefMock = {
-			dispose: jest.fn()
-		} as unknown as jest.Mocked<OverlayRef>;
+			dispose: vi.fn()
+		} as unknown as OverlayRef & { dispose?: ReturnType<typeof vi.fn> };
 		const mockDialogData: DialogConfigModel<any> = {
 			componentData: undefined,
 			settings: { title: 'Test Dialog' }
@@ -45,26 +45,26 @@ describe('DialogComponent', () => {
 	});
 
 	it('should close the dialog when close is called', () => {
-		const overlayRefSpy = jest.spyOn(component['overlayRef'], 'dispose');
+		const overlayRefSpy = vi.spyOn(component['overlayRef'], 'dispose');
 		component.close();
 		expect(overlayRefSpy).toHaveBeenCalled();
 	});
 
 	it('should close the dialog when backdropClick is called', () => {
-		const overlayRefSpy = jest.spyOn(component['overlayRef'], 'dispose');
+		const overlayRefSpy = vi.spyOn(component['overlayRef'], 'dispose');
 		component.backdropClick();
 		expect(overlayRefSpy).toHaveBeenCalled();
 	});
 
 	it('should not throw error if close is called multiple times', () => {
-		const overlayRefSpy = jest.spyOn(component['overlayRef'], 'dispose');
+		const overlayRefSpy = vi.spyOn(component['overlayRef'], 'dispose');
 		component.close();
 		component.close();
 		expect(overlayRefSpy).toHaveBeenCalledTimes(2);
 	});
 
 	it('should not throw error if backdropClick is called multiple times', () => {
-		const overlayRefSpy = jest.spyOn(component['overlayRef'], 'dispose');
+		const overlayRefSpy = vi.spyOn(component['overlayRef'], 'dispose');
 		component.backdropClick();
 		component.backdropClick();
 		expect(overlayRefSpy).toHaveBeenCalledTimes(2);

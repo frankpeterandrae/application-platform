@@ -4,8 +4,9 @@
  */
 
 import nx from '@nx/eslint-plugin';
-import baseConfig from '../../eslint.config.mjs';
+
 import '@typescript-eslint/eslint-plugin';
+import baseConfig from '../../eslint.config.mjs';
 
 export default [
 	...baseConfig,

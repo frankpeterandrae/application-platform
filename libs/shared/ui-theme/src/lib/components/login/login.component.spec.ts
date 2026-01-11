@@ -5,7 +5,7 @@
 
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { EMPTY } from 'rxjs';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -53,14 +53,14 @@ describe('LoginComponent', () => {
 	});
 
 	it('should call dataConnection.login with form values if form is valid', () => {
-		const loginSpy = jest.spyOn(component.dataConnection, 'login').mockReturnValue(of({}));
+		const loginSpy = vi.spyOn(component.dataConnection, 'login').mockReturnValue(EMPTY);
 		component.loginForm.setValue({ email: 'test@example.com', password: 'password' });
 		component.login();
 		expect(loginSpy).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password' });
 	});
 
 	it('should not call dataConnection.login if form is invalid', () => {
-		const loginSpy = jest.spyOn(component.dataConnection, 'login');
+		const loginSpy = vi.spyOn(component.dataConnection, 'login');
 		component.loginForm.setValue({ email: '', password: '' });
 		component.login();
 		expect(loginSpy).not.toHaveBeenCalled();

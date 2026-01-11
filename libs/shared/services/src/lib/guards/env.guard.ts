@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
 import type { CanActivate } from '@angular/router';
+import { Router } from '@angular/router';
 import { environment } from '@application-platform/config';
 
 /**

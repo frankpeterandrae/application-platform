@@ -23,9 +23,9 @@ import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translat
  * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
- * @returns {Promise<void>} A promise that resolves when the test module is compiled.
+ * @returns {Promise<void>} A promise that resolves when the test module is compiled and resources resolved.
  */
-export function sharedSetupTestingModule(
+export async function sharedSetupTestingModule(
 	{ imports = [], providers = [], declarations }: TestModuleMetadata,
 	langs?: HashMap<Translation>,
 	config: Partial<TranslocoConfig> = {}
@@ -37,7 +37,8 @@ export function sharedSetupTestingModule(
 	};
 	const usedLangs = langs ?? defaultLangs;
 
-	return TestBed.configureTestingModule({
+	// Configure and compile the testing module
+	await TestBed.configureTestingModule({
 		imports: [translocoTestingModulFactory(config, usedLangs), ...imports],
 		providers: [
 			{ provide: ScopedTranslationServiceInterface, useClass: MockScopedTranslationService },
@@ -48,6 +49,12 @@ export function sharedSetupTestingModule(
 		declarations,
 		schemas: [NO_ERRORS_SCHEMA]
 	}).compileComponents();
+
+	// Some Angular runtimes expose resolveComponentResources to load external templateUrl/styleUrls for components.
+	// If present, call it to ensure standalone components with external resources are resolved in tests.
+	if (typeof (TestBed as unknown as { resolveComponentResources?: () => Promise<void> }).resolveComponentResources === 'function') {
+		await (TestBed as unknown as { resolveComponentResources?: () => Promise<void> }).resolveComponentResources?.();
+	}
 }
 
 /**

@@ -1,0 +1,18 @@
+{
+	"name": "z21-server-e2e",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"implicitDependencies": ["z21-server"],
+	"tags": ["type:e2e", "scope:z21", "platform:node"],
+	"targets": {
+		"e2e": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+			"options": {
+				"jestConfig": "apps/z21-server-e2e/jest.config.cts",
+				"passWithNoTests": true
+			},
+			"dependsOn": ["z21-server:build", "z21-server:serve"]
+		}
+	}
+}

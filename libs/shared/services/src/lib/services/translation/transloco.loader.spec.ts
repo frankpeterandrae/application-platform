@@ -27,47 +27,56 @@ describe('TranslocoHttpLoader', () => {
 		httpMock.verify();
 	});
 
-	it('fetches translation file for specified language', (done) => {
+	it('fetches translation file for specified language', async () => {
 		const lang = 'en';
 		const mockTranslation: Translation = { hello: 'Hello' };
 
-		loader.getTranslation(lang).subscribe((translation) => {
-			expect(translation).toEqual(mockTranslation);
-			done();
+		const p = new Promise<void>((resolve) => {
+			loader.getTranslation(lang).subscribe((translation) => {
+				expect(translation).toEqual(mockTranslation);
+				resolve();
+			});
 		});
 
 		const req = httpMock.expectOne(`/assets/i18n/${lang}.json`);
 		expect(req.request.method).toBe('GET');
 		req.flush(mockTranslation);
+		await p;
 	});
 
-	it('handles HTTP error when fetching translation file', (done) => {
+	it('handles HTTP error when fetching translation file', async () => {
 		const lang = 'en';
 
-		loader.getTranslation(lang).subscribe({
-			next: (): void => fail('expected an error, not translations'),
-			error: (error): void => {
-				expect(error.status).toBe(404);
-				done();
-			}
+		const p = new Promise<void>((resolve) => {
+			loader.getTranslation(lang).subscribe({
+				next: (): void => fail('expected an error, not translations'),
+				error: (error): void => {
+					expect(error.status).toBe(404);
+					resolve();
+				}
+			});
 		});
 
 		const req = httpMock.expectOne(`/assets/i18n/${lang}.json`);
 		expect(req.request.method).toBe('GET');
 		req.flush('File not found', { status: 404, statusText: 'Not Found' });
+		await p;
 	});
 
-	it('fetches translation file for another language', (done) => {
+	it('fetches translation file for another language', async () => {
 		const lang = 'de';
 		const mockTranslation: Translation = { hello: 'Hallo' };
 
-		loader.getTranslation(lang).subscribe((translation) => {
-			expect(translation).toEqual(mockTranslation);
-			done();
+		const p = new Promise<void>((resolve) => {
+			loader.getTranslation(lang).subscribe((translation) => {
+				expect(translation).toEqual(mockTranslation);
+				resolve();
+			});
 		});
 
 		const req = httpMock.expectOne(`/assets/i18n/${lang}.json`);
 		expect(req.request.method).toBe('GET');
 		req.flush(mockTranslation);
+		await p;
 	});
 });

@@ -4,7 +4,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, input, inject, HostListener } from '@angular/core';
+import { Component, HostListener, inject, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { ColorDefinition } from '../../../enums';

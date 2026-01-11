@@ -4,10 +4,11 @@
 		"noPropertyAccessFromIndexSignature": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-		"moduleResolution": "bundler"
+		"moduleResolution": "bundler",
+		"allowJs": true
 	},
 	"files": [],
-	"include": [],
+	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
 	"references": [
 		{
 			"path": "./tsconfig.lib.json"

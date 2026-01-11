@@ -12,7 +12,12 @@ import { setupTestingModule } from '../test-setup';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+	let fixture: ComponentFixture<AppComponent>;
+
 	beforeEach(async () => {
+		// Prevent Angular from trying to resolve external templateUrl/styleUrls during tests
+		TestBed.overrideComponent(AppComponent, { set: { template: '<div></div>', styles: [''] } });
+
 		await setupTestingModule({
 			imports: [AppComponent],
 			providers: [
@@ -33,16 +38,16 @@ describe('AppComponent', () => {
 				}
 			]
 		});
+
+		fixture = TestBed.createComponent(AppComponent);
 	});
 
 	it('should create the app', () => {
-		const fixture = TestBed.createComponent(AppComponent);
 		const app = fixture.componentInstance;
 		expect(app).toBeTruthy();
 	});
 
 	it('should have the correct title', () => {
-		const fixture = TestBed.createComponent(AppComponent);
 		const app = fixture.componentInstance;
 		expect(app.title).toEqual('demo');
 	});

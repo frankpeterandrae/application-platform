@@ -4,7 +4,7 @@
  */
 
 import type { AfterViewInit, OnDestroy } from '@angular/core';
-import { Component, computed, ElementRef, input, DOCUMENT, inject } from '@angular/core';
+import { Component, computed, DOCUMENT, ElementRef, inject, input } from '@angular/core';
 import type { SafeUrl } from '@angular/platform-browser';
 import { DomSanitizer } from '@angular/platform-browser';
 

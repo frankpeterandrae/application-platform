@@ -11,7 +11,6 @@ export * from './lib/components/dialog/dialog.component';
 export * from './lib/components/footer/footer.component';
 export * from './lib/components/header/header.component';
 export * from './lib/components/image-loader/image-loader.component';
-export * from './lib/components/image-loader/image-loader.component';
 export * from './lib/components/input/input.component';
 export * from './lib/components/language-toggle/language-toggle.component';
 export * from './lib/components/login/login.component';

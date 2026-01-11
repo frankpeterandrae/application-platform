@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Injectable, InjectionToken, inject } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
 
 /**
  * Enum representing the log levels.

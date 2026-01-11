@@ -1,0 +1,22 @@
+{
+	"name": "config",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/homepage/config/src",
+	"prefix": "lib",
+	"projectType": "library",
+	"tags": ["type:util", "scope:shared", "platform:agnostic"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "libs/homepage/config/tsconfig.spec.json",
+				"vitestConfig": "libs/homepage/config/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/homepage/config",
+				"passWithNoTests": true
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		}
+	}
+}

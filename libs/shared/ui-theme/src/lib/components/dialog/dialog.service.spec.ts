@@ -12,19 +12,28 @@ import type { DialogConfigModel } from '../../model/dialog-config.model';
 
 import { DialogService } from './dialog-service';
 
+// Local helper types for clearer, typed mocks in tests
+type MockOverlayRef = Partial<OverlayRef> & {
+	attach: (...args: any[]) => any;
+	backdropClick: (...args: any[]) => any;
+	dispose: (...args: any[]) => any;
+};
+
+type ComponentType = new (...args: any[]) => any;
+
 describe('DialogService', () => {
 	let service: DialogService;
 	let overlay: Overlay;
-	let createSpy: jest.SpyInstance;
-	let attachSpy: jest.SpyInstance;
-	let backdropClickSpy: jest.SpyInstance;
+	let createSpy: ReturnType<typeof vi.spyOn>;
+	let attachSpy: ReturnType<typeof vi.spyOn>;
+	let backdropClickSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		// Create the mock overlay ref first so we can provide an Overlay that returns it
 		const mockOverlayRef: Partial<OverlayRef> = {
-			attach: jest.fn(),
-			backdropClick: jest.fn().mockReturnValue(of(void 0)),
-			dispose: jest.fn()
+			attach: vi.fn(),
+			backdropClick: vi.fn().mockReturnValue(of(void 0)),
+			dispose: vi.fn()
 		};
 
 		// Minimal mock for position() chain used in DialogService
@@ -33,8 +42,8 @@ describe('DialogService', () => {
 		};
 
 		const mockOverlay = {
-			create: jest.fn().mockReturnValue(mockOverlayRef as OverlayRef),
-			position: jest.fn().mockReturnValue(mockPositionStrategy)
+			create: vi.fn().mockReturnValue(mockOverlayRef as OverlayRef),
+			position: vi.fn().mockReturnValue(mockPositionStrategy)
 		};
 
 		// Provide a mocked Overlay where create() returns our mockOverlayRef
@@ -45,9 +54,9 @@ describe('DialogService', () => {
 		service = TestBed.inject(DialogService);
 		overlay = TestBed.inject(Overlay);
 
-		createSpy = jest.spyOn(overlay, 'create');
-		attachSpy = jest.spyOn(mockOverlayRef, 'attach' as any);
-		backdropClickSpy = jest.spyOn(mockOverlayRef, 'backdropClick' as any);
+		createSpy = vi.spyOn(overlay, 'create');
+		attachSpy = vi.spyOn(mockOverlayRef as MockOverlayRef, 'attach');
+		backdropClickSpy = vi.spyOn(mockOverlayRef as MockOverlayRef, 'backdropClick');
 	});
 
 	it('should be created', () => {
@@ -55,10 +64,10 @@ describe('DialogService', () => {
 	});
 
 	it('should open a dialog and attach the component to the overlay', () => {
-		const mockComponent = jest.fn(); // Mock component
+		const mockComponent: ComponentType = class {} as unknown as ComponentType; // simple dummy component constructor
 		const mockData: DialogConfigModel<any> = { settings: undefined, componentData: 'test data' };
 
-		const overlayRef = service.open(mockComponent as any, mockData);
+		const overlayRef = service.open(mockComponent, mockData);
 
 		// Verify that Overlay.create was called with the correct config
 		expect(createSpy).toHaveBeenCalled();

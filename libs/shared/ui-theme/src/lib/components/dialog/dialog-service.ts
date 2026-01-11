@@ -5,9 +5,9 @@
 
 import type { OverlayConfig } from '@angular/cdk/overlay';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
 import type { ComponentType } from '@angular/cdk/portal';
-import { Injectable, Injector, inject } from '@angular/core';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { inject, Injectable, Injector } from '@angular/core';
 import { tap } from 'rxjs/operators';
 
 import type { DialogConfigModel } from '../../model/dialog-config.model';
