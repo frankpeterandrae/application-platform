@@ -18,7 +18,7 @@ describe('EnvGuard', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			providers: [EnvGuard, { provide: Router, useValue: { navigate: jest.fn() } }]
+			providers: [EnvGuard, { provide: Router, useValue: { navigate: vi.fn() } }]
 		});
 		guard = TestBed.inject(EnvGuard);
 		router = TestBed.inject(Router);
@@ -31,7 +31,7 @@ describe('EnvGuard', () => {
 
 	it('should redirect to 404 if in production', () => {
 		Object.defineProperty(environment, 'production', { value: true });
-		const navigateSpy = jest.spyOn(router, 'navigate');
+		const navigateSpy = vi.spyOn(router, 'navigate');
 		expect(guard.canActivate()).toBeFalsy();
 		expect(navigateSpy).toHaveBeenCalledWith(['/404']);
 	});

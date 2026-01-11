@@ -18,12 +18,12 @@ describe('TooltipDirective', () => {
 	beforeEach(async () => {
 		elementRefMock = { nativeElement: document.createElement('div') } as ElementRef;
 		rendererMock = {
-			createElement: jest.fn().mockReturnValue(document.createElement('span')),
-			createText: jest.fn().mockImplementation((text: string) => document.createTextNode(text)),
-			appendChild: jest.fn(),
-			addClass: jest.fn(),
-			setStyle: jest.fn(),
-			removeChild: jest.fn()
+			createElement: vi.fn().mockReturnValue(document.createElement('span')),
+			createText: vi.fn().mockImplementation((text: string) => document.createTextNode(text)),
+			appendChild: vi.fn(),
+			addClass: vi.fn(),
+			setStyle: vi.fn(),
+			removeChild: vi.fn()
 		} as unknown as Renderer2;
 
 		await setupTestingModule({

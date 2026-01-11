@@ -17,20 +17,20 @@ class MockIntersectionObserver {
 	/**
 	 * Mock observe method.
 	 */
-	public observe = jest.fn();
+	public observe = vi.fn();
 
 	/**
 	 * Mock unobserve method.
 	 */
-	public unobserve = jest.fn();
+	public unobserve = vi.fn();
 
 	/**
 	 * Mock disconnect method.
 	 */
-	public disconnect = jest.fn();
+	public disconnect = vi.fn();
 }
 
-global.IntersectionObserver = MockIntersectionObserver as any;
+global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 describe('ImageLoaderComponent', () => {
 	let component: ImageLoaderComponent;
 	let fixture: ComponentFixture<ImageLoaderComponent>;
@@ -56,7 +56,7 @@ describe('ImageLoaderComponent', () => {
 	});
 
 	it('should load actual image when in view', () => {
-		const loadImageSpy = jest.spyOn(component, 'ngAfterViewInit');
+		const loadImageSpy = vi.spyOn(component, 'ngAfterViewInit');
 		component.ngAfterViewInit();
 		component['observer'].observe(fixture.nativeElement);
 		expect(loadImageSpy).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('ImageLoaderComponent', () => {
 	});
 
 	it('should revert to placeholder on image error', () => {
-		const setPlaceholderSpy = jest.spyOn(component, 'onError');
+		const setPlaceholderSpy = vi.spyOn(component, 'onError');
 		component.onError();
 		expect(setPlaceholderSpy).toHaveBeenCalled();
 	});

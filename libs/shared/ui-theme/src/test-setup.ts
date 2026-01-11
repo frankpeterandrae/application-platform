@@ -3,23 +3,31 @@
  * All rights reserved.
  */
 
+import type { TestModuleMetadata } from '@angular/core/testing';
+
 // Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
 import '@angular/compiler';
 
-// Load zone.js core so the global `Zone` is available for zone testing APIs.
-import 'zone.js';
-
-// Ensure zone testing APIs are available for fakeAsync() and other helpers.
-import 'zone.js/testing';
-
-import type { TestModuleMetadata } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { sharedSetupTestingModule } from '@application-platform/testing';
-import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
 
 import de from './lib/theme/assets/i18n/theme/de.json';
 import en from './lib/theme/assets/i18n/theme/en.json';
 
-setupZoneTestEnv();
+// Initialize TestBed environment for dynamic compilation (templateUrl/styleUrls)
+getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
+
+// Use Vitest globals directly (vi) instead of a jest->vi shim
+
+beforeEach((): void => {
+	TestBed.resetTestingModule();
+	vi.resetAllMocks();
+});
+
+afterEach((): void => {
+	vi.resetAllMocks();
+});
 
 /**
  * Sets up the Angular testing module with the provided metadata.

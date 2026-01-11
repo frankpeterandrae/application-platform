@@ -50,6 +50,6 @@ routes.forEach((route) => {
 
 sitemapContent += `</urlset>`;
 
-fs.mkdirSync('./libs/shared/config/src/lib/sitemap', { recursive: true });
-fs.writeFileSync('./libs/shared/config/src/lib/sitemap/sitemap.xml', sitemapContent.trim());
+fs.mkdirSync('./libs/homepage/config/src/lib/sitemap', { recursive: true });
+fs.writeFileSync('./libs/homepage/config/src/lib/sitemap/sitemap.xml', sitemapContent.trim());
 console.log('sitemap.xml has been generated.');
