@@ -10,9 +10,9 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/homepage/config/tsconfig.spec.json",
-				"passWithNoTests": true,
 				"vitestConfig": "libs/homepage/config/vitest.config.ts",
-				"reportsDirectory": "../../../coverage/libs/homepage/config"
+				"reportsDirectory": "../../../coverage/libs/homepage/config",
+				"passWithNoTests": true
 			}
 		},
 		"lint": {

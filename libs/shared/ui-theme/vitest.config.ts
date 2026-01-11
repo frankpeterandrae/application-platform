@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { resolve } from 'node:path';
 
 import angular from '@analogjs/vite-plugin-angular';
@@ -8,16 +13,11 @@ export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/shared-ui-theme'),
 	plugins: [angular(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			'@application-platform/testing': resolve(process.cwd(), 'libs/shared/testing/src/index.ts'),
-			'@application-platform/interfaces': resolve(process.cwd(), 'libs/shared/interfaces/src/index.ts')
-		}
-	},
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
+		reporters: ['default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',

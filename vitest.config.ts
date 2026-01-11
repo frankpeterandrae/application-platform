@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { defineConfig } from 'vitest/config';
 import { resolve } from 'node:path';
 
@@ -7,7 +12,9 @@ export default defineConfig({
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./vitest.setup.ts'],
-		include: ['**/*.spec.ts', '**/*.test.ts']
+		reporters: ['default', 'verbose'],
+		include: ['**/*.spec.ts', '**/*.test.ts', '**/*.vi.ts', '**/*.d.ts'],
+		silent: false
 	},
 	resolve: {
 		alias: {

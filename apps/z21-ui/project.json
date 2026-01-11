@@ -64,13 +64,13 @@
 		},
 		"test": {
 			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
 			"options": {
 				"tsConfig": "apps/z21-ui/tsconfig.spec.json",
 				"vitestConfig": "apps/z21-ui/vitest.config.ts",
-				"passWithNoTests": true,
-				"reportsDirectory": "../../coverage/apps/z21-ui"
-			},
-			"outputs": ["{options.reportsDirectory}"]
+				"reportsDirectory": "../../coverage/apps/z21-ui",
+				"passWithNoTests": true
+			}
 		},
 		"serve-static": {
 			"continuous": true,

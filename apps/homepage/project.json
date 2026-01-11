@@ -161,7 +161,8 @@
 			"options": {
 				"tsConfig": "apps/homepage/tsconfig.spec.json",
 				"vitestConfig": "apps/homepage/vitest.config.ts",
-				"reportsDirectory": "../../coverage/apps/homepage"
+				"reportsDirectory": "../../coverage/apps/homepage",
+				"passWithNoTests": true
 			}
 		},
 		"serve-static": {

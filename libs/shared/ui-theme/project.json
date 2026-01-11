@@ -11,8 +11,8 @@
 			"options": {
 				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/ui-theme/vitest.config.ts",
-				"passWithNoTests": true,
-				"reportsDirectory": "../../../coverage/libs/shared/ui-theme"
+				"reportsDirectory": "../../../coverage/libs/shared/ui-theme",
+				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
 		},
@@ -23,7 +23,7 @@
 			"executor": "nx:run-commands",
 			"options": {
 				"command": "npm run watch:shared-styles",
-				"cwd": "libs/shared/ui-theme",
+				"cwd": "scripts",
 				"parallel": false
 			}
 		},

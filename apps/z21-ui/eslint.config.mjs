@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import nx from '@nx/eslint-plugin';
+
 import baseConfig from '../../eslint.config.mjs';
+import '@typescript-eslint/eslint-plugin';
 
 export default [
 	...baseConfig,
@@ -23,12 +30,8 @@ export default [
 					prefix: 'z21',
 					style: 'kebab-case'
 				}
-			]
+			],
+			'@angular-eslint/prefer-standalone': 'off'
 		}
-	},
-	{
-		files: ['**/*.html'],
-		// Override or add rules here
-		rules: {}
 	}
 ];

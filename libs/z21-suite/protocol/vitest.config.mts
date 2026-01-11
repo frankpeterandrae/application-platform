@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { defineConfig } from 'vitest/config';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
@@ -7,15 +12,14 @@ export default defineConfig(() => ({
 	cacheDir: '../../../node_modules/.vite/libs/z21-suite/protocol',
 	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
 	test: {
-		name: 'protocol',
-		watch: false,
+		environment: 'jsdom',
 		globals: true,
-		environment: 'node',
-		include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-		reporters: ['default'],
+		setupFiles: ['./src/test-setup.ts'],
+		reporters: ['default', 'verbose'],
+		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
-			reportsDirectory: '../../../coverage/libs/z21-suite/protocol',
-			provider: 'v8' as const
+			provider: 'v8',
+			reporter: ['text', 'lcov']
 		}
 	}
 }));

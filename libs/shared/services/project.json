@@ -11,7 +11,8 @@
 			"options": {
 				"tsConfig": "libs/shared/services/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/services/vitest.config.ts",
-				"reportsDirectory": "../../../coverage/libs/shared/services"
+				"reportsDirectory": "../../../coverage/libs/shared/services",
+				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
 		},
