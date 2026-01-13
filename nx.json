@@ -43,7 +43,7 @@
 		},
 		"@nx/vitest:test": {
 			"cache": true,
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"outputs": ["{options.reportsDirectory}"],
 			"inputs": ["default", "^production"],
 			"options": {
 				"coverage": true

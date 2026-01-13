@@ -8,6 +8,7 @@ import { TestBed } from '@angular/core/testing';
 import { Meta, Title } from '@angular/platform-browser';
 import type { Mocked } from '@application-platform/testing';
 import { createMock } from '@application-platform/testing';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 import { HeroComponent } from '../hero/hero.component';

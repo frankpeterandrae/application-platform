@@ -8,6 +8,7 @@ import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
 import { DIALOG_DATA } from '@application-platform/shared/ui-theme';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 import type { Color } from '../models/color.model';

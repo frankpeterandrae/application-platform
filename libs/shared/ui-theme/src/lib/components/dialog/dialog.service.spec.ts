@@ -6,6 +6,7 @@ import type { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 import type { DialogConfigModel } from '../../model/dialog-config.model';

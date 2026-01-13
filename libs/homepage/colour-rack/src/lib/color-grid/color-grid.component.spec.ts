@@ -8,6 +8,7 @@ import { TestBed } from '@angular/core/testing';
 import type { Mocked } from '@application-platform/testing';
 import { createMock } from '@application-platform/testing';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 import { ColorDetailsComponent } from '../color-details/color-details.component';

@@ -1,0 +1,137 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { Component, signal } from '@angular/core';
+import type { ClientToServer, ServerToClient } from '@application-platform/protocol';
+import { PROTOCOL_VERSION } from '@application-platform/protocol';
+
+/**
+ * Root application component for the z21 UI.
+ *
+ * Responsibilities:
+ * - Hold UI state as signals (status, last received message, controls).
+ * - Manage the WebSocket connection to the platform server.
+ * - Provide public methods used by the template (setSpeed, sendFn, sendTurnout).
+ *
+ * Notes:
+ * - Signals are used for lightweight reactive state (Angular signals API).
+ * - Messages sent/received conform to the `ClientToServer` / `ServerToClient` protocol.
+ */
+@Component({
+	selector: 'z21-app-root',
+	imports: [],
+	templateUrl: './app.component.html',
+	styleUrl: './app.component.scss'
+})
+export class AppComponent {
+	/**
+	 * Connection status signal. Values: 'connected' | 'disconnected'.
+	 * Template can subscribe to this signal to display connection state.
+	 */
+	public status = signal('disconnected');
+
+	/**
+	 * Last raw message received from the server (pretty-printed JSON).
+	 * Useful for debugging / UI display of incoming messages.
+	 */
+	public lastMsg = signal('');
+
+	/**
+	 * Currently selected locomotive address (UI control).
+	 */
+	public addr = signal(3);
+
+	/**
+	 * Current speed value held in the UI; use `setSpeed` to update and notify the server.
+	 */
+	public speed = signal(0);
+
+	/**
+	 * Current direction selection for the locomotive.
+	 * Allowed values: 'FWD' | 'REV'.
+	 */
+	public dir = signal<'FWD' | 'REV'>('FWD');
+
+	/**
+	 * Example function/feature toggle (f0).
+	 */
+	public f0 = signal(false);
+
+	/**
+	 * Turnout (switch) address selected in the UI.
+	 */
+	public turnoutAddr = signal(12);
+
+	/**
+	 * Underlying WebSocket used for server communication.
+	 * Undefined if not yet connected or if connection has been closed.
+	 * @private
+	 */
+	private ws?: WebSocket;
+
+	/**
+	 * Initialize component and establish WebSocket connection.
+	 *
+	 * The constructor invokes `connect()` to open the socket immediately
+	 * so the UI can start sending/receiving messages.
+	 */
+	constructor() {
+		this.connect();
+	}
+
+	/**
+	 * Set the locomotive speed locally and send a `loco.set` command to the server.
+	 *
+	 * - Updates the local `speed` signal.
+	 * - Sends a `ClientToServer` message describing the new speed and direction.
+	 * - Logs the action to the console for quick debugging.
+	 *
+	 * @param v - Target speed value (numeric scale used by the UI/protocol).
+	 */
+	public setSpeed(v: number): void {
+		this.speed.set(v);
+		this.send({ type: 'loco.command.drive', addr: this.addr(), speed: v, dir: this.dir(), steps: 128 });
+		// eslint-disable-next-line no-console
+		console.log('setSpeed', v);
+	}
+
+	/**
+	 * Send a function (F0..Fn) on/off command for the currently selected locomotive.
+	 *
+	 * @param fn - Function number to switch (e.g. 0..n).
+	 * @param on - `true` to turn the function on, `false` to turn it off.
+	 */
+	public sendFn(fn: number, on: boolean): void {
+		this.send({ type: 'loco.command.function.set', addr: this.addr(), fn, on });
+	}
+
+	/**
+	 * Send a turnout (switch) command.
+	 *
+	 * @param state - Either 'STRAIGHT' or 'DIVERGING'.
+	 *                The message includes `pulseMs: 200` as an example pulse duration.
+	 */
+	public sendTurnout(state: 'STRAIGHT' | 'DIVERGING'): void {
+		this.send({ type: 'switching.command.turnout.set', addr: this.turnoutAddr(), state, pulseMs: 200 });
+	}
+	private connect(): void {
+		const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+		this.ws = new WebSocket(`${proto}://${location.host}`);
+		this.ws.onopen = (): void => {
+			this.status.set('connected');
+			this.send({ type: 'server.command.session.hello', protocolVersion: PROTOCOL_VERSION, clientName: 'ui' });
+		};
+		this.ws.onclose = (): void => this.status.set('disconnected');
+		this.ws.onmessage = (ev): void => {
+			const msg = JSON.parse(ev.data) as ServerToClient;
+			this.lastMsg.set(JSON.stringify(msg, null, 2));
+		};
+	}
+
+	private send(msg: ClientToServer): void {
+		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+		this.ws.send(JSON.stringify(msg));
+	}
+}

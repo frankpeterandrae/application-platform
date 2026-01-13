@@ -39,5 +39,5 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "vitest.workspace.ts", "vitest.setup.ts"]
+	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "scripts/**/*", "vitest.workspace.ts", "vitest.setup.ts"]
 }
