@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { execSync } from 'child_process';
 import { join } from 'node:path';
-
 describe('CLI tests', () => {
 	it('should print a message', () => {
 		const cliPath = join(process.cwd(), 'dist/apps/z21-server');

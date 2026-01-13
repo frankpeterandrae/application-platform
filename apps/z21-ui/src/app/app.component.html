@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<h1>Z21 UI</h1>
+<p>WS: {{ status() }}</p>
+
+<div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
+	<label for="loco">Lok</label>
+	<input id="loco" type="number" [value]="addr()" (input)="addr.set(+$any($event.target).value)" />
+	<label for="speed">Speed</label>
+	<input id="speed" type="range" min="0" max="1" step="0.01" [value]="speed()" (input)="setSpeed(+$any($event.target).value)" />
+	<button (click)="dir.set(dir() === 'FWD' ? 'REV' : 'FWD')">Dir: {{ dir() }}</button>
+	<button (click)="f0.set(!f0()); sendFn(0, f0())">F0: {{ f0() }}</button>
+</div>
+
+<div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
+	<label for="turnout">Weiche</label>
+	<input id="turnout" type="number" [value]="turnoutAddr()" (input)="turnoutAddr.set(+$any($event.target).value)" />
+	<button (click)="sendTurnout('STRAIGHT')">Gerade</button>
+	<button (click)="sendTurnout('DIVERGING')">Abzweig</button>
+</div>
+
+<pre>{{ lastMsg() }}</pre>

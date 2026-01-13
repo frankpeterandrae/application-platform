@@ -30,9 +30,10 @@ export default [
 			'*.log',
 			'**/.tmp/**',
 			'**/node_modules/**',
-      'vitest.config.*',
-      'vitest.setup.*',
-			'vite*.workspace.*'
+      		'vitest.config.*',
+      		'vitest.setup.*',
+			'vite*.workspace.*',
+			'scripts/**'
 		]
 	},
 
@@ -49,7 +50,7 @@ export default [
 					enforceBuildableLibDependency: false,
 
 					// eslint config files dürfen importiert werden
-					allow: ['^.*/eslint\\.config\\.[cm]?[jt]s$'],
+					allow: [String.raw`^.*/eslint\\.config\\.[cm]?[jt]s$`],
 
 					depConstraints: [
 						// -------------------------

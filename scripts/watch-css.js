@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -12,8 +12,8 @@ function compileSass() {
 	(async () => {
 		try {
 			// Define paths
-			const scssPath = path.join(__dirname, '../src/lib/theme/styles.scss');
-			const cssOutputPath = path.join(__dirname, '../src/lib/theme'); // Output to lib root
+			const scssPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme/styles.scss');
+			const cssOutputPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme'); // Output to lib root
 			const outputFileName = 'styles.css'; // Desired CSS file name
 
 			// Compile SCSS to CSS using compileAsync
@@ -41,7 +41,7 @@ compileSass();
 const chokidar = require('chokidar');
 
 // Initialize watcher.
-const watcher = chokidar.watch(path.join(__dirname, '../src/lib/theme/**/*.scss'), {
+const watcher = chokidar.watch(path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme/**/*.scss'), {
 	persistent: true,
 	ignoreInitial: true
 });

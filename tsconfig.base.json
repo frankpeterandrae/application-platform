@@ -37,5 +37,5 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js", "vitest.workspace.ts"]
+	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "scripts/**/*", "jest.config.ts", "jest.preset.js", "vitest.workspace.ts"]
 }

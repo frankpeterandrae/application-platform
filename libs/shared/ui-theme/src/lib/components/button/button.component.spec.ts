@@ -5,6 +5,7 @@
 
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 import { ButtonColorDefinition } from '../../enums';
@@ -105,5 +106,6 @@ describe('ButtonComponent', () => {
 
 		const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 		expect(buttonElement.classList).not.toContain('fpa-disabled');
+		expect(buttonElement.disabled).toBe(false);
 	});
 });

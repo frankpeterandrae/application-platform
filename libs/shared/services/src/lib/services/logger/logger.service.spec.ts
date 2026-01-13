@@ -4,6 +4,7 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -69,6 +70,9 @@ describe('Logger', () => {
 		logger.info('No Info message');
 
 		expect(console.info).not.toHaveBeenCalled();
+		expect(console.warn).not.toHaveBeenCalled();
+		expect(console.error).not.toHaveBeenCalled();
+		expect(console.debug).not.toHaveBeenCalled();
 	});
 
 	it('should log messages without source', () => {

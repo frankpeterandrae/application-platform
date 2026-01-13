@@ -9,6 +9,7 @@ import type { Mocked } from '@application-platform/testing';
 import { createMock } from '@application-platform/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 

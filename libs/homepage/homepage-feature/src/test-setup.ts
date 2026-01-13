@@ -10,6 +10,7 @@ import type { TestModuleMetadata } from '@angular/core/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { sharedSetupTestingModule } from '@application-platform/testing';
+import { vi } from 'vitest';
 
 import de from './lib/assets/i18n/feature/de.json';
 import en from './lib/assets/i18n/feature/en.json';
