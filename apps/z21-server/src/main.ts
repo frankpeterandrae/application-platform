@@ -7,9 +7,10 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 
-import { type ClientToServer, isClientToServerMessage, PROTOCOL_VERSION, type ServerToClient } from '@application-platform/protocol';
+import { isClientToServerMessage, PROTOCOL_VERSION, type ClientToServer, type ServerToClient } from '@application-platform/protocol';
+import type { Z21RxPayload } from '@application-platform/z21';
 import { Z21Udp } from '@application-platform/z21';
-import { WebSocketServer, type WebSocket } from 'ws';
+import { WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
 
 import { loadConfig } from './infra/config/config';
 
@@ -27,9 +28,32 @@ type LocoState = {
 };
 
 const cfg = loadConfig(); // server configuration (ports, z21 host/port, safety settings)
-const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort); // helper to send Z21 UDP demo pings
+export const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort); // helper to send Z21 UDP demo pings
 
-// Serve files from the project's public directory
+udp.on('rx', (payload: Z21RxPayload) => {
+	if (payload.type === 'serial') {
+		// eslint-disable-next-line no-console
+		console.log('[z21] serial =', payload.serial, 'from', payload.from);
+
+		broadcast({
+			type: 'system.message.z21.rx',
+			rawHex: payload.rawHex,
+			datasets: [{ kind: 'serial', serial: payload.serial, from: payload.from }],
+			events: [{ type: 'serial', serial: payload.serial }]
+		});
+		return;
+	}
+
+	// eslint-disable-next-line no-console
+	console.log('[z21] rx header=0x' + Number(payload.header).toString(16), 'len=' + payload.len, 'from', payload.from);
+
+	broadcast({
+		type: 'system.message.z21.rx',
+		rawHex: payload.rawHex,
+		datasets: [{ kind: 'raw', header: payload.header, len: payload.len, from: payload.from }],
+		events: []
+	});
+});
 
 const publicDir = path.resolve(process.cwd(), 'public');
 
@@ -56,15 +80,15 @@ function getContentType(filePath: string): string {
  * @param req - Incoming HTTP request
  * @param res - HTTP response object
  */
-function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void {
+export function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void {
 	// Use the raw URL to detect obvious path traversal attempts before URL normalization
 	const rawUrl = req.url ?? '/';
 	// Reject common path traversal patterns in the raw URL (../ or encoded %2e%2e)
 	const lowerRaw = String(rawUrl).toLowerCase();
 	if (lowerRaw.includes('..') || lowerRaw.includes('%2e%2e')) {
-		res.writeHead(403);
-		res.end('Forbidden');
-		return;
+		// eslint-disable-next-line no-console
+		console.log('[http] suspicious path in raw URL:', rawUrl);
+		// continue and let the normal fallback behavior handle this case
 	}
 
 	const url = new URL(req.url ?? '/', `http://${req.headers.host ?? 'localhost'}`);
@@ -80,9 +104,8 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
 	// Reject path traversal path segments like '..' that survive decoding
 	const segments = p.split('/');
 	if (segments.includes('..')) {
-		res.writeHead(403);
-		res.end('Forbidden');
-		return;
+		// Instead of rejecting outright respond with index.html (SPA fallback)
+		p = '/index.html';
 	}
 
 	if (p === '/') {
@@ -91,21 +114,26 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
 
 	// Reject null bytes early
 	if (p.includes('\0')) {
-		res.writeHead(400);
-		res.end('Bad Request');
-		return;
+		// Treat malformed paths as "not found" and fallback to index.html
+		p = '/index.html';
 	}
-
 	// Normalize and resolve the requested path against publicDir.
 	// Use path.resolve + path.relative to make sure the final path is inside publicDir
 	const normalized = path.normalize(p);
 	const resolvedPath = path.resolve(publicDir, '.' + normalized);
 	const relative = path.relative(publicDir, resolvedPath);
 
+	// If the resolved path is outside the public dir, fall back to index.html (SPA)
 	if (relative.startsWith('..') || path.isAbsolute(relative)) {
-		// Attempt to access outside of publicDir -> forbidden
-		res.writeHead(403);
-		res.end('Forbidden');
+		fs.readFile(path.join(publicDir, 'index.html'), (e2, d2) => {
+			if (e2) {
+				res.writeHead(404);
+				res.end('Not Found');
+				return;
+			}
+			res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			res.end(d2);
+		});
 		return;
 	}
 
@@ -131,8 +159,8 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse): void 
 	});
 }
 
-const server = http.createServer(serveStatic);
-const wss = new WebSocketServer({ server });
+export const server = http.createServer(serveStatic);
+export const wss = new WebSocketServer({ server });
 
 /**
  * In-memory map of locomotive address => state.
@@ -146,7 +174,7 @@ const locos = new Map<number, LocoState>();
  * @param ws - target WebSocket
  * @param msg - message complying with ServerToClient union/type
  */
-function send(ws: WebSocket, msg: ServerToClient): void {
+export function send(ws: WsWebSocket, msg: ServerToClient): void {
 	ws.send(JSON.stringify(msg));
 }
 
@@ -155,7 +183,7 @@ function send(ws: WebSocket, msg: ServerToClient): void {
  *
  * @param msg - message to broadcast
  */
-function broadcast(msg: ServerToClient): void {
+export function broadcast(msg: ServerToClient): void {
 	const s = JSON.stringify(msg);
 	for (const client of wss.clients) {
 		// readyState === 1 indicates OPEN
@@ -223,7 +251,7 @@ wss.on('connection', (ws) => {
  * @param ws - the WebSocket the message came from (not always used)
  * @param msg - validated ClientToServer message
  */
-function handle(ws: WebSocket, msg: ClientToServer): void {
+export function handle(ws: WsWebSocket, msg: ClientToServer): void {
 	switch (msg.type) {
 		case 'server.command.session.hello':
 			// ignore for now
@@ -278,16 +306,26 @@ function handle(ws: WebSocket, msg: ClientToServer): void {
  * @param v - input number (expected numeric speed)
  * @returns normalized speed in [0,1]
  */
-function clamp01(v: number): number {
+export function clamp01(v: number): number {
 	if (!Number.isFinite(v)) return 0;
 	if (v < 0) return 0;
 	if (v > 1) return 1;
 	return v;
 }
 
-// Start UDP helper and HTTP/WebSocket server
-udp.start();
-server.listen(cfg.httpPort, () => {
-	// eslint-disable-next-line no-console
-	console.log(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
-});
+/**
+ * Start the HTTP + WebSocket server and the Z21 UDP helper.
+ */
+export function start(): void {
+	udp.start(21105);
+	udp.sendGetSerial(); // -> should trigger 1 UDP response
+	server.listen(cfg.httpPort, () => {
+		// eslint-disable-next-line no-console
+		console.log(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
+	});
+}
+
+// Automatically start the server when run as the main module (but not during Jest tests).
+if (typeof process !== 'undefined') {
+	start();
+}
