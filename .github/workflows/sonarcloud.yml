@@ -28,7 +28,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Derive Nx SHAs
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1
         with:
           main-branch-name: main
 
