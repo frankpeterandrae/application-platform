@@ -89,6 +89,25 @@ describe('Z21Udp', () => {
 			expect(() => customServices.udp.sendRaw(empty)).not.toThrow();
 			expect(customServices.socket.send).toHaveBeenCalledWith(empty, 1, 'h');
 		});
+
+		it('sendGetSerial sends correct packet and logs tx message', () => {
+			const customServices = makeServices('z21-host', 4242);
+
+			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+			customServices.udp.sendGetSerial();
+
+			// Packet is DataLen=0x0004, Header=0x0010 -> bytes [04 00 10 00] little-endian
+			const expectedPkt = Buffer.alloc(4);
+			expectedPkt.writeUInt16LE(0x0004, 0);
+			expectedPkt.writeUInt16LE(0x0010, 2);
+
+			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
+
+			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx GET_SERIAL ->', 'z21-host:4242', expectedPkt.toString('hex'));
+
+			consoleSpy.mockRestore();
+		});
 	});
 
 	describe('lifecycle methods', () => {
@@ -108,6 +127,39 @@ describe('Z21Udp', () => {
 			expect(consoleSpy).toHaveBeenCalledWith('[udp] error', err);
 
 			consoleSpy.mockRestore();
+		});
+
+		it('emits serial rx when a serial reply is received', () => {
+			const svc = makeServices();
+			// start registers the 'message' handler on the mocked socket
+			svc.udp.start();
+
+			// find the message handler
+			const msgHandler = svc.socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
+			expect(msgHandler).toBeDefined();
+
+			// listen for 'rx' events
+			const rxSpy = vi.fn();
+			svc.udp.on('rx', rxSpy);
+
+			// Construct a buffer representing a serial reply: len=0x0008, header=0x0010, serial=0x12345678
+			const buf = Buffer.alloc(8);
+			buf.writeUInt16LE(0x0008, 0);
+			buf.writeUInt16LE(0x0010, 2);
+			buf.writeUInt32LE(0x12345678, 4);
+
+			const rinfo = { address: '1.2.3.4', port: 12345 };
+
+			// invoke the handler as if a message arrived
+			msgHandler(buf, rinfo);
+
+			expect(rxSpy).toHaveBeenCalled();
+			// validate the payload shape and values
+			const payload = rxSpy.mock.calls[0][0];
+			expect(payload.type).toBe('serial');
+			expect(payload.serial).toBe(0x12345678);
+			expect(payload.header).toBe(0x0010);
+			expect(payload.from).toEqual({ address: '1.2.3.4', port: 12345 });
 		});
 
 		it('stop closes the socket without logging when close succeeds', () => {
