@@ -7,6 +7,8 @@ on:
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
+    outputs:
+      homepage: ${{ steps.detect_homepage.outputs.homepage }}
     steps:
       # Checkout the repository with all branches and full history
       - name: Checkout code
@@ -21,9 +23,40 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      # Install dependencies
+      # Install dependencies (needed for npx nx commands)
       - name: Install dependencies
         run: npm ci --ignore-scripts
+
+      # Detect whether the `homepage` project was affected by this push using Nx
+      - name: Detect homepage changes
+        id: detect_homepage
+        run: |
+          echo "Detecting affected projects with Nx..."
+
+          # Determine base/head for Nx. On force pushes or created branch the before sha may be all zeros.
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # Fallback: compare with remote main's HEAD
+            git fetch origin --depth=1 main || true
+            BASE=origin/main
+            HEAD=HEAD
+          else
+            BASE=${{ github.event.before }}
+            HEAD=${{ github.event.after }}
+            # Ensure those commits/ref are available locally
+            git fetch origin $BASE || true
+            git fetch origin $HEAD || true
+          fi
+
+          # Use Nx to list affected projects (Nx v19+): replace deprecated print-affected
+          # Only consider projects affected for the `build` target so we don't deploy when unrelated changes happen
+          npx nx show projects --affected --target=build --base=$BASE --head=$HEAD > affected.txt || true
+          echo "Affected projects:"; cat affected.txt || true
+
+          if grep -E '"?homepage"?|\bhomepage\b' affected.txt >/dev/null 2>&1; then
+            echo "homepage=true" >> $GITHUB_OUTPUT
+          else
+            echo "homepage=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run tests with coverage
         run: npx nx run-many --target=test --all --configuration=ci
@@ -44,6 +77,7 @@ jobs:
 
   build-and-deploy:
     needs: sonarcloud
+    if: needs.sonarcloud.outputs.homepage == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -62,7 +96,8 @@ jobs:
         run: npx nx run homepage:build-production
 
       - name: Upload to FTP server
-        uses: SamKirkland/FTP-Deploy-Action@4.3.2
+        # Pinned to the commit SHA provided by the user
+        uses: SamKirkland/FTP-Deploy-Action@a51268f67f6605236975928ae28b0f7e9971d50a
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
