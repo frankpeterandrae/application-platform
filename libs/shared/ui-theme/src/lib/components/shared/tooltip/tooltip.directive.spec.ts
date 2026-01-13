@@ -5,6 +5,7 @@
 
 import { ElementRef, input, Renderer2 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
 

@@ -6,6 +6,7 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { LOGGER_SOURCE } from '@application-platform/services';
+import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 

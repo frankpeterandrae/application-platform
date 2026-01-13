@@ -33,7 +33,8 @@ export default [
 			'vitest.setup.*',
 			'vite*.workspace.*',
 			'global.d.ts',
-			'**/global.d.ts'
+			'**/global.d.ts',
+			'scripts/**'
 		]
 	},
 
@@ -50,7 +51,7 @@ export default [
 					enforceBuildableLibDependency: false,
 
 					// eslint config files dürfen importiert werden
-					allow: ['^.*/eslint\\.config\\.[cm]?[jt]s$'],
+					allow: [String.raw`^.*/eslint\\.config\\.[cm]?[jt]s$`],
 
 					depConstraints: [
 						// -------------------------

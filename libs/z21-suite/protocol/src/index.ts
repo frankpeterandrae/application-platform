@@ -3,4 +3,5 @@
  * All rights reserved.
  */
 
-export * from './lib/protocol';
+export * from './lib/message/message-types';
+export * from './lib/message/messages';

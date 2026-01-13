@@ -18,8 +18,8 @@ function compileSass() {
 	(async () => {
 		try {
 			// Define paths
-			const scssPath = path.join(__dirname, '../src/lib/theme/styles.scss');
-			const cssOutputPath = path.join(__dirname, '../src/lib/theme'); // Output to lib root
+			const scssPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme/styles.scss');
+			const cssOutputPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme'); // Output to lib root
 			const outputFileName = 'styles.css'; // Desired CSS file name
 
 			// Compile SCSS to CSS using compileAsync
@@ -44,7 +44,7 @@ function compileSass() {
 compileSass();
 
 // Initialize watcher.
-const watcher = chokidar.watch(path.join(__dirname, '../src/lib/theme/**/*.scss'), {
+const watcher = chokidar.watch(path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme/**/*.scss'), {
 	persistent: true,
 	ignoreInitial: true
 });
