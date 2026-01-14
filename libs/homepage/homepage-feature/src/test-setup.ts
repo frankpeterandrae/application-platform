@@ -5,28 +5,11 @@
 
 // Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
 import '@angular/compiler';
-
 import type { TestModuleMetadata } from '@angular/core/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
-import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
-import { sharedSetupTestingModule } from '@application-platform/testing';
+import { setupTestingModule as sharedSetup } from '@application-platform/testing';
 
 import de from './lib/assets/i18n/feature/de.json';
 import en from './lib/assets/i18n/feature/en.json';
-
-// Initialize TestBed environment for dynamic compilation (templateUrl/styleUrls)
-getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting());
-
-// Use Vitest globals directly (vi) instead of a jest->vi shim
-
-beforeEach((): void => {
-	TestBed.resetTestingModule();
-	vi.resetAllMocks();
-});
-
-afterEach((): void => {
-	vi.resetAllMocks();
-});
 
 /**
  * Sets up the Angular testing module with the provided metadata.
@@ -34,5 +17,5 @@ afterEach((): void => {
  * @returns {Promise<void>} A promise that resolves when the test module is compiled.
  */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
-	return sharedSetupTestingModule({ imports, providers, declarations }, { en, de });
+	return sharedSetup({ imports, providers, declarations }, { en, de });
 }

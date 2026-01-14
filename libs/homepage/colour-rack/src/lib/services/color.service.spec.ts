@@ -3,10 +3,10 @@
  * All rights reserved.
  */
 
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import type { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
+import { setupTestingModule } from '../../test-setup';
 import { ColorType } from '../models/color-type.enum';
 import type { Color } from '../models/color.model';
 
@@ -16,12 +16,23 @@ describe('ColorService', () => {
 	let service: ColorService;
 	let httpMock: HttpTestingController;
 
-	beforeEach(() => {
-		TestBed.configureTestingModule({
-			providers: [ColorService, provideHttpClient(), provideHttpClientTesting()]
+	beforeEach(async () => {
+		// Import HTTP testing helpers dynamically to avoid triggering Angular static initializers
+		const http = await import('@angular/common/http');
+		const httpTesting = await import('@angular/common/http/testing');
+
+		await setupTestingModule({
+			providers: [
+				ColorService,
+				http.provideHttpClient ? http.provideHttpClient() : (http as any).provideHttpClient(),
+				httpTesting.provideHttpClientTesting
+					? httpTesting.provideHttpClientTesting()
+					: (httpTesting as any).provideHttpClientTesting()
+			]
 		});
+
 		service = TestBed.inject(ColorService);
-		httpMock = TestBed.inject(HttpTestingController);
+		httpMock = TestBed.inject(httpTesting.HttpTestingController as unknown as typeof HttpTestingController);
 	});
 
 	afterEach(() => {

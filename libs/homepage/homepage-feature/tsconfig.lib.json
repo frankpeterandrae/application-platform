@@ -2,10 +2,11 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../../dist/out-tsc",
-		"declaration": true,
-		"declarationMap": true,
+		"declaration": false,
+		"declarationMap": false,
 		"inlineSources": true,
-		"types": []
+		"types": [],
+		"composite": false
 	},
 	"exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "vitest.config.ts", "src/**/*.test.ts"],
 	"include": ["src/**/*.ts"]

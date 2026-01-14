@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { fileURLToPath } from 'url';
+
 import { workspaceRoot } from '@nx/devkit';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
@@ -5,11 +12,14 @@ import { defineConfig, devices } from '@playwright/test';
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 
+// Determine a filename compatible with both CommonJS and ESM
+const __currentFileName = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-	...nxE2EPreset(__filename, { testDir: './src' }),
+	...nxE2EPreset(__currentFileName, { testDir: './src' }),
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		baseURL,

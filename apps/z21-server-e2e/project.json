@@ -6,10 +6,12 @@
 	"tags": ["type:e2e", "scope:z21", "platform:node"],
 	"targets": {
 		"e2e": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
 			"options": {
-				"jestConfig": "apps/z21-server-e2e/jest.config.cts",
+				"tsConfig": "apps/z21-server-e2e/tsconfig.spec.json",
+				"vitestConfig": "apps/z21-server-e2e/vitest.config.ts",
+				"reportsDirectory": "../../coverage/z21-server-e2e",
 				"passWithNoTests": true
 			},
 			"dependsOn": ["z21-server:build", "z21-server:serve"]

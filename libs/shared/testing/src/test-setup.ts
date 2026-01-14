@@ -3,15 +3,24 @@
  * All rights reserved.
  */
 
+// Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
+import '@angular/compiler';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { ModuleWithProviders } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-// Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
-import '@angular/compiler';
+import { getTestBed, TestBed } from '@angular/core/testing';
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 
-import type { TestModuleMetadata } from '@angular/core/testing';
-import { TestBed } from '@angular/core/testing';
+// Initialize TestBed environment for dynamic compilation and external resource resolution.
+// Use the dynamic testing platform which supports JIT and resolveComponentResources.
+
+const _tb_env_init = getTestBed() as any;
+if (!_tb_env_init || !_tb_env_init.platform) {
+	getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
+}
+
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import type { HashMap, Translation, TranslocoConfig } from '@jsverse/transloco';
 import { TranslocoTestingModule } from '@jsverse/transloco';
@@ -26,10 +35,67 @@ import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translat
  * @returns {Promise<void>} A promise that resolves when the test module is compiled and resources resolved.
  */
 export async function sharedSetupTestingModule(
-	{ imports = [], providers = [], declarations }: TestModuleMetadata,
+	// accept an untyped options object at runtime to avoid TypeScript-only syntax in test-setup
+	_testModule: any,
 	langs?: HashMap<Translation>,
 	config: Partial<TranslocoConfig> = {}
 ): Promise<void> {
+	const { imports = [], declarations } = _testModule ?? {};
+	let providers: any[] = (_testModule && _testModule.providers) || [];
+
+	// Dynamically import Angular common tokens after the compiler is loaded to avoid
+	// triggering their static initializers during module load. Then provide lightweight
+	// stubs so the TestBed doesn't attempt JIT-compilation on partially compiled libs.
+	const angularCommon = await import('@angular/common');
+	const PlatformLocation = angularCommon.PlatformLocation;
+	const Location = angularCommon.Location;
+	const PathLocationStrategy = angularCommon.PathLocationStrategy;
+
+	const platformLocationStub = {
+		getBaseHrefFromDOM: () => '/',
+		onPopState: (fn: (ev?: any) => any) => {
+			return () => undefined;
+		},
+		onHashChange: (fn: (ev?: any) => any) => {
+			return () => undefined;
+		},
+		pathname: '/',
+		search: '',
+		hash: '',
+		pushState: (_: any) => undefined,
+		replaceState: (_: any) => undefined,
+		forward: () => undefined,
+		back: () => undefined
+	};
+
+	const locationStub = {
+		path: () => '/',
+		prepareExternalUrl: (p: string) => p,
+		go: (_: any) => undefined,
+		replaceState: (_: any) => undefined,
+		forward: () => undefined,
+		back: () => undefined,
+		normalize: (p: string) => p
+	};
+
+	const pathLocationStrategyStub = {
+		path: () => '/',
+		prepareExternalUrl: (p: string) => p,
+		onPopState: (_: any) => undefined,
+		onHashChange: (_: any) => undefined,
+		pushState: (_: any) => undefined,
+		replaceState: (_: any) => undefined,
+		forward: () => undefined,
+		back: () => undefined
+	};
+
+	providers = [
+		{ provide: PlatformLocation, useValue: platformLocationStub },
+		{ provide: Location, useValue: locationStub },
+		{ provide: PathLocationStrategy, useValue: pathLocationStrategyStub },
+		...providers
+	];
+
 	// Create a fresh default object to avoid shared mutable defaults
 	const defaultLangs: HashMap<Translation> = {
 		en: { hello: 'Hello' },
@@ -78,3 +144,8 @@ function translocoTestingModulFactory(
 		translocoConfig: { availableLangs: ['en', 'de'], defaultLang: 'en', ...config }
 	});
 }
+
+// Provide a runtime-friendly alias so wrappers can import `{ setupTestingModule }` from the shared testing package.
+export const setupTestingModule = (options: any, langs?: HashMap<Translation>, config: Partial<TranslocoConfig> = {}) => {
+	return sharedSetupTestingModule(options, langs, config);
+};

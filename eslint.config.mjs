@@ -22,7 +22,6 @@ export default [
 			'**/.nx',
 			'**/coverage',
 			'**/dist',
-			'**/jest.config.ts',
 			'**/out-tsc',
 			'**/release',
 			'**/tools/**',
@@ -30,9 +29,11 @@ export default [
 			'*.log',
 			'**/.tmp/**',
 			'**/node_modules/**',
-      'vitest.config.*',
-      'vitest.setup.*',
-			'vite*.workspace.*'
+			'vitest.config.*',
+			'vitest.setup.*',
+			'vite*.workspace.*',
+			'global.d.ts',
+			'**/global.d.ts'
 		]
 	},
 
@@ -227,13 +228,13 @@ export default [
 	// -----------------------------
 	// Ensure vitest.workspace.ts is parsed with the tools tsconfig (use absolute paths)
 	{
-		files: ['vitest.workspace.ts', './vitest.workspace.ts', 'D:/dev/src/application-platform/vitest.workspace.ts'],
+		files: ['vitest.workspace.ts', './vitest.workspace.ts'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
-				tsconfigRootDir: 'D:/dev/src/application-platform',
-				project: ['D:/dev/src/application-platform/tsconfig.tools.json'],
-				allowDefaultProject: ['D:/dev/src/application-platform/vitest.workspace.ts'],
+				tsconfigRootDir: import.meta.dirname,
+				project: ['./tsconfig.tools.json'],
+				allowDefaultProject: ['./vitest.workspace.ts'],
 				createDefaultProgram: true
 			}
 		}
@@ -248,9 +249,9 @@ export default [
 		}
 	},
 
-	// Disable jsdoc for common config files (playwright/jest/vite/other configs)
+	// Disable jsdoc for common config files (playwright/vite/other configs)
 	{
-		files: ['**/playwright.config.*', '**/jest.config.*', '**/vitest.config.*', '**/vite*.workspace.*'],
+		files: ['**/playwright.config.*', '**/vitest.config.*', '**/vite*.workspace.*'],
 		rules: {
 			'jsdoc/require-jsdoc': 'off',
 			'jsdoc/require-description-complete-sentence': 'off'
@@ -269,8 +270,9 @@ export default [
 				allowDefaultProject: [
 					'tools/jest/angular-jest.base.ts',
 					'./vitest.workspace.ts',
-					'D:/dev/src/application-platform/vitest.workspace.ts'
-				]
+					'./global.d.ts'
+				],
+				createDefaultProgram: true
 			}
 		},
 		plugins: {
@@ -344,18 +346,6 @@ export default [
 		}
 	},
 
-	// tests: weniger streng
-	{
-		files: ['**/*.spec.ts', '**/*.test.ts'],
-		rules: {
-			'@typescript-eslint/no-explicit-any': 'off',
-			'jsdoc/require-jsdoc': 'off',
-			'no-console': 'off',
-			'@typescript-eslint/no-unnecessary-condition': 'off',
-			'@typescript-eslint/explicit-function-return-type': 'off'
-		}
-	},
-
 	// -----------------------------
 	// Type-aware rules (nur server + libs; UI Apps bleiben schnell)
 	// -----------------------------
@@ -366,7 +356,8 @@ export default [
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
 				project: ['./tsconfig.tools.json'],
-				allowDefaultProject: ['./vitest.workspace.ts']
+				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
+				createDefaultProgram: true
 			}
 		},
 		rules: {
@@ -381,6 +372,27 @@ export default [
 			'@typescript-eslint/no-unnecessary-condition': 'error'
 		}
 	}),
+
+	// tests: weniger streng
+	{
+		files: ['**/*.spec.ts', '**/*test*.ts'],
+		rules: {
+			'@typescript-eslint/no-explicit-any': 'off',
+			'jsdoc/require-jsdoc': 'off',
+			'no-console': 'off',
+			'@typescript-eslint/no-unnecessary-condition': 'off',
+			'@typescript-eslint/explicit-function-return-type': 'off'
+		}
+	},
+
+	{
+		files: ['**/*.{js,jsx}'],
+		rules: {
+			'no-console': 'off',
+			'@typescript-eslint/explicit-function-return-type': 'off',
+			'@typescript-eslint/no-require-imports': 'off'
+		}
+	},
 
 	// Prettier last
 	prettier

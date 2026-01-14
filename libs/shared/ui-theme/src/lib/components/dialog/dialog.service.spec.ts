@@ -2,12 +2,12 @@
  * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import type { OverlayRef } from '@angular/cdk/overlay';
-import { Overlay } from '@angular/cdk/overlay';
+import type { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
+import { setupTestingModule } from '../../../test-setup';
 import type { DialogConfigModel } from '../../model/dialog-config.model';
 
 import { DialogService } from './dialog-service';
@@ -28,7 +28,7 @@ describe('DialogService', () => {
 	let attachSpy: ReturnType<typeof vi.spyOn>;
 	let backdropClickSpy: ReturnType<typeof vi.spyOn>;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		// Create the mock overlay ref first so we can provide an Overlay that returns it
 		const mockOverlayRef: Partial<OverlayRef> = {
 			attach: vi.fn(),
@@ -47,12 +47,20 @@ describe('DialogService', () => {
 		};
 
 		// Provide a mocked Overlay where create() returns our mockOverlayRef
-		TestBed.configureTestingModule({
-			providers: [DialogService, { provide: Overlay, useValue: mockOverlay }, Injector]
+		const dialogTokens = await import('../dialog/dialog-tokens');
+		const overlayModule = await import('@angular/cdk/overlay');
+		// Use the shared testing setup so platform/location stubs are applied.
+		await setupTestingModule({
+			providers: [
+				DialogService,
+				{ provide: overlayModule.Overlay, useValue: mockOverlay },
+				{ provide: dialogTokens.DIALOG_OVERLAY_REF, useValue: mockOverlayRef },
+				Injector
+			]
 		});
 
 		service = TestBed.inject(DialogService);
-		overlay = TestBed.inject(Overlay);
+		overlay = TestBed.inject(overlayModule.Overlay);
 
 		createSpy = vi.spyOn(overlay, 'create');
 		attachSpy = vi.spyOn(mockOverlayRef as MockOverlayRef, 'attach');

@@ -78,10 +78,12 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/jest:jest",
+			"executor": "@nx/vitest:test",
 			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
-				"jestConfig": "apps/z21-server/jest.config.cts",
+				"tsConfig": "apps/z21-server/tsconfig.spec.json",
+				"vitestConfig": "apps/z21-server/vitest.config.ts",
+				"reportsDirectory": "../../coverage/apps/z21-server",
 				"passWithNoTests": true
 			}
 		}

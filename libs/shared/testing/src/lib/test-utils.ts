@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 // Lightweight test utility types for Vitest
 // Use these types in tests to type mock objects and spies in a consistent way.
 
@@ -11,9 +16,6 @@ export type MockFn = (...args: unknown[]) => unknown;
 export type Mocked<T> = {
 	[P in keyof T]?: T[P] extends (...args: infer A) => infer R ? (...args: A) => unknown : T[P];
 };
-
-/** A union type that represents common spy return values from `vi`. */
-export type Spy<T extends MockFn = MockFn> = ReturnType<typeof vi.fn> | ReturnType<typeof vi.spyOn>;
 
 /**
  * Utility to create a strongly-typed mock object from a partial implementation.

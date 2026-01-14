@@ -18,7 +18,7 @@ export default defineConfig(() => ({
 		reporters: ['default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
-			provider: 'v8',
+			provider: 'v8' as const,
 			reporter: ['text', 'lcov']
 		}
 	}

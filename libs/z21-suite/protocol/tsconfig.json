@@ -13,13 +13,10 @@
 		"allowJs": true
 	},
 	"files": [],
-	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
+	"include": ["src/**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
 	"references": [
 		{
 			"path": "./tsconfig.lib.json"
-		},
-		{
-			"path": "./tsconfig.spec.json"
 		}
 	]
 }

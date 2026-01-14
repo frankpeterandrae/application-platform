@@ -3,10 +3,4 @@
  * All rights reserved.
  */
 
-beforeEach((): void => {
-	vi.resetAllMocks();
-});
-
-afterEach((): void => {
-	vi.resetAllMocks();
-});
+// global vitest.setup.ts handles vi.resetAllMocks for tests

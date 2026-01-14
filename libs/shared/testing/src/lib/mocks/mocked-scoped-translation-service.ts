@@ -4,9 +4,9 @@
  */
 
 import { signal } from '@angular/core';
-import * as jestMock from 'jest-mock';
 import type { Observable } from 'rxjs';
 import { delay, of } from 'rxjs';
+import { vi } from 'vitest';
 
 /**
  * Mock service for ScopedTranslationService.
@@ -35,5 +35,5 @@ export class MockScopedTranslationService {
 	}; // Add a short delay
 
 	public currentLang = signal('en'); // Mock `currentLang` as a signal
-	public toggleLanguage = jestMock.fn(); // Mock toggleLanguage method
+	public toggleLanguage = vi.fn(); // Mock toggleLanguage method (Vitest)
 }

@@ -14,13 +14,7 @@
 	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
 	"references": [
 		{
-			"path": "./tsconfig.editor.json"
-		},
-		{
 			"path": "./tsconfig.app.json"
-		},
-		{
-			"path": "./tsconfig.spec.json"
 		}
 	],
 	"extends": "../../tsconfig.base.json",

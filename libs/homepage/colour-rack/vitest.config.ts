@@ -13,16 +13,10 @@ export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/colour-rack'),
 	plugins: [angular(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			'@application-platform/testing': resolve(__dirname, '../../shared/testing/src/index.ts'),
-			'@application-platform/config': resolve(__dirname, '../../homepage/config/src/index.ts')
-		}
-	},
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: ['./src/test-setup.ts'],
+		setupFiles: [resolve(__dirname, '../../../vitest.setup.ts')],
 		reporters: ['default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {

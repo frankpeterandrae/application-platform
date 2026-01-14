@@ -1,11 +1,11 @@
 {
+	"extends": "../../../tsconfig.base.json",
 	"compilerOptions": {
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"moduleResolution": "bundler",
-		"module": "commonjs",
 		"allowJs": true
 	},
 	"files": [],
@@ -13,16 +13,6 @@
 	"references": [
 		{
 			"path": "./tsconfig.lib.json"
-		},
-		{
-			"path": "./tsconfig.spec.json"
 		}
-	],
-	"extends": "../../../tsconfig.base.json",
-	"angularCompilerOptions": {
-		"enableI18nLegacyMessageIdFormat": false,
-		"strictInjectionParameters": true,
-		"strictInputAccessModifiers": true,
-		"strictTemplates": true
-	}
+	]
 }
