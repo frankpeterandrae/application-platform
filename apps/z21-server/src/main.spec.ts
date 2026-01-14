@@ -26,6 +26,12 @@ vi.mock('@application-platform/z21', () => ({
 		public demoPing() {
 			return undefined;
 		}
+		public sendSetBroadcastFlags(_flags: number) {
+			return undefined;
+		}
+		public sendSystemStateGetData() {
+			return undefined;
+		}
 	}
 }));
 

@@ -30,7 +30,7 @@ export type ClientToServer =
  */
 export type ServerToClient =
 	| { type: 'server.replay.session.ready'; protocolVersion: string; serverTime?: string }
-	| { type: 'system.message.trackpower'; on: boolean; short?: boolean }
+	| { type: 'system.message.trackpower'; on: boolean; short?: boolean; emergencyStop?: boolean }
 	| { type: 'loco.message.state'; addr: number; speed: number; dir: Direction; fns: Record<number, boolean> }
 	| { type: 'switching.message.turnout.state'; addr: number; state: TurnoutState }
 	| { type: 'feedback.message.changed'; source: SourceType; addr: number; value: 0 | 1 }

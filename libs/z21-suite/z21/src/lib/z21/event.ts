@@ -9,7 +9,27 @@ export type Z21Event =
 	| { type: 'event.track.power'; on: boolean }
 	| { type: 'event.z21.status'; statusMask: number }
 	| { type: 'event.loco.info'; addr: number; speedSteps: 14 | 28 | 128; speedRaw: number; forward: boolean }
+	| { type: 'event.system.state'; payload: Z21SystemState }
 	| { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
+
+export type Z21SystemState = {
+	mainCurrent_mA: number; // int16
+	progCurrent_mA: number; // int16
+	filteredMainCurrent_mA: number; // int16
+	temperature_C: number; // int16
+	supplyVoltage_mV: number; // uint16
+	vccVoltage_mV: number; // uint16
+	centralState: number; // uint8 (Bitfeld)
+	centralStateEx: number; // uint8 (Bitfeld)
+	capabilities: number; // uint8
+};
+
+export type DerivedTrackFlags = {
+	powerOn?: boolean;
+	emergencyStop?: boolean;
+	short?: boolean;
+	programmingMode?: boolean;
+};
 
 /**
  * Converts a decoded Z21 dataset into one or more higher-level events.
@@ -20,6 +40,10 @@ export type Z21Event =
  * @returns Array of Z21Event entries produced from the dataset.
  */
 export function dataToEvent(ds: Z21Dataset): Z21Event[] {
+	if (ds.kind === 'ds.system.state') {
+		return [{ type: 'event.system.state', payload: decodeSystemState(ds.state) }];
+	}
+
 	if (ds.kind !== 'ds.x.bus') {
 		return [];
 	}
@@ -63,4 +87,51 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 		return [{ type: 'event.loco.info', addr, speedSteps, speedRaw, forward }];
 	}
 	return [{ type: 'event.unknown.x.bus', xHeader, bytes: Array.from(b) }];
+}
+
+/**
+ * Decodes a 16-byte system state payload into typed fields.
+ *
+ * @param state - Raw system state bytes from a Z21 dataset.
+ * @returns Parsed Z21SystemState structure.
+ */
+function decodeSystemState(state: Uint8Array): Z21SystemState {
+	const b = Buffer.from(state);
+	return {
+		mainCurrent_mA: b.readInt16LE(0),
+		progCurrent_mA: b.readInt16LE(2),
+		filteredMainCurrent_mA: b.readInt16LE(4),
+		temperature_C: b.readInt16LE(6),
+		supplyVoltage_mV: b.readUInt16LE(8),
+		vccVoltage_mV: b.readUInt16LE(10),
+		centralState: b.readUInt8(12),
+		centralStateEx: b.readUInt8(13),
+		capabilities: b.readUInt8(15)
+	};
+}
+
+export const enum CentralStatus {
+	EmergencyStop = 0x01,
+	TrackVoltageOff = 0x02,
+	ShortCircuit = 0x04,
+	ProgrammingModeActive = 0x20
+}
+
+/**
+ * Derives human-friendly track flags from system state bitfields.
+ *
+ * @param sysState - Central state and extended state bytes.
+ * @returns DerivedTrackFlags indicating power, emergency stop, short, programming mode.
+ */
+export function deriveTrackFlagsFromSystemState(sysState: { centralState: number; centralStateEx: number }): DerivedTrackFlags {
+	const cs = sysState.centralState;
+
+	const emergencyStop = (cs & CentralStatus.EmergencyStop) !== 0;
+	const short = (cs & CentralStatus.ShortCircuit) !== 0;
+	const trackVoltageOff = (cs & CentralStatus.TrackVoltageOff) !== 0;
+	const powerOn = !trackVoltageOff;
+
+	const programmingMode = (cs & CentralStatus.ProgrammingModeActive) !== 0;
+
+	return { powerOn, emergencyStop, short, programmingMode };
 }

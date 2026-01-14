@@ -7,9 +7,10 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 
+import type { TrackStatus } from '@application-platform/domain';
 import { isClientToServerMessage, PROTOCOL_VERSION, type ClientToServer, type ServerToClient } from '@application-platform/protocol';
-import type { Z21RxPayload } from '@application-platform/z21';
-import { Z21Udp } from '@application-platform/z21';
+import type { Z21RxPayload, DerivedTrackFlags } from '@application-platform/z21';
+import { deriveTrackFlagsFromSystemState, Z21Udp } from '@application-platform/z21';
 import { WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
 
 import { loadConfig } from './infra/config/config';
@@ -30,6 +31,8 @@ type LocoState = {
 const cfg = loadConfig(); // server configuration (ports, z21 host/port, safety settings)
 export const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort); // helper to send Z21 UDP demo pings
 
+let trackStatus: TrackStatus = {};
+
 udp.on('rx', (payload: Z21RxPayload) => {
 	if (payload.type === 'serial') {
 		// eslint-disable-next-line no-console
@@ -47,11 +50,47 @@ udp.on('rx', (payload: Z21RxPayload) => {
 	// eslint-disable-next-line no-console
 	console.log('[z21] rx header=0x' + Number(payload.header).toString(16), 'len=' + payload.len, 'from', payload.from);
 
+	if (payload.type === 'systemstate') {
+		broadcast({
+			type: 'system.message.z21.rx',
+			rawHex: payload.rawHex,
+			datasets: [{ kind: 'systemstate', from: payload.from, payload: payload.payload }],
+			events: [{ type: 'systemstate', state: payload.payload }]
+		});
+	}
+
+	if (payload.type !== 'datasets') return;
+	// Konsole: zeigt dir sofort Power toggles
+	for (const e of payload.events) {
+		if (e.type === 'event.track.power') {
+			updateTrackStatusFromXbusPower(e.on);
+		}
+
+		if (e.type === 'event.system.state') {
+			const flags = deriveTrackFlagsFromSystemState({
+				centralState: e.payload.centralState,
+				centralStateEx: e.payload.centralStateEx
+			});
+			updateTrackStatusFromSystemState(flags);
+			// eslint-disable-next-line no-console
+			console.log(
+				'[z21] systemstate cs=0x' + e.payload.centralState.toString(16).padStart(2, '0'),
+				'cse=0x' + e.payload.centralStateEx.toString(16).padStart(2, '0'),
+				'powerOn?',
+				trackStatus.powerOn,
+				'short?',
+				trackStatus.short,
+				'estop?',
+				trackStatus.emergencyStop
+			);
+		}
+	}
+
 	broadcast({
 		type: 'system.message.z21.rx',
 		rawHex: payload.rawHex,
-		datasets: [{ kind: 'raw', header: payload.header, len: payload.len, from: payload.from }],
-		events: []
+		datasets: payload.datasets,
+		events: payload.events
 	});
 });
 
@@ -314,11 +353,46 @@ export function clamp01(v: number): number {
 }
 
 /**
+ * Updates track power status based on X-Bus power signal and notifies clients.
+ * @param on - whether track power is on
+ */
+export function updateTrackStatusFromXbusPower(on: boolean): void {
+	trackStatus = { ...trackStatus, powerOn: on, source: 'xbus' };
+	broadcast({ type: 'system.message.trackpower', on, short: trackStatus.short ?? false });
+}
+
+/**
+ * Updates track status from derived system state flags and notifies clients.
+ * @param flags - derived track flags
+ */
+export function updateTrackStatusFromSystemState(flags: DerivedTrackFlags): void {
+	const powerOn = trackStatus.source === 'xbus' && trackStatus.powerOn !== undefined ? trackStatus.powerOn : flags.powerOn;
+
+	trackStatus = {
+		powerOn,
+		emergencyStop: flags.emergencyStop,
+		short: flags.short,
+		source: trackStatus.source ?? 'systemstate'
+	};
+
+	broadcast({
+		type: 'system.message.trackpower',
+		on: powerOn ?? false,
+		short: trackStatus.short ?? false,
+		emergencyStop: trackStatus.emergencyStop
+	});
+}
+
+/**
  * Start the HTTP + WebSocket server and the Z21 UDP helper.
  */
 export function start(): void {
 	udp.start(21105);
 	udp.sendGetSerial(); // -> should trigger 1 UDP response
+	// Broadcasts aktivieren: basic + systemstate
+	udp.sendSetBroadcastFlags(0x00000101);
+	// Initial sofort ziehen (sonst wartest du ggf. bis zur nächsten Änderung)
+	udp.sendSystemStateGetData();
 	server.listen(cfg.httpPort, () => {
 		// eslint-disable-next-line no-console
 		console.log(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);

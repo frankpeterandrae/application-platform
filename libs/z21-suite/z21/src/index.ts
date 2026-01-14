@@ -4,3 +4,5 @@
  */
 
 export * from './lib/udp/udp';
+export * from './lib/z21/codec';
+export * from './lib/z21/event';

@@ -108,6 +108,41 @@ describe('Z21Udp', () => {
 
 			consoleSpy.mockRestore();
 		});
+
+		// New tests for additional send methods
+		it('sendSetBroadcastFlags sends correct 8-byte packet and logs tx message', () => {
+			const customServices = makeServices('z21-host', 4242);
+			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+			const flags = 0x01020304;
+			customServices.udp.sendSetBroadcastFlags(flags);
+
+			const expectedPkt = Buffer.alloc(8);
+			expectedPkt.writeUInt16LE(0x0008, 0);
+			expectedPkt.writeUInt16LE(0x0050, 2);
+			expectedPkt.writeUInt32LE(flags >>> 0, 4);
+
+			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
+			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx SET_BROADCAST_FLAGS ->', 'z21-host:4242', expectedPkt.toString('hex'));
+
+			consoleSpy.mockRestore();
+		});
+
+		it('sendSystemStateGetData sends correct 4-byte packet and logs tx message', () => {
+			const customServices = makeServices('z21-host', 4242);
+			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+			customServices.udp.sendSystemStateGetData();
+
+			const expectedPkt = Buffer.alloc(4);
+			expectedPkt.writeUInt16LE(0x0004, 0);
+			expectedPkt.writeUInt16LE(0x0085, 2);
+
+			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
+			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx SYSTEM_STATE_GET_DATA ->', 'z21-host:4242', expectedPkt.toString('hex'));
+
+			consoleSpy.mockRestore();
+		});
 	});
 
 	describe('lifecycle methods', () => {

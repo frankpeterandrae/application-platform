@@ -6,9 +6,29 @@
 import dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 
+import { parseZ21Dataset, type Z21Dataset } from '../z21/codec';
+import { dataToEvent, type Z21Event, type Z21SystemState } from '../z21/event';
+
 export type Z21RxPayload =
 	| { type: 'serial'; serial: number; header: number; len: number; rawHex: string; from: { address: string; port: number } }
-	| { type: 'raw'; header: number; len: number; rawHex: string; from: { address: string; port: number } };
+	| { type: 'raw'; header: number; len: number; rawHex: string; from: { address: string; port: number } }
+	| {
+			type: 'datasets';
+			header: number;
+			len: number;
+			rawHex: string;
+			datasets: Z21Dataset[];
+			events: Z21Event[];
+			from: { address: string; port: number };
+	  }
+	| {
+			type: 'systemstate';
+			header: number;
+			len: number;
+			rawHex: string;
+			from: { address: string; port: number };
+			payload: Z21SystemState;
+	  };
 
 /**
  * Thin Z21 UDP client that:
@@ -44,6 +64,8 @@ export class Z21Udp extends EventEmitter {
 		});
 
 		this.sock.on('message', (msg, rinfo) => {
+			// eslint-disable-next-line no-console
+			console.log('[udp] rx raw', rinfo.address + ':' + rinfo.port, 'len', msg.length, 'hex', msg.toString('hex'));
 			// Z21 dataset: [lenLE16][headerLE16][data...]
 			if (msg.length < 4) return;
 
@@ -51,6 +73,12 @@ export class Z21Udp extends EventEmitter {
 			const header = msg.readUInt16LE(2);
 			const rawHex = msg.toString('hex');
 			const from = { address: rinfo.address, port: rinfo.port };
+
+			// 1) Datagram -> Datasets
+			const datasets = parseZ21Dataset(msg);
+
+			// 2) Datasets -> Domain Events (track.power, system.state, ...)
+			const events = datasets.flatMap(dataToEvent);
 
 			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
 			if (len === 0x0008 && header === 0x0010 && msg.length >= 8) {
@@ -66,8 +94,16 @@ export class Z21Udp extends EventEmitter {
 				return;
 			}
 
-			// Fallback: raw dataset
-			this.emit('rx', { type: 'raw', header, len, rawHex, from } satisfies Z21RxPayload);
+			// 3) EIN rx-Event hochreichen (einheitlich)
+			this.emit('rx', {
+				type: 'datasets',
+				header: msg.length >= 4 ? msg.readUInt16LE(2) : 0,
+				len: msg.length >= 2 ? msg.readUInt16LE(0) : msg.length,
+				rawHex,
+				from,
+				datasets,
+				events
+			});
 		});
 
 		this.sock.bind(listenPort);
@@ -110,6 +146,34 @@ export class Z21Udp extends EventEmitter {
 		pkt.writeUInt16LE(0x0010, 2);
 		// eslint-disable-next-line no-console
 		console.log('[udp] tx GET_SERIAL ->', this.host + ':' + this.port, pkt.toString('hex'));
+		this.sendRaw(pkt);
+	}
+
+	/**
+	 * Sets Z21 broadcast flags (Header 0x0050).
+	 * @param flags Bitmask of broadcast flags to enable
+	 */
+	public sendSetBroadcastFlags(flags: number): void {
+		const ptk = Buffer.alloc(8);
+		ptk.writeUInt16LE(0x0008, 0); // DataLen=0x0008
+		ptk.writeUInt16LE(0x0050, 2);
+		ptk.writeUInt32LE(flags >>> 0, 4); // Flags
+
+		// eslint-disable-next-line no-console
+		console.log('[udp] tx SET_BROADCAST_FLAGS ->', this.host + ':' + this.port, ptk.toString('hex'));
+		this.sendRaw(ptk);
+	}
+
+	/**
+	 * Requests the current system state snapshot (Header 0x0085).
+	 */
+	public sendSystemStateGetData(): void {
+		const pkt = Buffer.alloc(4);
+		pkt.writeUInt16LE(0x0004, 0);
+		pkt.writeUInt16LE(0x0085, 2); // Header=0x0020
+
+		// eslint-disable-next-line no-console
+		console.log('[udp] tx SYSTEM_STATE_GET_DATA ->', this.host + ':' + this.port, pkt.toString('hex'));
 		this.sendRaw(pkt);
 	}
 }
