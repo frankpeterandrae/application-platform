@@ -268,11 +268,7 @@ export default [
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
 				project: ['./tsconfig.tools.json'],
-				allowDefaultProject: [
-					'tools/jest/angular-jest.base.ts',
-					'./vitest.workspace.ts',
-					'./global.d.ts'
-				],
+				allowDefaultProject: ['tools/jest/angular-jest.base.ts', './vitest.workspace.ts', './global.d.ts'],
 				createDefaultProgram: true
 			}
 		},

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { describe, expect, it } from 'vitest';
 
 import { parseZ21Dataset } from './codec';
@@ -45,7 +50,7 @@ describe('parseZ21Dataset', () => {
 
 		const ds = parseZ21Dataset(buf);
 		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('systemState');
+		expect(ds[0].kind).toBe('ds.system.state');
 		expect(Array.from((ds[0] as any).state)).toEqual(payload);
 	});
 
@@ -60,7 +65,7 @@ describe('parseZ21Dataset', () => {
 		const ds = parseZ21Dataset(buf);
 		expect(ds).toHaveLength(2);
 		expect(ds[0].kind).toBe('ds.x.bus');
-		expect(ds[1].kind).toBe('systemState');
+		expect(ds[1].kind).toBe('ds.system.state');
 	});
 
 	it('stops parsing when encountering a frame with declared length < 4', () => {
@@ -82,5 +87,37 @@ describe('parseZ21Dataset', () => {
 		const ds = parseZ21Dataset(buf);
 		expect(ds).toHaveLength(1);
 		expect(ds[0].kind).toBe('ds.x.bus');
+	});
+
+	// New tests for missing edge cases
+	it('returns ds.unknown for systemState header with wrong payload length', () => {
+		const payload = Array.from({ length: 15 }, (_, i) => i & 0xff);
+		const buf = makeFrame(0x0084, payload);
+
+		const ds = parseZ21Dataset(buf);
+		expect(ds).toHaveLength(1);
+		expect(ds[0].kind).toBe('ds.unknown');
+		expect((ds[0] as any).header).toBe(0x0084);
+		expect(Array.from((ds[0] as any).payload)).toEqual(payload);
+	});
+
+	it('returns ds.unknown for unknown header', () => {
+		const payload = [0x01, 0x02];
+		const buf = makeFrame(0x1234, payload);
+
+		const ds = parseZ21Dataset(buf);
+		expect(ds).toHaveLength(1);
+		expect(ds[0].kind).toBe('ds.unknown');
+		expect((ds[0] as any).header).toBe(0x1234);
+	});
+
+	it('returns ds.unknown for x-bus payload too short', () => {
+		const payload = [0x61]; // only xHeader, requires at least 2 bytes
+		const buf = makeFrame(0x0040, payload);
+
+		const ds = parseZ21Dataset(buf);
+		expect(ds).toHaveLength(1);
+		expect(ds[0].kind).toBe('ds.unknown');
+		expect((ds[0] as any).header).toBe(0x0040);
 	});
 });

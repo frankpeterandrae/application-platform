@@ -3,4 +3,4 @@
  * All rights reserved.
  */
 
-export * from './lib/domain';
+export * from './lib/system';

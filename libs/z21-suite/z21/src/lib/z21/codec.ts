@@ -7,14 +7,14 @@
  * Represents a decoded Z21 dataset from a UDP buffer.
  *
  * Variants:
- * - xbus: X-BUS tunneled frame. `xHeader` is the first X-BUS byte, `data` is the payload without the trailing XOR.
- * - systemState: Fixed-length 16-byte Z21 system state packet.
- * - unknown: Any unrecognized header or unexpected payload length, returned as-is for observability.
+ * - ds.x.bus: X-BUS tunneled frame. `xHeader` is the first X-BUS byte, `data` is the payload without the trailing XOR.
+ * - ds.system.state: Fixed-length 16-byte Z21 system state packet.
+ * - ds.unknown: Any unrecognized header or unexpected payload length, returned as-is for observability.
  */
 export type Z21Dataset =
 	| { kind: 'ds.x.bus'; xHeader: number; data: Uint8Array }
-	| { kind: 'systemState'; state: Uint8Array }
-	| { kind: 'unknown'; header: number; payload: Uint8Array };
+	| { kind: 'ds.system.state'; state: Uint8Array }
+	| { kind: 'ds.unknown'; header: number; payload: Uint8Array };
 
 /**
  * Parse a Buffer of one or more concatenated Z21 frames into structured datasets.
@@ -70,12 +70,12 @@ export function parseZ21Dataset(buf: Buffer): Z21Dataset[] {
 
 				out.push({ kind: 'ds.x.bus', xHeader, data: bodyNoXor });
 			} else {
-				out.push({ kind: 'unknown', header, payload });
+				out.push({ kind: 'ds.unknown', header, payload });
 			}
 		} else if (header === 0x0084 && payload.length === 16) {
-			out.push({ kind: 'systemState', state: Uint8Array.from(payload) });
+			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
 		} else {
-			out.push({ kind: 'unknown', header, payload });
+			out.push({ kind: 'ds.unknown', header, payload });
 		}
 
 		offset += len;
