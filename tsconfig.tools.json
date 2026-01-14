@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		// tools use the same strict settings as the base config but keep this file minimal
+	},
+	"include": ["global.d.ts", "tools/**/*", "vitest.workspace.ts", "vitest.setup.ts"]
+}

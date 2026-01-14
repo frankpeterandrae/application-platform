@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 
@@ -16,12 +15,16 @@ import { DialogComponent } from './dialog.component';
 describe('DialogComponent', () => {
 	let component: DialogComponent;
 	let fixture: ComponentFixture<DialogComponent>;
-	let overlayRefMock: OverlayRef & { dispose?: ReturnType<typeof vi.fn> };
+	let overlayRefMock: any;
 
 	beforeEach(async () => {
+		// Import CDK Overlay tokens dynamically to avoid early static initialization of Angular
+		const overlayModule = await import('@angular/cdk/overlay');
+		const OverlayRef = overlayModule.OverlayRef;
+
 		overlayRefMock = {
 			dispose: vi.fn()
-		} as unknown as OverlayRef & { dispose?: ReturnType<typeof vi.fn> };
+		} as unknown as typeof OverlayRef & { dispose?: ReturnType<typeof vi.fn> };
 		const mockDialogData: DialogConfigModel<any> = {
 			componentData: undefined,
 			settings: { title: 'Test Dialog' }
@@ -30,7 +33,7 @@ describe('DialogComponent', () => {
 		await setupTestingModule({
 			imports: [DialogComponent],
 			providers: [
-				{ provide: OverlayRef, useValue: overlayRefMock },
+				{ provide: overlayModule.OverlayRef, useValue: overlayRefMock },
 				{ provide: DIALOG_DATA, useValue: mockDialogData }
 			]
 		});

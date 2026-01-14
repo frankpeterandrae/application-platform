@@ -10,7 +10,8 @@
 		"experimentalDecorators": true,
 		"importHelpers": true,
 		"module": "preserve",
-		"moduleResolution": "node",
+		"target": "ES2022",
+		"moduleResolution": "bundler",
 		"lib": ["DOM", "ES2022"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
@@ -18,6 +19,7 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"baseUrl": ".",
+		"types": ["vitest", "vitest/globals"],
 		"paths": {
 			"@application-platform/colour-rack": ["libs/homepage/colour-rack/src/index.ts"],
 			"@application-platform/config": ["libs/homepage/config/src/index.ts"],
@@ -37,5 +39,5 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": ["tools/**/*", "libs/**/*", "apps/**/*", "jest.config.ts", "jest.preset.js", "vitest.workspace.ts"]
+	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "vitest.workspace.ts", "vitest.setup.ts"]
 }

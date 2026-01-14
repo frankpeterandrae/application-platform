@@ -6,6 +6,6 @@
 		"moduleResolution": "bundler"
 	},
 	"files": ["src/main.ts"],
-	"include": ["src/**/*.d.ts"],
-	"exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
+	"include": ["src/**/*.ts"],
+	"exclude": ["vitest.config.ts", "vitest.config.cts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

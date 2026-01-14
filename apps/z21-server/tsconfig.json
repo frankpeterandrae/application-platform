@@ -1,17 +1,14 @@
 {
 	"extends": "../../tsconfig.base.json",
-	"files": [],
-	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
-	"references": [
-		{
-			"path": "./tsconfig.app.json"
-		},
-		{
-			"path": "./tsconfig.spec.json"
-		}
-	],
 	"compilerOptions": {
+		"target": "ES2022",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"types": ["node"],
 		"esModuleInterop": true,
 		"allowJs": true
-	}
+	},
+	"files": [],
+	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
+	"references": []
 }

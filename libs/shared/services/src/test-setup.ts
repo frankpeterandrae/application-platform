@@ -3,27 +3,10 @@
  * All rights reserved.
  */
 
-import type { TestModuleMetadata } from '@angular/core/testing';
-// Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
+// runtime wrapper for tests — avoid type-only imports to keep the Vite/ESBuild plugin happy
 import '@angular/compiler';
-
-import { getTestBed, TestBed } from '@angular/core/testing';
-import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
-import { sharedSetupTestingModule } from '@application-platform/testing';
-
-// Initialize the Angular testing environment (TestBed) for the current runtime.
-const platform = platformBrowserTesting();
-getTestBed().initTestEnvironment(BrowserTestingModule, platform);
-
-// Reset TestBed and mocks before each test to emulate jest-preset-angular behavior.
-beforeEach(() => {
-	TestBed.resetTestingModule();
-	vi.resetAllMocks();
-});
-
-afterEach(() => {
-	vi.resetAllMocks();
-});
+import type { TestModuleMetadata } from '@angular/core/testing';
+import { setupTestingModule as sharedSetup } from '@application-platform/testing';
 
 /**
  * Sets up the Angular testing module with the provided metadata.
@@ -31,5 +14,5 @@ afterEach(() => {
  * @returns {Promise<void>} A promise that resolves when the test module is compiled.
  */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
-	return sharedSetupTestingModule({ imports, providers, declarations });
+	return sharedSetup({ imports, providers, declarations });
 }

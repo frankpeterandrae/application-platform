@@ -64,7 +64,7 @@
 		},
 		"test": {
 			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"tsConfig": "apps/z21-ui/tsconfig.spec.json",
 				"vitestConfig": "apps/z21-ui/vitest.config.ts",

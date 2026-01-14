@@ -1,13 +1,19 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 const sass = require('sass');
+
 const fs = require('node:fs').promises;
 const path = require('node:path');
 
-// Function to compile SCSS
+// Watch for changes
+const chokidar = require('chokidar');
+
+/**
+ * Function to compile SCSS
+ */
 function compileSass() {
 	(async () => {
 		try {
@@ -36,9 +42,6 @@ function compileSass() {
 
 // Initial compilation
 compileSass();
-
-// Watch for changes
-const chokidar = require('chokidar');
 
 // Initialize watcher.
 const watcher = chokidar.watch(path.join(__dirname, '../src/lib/theme/**/*.scss'), {
