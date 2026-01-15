@@ -3,9 +3,10 @@
  * All rights reserved.
  */
 
-import type { Z21Dataset } from './codec-types';
-import type { DerivedTrackFlags, Z21Event, Z21SystemState } from './event-types';
-import { CentralStatus } from './event-types';
+import type { Z21Dataset } from '../codec/codec-types';
+import { StatusChangedDb0, TrackPowerBroadcastValue, XBusHeader } from '../constants';
+
+import { CentralStatus, type DerivedTrackFlags, type Z21Event, type Z21SystemState } from './event-types';
 
 /**
  * Converts a decoded Z21 dataset into one or more higher-level events.
@@ -28,26 +29,26 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 	const xHeader = b[0];
 
 	// Track power broadcasts :contentReference[oaicite:12]{index=12}
-	if (xHeader === 0x61 && b.length >= 2) {
+	if (xHeader === XBusHeader.TrackPowerBroadcast && b.length >= 2) {
 		const db0 = b[1];
-		if (db0 === 0x00) {
+		if (db0 === TrackPowerBroadcastValue.Off) {
 			return [{ type: 'event.track.power', on: false }];
 		}
-		if (db0 === 0x01) {
+		if (db0 === TrackPowerBroadcastValue.On) {
 			return [{ type: 'event.track.power', on: true }];
 		}
 	}
 
 	// Status changed :contentReference[oaicite:13]{index=13}
-	if (xHeader === 0x62 && b.length >= 3) {
+	if (xHeader === XBusHeader.StatusChanged && b.length >= 3) {
 		const db0 = b[1];
-		if (db0 === 0x22) {
+		if (db0 === StatusChangedDb0.CentralStatus) {
 			return [{ type: 'event.system.state', statusMask: b[2] }];
 		}
 	}
 
 	// Loco info :contentReference[oaicite:14]{index=14}
-	if (xHeader === 0xef && b.length >= 5) {
+	if (xHeader === XBusHeader.LocoInfo && b.length >= 6) {
 		const adrMsb = b[1] & 0x3f;
 		const adrLsb = b[2];
 		const addr = (adrMsb << 8) + adrLsb;

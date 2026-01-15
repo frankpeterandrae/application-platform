@@ -5,8 +5,7 @@
 		"declaration": false,
 		"declarationMap": false,
 		"inlineSources": true,
-		"types": [],
-		"composite": false
+		"types": []
 	},
 	"exclude": ["src/**/*.spec.ts", "src/test-setup.ts", "vitest.config.ts", "src/**/*.test.ts"],
 	"include": ["src/**/*.ts"]

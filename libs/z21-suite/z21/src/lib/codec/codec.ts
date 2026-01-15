@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { Z21LanHeader } from '../constants';
+
 import type { Z21Dataset } from './codec-types';
 
 /**
@@ -42,7 +44,7 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 		const header = buf.readUint16LE(offset + 2);
 		const payload = buf.subarray(offset + 4, offset + len);
 
-		if (header === 0x0040) {
+		if (header === Z21LanHeader.LAN_X) {
 			// X-BUS tunneling: payload = [XHeader, DB..., XOR]
 			if (payload.length >= 2) {
 				const xHeader = payload[0];
@@ -61,7 +63,7 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 			} else {
 				out.push({ kind: 'ds.unknown', header, payload });
 			}
-		} else if (header === 0x0084 && payload.length === 16) {
+		} else if (header === Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED && payload.length === 16) {
 			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
 		} else {
 			out.push({ kind: 'ds.unknown', header, payload });

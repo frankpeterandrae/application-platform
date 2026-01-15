@@ -5,7 +5,7 @@
 
 import { type TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
-import { deriveTrackFlagsFromSystemState, type Z21RxPayload } from '@application-platform/z21';
+import { deriveTrackFlagsFromSystemState, type DerivedTrackFlags, type Z21RxPayload } from '@application-platform/z21';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
 
@@ -100,7 +100,7 @@ export class Z21EventHandler {
 	/**
 	 * Updates track status from derived system state flags and notifies clients.
 	 */
-	private updateTrackStatusFromSystemState(flags: { powerOn?: boolean; emergencyStop?: boolean; short?: boolean }): void {
+	private updateTrackStatusFromSystemState(flags: DerivedTrackFlags): void {
 		const status = this.trackStatusManager.updateFromSystemState(flags);
 		this.broadcast({
 			type: 'system.message.trackpower',

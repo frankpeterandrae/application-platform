@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import type { Z21Dataset } from '../z21/codec-types';
+import type { Z21Dataset } from '../codec/codec-types';
 import type { Z21Event, Z21SystemState } from '../z21/event-types';
 
 /**

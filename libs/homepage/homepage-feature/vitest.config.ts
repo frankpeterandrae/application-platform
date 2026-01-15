@@ -13,12 +13,6 @@ export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/homepage-feature'),
 	plugins: [angular(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			'@application-platform/testing': resolve(__dirname, '../../shared/testing/src/index.ts'),
-			'@application-platform/config': resolve(process.cwd(), 'libs/homepage/config/src/index.ts')
-		}
-	},
 	test: {
 		environment: 'jsdom',
 		globals: true,

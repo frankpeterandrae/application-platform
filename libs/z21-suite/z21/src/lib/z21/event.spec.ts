@@ -60,7 +60,7 @@ describe('dataToEvent', () => {
 		const adrMsb = (addr >> 8) & 0x3f;
 		const adrLsb = addr & 0xff;
 		// [xHeader, adrMsb, adrLsb, db2 (speed step code), db3 (forward bit + speedRaw)]
-		const payload = new Uint8Array([0xef, adrMsb, adrLsb, 0x02, 0x80 | 0x40]); // speedStepCode=2 -> 28, forward=true, speedRaw=64
+		const payload = new Uint8Array([0xef, adrMsb, adrLsb, 0x02, 0x80 | 0x40, 0x80]); // speedStepCode=2 -> 28, forward=true, speedRaw=64
 		const ds = { kind: 'ds.x.bus', xHeader: 0xef, data: payload } as const;
 		const events = dataToEvent(ds as any);
 		expect(events).toHaveLength(1);

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
 import { LocoManager } from './loco-manager';
 
 describe('LocoManager', () => {

@@ -3,10 +3,10 @@
  * All rights reserved.
  */
 
-/// <reference types="vitest" />
-
 import http from 'node:http';
 import path from 'node:path';
+
+import { vi, type Mock } from 'vitest';
 
 let lastUdpInstance: any = undefined;
 
@@ -24,6 +24,13 @@ vi.mock('@application-platform/z21', async () => {
 				on: vi.fn()
 			};
 			lastUdpInstance = inst;
+			return inst;
+		}),
+		Z21Service: vi.fn().mockImplementation(function (udp) {
+			const inst = {
+				sendTrackPower: vi.fn(),
+				demoPing: vi.fn()
+			};
 			return inst;
 		})
 	};
@@ -82,7 +89,7 @@ vi.mock('./infra/config/config', () => {
 });
 describe('main bootstrap', () => {
 	let createServerSpy: vi.SpyInstance;
-	let listenSpy: vi.Mock;
+	let listenSpy: Mock;
 	let consoleSpy: vi.SpyInstance;
 
 	beforeEach(() => {
@@ -130,11 +137,11 @@ describe('main bootstrap', () => {
 		const { Z21Udp } = z21Mock as any;
 		const { Z21EventHandler } = await import('./services/z21-service');
 
-		const udpInstance = (Z21Udp as vi.Mock).mock.results[0].value;
-		const rxHandler = (udpInstance.on as vi.Mock).mock.calls.find((call) => call[0] === 'rx')?.[1];
+		const udpInstance = (Z21Udp as Mock).mock.results[0].value;
+		const rxHandler = (udpInstance.on as Mock).mock.calls.find((call) => call[0] === 'rx')?.[1];
 		expect(rxHandler).toBeDefined();
 
-		const handlerInstance = (Z21EventHandler as vi.Mock).mock.results[0].value;
+		const handlerInstance = (Z21EventHandler as Mock).mock.results[0].value;
 		rxHandler({ type: 'datasets' });
 
 		expect(handlerInstance.handle).toHaveBeenCalledWith({ type: 'datasets' });
@@ -147,10 +154,10 @@ describe('main bootstrap', () => {
 		const domainMock = await vi.importMock('@application-platform/domain');
 		const { LocoManager } = domainMock as any;
 
-		const appWsInstance = (AppWsServer as vi.Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as vi.Mock).mock.results[0].value;
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
 
-		const onConnectionCalls = (appWsInstance.onConnection as vi.Mock).mock.calls[0];
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
 		const onDisconnect = onConnectionCalls[1];
 
 		onDisconnect();
@@ -197,10 +204,10 @@ describe('main bootstrap', () => {
 		const domainMock2 = await vi.importMock('@application-platform/domain');
 		const { LocoManager } = domainMock2 as any;
 
-		const appWsInstance = (AppWsServer as vi.Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as vi.Mock).mock.results[0].value;
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
 
-		const onConnectionCalls = (appWsInstance.onConnection as vi.Mock).mock.calls[0];
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
 		const onDisconnect = onConnectionCalls[1];
 
 		onDisconnect();

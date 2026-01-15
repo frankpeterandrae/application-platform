@@ -2,6 +2,7 @@
  * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
+
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 

@@ -6,6 +6,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { vi, type Mock } from 'vitest';
+
 import { loadConfig } from './config';
 
 vi.mock('node:fs');
@@ -19,8 +21,8 @@ describe('loadConfig', () => {
 		vi.spyOn(console, 'log').mockImplementation(() => {
 			// do nothing
 		});
-		(path.resolve as unknown as vi.Mock | undefined)?.mockReset?.();
-		(fs.readFileSync as unknown as vi.Mock | undefined)?.mockReset?.();
+		(path.resolve as unknown as Mock | undefined)?.mockReset?.();
+		(fs.readFileSync as unknown as Mock | undefined)?.mockReset?.();
 	});
 
 	afterAll(() => {
@@ -29,7 +31,7 @@ describe('loadConfig', () => {
 
 	it('returns DEFAULT when config file is missing', () => {
 		(process.env as any).Z21_CONFIG = undefined;
-		(fs.readFileSync as unknown as vi.Mock).mockImplementation(() => {
+		(fs.readFileSync as unknown as Mock).mockImplementation(() => {
 			throw new Error('ENOENT');
 		});
 
@@ -45,7 +47,7 @@ describe('loadConfig', () => {
 	it('uses Z21_CONFIG env var to resolve path and loads file', () => {
 		(process.env as any).Z21_CONFIG = 'custom/path/config.json';
 		const resolved = path.resolve(process.env.Z21_CONFIG!);
-		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(JSON.stringify({ httpPort: 3000 }));
+		(fs.readFileSync as unknown as Mock).mockReturnValue(JSON.stringify({ httpPort: 3000 }));
 
 		const cfg = loadConfig();
 
@@ -56,7 +58,7 @@ describe('loadConfig', () => {
 
 	it('loads config.json from CWD when env var is not set', () => {
 		(process.env as any).Z21_CONFIG = undefined;
-		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(JSON.stringify({ z21: { host: '10.0.0.5' } }));
+		(fs.readFileSync as unknown as Mock).mockReturnValue(JSON.stringify({ z21: { host: '10.0.0.5' } }));
 
 		const cfg = loadConfig();
 
@@ -65,7 +67,7 @@ describe('loadConfig', () => {
 	});
 
 	it('deep merges nested z21 and safety sections while preserving defaults', () => {
-		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(
+		(fs.readFileSync as unknown as Mock).mockReturnValue(
 			JSON.stringify({
 				httpPort: 9090,
 				z21: { udpPort: 30000 },
@@ -81,7 +83,7 @@ describe('loadConfig', () => {
 	});
 
 	it('falls back to DEFAULT on JSON parse error', () => {
-		(fs.readFileSync as unknown as vi.Mock).mockReturnValue('this is not json');
+		(fs.readFileSync as unknown as Mock).mockReturnValue('this is not json');
 
 		const cfg = loadConfig();
 

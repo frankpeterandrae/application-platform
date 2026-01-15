@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type DerivedTrackFlags, type TrackStatus } from './track-types';
+import { type TrackStatus } from './track-types';
 
 /**
  * Manages and merges track power/status state coming from X-Bus power events
@@ -35,7 +35,7 @@ export class TrackStatusManager {
 	 * @param flags - Derived flags from a system state message.
 	 * @returns Updated track status.
 	 */
-	public updateFromSystemState(flags: DerivedTrackFlags): TrackStatus {
+	public updateFromSystemState(flags: TrackStatus): TrackStatus {
 		const powerOn = this.status.source === 'ds.x.bus' && this.status.powerOn !== undefined ? this.status.powerOn : flags.powerOn;
 
 		this.status = {

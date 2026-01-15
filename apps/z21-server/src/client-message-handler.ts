@@ -5,7 +5,7 @@
 
 import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
-import type { Z21Udp } from '@application-platform/z21';
+import type { Z21Service } from '@application-platform/z21';
 
 /**
  * Function signature used to emit server-to-client protocol messages.
@@ -22,12 +22,12 @@ export class ClientMessageHandler {
 	/**
 	 * Creates a new ClientMessageHandler.
 	 * @param locoManager - Manages locomotive state (speed, direction, functions)
-	 * @param z21Udp - Z21 UDP transport used for signaling/demo pings
+	 * @param z21Service - Z21 UDP transport used for signaling/demo pings
 	 * @param broadcast - Function to emit server-to-client messages
 	 */
 	constructor(
 		private readonly locoManager: LocoManager,
-		private readonly z21Udp: Z21Udp,
+		private readonly z21Service: Z21Service,
 		private readonly broadcast: BroadcastFn
 	) {}
 
@@ -52,14 +52,14 @@ export class ClientMessageHandler {
 
 			case 'system.command.trackpower.set':
 				// Ping the Z21 gateway (demo behavior), then broadcast new power state
-				this.z21Udp.demoPing();
+				this.z21Service.sendTrackPower(msg.on);
 				this.broadcast({ type: 'system.message.trackpower', on: msg.on, short: false });
 				return;
 
 			case 'loco.command.drive': {
 				// Update locomotive speed/direction and inform clients of the new state
 				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
-				this.z21Udp.demoPing();
+				this.z21Service.demoPing();
 				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
 				return;
 			}
@@ -67,14 +67,14 @@ export class ClientMessageHandler {
 			case 'loco.command.function.set': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, msg.on);
-				this.z21Udp.demoPing();
+				this.z21Service.demoPing();
 				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
 				return;
 			}
 
 			case 'switching.command.turnout.set': {
 				// Update turnout state and notify clients
-				this.z21Udp.demoPing();
+				this.z21Service.demoPing();
 				this.broadcast({ type: 'switching.message.turnout.state', addr: msg.addr, state: msg.state });
 				return;
 			}
