@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { AddessByteMask, FULL_BYTE_MASK, SpeedByteMask, TrackPowerValue, XBusHeader, Z21LanHeader } from '../constants';
+import { AddessByteMask, FULL_BYTE_MASK, LAN_X_COMMANDS, SpeedByteMask, Z21LanHeader } from '../constants';
 
 import { encodeLanX, encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn, encodeLocoDrive128, xbusXor } from './frames';
 
@@ -42,32 +42,21 @@ describe('xbusXor', () => {
 
 describe('encodeLanX', () => {
 	it('encodes minimal xbus frame with header and checksum', () => {
-		const xbus = [0x21];
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_STOP');
 
 		expect(Buffer.isBuffer(result)).toBe(true);
 		expect(result.length).toBe(6); // 2 (len) + 2 (header) + 1 (xbus) + 1 (xor)
 	});
 
 	it('writes correct data length at start', () => {
-		const xbus = [0x21, 0x80];
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
 		const len = result.readUInt16LE(0);
 
 		expect(len).toBe(result.length);
 	});
 
-	it('writes LAN_X header at correct position', () => {
-		const xbus = [0x21, 0x80];
-		const result = encodeLanX(xbus);
-		const header = result.readUInt16LE(2);
-
-		expect(header).toBe(Z21LanHeader.LAN_X);
-	});
-
 	it('copies xbus payload to correct position', () => {
-		const xbus = [0x21, 0x80];
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
 
 		expect(result[4]).toBe(0x21);
 		expect(result[5]).toBe(0x80);
@@ -75,7 +64,7 @@ describe('encodeLanX', () => {
 
 	it('writes xor checksum at end', () => {
 		const xbus = [0x21, 0x80];
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
 		const expectedXor = xbusXor(xbus);
 
 		expect(result[result.length - 1]).toBe(expectedXor);
@@ -83,30 +72,30 @@ describe('encodeLanX', () => {
 
 	it('handles large xbus payloads', () => {
 		const xbus = Array.from({ length: 100 }, (_, i) => i & FULL_BYTE_MASK);
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF', xbus);
 
-		expect(result.length).toBe(2 + 2 + xbus.length + 1);
+		expect(result.length).toBe(2 + 2 + 2 + xbus.length + 1);
 		expect(result.readUInt16LE(0)).toBe(result.length);
 	});
 
 	it('encodes track power command correctly', () => {
-		const xbus = [XBusHeader.TrackPower, TrackPowerValue.On];
-		const result = encodeLanX(xbus);
+		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
+		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
 
 		expect(result.length).toBe(7);
-		expect(result[4]).toBe(XBusHeader.TrackPower);
-		expect(result[5]).toBe(TrackPowerValue.On);
+		expect(result[4]).toBe(trackPowerOff.xBusHeader);
+		expect(result[5]).toBe(trackPowerOff.xBusCmd);
 	});
 
 	it('produces different output for different payloads', () => {
-		const result1 = encodeLanX([0x21, 0x80]);
-		const result2 = encodeLanX([0x21, 0x81]);
+		const result1 = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
+		const result2 = encodeLanX('LAN_X_SET_TRACK_POWER_ON');
 
 		expect(result1).not.toEqual(result2);
 	});
 
 	it('produces consistent output for identical input', () => {
-		const xbus = [0x21, 0x80];
+		const xbus = 'LAN_X_SET_TRACK_POWER_OFF';
 		const result1 = encodeLanX(xbus);
 		const result2 = encodeLanX(xbus);
 
@@ -134,21 +123,24 @@ describe('encodeLanXSetTrackPowerOff', () => {
 		expect(header).toBe(Z21LanHeader.LAN_X);
 	});
 
-	it('includes TrackPower xbus header', () => {
+	it('includes STATUS xbus header', () => {
 		const result = encodeLanXSetTrackPowerOff();
 
-		expect(result[4]).toBe(XBusHeader.TrackPower);
+		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
+		expect(result[4]).toBe(trackPowerOff.xBusHeader);
 	});
 
 	it('includes Off track power value', () => {
 		const result = encodeLanXSetTrackPowerOff();
 
-		expect(result[5]).toBe(TrackPowerValue.Off);
+		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
+		expect(result[5]).toBe(trackPowerOff.xBusCmd);
 	});
 
 	it('includes valid xor checksum', () => {
 		const result = encodeLanXSetTrackPowerOff();
-		const payload = [XBusHeader.TrackPower, TrackPowerValue.Off];
+		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
+		const payload = [trackPowerOff.xBusHeader, trackPowerOff.xBusCmd];
 		const expectedXor = xbusXor(payload);
 
 		expect(result[6]).toBe(expectedXor);
@@ -189,21 +181,24 @@ describe('encodeLanXSetTrackPowerOn', () => {
 		expect(header).toBe(Z21LanHeader.LAN_X);
 	});
 
-	it('includes TrackPower xbus header', () => {
+	it('includes STATUS xbus header', () => {
 		const result = encodeLanXSetTrackPowerOn();
 
-		expect(result[4]).toBe(XBusHeader.TrackPower);
+		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
+		expect(result[4]).toBe(trackPowerOn.xBusHeader);
 	});
 
 	it('includes On track power value', () => {
 		const result = encodeLanXSetTrackPowerOn();
 
-		expect(result[5]).toBe(TrackPowerValue.On);
+		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
+		expect(result[5]).toBe(trackPowerOn.xBusCmd);
 	});
 
 	it('includes valid xor checksum', () => {
 		const result = encodeLanXSetTrackPowerOn();
-		const payload = [XBusHeader.TrackPower, TrackPowerValue.On];
+		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
+		const payload = [trackPowerOn.xBusHeader, trackPowerOn.xBusCmd];
 		const expectedXor = xbusXor(payload);
 
 		expect(result[6]).toBe(expectedXor);
@@ -228,17 +223,20 @@ describe('encodeLocoDrive128', () => {
 	it('encodes forward direction with zero speed', () => {
 		const result = encodeLocoDrive128(3, 0, 'FWD');
 
+		const fullCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_DRIVE_128;
 		expect(Buffer.isBuffer(result)).toBe(true);
 		expect(result.readUInt16LE(2)).toBe(Z21LanHeader.LAN_X);
-		expect(result[4]).toBe(XBusHeader.LocoDrive);
-		expect(result[5]).toBe(0x13);
+		expect(result[4]).toBe(fullCommand.xBusHeader);
+		expect(result[5]).toBe(fullCommand.xBusCmd);
 	});
 
 	it('encodes reverse direction with zero speed', () => {
 		const result = encodeLocoDrive128(3, 0, 'REV');
 
+		const fullCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_DRIVE_128;
 		expect(Buffer.isBuffer(result)).toBe(true);
-		expect(result[4]).toBe(XBusHeader.LocoDrive);
+		expect(result[4]).toBe(fullCommand.xBusHeader);
+		expect(result[5]).toBe(fullCommand.xBusCmd);
 	});
 
 	it('encodes minimum valid address', () => {

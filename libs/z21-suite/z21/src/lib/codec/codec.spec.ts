@@ -5,7 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { FULL_BYTE_MASK, XBusHeader, Z21LanHeader } from '../constants';
+import { FULL_BYTE_MASK, Z21LanHeader } from '../constants';
 
 import { parseZ21Datagram } from './codec';
 
@@ -35,13 +35,13 @@ describe('parseZ21Datagram', () => {
 		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
 			// do nothing
 		});
-		const payload = [XBusHeader.TrackPower, 0x02, 0x03];
+		const payload = [0x21, 0x02, 0x03];
 		const xor = (xor8(payload) + 1) & FULL_BYTE_MASK;
 		const buf = makeFrame(Z21LanHeader.LAN_X, [...payload, xor]);
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: XBusHeader.TrackPower, data: Uint8Array.from(payload) });
+		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: 0x21, data: Uint8Array.from(payload) });
 		expect(warnSpy).toHaveBeenCalled();
 		warnSpy.mockRestore();
 	});

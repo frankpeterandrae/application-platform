@@ -51,7 +51,7 @@ export class Z21Service {
 	/**
 	 * Set or toggle a locomotive function (F0..Fn).
 	 *
-	 * Encodes a LAN/X frame that contains an X-BUS SetLocoFunction command and sends it.
+	 * Encodes a LAN/X frame that contains an X-BUS LOCO_FUNCTION command and sends it.
 	 * Logs the encoded frame hex for debugging.
 	 *
 	 * @param address - Locomotive address to apply the function change.
@@ -68,7 +68,7 @@ export class Z21Service {
 	/**
 	 * Request locomotive information (CVs / capabilities) from the Z21.
 	 *
-	 * Encodes the LAN/X GetLocoInfo command and sends it to the central.
+	 * Encodes the LAN/X LOCO_INFO command and sends it to the central.
 	 *
 	 * @param address - Address of the locomotive to query.
 	 */

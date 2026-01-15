@@ -9,10 +9,10 @@ import { encodeXBusLanFrame } from './x-bus-encoder';
 
 describe('encodeXBusLanFrame', () => {
 	it('encodes no-payload frame as LAN_X followed by header', () => {
-		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL);
+		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 		expect(buf.length).toBe(4);
 		expect(buf.readUInt16LE(0)).toBe(0x0004);
-		expect(buf.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL);
+		expect(buf.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 	});
 
 	it('encodes payload frame with length prefix and copies payload', () => {
@@ -25,11 +25,11 @@ describe('encodeXBusLanFrame', () => {
 	});
 
 	it('treats empty Buffer same as undefined (produces 4-byte LAN_X frame)', () => {
-		const bufWithEmpty = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL, Buffer.alloc(0));
-		const bufWithout = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL);
+		const bufWithEmpty = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL_NUMBER, Buffer.alloc(0));
+		const bufWithout = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 		expect(bufWithEmpty.length).toBe(4);
 		expect(bufWithEmpty.readUInt16LE(0)).toBe(0x0004);
-		expect(bufWithEmpty.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL);
+		expect(bufWithEmpty.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 		expect(bufWithEmpty.equals(bufWithout)).toBe(true);
 	});
 });

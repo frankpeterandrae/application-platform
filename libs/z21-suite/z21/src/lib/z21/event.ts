@@ -12,14 +12,13 @@ import {
 	F29ToF31FunctionsByteMask,
 	F5ToF12FunctionsByteMask,
 	InfoByteMask,
+	LAN_X_COMMANDS,
 	LowFunctionsByteMask,
 	SpeedByteMask,
-	StatusChangedDb0,
-	TrackPowerBroadcastValue,
-	XBusHeader
+	type LanXCommandKey
 } from '../constants';
 
-import { CentralStatus, type DerivedTrackFlags, type Z21Event } from './event-types';
+import { CentralStatus, CentralStatusEx, type DerivedTrackFlags, type Z21Event } from './event-types';
 
 /**
  * Converts a decoded Z21 dataset into one or more higher-level events.
@@ -41,27 +40,14 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 	const b = ds.data;
 	const xHeader = b[0];
 
-	// Track power broadcasts :contentReference[oaicite:12]{index=12}
-	if (xHeader === XBusHeader.TrackPowerBroadcast && b.length >= 2) {
-		const db0 = b[1];
-		if (db0 === TrackPowerBroadcastValue.Off) {
-			return [{ type: 'event.track.power', on: false }];
-		}
-		if (db0 === TrackPowerBroadcastValue.On) {
-			return [{ type: 'event.track.power', on: true }];
-		}
-	}
-
-	// Status changed :contentReference[oaicite:13]{index=13}
-	if (xHeader === XBusHeader.StatusChanged && b.length >= 3) {
-		const db0 = b[1];
-		if (db0 === StatusChangedDb0.CentralStatus) {
-			return [{ type: 'event.system.state', statusMask: b[2] }];
-		}
-	}
-
-	// Loco info :contentReference[oaicite:14]{index=14}
-	if (xHeader === XBusHeader.LocoInfo && b.length >= 6) {
+	const command: LanXCommandKey = decodeData(b);
+	if (command === 'LAN_X_BC_TRACK_POWER_OFF') {
+		return [{ type: 'event.track.power', on: false }];
+	} else if (command === 'LAN_X_BC_TRACK_POWER_ON') {
+		return [{ type: 'event.track.power', on: true }];
+	} else if (command === 'LAN_X_STATUS_CHANGED') {
+		return [{ type: 'event.system.state', statusMask: b[2] }];
+	} else if (command === 'LAN_X_LOCO_INFO' && b.length >= 6) {
 		const adrMsb = b[1] & AddessByteMask.MSB;
 		const adrLsb = b[2];
 		const addr = (adrMsb << 8) + adrLsb;
@@ -176,6 +162,7 @@ function decodeSystemState(state: Uint8Array): Z21SystemState {
  */
 export function deriveTrackFlagsFromSystemState(sysState: { centralState: number; centralStateEx: number }): DerivedTrackFlags {
 	const cs = sysState.centralState;
+	const csEx = sysState.centralStateEx;
 
 	const emergencyStop = (cs & CentralStatus.EmergencyStop) !== 0;
 	const short = (cs & CentralStatus.ShortCircuit) !== 0;
@@ -184,5 +171,41 @@ export function deriveTrackFlagsFromSystemState(sysState: { centralState: number
 
 	const programmingMode = (cs & CentralStatus.ProgrammingModeActive) !== 0;
 
-	return { powerOn, emergencyStop, short, programmingMode };
+	const highTemperature = (csEx & CentralStatusEx.HighTemperature) !== 0;
+	const powerLost = (csEx & CentralStatusEx.PowerLost) !== 0;
+	const shortCircuitExternal = (csEx & CentralStatusEx.ShortCircuitExternal) !== 0;
+	const shortCircuitInternal = (csEx & CentralStatusEx.ShortCircuitInternal) !== 0;
+	const cseRCN2130Mode = (csEx & CentralStatusEx.CseRCN2130Mode) !== 0;
+
+	return {
+		powerOn,
+		emergencyStop,
+		short,
+		programmingMode,
+		highTemperature,
+		powerLost,
+		shortCircuitExternal,
+		shortCircuitInternal,
+		cseRCN2130Mode
+	};
+}
+
+/**
+ * Decodes the LAN X command from raw X-Bus data.
+ * @param data - Raw X-Bus data bytes.
+ * @returns The identified LanXCommandKey, or 'LAN_X_UNKNOWN_COMMAND' if unrecognized.
+ */
+function decodeData(data: Uint8Array): LanXCommandKey {
+	const header = data[0];
+	const commandByte = data[1];
+	/** decode LAN X command */
+	for (const [key, value] of Object.entries(LAN_X_COMMANDS)) {
+		const hasXBusCmd = 'xBusCmd' in value;
+		if (hasXBusCmd && header === value.xBusHeader && commandByte === value.xBusCmd) {
+			return key as LanXCommandKey;
+		} else if (!hasXBusCmd && header === value.xBusHeader) {
+			return key as LanXCommandKey;
+		}
+	}
+	return 'LAN_X_UNKNOWN_COMMAND';
 }
