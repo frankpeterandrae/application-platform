@@ -2,8 +2,9 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import { type Direction } from '@application-platform/domain';
 
-import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn } from '../codec/frames';
+import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn, encodeLocoDrive128 } from '../codec/frames';
 import { type Z21Udp } from '../udp/udp';
 
 /**
@@ -23,6 +24,20 @@ export class Z21Service {
 	 */
 	public sendTrackPower(on: boolean): void {
 		const buf = on ? encodeLanXSetTrackPowerOn() : encodeLanXSetTrackPowerOff();
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Sends a locomotive drive command (speed and direction) to the Z21 device.
+	 * Converts fractional speed (0-1) to 128-step DCC speed commands.
+	 * @param address - Locomotive address (1-9999)
+	 * @param speed - Fractional speed (0.0 = stop, 1.0 = full speed)
+	 * @param forward - Direction ('FWD' for forward, 'REV' for reverse)
+	 */
+	public setLocoDrive(address: number, speed: number, forward: Direction): void {
+		const buf = encodeLocoDrive128(address, speed, forward);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx LOCO_DRIVE', `addr=${address}`, `speed=${speed}`, forward, buf.toString('hex'));
 		this.udp.sendRaw(buf);
 	}
 

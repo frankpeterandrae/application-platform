@@ -96,10 +96,11 @@ export class AppComponent {
 	 * @param v - Target speed value (numeric scale used by the UI/protocol).
 	 */
 	public setSpeed(v: number): void {
+		const step = this.uiSpeedToStep128(v);
 		this.speed.set(v);
-		this.send({ type: 'loco.command.drive', addr: this.addr(), speed: v, dir: this.dir(), steps: 128 });
 		// eslint-disable-next-line no-console
-		console.log('setSpeed', v);
+		console.log({ type: 'loco.command.drive', addr: this.addr(), speed: step, dir: this.dir(), steps: 128 });
+		this.send({ type: 'loco.command.drive', addr: this.addr(), speed: v, dir: this.dir(), steps: 128 });
 	}
 
 	/**
@@ -121,6 +122,16 @@ export class AppComponent {
 	public sendTurnout(state: 'STRAIGHT' | 'DIVERGING'): void {
 		this.send({ type: 'switching.command.turnout.set', addr: this.turnoutAddr(), state, pulseMs: 200 });
 	}
+
+	private clamp01(x: number): number {
+		return Math.max(0, Math.min(1, x));
+	}
+
+	private uiSpeedToStep128(ui: number): number {
+		// 0..1 -> 0..126
+		return Math.round(this.clamp01(ui) * 126);
+	}
+
 	private connect(): void {
 		const proto = location.protocol === 'https:' ? 'wss' : 'ws';
 		this.ws = new WebSocket(`${proto}://${location.host}`);

@@ -17,6 +17,7 @@ describe('ClientMessageHandler.handle', () => {
 	let z21Service: {
 		sendTrackPower: Mock;
 		demoPing: Mock;
+		setLocoDrive: Mock;
 	};
 	let handler: ClientMessageHandler;
 
@@ -28,7 +29,8 @@ describe('ClientMessageHandler.handle', () => {
 		} as any;
 		z21Service = {
 			sendTrackPower: vi.fn(),
-			demoPing: vi.fn()
+			demoPing: vi.fn(),
+			setLocoDrive: vi.fn()
 		} as any;
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, broadcast);
 	});
@@ -50,7 +52,7 @@ describe('ClientMessageHandler.handle', () => {
 		locoManager.setSpeed.mockReturnValue({ speed: 42, dir: 'REV', fns: { 1: true } });
 		handler.handle({ type: 'loco.command.drive', addr: 5, speed: 42, dir: 'REV' } as unknown as ClientToServer);
 		expect(locoManager.setSpeed).toHaveBeenCalledWith(5, 42, 'REV');
-		expect(z21Service.demoPing).toHaveBeenCalled();
+		expect(z21Service.setLocoDrive).toHaveBeenCalledWith(5, 42, 'REV');
 		expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', addr: 5, speed: 42, dir: 'REV', fns: { 1: true } });
 	});
 

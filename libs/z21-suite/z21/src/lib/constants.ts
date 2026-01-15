@@ -33,6 +33,10 @@ export const enum XBusHeader {
 	TrackPowerBroadcast = 0x61,
 	/** Broadcast notification of a general status change event. */
 	StatusChanged = 0x62,
+	/** Command to request locomotive information. */
+	GetLocoInfo = 0xe3,
+	/** Command to drive a locomotive (speed/direction). */
+	LocoDrive = 0xe4,
 	/** Locomotive information or status query/response. */
 	LocoInfo = 0xef
 }
