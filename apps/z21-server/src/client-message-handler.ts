@@ -37,10 +37,10 @@ export class ClientMessageHandler {
 	 *
 	 * Supported messages:
 	 * - server.command.session.hello: currently ignored
-	 * - trackpower.set: toggles track power and notifies clients
-	 * - loco.set: sets locomotive speed and direction, then broadcasts state
-	 * - loco.fn: toggles a locomotive function, then broadcasts state
-	 * - turnout.set: sets turnout state and notifies clients
+	 * - system.command.trackpower.set: toggles track power and notifies clients
+	 * - loco.command.drive: sets locomotive speed and direction, then broadcasts state
+	 * - loco.command.function.set: toggles a locomotive function, then broadcasts state
+	 * - switching.command.turnout.set: sets turnout state and notifies clients
 	 *
 	 * @param msg - The client-to-server protocol message
 	 */
@@ -59,7 +59,7 @@ export class ClientMessageHandler {
 			case 'loco.command.drive': {
 				// Update locomotive speed/direction and inform clients of the new state
 				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
-				this.z21Service.demoPing();
+				this.z21Service.setLocoDrive(msg.addr, msg.speed, msg.dir);
 				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
 				return;
 			}

@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { type Direction } from '@application-platform/domain';
+
 import { TrackPowerValue, XBusHeader, Z21LanHeader } from '../constants';
 
 /**
@@ -57,4 +59,62 @@ export function encodeLanXSetTrackPowerOff(): Buffer {
  */
 export function encodeLanXSetTrackPowerOn(): Buffer {
 	return encodeLanX([XBusHeader.TrackPower, TrackPowerValue.On]); // XOR becomes 0xA0
+}
+
+/**
+ * Encodes speed value for 128-step DCC speed control.
+ * Maps speed steps (0-126) to protocol values (0-127), with special handling for emergency stop.
+ * @param step - Speed step (0 = stop, 1-126 = speed levels, >126 = max speed)
+ * @param estop - Whether to indicate emergency stop (true = estop, false = normal)
+ * @returns Encoded speed value (0-127)
+ */
+function encodeSpeed128(step: number, estop = false): number {
+	if (estop) return 1;
+	if (step <= 0) return 0;
+	if (step > 126) step = 126;
+	return step + 1; // Step 1 -> 2, Step 126 -> 127
+}
+
+/**
+ * Encodes direction and speed into a single byte.
+ * The highest bit indicates direction (1 = forward, 0 = reverse).
+ * The lower 7 bits represent the speed code (0-127).
+ * @param forward - Direction ('FWD' for forward, 'REV' for reverse)
+ * @param speedCode0to127 - Speed code (0-127)
+ * @returns Encoded direction/speed byte
+ */
+function encodeDirSpeedByte(forward: Direction, speedCode0to127: number): number {
+	const directionBit = forward === 'FWD' ? 0x80 : 0x00;
+	return directionBit | (speedCode0to127 & 0x7f);
+}
+
+/**
+ * Encodes a locomotive drive command with 128 speed steps.
+ * Constructs a LAN_X message with LocoDrive header, address, and direction/speed byte.
+ * @param address - Locomotive address (1-9999)
+ * @param step0to126 - Speed step (0 = stop, 1-126 = speed levels, >126 = max speed)
+ * @param forward - Direction ('FWD' for forward, 'REV' for reverse)
+ * @returns Buffer containing the locomotive drive command
+ */
+export function encodeLocoDrive128(address: number, step0to126: number, forward: Direction): Buffer {
+	if (address < 1 || address > 9999) {
+		throw new Error(`Address (${address}) out of range (1..9999)`);
+	}
+	if (step0to126 < 0 || step0to126 > 128) {
+		throw new Error('Speed out of range (0..128)');
+	}
+
+	const addHigh = (address >> 8) & 0x3f;
+	const addLow = address & 0xff;
+
+	const speedCode = encodeSpeed128(step0to126);
+	const rv = encodeDirSpeedByte(forward, speedCode);
+
+	return encodeLanX([
+		XBusHeader.LocoDrive,
+		0x13, // 128 speed steps
+		addHigh,
+		addLow,
+		rv
+	]);
 }

@@ -113,7 +113,7 @@ wsServer.onConnection(
 udp.start(21105);
 udp.sendGetSerial(); // -> should trigger 1 UDP response
 // Broadcasts aktivieren: basic + systemState
-udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic | Z21BroadcastFlag.SystemState);
+udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
 // Initial sofort ziehen (sonst wartest du ggf. bis zur nächsten Änderung)
 udp.sendSystemStateGetData();
 

@@ -29,10 +29,16 @@ vi.mock('@application-platform/z21', async () => {
 		Z21Service: vi.fn().mockImplementation(function (udp) {
 			const inst = {
 				sendTrackPower: vi.fn(),
-				demoPing: vi.fn()
+				demoPing: vi.fn(),
+				setLocoDrive: vi.fn()
 			};
 			return inst;
-		})
+		}),
+		Z21BroadcastFlag: {
+			None: 0x00000000,
+			Basic: 0x00000001,
+			SystemState: 0x00000100
+		}
 	};
 });
 vi.mock('@application-platform/server-utils', () => {
@@ -115,7 +121,7 @@ describe('main bootstrap', () => {
 
 		expect(udpInstance.start).toHaveBeenCalledWith(21105);
 		expect(udpInstance.sendGetSerial).toHaveBeenCalled();
-		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000101);
+		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000001);
 		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalled();
 	});
 
