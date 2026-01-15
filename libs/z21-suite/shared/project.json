@@ -1,0 +1,19 @@
+{
+	"name": "z21-shared",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/z21-suite/shared/src",
+	"projectType": "library",
+	"tags": ["type:shared", "scope:z21", "platform:agnostic"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/z21-suite/shared/tsconfig.spec.json",
+				"vitestConfig": "libs/z21-suite/shared/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/z21-suite/shared",
+				"passWithNoTests": true
+			}
+		}
+	}
+}

@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-export type Direction = 'FWD' | 'REV';
+import { type Direction } from '@application-platform/z21-shared';
 
 export type LocoState = {
 	speed: number;

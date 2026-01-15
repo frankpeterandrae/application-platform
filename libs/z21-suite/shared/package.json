@@ -1,0 +1,13 @@
+{
+	"name": "@application-platform/z21-shared",
+	"version": "0.0.1",
+	"private": true,
+	"type": "commonjs",
+	"main": "./src/index.js",
+	"types": "./src/index.d.ts",
+	"dependencies": {
+		"tslib": "^2.3.0",
+		"vitest": "^4.0.8",
+		"@nx/vite": "22.3.3"
+	}
+}

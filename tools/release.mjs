@@ -1,11 +1,16 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const run = (cmd) => execSync(cmd, { stdio: 'inherit' });
 
-run('nx build ui');
-run('nx build server');
+run('nx build z21-ui');
+run('nx build z21-server');
 
 // Safely remove existing release directory (Windows-friendly)
 try {
@@ -17,11 +22,11 @@ try {
 fs.mkdirSync(path.resolve('release/public'), { recursive: true });
 fs.mkdirSync(path.resolve('release/server'), { recursive: true });
 
-const uiOut = fs.existsSync('dist/apps/ui/browser') ? 'dist/apps/ui/browser' : 'dist/apps/ui';
+const uiOut = fs.existsSync('dist/apps/z21-ui/browser') ? 'dist/apps/z21-ui/browser' : 'dist/apps/z21-ui';
 
 copyDir(path.resolve(uiOut), path.resolve('release/public'));
-copyDir(path.resolve('dist/apps/server'), path.resolve('release/server'));
-copyFileIfExists('apps/server/config.json', 'release/config.json');
+copyDir(path.resolve('dist/apps/z21-server'), path.resolve('release/server'));
+copyFileIfExists('apps/z21-server/config.json', 'release/config.json');
 
 console.log('✅ release/ ready');
 
