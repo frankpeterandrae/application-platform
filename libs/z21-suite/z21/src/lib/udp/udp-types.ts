@@ -3,8 +3,10 @@
  * All rights reserved.
  */
 
+import type { Z21SystemState } from '@application-platform/z21-shared';
+
 import type { Z21Dataset } from '../codec/codec-types';
-import type { Z21Event, Z21SystemState } from '../z21/event-types';
+import type { Z21Event } from '../z21/event-types';
 
 /**
  * Unified shape for inbound Z21 UDP payloads raised by Z21Udp.

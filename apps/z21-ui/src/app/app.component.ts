@@ -2,10 +2,11 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-
+import { KeyValuePipe, type KeyValue } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import type { ClientToServer, ServerToClient } from '@application-platform/protocol';
 import { PROTOCOL_VERSION } from '@application-platform/protocol';
+import { type Direction } from '@application-platform/z21-shared';
 
 /**
  * Root application component for the z21 UI.
@@ -21,11 +22,16 @@ import { PROTOCOL_VERSION } from '@application-platform/protocol';
  */
 @Component({
 	selector: 'z21-app-root',
-	imports: [],
+	imports: [KeyValuePipe],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss'
 })
 export class AppComponent {
+	/**
+	 * Indicates if the speed slider is currently being dragged.
+	 * Template can bind to this signal to adjust UI behavior during dragging.
+	 */
+	public draggingSpeed = signal(false);
 	/**
 	 * Connection status signal. Values: 'connected' | 'disconnected'.
 	 * Template can subscribe to this signal to display connection state.
@@ -41,7 +47,7 @@ export class AppComponent {
 	/**
 	 * Currently selected locomotive address (UI control).
 	 */
-	public addr = signal(3);
+	public addr = signal(1845);
 
 	/**
 	 * Current speed value held in the UI; use `setSpeed` to update and notify the server.
@@ -52,12 +58,12 @@ export class AppComponent {
 	 * Current direction selection for the locomotive.
 	 * Allowed values: 'FWD' | 'REV'.
 	 */
-	public dir = signal<'FWD' | 'REV'>('FWD');
+	public dir = signal<Direction>('FWD');
 
 	/**
 	 * Example function/feature toggle (f0).
 	 */
-	public f0 = signal(false);
+	public functions = signal<Record<number, boolean>>({});
 
 	/**
 	 * Turnout (switch) address selected in the UI.
@@ -75,6 +81,23 @@ export class AppComponent {
 	 * @private
 	 */
 	private ws?: WebSocket;
+
+	/**
+	 * Numeric key sorting function for KeyValuePipe.
+	 * Ensures that keys which can be parsed as numbers are sorted numerically.
+	 * Non-numeric keys are sorted lexicographically after numeric keys.
+	 * @param a - First key-value pair
+	 * @param b - Second key-value pair
+	 * @returns Negative if a < b, positive if a > b, zero if equal
+	 */
+	protected numericKeySort = (a: KeyValue<string, unknown>, b: KeyValue<string, unknown>): number => {
+		const na = Number(a.key);
+		const nb = Number(b.key);
+		if (Number.isNaN(na) && Number.isNaN(nb)) return 0;
+		if (Number.isNaN(na)) return -1;
+		if (Number.isNaN(nb)) return 1;
+		return na - nb;
+	};
 
 	/**
 	 * Initialize component and establish WebSocket connection.
@@ -142,6 +165,7 @@ export class AppComponent {
 		this.ws.onclose = (): void => this.status.set('disconnected');
 		this.ws.onmessage = (ev): void => {
 			const msg = JSON.parse(ev.data) as ServerToClient;
+			this.updateFromServer(msg);
 			this.lastMsg.set(JSON.stringify(msg, null, 2));
 		};
 	}
@@ -163,5 +187,36 @@ export class AppComponent {
 			this.powerOn.set(true);
 			this.send({ type: 'system.command.trackpower.set', on: true });
 		}
+	}
+
+	private updateFromServer(msg: ServerToClient): void {
+		switch (msg.type) {
+			case 'system.message.trackpower':
+				this.powerOn.set(msg.on);
+				break;
+			case 'loco.message.state':
+				if (msg.addr === this.addr()) {
+					if (this.draggingSpeed()) return;
+					this.speed.set(this.step128ToUiSpeed(msg.speed));
+					this.dir.set(msg.dir);
+					this.functions.set(msg.fns);
+				}
+				break;
+			case 'switching.message.turnout.state':
+			case 'server.replay.session.ready':
+			case 'feedback.message.changed':
+			case 'system.message.z21.rx':
+				// no-op for now
+				break;
+			default:
+				break;
+		}
+	}
+
+	private step128ToUiSpeed(step: number): number {
+		// 0..126 -> 0..1
+		if (step <= 0) return 0;
+		if (step >= 126) return 1;
+		return step / 126;
 	}
 }

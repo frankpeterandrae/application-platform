@@ -4,7 +4,14 @@
  */
 import { type Direction } from '@application-platform/z21-shared';
 
-import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn, encodeLocoDrive128 } from '../codec/frames';
+import {
+	encdodeLanXGetLocoInfo,
+	encodeLanXSetLocoFunction,
+	encodeLanXSetTrackPowerOff,
+	encodeLanXSetTrackPowerOn,
+	encodeLocoDrive128
+} from '../codec/frames';
+import { type LocoFunctionSwitchType } from '../constants';
 import { type Z21Udp } from '../udp/udp';
 
 /**
@@ -38,6 +45,37 @@ export class Z21Service {
 		const buf = encodeLocoDrive128(address, speed, forward);
 		// eslint-disable-next-line no-console
 		console.log('[z21] tx LOCO_DRIVE', `addr=${address}`, `speed=${speed}`, forward, buf.toString('hex'));
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Set or toggle a locomotive function (F0..Fn).
+	 *
+	 * Encodes a LAN/X frame that contains an X-BUS SetLocoFunction command and sends it.
+	 * Logs the encoded frame hex for debugging.
+	 *
+	 * @param address - Locomotive address to apply the function change.
+	 * @param fn - Function index (e.g. 0..31 depending on loco capability).
+	 * @param on - One of the LocoFunctionSwitchType values (Off, On, Toggle).
+	 */
+	public setLocoFunction(address: number, fn: number, on: LocoFunctionSwitchType): void {
+		const buf = encodeLanXSetLocoFunction(address, fn, on);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx LOCO_FUNCTION', `addr=${address}`, `fn=${fn}`, `on=${on}`, buf.toString('hex'));
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Request locomotive information (CVs / capabilities) from the Z21.
+	 *
+	 * Encodes the LAN/X GetLocoInfo command and sends it to the central.
+	 *
+	 * @param address - Address of the locomotive to query.
+	 */
+	public getLocoInfo(address: number): void {
+		const buf = encdodeLanXGetLocoInfo(address);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx GET_LOCO_INFO', `addr=${address}`, buf.toString('hex'));
 		this.udp.sendRaw(buf);
 	}
 

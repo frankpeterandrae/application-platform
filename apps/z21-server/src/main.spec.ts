@@ -6,7 +6,7 @@
 import http from 'node:http';
 import path from 'node:path';
 
-import { vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock, type SpyInstance } from 'vitest';
 
 let lastUdpInstance: any = undefined;
 
@@ -26,13 +26,13 @@ vi.mock('@application-platform/z21', async () => {
 			lastUdpInstance = inst;
 			return inst;
 		}),
-		Z21Service: vi.fn().mockImplementation(function (udp) {
-			const inst = {
+		Z21Service: vi.fn().mockImplementation(function (_udp) {
+			return {
 				sendTrackPower: vi.fn(),
 				demoPing: vi.fn(),
-				setLocoDrive: vi.fn()
+				setLocoDrive: vi.fn(),
+				getLocoInfo: vi.fn()
 			};
-			return inst;
 		}),
 		Z21BroadcastFlag: {
 			None: 0x00000000,
@@ -46,22 +46,22 @@ vi.mock('@application-platform/server-utils', () => {
 		createStaticFileServer: vi.fn(function () {
 			return vi.fn();
 		}),
-		WsServer: vi.fn().mockImplementation(function (this: any, server: any) {
+		WsServer: vi.fn().mockImplementation(function (this: any, _server: any) {
 			// constructor-compatible stub; nothing required for tests since AppWsServer is mocked
-			this.server = server;
+			this.server = _server;
 		})
 	};
 });
 vi.mock('./app-websocket-server', () => {
 	return {
-		AppWsServer: vi.fn().mockImplementation(function (this: any, wsAdapter: any) {
+		AppWsServer: vi.fn().mockImplementation(function (this: any, _wsAdapter: any) {
 			return { onConnection: vi.fn(), broadcast: vi.fn(), sendToClient: vi.fn() };
 		})
 	};
 });
 vi.mock('./client-message-handler', () => {
 	return {
-		ClientMessageHandler: vi.fn().mockImplementation(function (this: any, locoManager: any, udp: any, broadcast: any) {
+		ClientMessageHandler: vi.fn().mockImplementation(function (this: any, _locoManager: any, _udp: any, _broadcast: any) {
 			return { handle: vi.fn() };
 		})
 	};
@@ -73,6 +73,7 @@ vi.mock('@application-platform/domain', () => {
 				{ addr: 3, state: { dir: 'fwd', fns: { 0: true } } },
 				{ addr: 7, state: { dir: 'rev', fns: { 2: false } } }
 			]);
+			this.subscribeLocoInfoOnce = vi.fn().mockReturnValue(true);
 		}),
 		TrackStatusManager: vi.fn().mockImplementation(function (this: any) {
 			this.getStatus = vi.fn();
@@ -81,7 +82,7 @@ vi.mock('@application-platform/domain', () => {
 });
 vi.mock('./services/z21-service', () => {
 	return {
-		Z21EventHandler: vi.fn().mockImplementation(function (this: any, trackStatusManager: any, broadcast: any) {
+		Z21EventHandler: vi.fn().mockImplementation(function (this: any, _trackStatusManager: any, _broadcast: any) {
 			return { handle: vi.fn() };
 		})
 	};
@@ -94,9 +95,9 @@ vi.mock('./infra/config/config', () => {
 	};
 });
 describe('main bootstrap', () => {
-	let createServerSpy: vi.SpyInstance;
+	let createServerSpy: SpyInstance;
 	let listenSpy: Mock;
-	let consoleSpy: vi.SpyInstance;
+	let consoleSpy: SpyInstance;
 
 	beforeEach(() => {
 		vi.resetModules();
@@ -220,5 +221,55 @@ describe('main bootstrap', () => {
 
 		expect(locoManagerInstance.stopAll).not.toHaveBeenCalled();
 		expect(appWsInstance.broadcast).not.toHaveBeenCalled();
+	});
+
+	it('requests loco info on connection when subscribeLocoInfoOnce returns true', async () => {
+		await import('./main');
+
+		const { AppWsServer } = await import('./app-websocket-server');
+		const z21Mock = await vi.importMock('@application-platform/z21');
+		const domainMock = await vi.importMock('@application-platform/domain');
+		const { Z21Service } = z21Mock as any;
+		const { LocoManager } = domainMock as any;
+
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
+		const z21ServiceInstance = (Z21Service as Mock).mock.results[0].value;
+
+		// ensure subscribeLocoInfoOnce returns true
+		(locoManagerInstance.subscribeLocoInfoOnce as Mock).mockReturnValue(true);
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onSubscribe = onConnectionCalls[2];
+
+		onSubscribe();
+
+		expect(locoManagerInstance.subscribeLocoInfoOnce).toHaveBeenCalledWith(1845);
+		expect(z21ServiceInstance.getLocoInfo).toHaveBeenCalledWith(1845);
+	});
+
+	it('does not request loco info on connection when subscribeLocoInfoOnce returns false', async () => {
+		await import('./main');
+
+		const { AppWsServer } = await import('./app-websocket-server');
+		const z21Mock = await vi.importMock('@application-platform/z21');
+		const domainMock = await vi.importMock('@application-platform/domain');
+		const { Z21Service } = z21Mock as any;
+		const { LocoManager } = domainMock as any;
+
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
+		const z21ServiceInstance = (Z21Service as Mock).mock.results[0].value;
+
+		// ensure subscribeLocoInfoOnce returns false
+		(locoManagerInstance.subscribeLocoInfoOnce as Mock).mockReturnValue(false);
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onSubscribe = onConnectionCalls[2];
+
+		onSubscribe();
+
+		expect(locoManagerInstance.subscribeLocoInfoOnce).toHaveBeenCalledWith(1845);
+		expect(z21ServiceInstance.getLocoInfo).not.toHaveBeenCalled();
 	});
 });

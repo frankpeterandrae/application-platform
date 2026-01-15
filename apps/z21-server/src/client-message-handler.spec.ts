@@ -4,20 +4,23 @@
  */
 
 import type { ClientToServer } from '@application-platform/protocol';
-import { vi, type Mock } from 'vitest';
+import type { MockedFunction } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { ClientMessageHandler, type BroadcastFn } from './client-message-handler';
 
 describe('ClientMessageHandler.handle', () => {
-	let broadcast: vi.MockedFunction<BroadcastFn>;
+	let broadcast: MockedFunction<BroadcastFn>;
 	let locoManager: {
 		setSpeed: Mock;
 		setFunction: Mock;
+		getState?: Mock;
 	};
 	let z21Service: {
 		sendTrackPower: Mock;
 		demoPing: Mock;
 		setLocoDrive: Mock;
+		setLocoFunction: Mock;
 	};
 	let handler: ClientMessageHandler;
 
@@ -25,12 +28,14 @@ describe('ClientMessageHandler.handle', () => {
 		broadcast = vi.fn();
 		locoManager = {
 			setSpeed: vi.fn().mockReturnValue({ speed: 0, dir: 'FWD', fns: {} }),
-			setFunction: vi.fn().mockReturnValue({ speed: 10, dir: 'REV', fns: { 0: true } })
+			setFunction: vi.fn().mockReturnValue({ speed: 10, dir: 'REV', fns: { 0: true } }),
+			getState: vi.fn().mockReturnValue({ fns: { 1: true } })
 		} as any;
 		z21Service = {
 			sendTrackPower: vi.fn(),
 			demoPing: vi.fn(),
-			setLocoDrive: vi.fn()
+			setLocoDrive: vi.fn(),
+			setLocoFunction: vi.fn()
 		} as any;
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, broadcast);
 	});
@@ -60,7 +65,7 @@ describe('ClientMessageHandler.handle', () => {
 		locoManager.setFunction.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: false } });
 		handler.handle({ type: 'loco.command.function.set', addr: 7, fn: 2, on: false } as ClientToServer);
 		expect(locoManager.setFunction).toHaveBeenCalledWith(7, 2, false);
-		expect(z21Service.demoPing).toHaveBeenCalled();
+		expect(z21Service.setLocoFunction).toHaveBeenCalled();
 		expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', addr: 7, speed: 13, dir: 'FWD', fns: { 0: true, 2: false } });
 	});
 
@@ -75,5 +80,15 @@ describe('ClientMessageHandler.handle', () => {
 		expect(broadcast).not.toHaveBeenCalled();
 		expect(z21Service.sendTrackPower).not.toHaveBeenCalled();
 		expect(z21Service.demoPing).not.toHaveBeenCalled();
+	});
+
+	it('toggles a loco function on toggle command and broadcasts updated state', () => {
+		// prepare setFunction to return updated state reflecting toggle
+		locoManager.setFunction.mockReturnValue({ speed: 5, dir: 'FWD', fns: { 1: false } });
+		handler.handle({ type: 'loco.command.function.toggle', addr: 8, fn: 1 } as any);
+		expect(locoManager.getState).toHaveBeenCalledWith(8);
+		expect(locoManager.setFunction).toHaveBeenCalledWith(8, 1, false);
+		expect(z21Service.setLocoFunction).toHaveBeenCalledWith(8, 1, expect.anything());
+		expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', addr: 8, speed: 5, dir: 'FWD', fns: { 1: false } });
 	});
 });

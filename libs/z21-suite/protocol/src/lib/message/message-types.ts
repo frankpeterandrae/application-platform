@@ -22,6 +22,7 @@ export type SourceType = 'RBUS' | 'CAN' | 'LOCONET';
  * - system.command.trackpower.set: toggles track power.
  * - loco.command.drive: sets locomotive speed/direction with optional speed steps.
  * - loco.command.function.set: toggles a locomotive function by number.
+ * - loco.command.function.toggle: toggles a locomotive function by number.
  * - switching.command.turnout.set: changes a turnout state with optional pulse duration.
  */
 export type ClientToServer =
@@ -29,6 +30,7 @@ export type ClientToServer =
 	| { type: 'system.command.trackpower.set'; on: boolean }
 	| { type: 'loco.command.drive'; addr: number; speed: number; dir: Direction; steps?: 14 | 28 | 128 }
 	| { type: 'loco.command.function.set'; addr: number; fn: number; on: boolean }
+	| { type: 'loco.command.function.toggle'; addr: number; fn: number }
 	| { type: 'switching.command.turnout.set'; addr: number; state: TurnoutState; pulseMs?: number };
 
 /**

@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { MockedLanguageToggleComponent } from '@application-platform/testing';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../test-setup';
 
@@ -152,5 +152,47 @@ describe('AppComponent', () => {
 
 		// restore
 		(global as any).WebSocket = originalWebSocket;
+	});
+
+	it('should toggle power and send commands when websocket is open', () => {
+		const comp = fixture.componentInstance;
+		const WS_OPEN = (global as any).WebSocket?.OPEN ?? 1;
+		const mockSend = vi.fn();
+		(comp as any).ws = { readyState: WS_OPEN, send: mockSend } as any;
+
+		comp.powerOn.set(true);
+		comp.togglePower();
+		expect(comp.powerOn()).toBe(false);
+		let sent = JSON.parse(mockSend.mock.calls[0][0]);
+		expect(sent.type).toBe('system.command.trackpower.set');
+		expect(sent.on).toBe(false);
+
+		comp.togglePower();
+		expect(comp.powerOn()).toBe(true);
+		sent = JSON.parse(mockSend.mock.calls[1][0]);
+		expect(sent.on).toBe(true);
+	});
+
+	it('updateFromServer handles loco.message.state updating when addr matches and draggingSpeed false', () => {
+		const comp = fixture.componentInstance;
+		// prepare state
+		comp.addr.set(5);
+		(comp as any).draggingSpeed.set(false);
+
+		// message matching address
+		(comp as any).updateFromServer({ type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any);
+		expect(comp.speed()).toBeCloseTo(63 / 126);
+		expect(comp.dir()).toBe('REV');
+		expect(comp.functions()[1]).toBe(true);
+	});
+
+	it('updateFromServer does not update speed when draggingSpeed is true', () => {
+		const comp = fixture.componentInstance;
+		comp.addr.set(9);
+		(comp as any).draggingSpeed.set(true);
+		comp.speed.set(0.2);
+
+		(comp as any).updateFromServer({ type: 'loco.message.state', addr: 9, speed: 10, dir: 'FWD', fns: {} } as any);
+		expect(comp.speed()).toBe(0.2);
 	});
 });

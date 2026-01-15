@@ -75,4 +75,23 @@ describe('LocoManager', () => {
 		expect(manager.getState(1)?.speed).toBe(0);
 		expect(manager.getState(2)?.speed).toBe(0);
 	});
+
+	it('subscribeLocoInfoOnce returns true when new and false on subsequent calls', () => {
+		const res1 = manager.subscribeLocoInfoOnce(42);
+		expect(res1).toBe(true);
+		const res2 = manager.subscribeLocoInfoOnce(42);
+		expect(res2).toBe(false);
+		// subscribe should ensure loco exists
+		expect(manager.getState(42)).toBeDefined();
+	});
+
+	it('updateLocoInfoFromZ21 updates loco state and returns addr/state pair', () => {
+		const info = { addr: 99, speedRaw: 0.75, forward: false, functionMap: { 0: true, 2: true } } as any;
+		const res = manager.updateLocoInfoFromZ21(info);
+		expect(res.addr).toBe(99);
+		expect(res.state.speed).toBe(0.75);
+		expect(res.state.dir).toBe('REV');
+		expect(res.state.fns[0]).toBe(true);
+		expect(res.state.fns[2]).toBe(true);
+	});
 });

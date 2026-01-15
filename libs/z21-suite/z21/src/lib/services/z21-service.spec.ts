@@ -3,15 +3,16 @@
  * All rights reserved.
  */
 
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mocked } from 'vitest';
 
+import { SpeedByteMask } from '../constants';
 import { type Z21Udp } from '../udp/udp';
 
 import { Z21Service } from './z21-service';
 
 describe('Z21Service', () => {
 	let service: Z21Service;
-	let mockUdp: vi.Mocked<Z21Udp>;
+	let mockUdp: Mocked<Z21Udp>;
 
 	beforeEach(() => {
 		mockUdp = {
@@ -90,7 +91,7 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x7f).toBe(0);
+			expect(speedByte & SpeedByteMask.VALUE).toBe(0);
 		});
 
 		it('converts fractional speed 1.0 to a non-zero speed step', () => {
@@ -98,7 +99,7 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x7f).toBeGreaterThan(0);
+			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
 		});
 
 		it('converts fractional speed 0.5 to a mid-range speed step', () => {
@@ -106,8 +107,8 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x7f).toBeGreaterThan(0);
-			expect(speedByte & 0x7f).toBeLessThan(127);
+			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
+			expect(speedByte & SpeedByteMask.VALUE).toBeLessThan(127);
 		});
 
 		it('encodes forward direction with high bit set', () => {
@@ -115,7 +116,7 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x80).toBe(0x80);
+			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x80);
 		});
 
 		it('encodes reverse direction with high bit clear', () => {
@@ -123,7 +124,7 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x80).toBe(0x00);
+			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x00);
 		});
 
 		it('does not reuse the same buffer instance between calls with different speeds', () => {
@@ -161,7 +162,7 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			const speedStep = speedByte & 0x7f;
+			const speedStep = speedByte & SpeedByteMask.VALUE;
 			expect(speedStep).toBeGreaterThan(0);
 		});
 
@@ -170,7 +171,28 @@ describe('Z21Service', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
-			expect(speedByte & 0x7f).toBeGreaterThan(0);
+			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
+		});
+	});
+
+	describe('setLocoFunction', () => {
+		it('sends setLocoFunction frames', () => {
+			service.setLocoFunction(6, 2, 1 as any);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalled();
+			const buf = mockUdp.sendRaw.mock.calls[mockUdp.sendRaw.mock.calls.length - 1][0];
+			expect(Buffer.isBuffer(buf)).toBe(true);
+			expect(buf.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe('getLocoInfo', () => {
+		it('sends getLocoInfo frames', () => {
+			service.getLocoInfo(12);
+			expect(mockUdp.sendRaw).toHaveBeenCalled();
+			const buf = mockUdp.sendRaw.mock.calls[mockUdp.sendRaw.mock.calls.length - 1][0];
+			expect(Buffer.isBuffer(buf)).toBe(true);
+			expect(buf.length).toBeGreaterThan(0);
 		});
 	});
 });

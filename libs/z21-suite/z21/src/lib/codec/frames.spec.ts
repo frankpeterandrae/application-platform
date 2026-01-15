@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { TrackPowerValue, XBusHeader, Z21LanHeader } from '../constants';
+import { AddessByteMask, FULL_BYTE_MASK, SpeedByteMask, TrackPowerValue, XBusHeader, Z21LanHeader } from '../constants';
 
 import { encodeLanX, encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn, encodeLocoDrive128, xbusXor } from './frames';
 
@@ -22,13 +22,13 @@ describe('xbusXor', () => {
 	});
 
 	it('masks result to 8-bit value', () => {
-		const bytes = [0xff, 0xff];
+		const bytes = [FULL_BYTE_MASK, FULL_BYTE_MASK];
 		expect(xbusXor(bytes)).toBe(0);
 	});
 
 	it('handles large arrays of bytes', () => {
-		const bytes = Array.from({ length: 100 }, (_, i) => i & 0xff);
-		const expected = bytes.reduce((acc, b) => (acc ^ b) & 0xff, 0);
+		const bytes = Array.from({ length: 100 }, (_, i) => i & FULL_BYTE_MASK);
+		const expected = bytes.reduce((acc, b) => (acc ^ b) & FULL_BYTE_MASK, 0);
 		expect(xbusXor(bytes)).toBe(expected);
 	});
 
@@ -82,7 +82,7 @@ describe('encodeLanX', () => {
 	});
 
 	it('handles large xbus payloads', () => {
-		const xbus = Array.from({ length: 100 }, (_, i) => i & 0xff);
+		const xbus = Array.from({ length: 100 }, (_, i) => i & FULL_BYTE_MASK);
 		const result = encodeLanX(xbus);
 
 		expect(result.length).toBe(2 + 2 + xbus.length + 1);
@@ -251,8 +251,8 @@ describe('encodeLocoDrive128', () => {
 	it('encodes maximum valid address', () => {
 		const result = encodeLocoDrive128(9999, 10, 'FWD');
 
-		const addrHigh = (9999 >> 8) & 0x3f;
-		const addrLow = 9999 & 0xff;
+		const addrHigh = 0xc0 | ((9999 >> 8) & AddessByteMask.MSB);
+		const addrLow = 9999 & FULL_BYTE_MASK;
 		expect(result[6]).toBe(addrHigh);
 		expect(result[7]).toBe(addrLow);
 	});
@@ -261,35 +261,35 @@ describe('encodeLocoDrive128', () => {
 		const result = encodeLocoDrive128(100, 1, 'FWD');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x7f).toBe(2);
+		expect(speedByte & SpeedByteMask.VALUE).toBe(2);
 	});
 
 	it('encodes maximum speed step', () => {
 		const result = encodeLocoDrive128(100, 126, 'FWD');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x7f).toBe(127);
+		expect(speedByte & SpeedByteMask.VALUE).toBe(127);
 	});
 
 	it('clamps speed above 126 to 126', () => {
 		const result = encodeLocoDrive128(100, 127, 'FWD');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x7f).toBe(127);
+		expect(speedByte & SpeedByteMask.VALUE).toBe(127);
 	});
 
 	it('encodes forward direction with high bit set', () => {
 		const result = encodeLocoDrive128(100, 50, 'FWD');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x80).toBe(0x80);
+		expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x80);
 	});
 
 	it('encodes reverse direction with high bit clear', () => {
 		const result = encodeLocoDrive128(100, 50, 'REV');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x80).toBe(0x00);
+		expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x00);
 	});
 
 	it('includes valid xor checksum', () => {
@@ -364,8 +364,8 @@ describe('encodeLocoDrive128', () => {
 	it('encodes long address with high byte correctly', () => {
 		const result = encodeLocoDrive128(1000, 50, 'FWD');
 
-		const expectedHigh = (1000 >> 8) & 0x3f;
-		const expectedLow = 1000 & 0xff;
+		const expectedHigh = 0xc0 | ((1000 >> 8) & AddessByteMask.MSB);
+		const expectedLow = 1000 & FULL_BYTE_MASK;
 		expect(result[6]).toBe(expectedHigh);
 		expect(result[7]).toBe(expectedLow);
 	});
@@ -374,28 +374,28 @@ describe('encodeLocoDrive128', () => {
 		const result = encodeLocoDrive128(9999, 50, 'FWD');
 
 		const addrHigh = result[6];
-		expect(addrHigh).toBeLessThanOrEqual(0x3f);
+		expect(addrHigh).toBeLessThanOrEqual(0xe7);
 	});
 
 	it('encodes mid-range speed correctly', () => {
 		const result = encodeLocoDrive128(100, 63, 'FWD');
 
 		const speedByte = result[8];
-		expect(speedByte & 0x7f).toBe(64);
+		expect(speedByte & SpeedByteMask.VALUE).toBe(64);
 	});
 
 	it('handles boundary case with address 127', () => {
 		const result = encodeLocoDrive128(127, 50, 'FWD');
 
-		expect(result[6]).toBe(0x00);
-		expect(result[7]).toBe(0x7f);
+		expect(result[6]).toBe(SpeedByteMask.DIRECTION_REWARD);
+		expect(result[7]).toBe(SpeedByteMask.VALUE);
 	});
 
 	it('handles boundary case with address 128', () => {
 		const result = encodeLocoDrive128(128, 50, 'FWD');
 
-		const expectedHigh = (128 >> 8) & 0x3f;
-		const expectedLow = 128 & 0xff;
+		const expectedHigh = 0xc0 | ((128 >> 8) & AddessByteMask.MSB);
+		const expectedLow = 128 & FULL_BYTE_MASK;
 		expect(result[6]).toBe(expectedHigh);
 		expect(result[7]).toBe(expectedLow);
 	});

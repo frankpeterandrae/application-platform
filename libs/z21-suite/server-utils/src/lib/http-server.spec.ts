@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import type * as http from 'node:http';
 import * as path from 'node:path';
 
-import { vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { createStaticFileServer } from './http-server';
 
@@ -174,7 +174,7 @@ describe('createStaticFileServer', () => {
 	});
 
 	it('normalizes path traversal attempts within public directory', () => {
-		mockReq.url = '/../../../etc/passwd';
+		mockReq.url = '../../../etc/passwd';
 		const handler = createStaticFileServer('/public');
 		(fs.readFile as unknown as Mock).mockImplementation(
 			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void) => {
@@ -230,5 +230,151 @@ describe('createStaticFileServer', () => {
 		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
 
 		expect(fs.readFile).toHaveBeenCalledWith(path.resolve('public/index.html'), expect.any(Function));
+	});
+
+	it('serves files with query strings by ignoring query parameters', () => {
+		mockReq.url = '/app.js?v=1.0';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('console.log("test")');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
+		expect(endSpy).toHaveBeenCalledWith(fileContent);
+	});
+
+	it('serves files with path segments with query strings', () => {
+		mockReq.url = '/assets/script.js?cache=false';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('var x = 1;');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
+	});
+
+	it('serves nested files correctly', () => {
+		mockReq.url = '/assets/css/main.css';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('body { color: blue; }');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'text/css; charset=utf-8' });
+		expect(endSpy).toHaveBeenCalledWith(fileContent);
+	});
+
+	it('falls back to index.html for nested non-existent paths', () => {
+		mockReq.url = '/api/users/123';
+		const handler = createStaticFileServer('/public');
+		const indexContent = Buffer.from('<html></html>');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void) => {
+				if (filePath.includes('users')) {
+					callback(new Error('ENOENT'), null);
+				} else if (filePath.includes('index.html')) {
+					callback(null, indexContent);
+				}
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
+	});
+
+	it('handles empty pathname from URL', () => {
+		mockReq.url = 'http://example.com';
+		mockReq.headers = { host: 'example.com' };
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('<html></html>');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
+	});
+
+	it('serves file with dot in filename correctly', () => {
+		mockReq.url = '/app.min.js';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('var x=1;');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
+	});
+
+	it('serves files with uppercase extensions', () => {
+		mockReq.url = '/style.CSS';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('body { margin: 0; }');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'application/octet-stream' });
+	});
+
+	it('serves files without extension with octet-stream', () => {
+		mockReq.url = '/LICENSE';
+		const handler = createStaticFileServer('/public');
+		const fileContent = Buffer.from('MIT License');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void) => {
+				callback(null, fileContent);
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'application/octet-stream' });
+	});
+
+	it('handles trailing slash in URL', () => {
+		mockReq.url = '/assets/';
+		const handler = createStaticFileServer('/public');
+		const indexContent = Buffer.from('<html></html>');
+		(fs.readFile as unknown as Mock).mockImplementation(
+			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void) => {
+				if (filePath.includes('assets')) {
+					callback(new Error('ENOENT'), null);
+				} else if (filePath.includes('index.html')) {
+					callback(null, indexContent);
+				}
+			}
+		);
+
+		handler(mockReq as http.IncomingMessage, mockRes as http.ServerResponse);
+
+		expect(writeHeadSpy).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
 	});
 });

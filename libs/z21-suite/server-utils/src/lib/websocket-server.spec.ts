@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { WebSocketServer } from 'ws';
 
 import { WsServer } from './websocket-server';

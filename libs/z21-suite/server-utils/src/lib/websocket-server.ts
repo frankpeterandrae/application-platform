@@ -7,7 +7,7 @@ import type * as http from 'node:http';
 
 import { WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
 
-import { type DisconnectHandler, type MessageHandler } from './websocket-server-types';
+import type { ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
 
 /**
  * WebSocket server wrapper that simplifies connection handling and messaging.
@@ -38,9 +38,14 @@ export class WsServer {
 	 *
 	 * @param onMessage - Handler called for each message received from any client
 	 * @param onDisconnect - Optional handler called when a client disconnects
+	 * @param onConnect - Optional handler called when a client connects
 	 */
-	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler): void {
+	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wss.on('connection', (ws) => {
+			if (onConnect) {
+				onConnect(ws);
+			}
+
 			ws.on('message', (data) => {
 				onMessage(data.toString(), ws);
 			});

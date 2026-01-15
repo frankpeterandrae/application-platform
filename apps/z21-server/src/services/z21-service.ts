@@ -3,9 +3,10 @@
  * All rights reserved.
  */
 
-import { type TrackStatusManager } from '@application-platform/domain';
+import { type LocoManager, type TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
 import { deriveTrackFlagsFromSystemState, type DerivedTrackFlags, type Z21RxPayload } from '@application-platform/z21';
+import type { LocoInfo } from '@application-platform/z21-shared';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
 
@@ -15,7 +16,8 @@ export type BroadcastFn = (msg: ServerToClient) => void;
 export class Z21EventHandler {
 	constructor(
 		private readonly trackStatusManager: TrackStatusManager,
-		private readonly broadcast: BroadcastFn
+		private readonly broadcast: BroadcastFn,
+		private readonly locoManager: LocoManager
 	) {}
 
 	/**
@@ -75,6 +77,10 @@ export class Z21EventHandler {
 					status.emergencyStop
 				);
 			}
+
+			if (e.type === 'event.loco.info') {
+				this.updateLocoInfoFromZ21(e as unknown as LocoInfo);
+			}
 		}
 
 		this.broadcast({
@@ -107,6 +113,20 @@ export class Z21EventHandler {
 			on: status.powerOn ?? false,
 			short: status.short ?? false,
 			emergencyStop: status.emergencyStop
+		});
+	}
+
+	/**
+	 * Updates locomotive information from Z21 event and notifies clients.
+	 */
+	private updateLocoInfoFromZ21(locoInfo: LocoInfo): void {
+		const locoState = this.locoManager.updateLocoInfoFromZ21(locoInfo);
+		this.broadcast({
+			type: 'loco.message.state',
+			addr: locoState.addr,
+			speed: locoState.state.speed,
+			dir: locoState.state.dir,
+			fns: locoState.state.fns
 		});
 	}
 }
