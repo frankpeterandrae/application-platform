@@ -54,7 +54,7 @@ describe('Z21Udp', () => {
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
 		const msg = Buffer.alloc(8);
 		msg.writeUInt16LE(0x0008, 0);
-		msg.writeUInt16LE(Z21LanHeader.LAN_GET_SERIAL, 2);
+		msg.writeUInt16LE(Z21LanHeader.LAN_GET_SERIAL_NUMBER, 2);
 		msg.writeUInt32LE(0xdeadbeef, 4);
 		const rx = vi.fn();
 		udp.on('rx', rx);
@@ -64,7 +64,7 @@ describe('Z21Udp', () => {
 		expect(rx).toHaveBeenCalledWith({
 			type: 'serial',
 			serial: 0xdeadbeef,
-			header: Z21LanHeader.LAN_GET_SERIAL,
+			header: Z21LanHeader.LAN_GET_SERIAL_NUMBER,
 			len: 0x0008,
 			rawHex: msg.toString('hex'),
 			from: { address: '1.2.3.4', port: 21105 }
@@ -131,7 +131,7 @@ describe('Z21Udp', () => {
 		udp.sendGetSerial();
 		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
 		expect(sent.readUInt16LE(0)).toBe(0x0004);
-		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 	});
 
 	it('sendSetBroadcastFlags builds proper packet', () => {

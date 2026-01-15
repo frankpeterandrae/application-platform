@@ -12,9 +12,7 @@ import {
 	InfoByteMask,
 	LowFunctionsByteMask,
 	SpeedByteMask,
-	StatusChangedDb0,
-	TrackPowerBroadcastValue,
-	XBusHeader
+	StatusChangedDb0
 } from '../constants';
 
 import { dataToEvent, deriveTrackFlagsFromSystemState } from './event';
@@ -45,8 +43,8 @@ describe('dataToEvent', () => {
 	it('emits event.track.power off when broadcast indicates off', () => {
 		const events = dataToEvent({
 			kind: 'ds.x.bus',
-			xHeader: XBusHeader.TrackPowerBroadcast,
-			data: Uint8Array.from([XBusHeader.TrackPowerBroadcast, TrackPowerBroadcastValue.Off])
+			xHeader: 0x61,
+			data: Uint8Array.from([0x61, 0x00])
 		});
 		expect(events).toEqual([{ type: 'event.track.power', on: false }]);
 	});
@@ -54,8 +52,8 @@ describe('dataToEvent', () => {
 	it('emits event.track.power on when broadcast indicates on', () => {
 		const events = dataToEvent({
 			kind: 'ds.x.bus',
-			xHeader: XBusHeader.TrackPowerBroadcast,
-			data: Uint8Array.from([XBusHeader.TrackPowerBroadcast, TrackPowerBroadcastValue.On])
+			xHeader: 0x61,
+			data: Uint8Array.from([0x61, 0x01])
 		});
 		expect(events).toEqual([{ type: 'event.track.power', on: true }]);
 	});
@@ -63,8 +61,8 @@ describe('dataToEvent', () => {
 	it('emits event.system.state when status changed dataset received', () => {
 		const events = dataToEvent({
 			kind: 'ds.x.bus',
-			xHeader: XBusHeader.StatusChanged,
-			data: Uint8Array.from([XBusHeader.StatusChanged, StatusChangedDb0.CentralStatus, 0xaa])
+			xHeader: 0x62,
+			data: Uint8Array.from([0x62, StatusChangedDb0.CentralStatus, 0xaa])
 		});
 		expect(events).toEqual([{ type: 'event.system.state', statusMask: 0xaa }]);
 	});
@@ -76,9 +74,9 @@ describe('dataToEvent', () => {
 		const db3 = SpeedByteMask.DIRECTION_FORWARD | 0x14;
 		const db4 = LowFunctionsByteMask.L | LowFunctionsByteMask.F1 | LowFunctionsByteMask.S;
 		const db5 = F5ToF12FunctionsByteMask.F5 | F5ToF12FunctionsByteMask.F7;
-		const data = Uint8Array.from([XBusHeader.LocoInfo, addrMsb, addrLsb, db2, db3, db4, db5]);
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4, db5]);
 
-		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: XBusHeader.LocoInfo, data });
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
 
 		expect(events).toEqual([
 			{
@@ -122,9 +120,9 @@ describe('dataToEvent', () => {
 		const db7 = F21ToF28FunctionsByteMask.F25; // f25
 		const db8 = F29ToF31FunctionsByteMask.F29 | F29ToF31FunctionsByteMask.F31; // f29, f31
 
-		const data = Uint8Array.from([XBusHeader.LocoInfo, addrMsb, addrLsb, db2, db3, db4, db5, db6, db7, db8]);
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4, db5, db6, db7, db8]);
 
-		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: XBusHeader.LocoInfo, data });
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
 		expect(events).toHaveLength(1);
 		const ev = events[0] as any;
 		expect(ev.type).toBe('event.loco.info');
@@ -155,9 +153,9 @@ describe('dataToEvent', () => {
 	});
 
 	it('returns unknown.x.bus for loco.info payload shorter than 6 bytes', () => {
-		const payload = Uint8Array.from([XBusHeader.LocoInfo, 0x00, 0x01]);
-		expect(dataToEvent({ kind: 'ds.x.bus', xHeader: XBusHeader.LocoInfo, data: payload })).toEqual([
-			{ type: 'event.unknown.x.bus', xHeader: XBusHeader.LocoInfo, bytes: Array.from(payload) }
+		const payload = Uint8Array.from([0xef, 0x00, 0x01]);
+		expect(dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data: payload })).toEqual([
+			{ type: 'event.unknown.x.bus', xHeader: 0xef, bytes: Array.from(payload) }
 		]);
 	});
 });

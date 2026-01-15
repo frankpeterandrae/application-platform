@@ -22,6 +22,11 @@ export type DerivedTrackFlags = {
 	emergencyStop?: boolean;
 	short?: boolean;
 	programmingMode?: boolean;
+	highTemperature?: boolean;
+	powerLost?: boolean;
+	shortCircuitExternal?: boolean;
+	shortCircuitInternal?: boolean;
+	cseRCN2130Mode?: boolean;
 };
 
 /**
@@ -32,4 +37,15 @@ export const enum CentralStatus {
 	TrackVoltageOff = 0x02,
 	ShortCircuit = 0x04,
 	ProgrammingModeActive = 0x20
+}
+
+/**
+ * Bit flags for Z21 extended central status.
+ */
+export const enum CentralStatusEx {
+	HighTemperature = 0x01,
+	PowerLost = 0x02,
+	ShortCircuitExternal = 0x04,
+	ShortCircuitInternal = 0x08,
+	CseRCN2130Mode = 0x20
 }

@@ -67,7 +67,7 @@ export class Z21Udp extends EventEmitter {
 			console.log('[udp] rx datasets=', datasets.length, 'events=', events.length, 'hex', rawHex);
 
 			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
-			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL && msg.length >= 8) {
+			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL_NUMBER && msg.length >= 8) {
 				const serial = msg.readUInt32LE(4);
 				this.emit('rx', {
 					type: 'serial',
@@ -119,7 +119,7 @@ export class Z21Udp extends EventEmitter {
 	 * Requests the Z21 serial number (Header 0x0010, DataLen 0x0004).
 	 */
 	public sendGetSerial(): void {
-		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL);
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 
 		// eslint-disable-next-line no-console
 		console.log('[udp] tx GET_SERIAL ->', this.host + ':' + this.port, pkt.toString('hex'));

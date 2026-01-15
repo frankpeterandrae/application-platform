@@ -8,11 +8,10 @@ import { type Direction } from '@application-platform/z21-shared';
 import {
 	AddessByteMask,
 	FULL_BYTE_MASK,
+	LAN_X_COMMANDS,
 	SpeedByteMask,
-	TrackPowerValue,
-	XBusHeader,
-	XBusLocoCmd,
 	Z21LanHeader,
+	type LanXCommandKey,
 	type LocoFunctionSwitchType
 } from '../constants';
 
@@ -36,38 +35,45 @@ export function xbusXor(bytes: readonly number[]): number {
  * - Bytes 4..n: X-BUS payload
  * - Byte n+1: XOR checksum
  *
- * @param xbus - X-BUS protocol bytes (header + data)
+ * @param xLanCommand - The LAN_X command key to encode
+ * @param xbus - X-BUS protocol bytes (additional data after header and command)
  * @returns Buffer containing the complete LAN_X encoded message
  */
-export function encodeLanX(xbus: readonly number[]): Buffer {
-	const xor = xbusXor(xbus);
-	const len = 2 + 2 + xbus.length + 1; // DataLen includes itself
+export function encodeLanX(xLanCommand: LanXCommandKey, xbus: readonly number[] = []): Buffer {
+	const command = LAN_X_COMMANDS[xLanCommand];
+	const xbusHeader = command.xBusHeader;
+
+	// Build full X-BUS payload: header, optional cmd, and additional data
+	const fullXbus = hasXbusCmd(command) ? [xbusHeader, command.xBusCmd, ...xbus] : [xbusHeader, ...xbus];
+
+	const xor = xbusXor(fullXbus);
+	const len = 2 + 2 + fullXbus.length + 1; // DataLen includes itself
 	const buffer = Buffer.alloc(len);
 	buffer.writeUInt16LE(len, 0);
 	buffer.writeUInt16LE(Z21LanHeader.LAN_X, 2); // LAN_X header
-	for (let i = 0; i < xbus.length; i++) {
-		buffer[4 + i] = xbus[i];
+	for (let i = 0; i < fullXbus.length; i++) {
+		buffer[4 + i] = fullXbus[i];
 	}
-	buffer[4 + xbus.length] = xor;
+	buffer[4 + fullXbus.length] = xor;
 	return buffer;
 }
 
 /**
  * Encodes a command to turn track power OFF.
- * Generates a LAN_X message with TrackPower header and Off value.
+ * Generates a LAN_X message with STATUS header and Off value.
  * @returns Buffer containing the track power OFF command (7 bytes: 07 00 40 00 21 80 A1)
  */
 export function encodeLanXSetTrackPowerOff(): Buffer {
-	return encodeLanX([XBusHeader.TrackPower, TrackPowerValue.Off]); // XOR becomes 0xA1
+	return encodeLanX('LAN_X_SET_TRACK_POWER_OFF', []); // XOR becomes 0xA1
 }
 
 /**
  * Encodes a command to turn track power ON.
- * Generates a LAN_X message with TrackPower header and On value.
+ * Generates a LAN_X message with STATUS header and On value.
  * @returns Buffer containing the track power ON command (7 bytes: 07 00 40 00 21 81 A0)
  */
 export function encodeLanXSetTrackPowerOn(): Buffer {
-	return encodeLanX([XBusHeader.TrackPower, TrackPowerValue.On]); // XOR becomes 0xA0
+	return encodeLanX('LAN_X_SET_TRACK_POWER_ON', []); // XOR becomes 0xA0
 }
 
 /**
@@ -127,9 +133,8 @@ export function encodeLocoDrive128(address: number, step0to126: number, forward:
 	const rv = encodeDirSpeedByte(forward, speedCode);
 
 	const { adrMsb, adrLsb } = endcodeLocoAddress(address);
-	return encodeLanX([XBusHeader.LocoDrive, XBusLocoCmd.SetLocoDrive_128, adrMsb, adrLsb, rv]);
+	return encodeLanX('LAN_X_SET_LOCO_DRIVE_128', [adrMsb, adrLsb, rv]);
 }
-
 /**
  * Encode a Set Loco Function (F0..Fn) X-BUS command wrapped in LAN_X.
  *
@@ -141,7 +146,7 @@ export function encodeLocoDrive128(address: number, step0to126: number, forward:
  * @param functionNumber - Function index to modify (0..31). Throws if out of range.
  * @param type - One of the LocoFunctionSwitchType flags (Off, On, Toggle).
  * @throws Error if `functionNumber` is not in the 0..31 range.
- * @returns Buffer containing the LAN_X SetLocoFunction message.
+ * @returns Buffer containing the LAN_X LOCO_FUNCTION message.
  */
 export function encodeLanXSetLocoFunction(address: number, functionNumber: number, type: LocoFunctionSwitchType): Buffer {
 	if (functionNumber < 0 || functionNumber > 31) {
@@ -152,7 +157,7 @@ export function encodeLanXSetLocoFunction(address: number, functionNumber: numbe
 
 	const ttNn = ((type & 0b11) << 6) | (functionNumber & 0x3f);
 
-	return encodeLanX([XBusHeader.LocoDrive, XBusLocoCmd.SetLocoFunction, adrMsb, adrLsb, ttNn]);
+	return encodeLanX('LAN_X_SET_LOCO_FUNCTION', [adrMsb, adrLsb, ttNn]);
 }
 
 /**
@@ -182,22 +187,28 @@ function endcodeLocoAddress(address: number): { adrMsb: number; adrLsb: number }
 }
 
 /**
- * Encode a LAN_X GetLocoInfo command for a given address.
+ * Encode a LAN_X LOCO_INFO command for a given address.
  *
  * Note: The function name currently contains a typo (`encdode...`) — the function is exported
  * under that name to avoid breaking existing callers. The behaviour is correct: it composes the
- * GetLocoInfo X-BUS header and the loco address bytes and then wraps them in a LAN_X frame.
+ * LOCO_INFO X-BUS header and the loco address bytes and then wraps them in a LAN_X frame.
  *
  * @param address - Locomotive numeric address to query (1..9999)
- * @returns Buffer containing the GetLocoInfo LAN_X command.
+ * @returns Buffer containing the LOCO_INFO LAN_X command.
  */
 export function encdodeLanXGetLocoInfo(address: number): Buffer {
 	const { adrMsb, adrLsb } = endcodeLocoAddress(address);
 
-	return encodeLanX([
-		XBusHeader.GetLocoInfo,
-		XBusLocoCmd.GetLocoInfo, //0xe3,
-		adrMsb,
-		adrLsb
-	]);
+	return encodeLanX('LAN_X_GET_LOCO_INFO', [adrMsb, adrLsb]);
+}
+
+/**
+ * Type guard to detect whether a LAN_X command entry includes an explicit xBusCmd.
+ * Uses a runtime check that safely handles non-object inputs.
+ */
+function hasXbusCmd(command: unknown): command is { xBusCmd: number } {
+	if (typeof command !== 'object' || command === null) return false;
+	// Use hasOwnProperty to avoid issues with prototype keys
+	const has = Object.hasOwn(command as object, 'xBusCmd');
+	return has && typeof (command as { xBusCmd?: unknown }).xBusCmd === 'number';
 }
