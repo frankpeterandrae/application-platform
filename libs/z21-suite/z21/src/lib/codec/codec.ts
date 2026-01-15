@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Z21LanHeader } from '../constants';
+import { FULL_BYTE_MASK, Z21LanHeader } from '../constants';
 
 import type { Z21Dataset } from './codec-types';
 
@@ -89,5 +89,5 @@ function xor8(data: Uint8Array): number {
 	for (const b of data) {
 		x ^= b;
 	}
-	return x & 0xff;
+	return x & FULL_BYTE_MASK;
 }

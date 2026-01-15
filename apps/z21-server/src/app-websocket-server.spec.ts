@@ -4,7 +4,7 @@
  */
 
 import { isClientToServerMessage, PROTOCOL_VERSION } from '@application-platform/protocol';
-import { vi, type Mock } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { AppWsServer } from './app-websocket-server';
 
@@ -37,13 +37,14 @@ describe('AppWsServer', () => {
 	it('sends session.ready on new connection', () => {
 		const onMessage = vi.fn();
 		const onDisconnect = vi.fn();
+		const onConnect = vi.fn();
 
-		server.onConnection(onMessage, onDisconnect);
+		server.onConnection(onMessage, onDisconnect, onConnect);
 
-		const handler = wsServer.onConnection.mock.calls[0][0];
+		const onConnectHandler = wsServer.onConnection.mock.calls[0][2];
 		const ws: any = { id: 'ws-1' };
 
-		handler('{"type":"noop"}', ws);
+		onConnectHandler(ws);
 
 		expect(wsServer.send).toHaveBeenCalledWith(ws, {
 			type: 'server.replay.session.ready',
@@ -101,12 +102,16 @@ describe('AppWsServer', () => {
 
 	it('delegates sendToClient to underlying wsServer', () => {
 		const ws: any = { id: 'ws-2' };
-		server.sendToClient(ws, { type: 'session.ready', protocolVersion: PROTOCOL_VERSION, serverTime: new Date().toISOString() });
-		expect(wsServer.send).toHaveBeenCalledWith(ws, expect.objectContaining({ type: 'session.ready' }));
+		server.sendToClient(ws, {
+			type: 'server.replay.session.ready',
+			protocolVersion: PROTOCOL_VERSION,
+			serverTime: new Date().toISOString()
+		});
+		expect(wsServer.send).toHaveBeenCalledWith(ws, expect.objectContaining({ type: 'server.replay.session.ready' }));
 	});
 
 	it('delegates broadcast to underlying wsServer', () => {
-		server.broadcast({ type: 'session.ready', protocolVersion: PROTOCOL_VERSION, serverTime: new Date().toISOString() });
-		expect(wsServer.broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'session.ready' }));
+		server.broadcast({ type: 'server.replay.session.ready', protocolVersion: PROTOCOL_VERSION, serverTime: new Date().toISOString() });
+		expect(wsServer.broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'server.replay.session.ready' }));
 	});
 });

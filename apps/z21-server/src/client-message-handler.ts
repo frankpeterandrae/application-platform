@@ -5,7 +5,7 @@
 
 import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
-import type { Z21Service } from '@application-platform/z21';
+import { LocoFunctionSwitchType, type Z21Service } from '@application-platform/z21';
 
 /**
  * Function signature used to emit server-to-client protocol messages.
@@ -67,7 +67,15 @@ export class ClientMessageHandler {
 			case 'loco.command.function.set': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, msg.on);
-				this.z21Service.demoPing();
+				this.z21Service.setLocoFunction(msg.addr, msg.fn, msg.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off);
+				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
+				return;
+			}
+
+			case 'loco.command.function.toggle': {
+				// Toggle a locomotive function and broadcast the updated locomotive state
+				const st = this.locoManager.setFunction(msg.addr, msg.fn, !(this.locoManager.getState(msg.addr)?.fns[msg.fn] ?? false));
+				this.z21Service.setLocoFunction(msg.addr, msg.fn, LocoFunctionSwitchType.Toggle);
 				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
 				return;
 			}

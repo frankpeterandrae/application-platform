@@ -4,7 +4,7 @@
  */
 
 import { isClientToServerMessage, PROTOCOL_VERSION, type ClientToServer, type ServerToClient } from '@application-platform/protocol';
-import type { WsServer } from '@application-platform/server-utils';
+import type { ConnectHandler, WsServer } from '@application-platform/server-utils';
 import type { WebSocket as WsWebSocket } from 'ws';
 
 /**
@@ -38,17 +38,11 @@ export class AppWsServer {
 	 *
 	 * @param onMessage - Handler invoked with validated ClientToServer messages
 	 * @param onDisconnect - Optional handler invoked when the client disconnects
+	 * @param onConnect - Optional handler invoked when the client connects
 	 */
-	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler): void {
+	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wsServer.onConnection(
 			(data, ws) => {
-				// Send welcome message on connection
-				this.sendToClient(ws, {
-					type: 'server.replay.session.ready',
-					protocolVersion: PROTOCOL_VERSION,
-					serverTime: new Date().toISOString()
-				});
-
 				// Parse and validate message
 				// eslint-disable-next-line no-console
 				console.log('[ws] raw', data);
@@ -71,6 +65,17 @@ export class AppWsServer {
 			() => {
 				if (onDisconnect) {
 					onDisconnect();
+				}
+			},
+			(ws) => {
+				this.sendToClient(ws, {
+					type: 'server.replay.session.ready',
+					protocolVersion: PROTOCOL_VERSION,
+					serverTime: new Date().toISOString()
+				});
+
+				if (onConnect) {
+					onConnect(ws);
 				}
 			}
 		);

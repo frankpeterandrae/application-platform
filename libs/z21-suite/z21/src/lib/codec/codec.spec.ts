@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { XBusHeader, Z21LanHeader } from '../constants';
+import { FULL_BYTE_MASK, XBusHeader, Z21LanHeader } from '../constants';
 
 import { parseZ21Datagram } from './codec';
 
@@ -18,7 +18,7 @@ const makeFrame = (header: number, payload: number[]): Buffer => {
 	return buf;
 };
 
-const xor8 = (data: number[]): number => data.reduce((acc, b) => (acc ^ b) & 0xff, 0);
+const xor8 = (data: number[]): number => data.reduce((acc, b) => (acc ^ b) & FULL_BYTE_MASK, 0);
 
 describe('parseZ21Datagram', () => {
 	it('parses x.bus frame and strips trailing xor', () => {
@@ -36,7 +36,7 @@ describe('parseZ21Datagram', () => {
 			// do nothing
 		});
 		const payload = [XBusHeader.TrackPower, 0x02, 0x03];
-		const xor = (xor8(payload) + 1) & 0xff;
+		const xor = (xor8(payload) + 1) & FULL_BYTE_MASK;
 		const buf = makeFrame(Z21LanHeader.LAN_X, [...payload, xor]);
 
 		const res = parseZ21Datagram(buf);
@@ -111,11 +111,19 @@ describe('parseZ21Datagram', () => {
 		buf.writeUInt8(payload[0], 4);
 		buf.writeUInt8(payload[1], 5);
 		// compute xor
-		const xor = payload.reduce((acc, b) => (acc ^ b) & 0xff, 0);
+		const xor = payload.reduce((acc, b) => (acc ^ b) & FULL_BYTE_MASK, 0);
 		buf.writeUInt8(xor, len - 1);
 
 		const parsed = parseZ21Datagram(buf);
 		expect(parsed).toHaveLength(1);
 		expect(parsed[0].kind).toBe('ds.x.bus');
+	});
+
+	it('returns unknown for x.bus frame with payload shorter than 2 bytes', () => {
+		const buf = makeFrame(Z21LanHeader.LAN_X, [0x10]);
+
+		const res = parseZ21Datagram(buf);
+
+		expect(res).toEqual([{ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload: Buffer.from([0x10]) }]);
 	});
 });

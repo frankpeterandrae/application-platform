@@ -3,9 +3,8 @@
  * All rights reserved.
  */
 
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-/// <reference types="vitest" />
 // Mock dgram module and related z21 helpers early so imports are replaced
 vi.mock('node:dgram', () => {
 	const socket = {
@@ -74,7 +73,7 @@ describe('Z21Udp', () => {
 
 	it('emits datasets rx payloads with parsed datasets and events', () => {
 		(parseZ21Datagram as any).mockReturnValue([{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }]);
-		(dataToEvent as any).mockReturnValue([{ type: 'track.power', on: true }]);
+		(dataToEvent as any).mockReturnValue([{ type: 'event.track.power', on: true }]);
 		const udp = new Z21Udp('host', 1234);
 		udp.start();
 		const socket = getSocket();
@@ -101,7 +100,7 @@ describe('Z21Udp', () => {
 			rawHex: msg.toString('hex'),
 			from: { address: '1.2.3.4', port: 21105 },
 			datasets: [{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }],
-			events: [{ type: 'track.power', on: true }]
+			events: [{ type: 'event.track.power', on: true }]
 		});
 	});
 

@@ -63,7 +63,7 @@ const wsServer = new AppWsServer(new WsServer(server));
  * - Updates track status (power/short/e-stop)
  * - Broadcasts datasets and derived events to connected clients
  */
-const z21Handler = new Z21EventHandler(trackStatusManager, (msg) => wsServer.broadcast(msg));
+const z21Handler = new Z21EventHandler(trackStatusManager, (msg) => wsServer.broadcast(msg), locoManager);
 
 /**
  * Validated client message handler:
@@ -72,6 +72,8 @@ const z21Handler = new Z21EventHandler(trackStatusManager, (msg) => wsServer.bro
  * - Performs demo ping via Z21 UDP where relevant
  */
 const clientMessageHandler = new ClientMessageHandler(locoManager, z21Service, (msg) => wsServer.broadcast(msg));
+
+const TEST_LOCO_ADDR = 1845;
 
 // Connect Z21 UDP to handler
 udp.on('rx', (payload) => {
@@ -99,6 +101,11 @@ wsServer.onConnection(
 			for (const { addr, state } of stopped) {
 				wsServer.broadcast({ type: 'loco.message.state', addr, speed: 0, dir: state.dir, fns: state.fns });
 			}
+		}
+	},
+	() => {
+		if (locoManager.subscribeLocoInfoOnce(TEST_LOCO_ADDR)) {
+			z21Service.getLocoInfo(TEST_LOCO_ADDR);
 		}
 	}
 );
