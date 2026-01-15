@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import { defineConfig } from 'vitest/config';
 import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/root'),
@@ -28,6 +28,7 @@ export default defineConfig({
 			'@application-platform/testing': resolve(__dirname, 'libs/shared/testing/src/index.ts'),
 			'@application-platform/domain': resolve(__dirname, 'libs/z21-suite/domain/src/index.ts'),
 			'@application-platform/protocol': resolve(__dirname, 'libs/z21-suite/protocol/src/index.ts'),
+			'@application-platform/server-utils': resolve(__dirname, 'libs/z21-suite/server-utils/src/index.ts'),
 			'@application-platform/z21': resolve(__dirname, 'libs/z21-suite/z21/src/index.ts')
 		}
 	}

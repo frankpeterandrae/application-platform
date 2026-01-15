@@ -1,0 +1,29 @@
+{
+	"name": "server-utils",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/z21-suite/server-utils/src",
+	"projectType": "library",
+	"tags": ["type:server-utils", "scope:z21", "platform:node"],
+	"targets": {
+		"build": {
+			"executor": "@nx/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/libs/z21-suite/server-utils",
+				"main": "libs/z21-suite/server-utils/src/index.ts",
+				"tsConfig": "libs/z21-suite/server-utils/tsconfig.lib.json",
+				"assets": ["libs/z21-suite/server-utils/*.md"]
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/z21-suite/server-utils/tsconfig.spec.json",
+				"vitestConfig": "libs/z21-suite/server-utils/vitest.config.ts",
+				"reportsDirectory": "../../../coverage/libs/z21-suite/server-utils",
+				"passWithNoTests": true
+			}
+		}
+	}
+}

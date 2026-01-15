@@ -3,45 +3,21 @@
  * All rights reserved.
  */
 
-import type { Z21Dataset } from './codec';
-
-export type Z21Event =
-	| { type: 'event.track.power'; on: boolean }
-	| { type: 'event.z21.status'; statusMask: number }
-	| { type: 'event.loco.info'; addr: number; speedSteps: 14 | 28 | 128; speedRaw: number; forward: boolean }
-	| { type: 'event.system.state'; payload: Z21SystemState }
-	| { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
-
-export type Z21SystemState = {
-	mainCurrent_mA: number; // int16
-	progCurrent_mA: number; // int16
-	filteredMainCurrent_mA: number; // int16
-	temperature_C: number; // int16
-	supplyVoltage_mV: number; // uint16
-	vccVoltage_mV: number; // uint16
-	centralState: number; // uint8 (Bitfeld)
-	centralStateEx: number; // uint8 (Bitfeld)
-	capabilities: number; // uint8
-};
-
-export type DerivedTrackFlags = {
-	powerOn?: boolean;
-	emergencyStop?: boolean;
-	short?: boolean;
-	programmingMode?: boolean;
-};
+import type { Z21Dataset } from './codec-types';
+import type { DerivedTrackFlags, Z21Event, Z21SystemState } from './event-types';
+import { CentralStatus } from './event-types';
 
 /**
  * Converts a decoded Z21 dataset into one or more higher-level events.
  * - system.state datasets are decoded into Z21SystemState payloads.
- * - X-Bus datasets are inspected by xHeader to emit specific events, else unknown.lan_x.
+ * - X-Bus datasets are inspected by xHeader to emit specific events, else unknown.x.bus.
  *
  * @param ds - The Z21 dataset to convert.
  * @returns Array of Z21Event entries produced from the dataset.
  */
 export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 	if (ds.kind === 'ds.system.state') {
-		return [{ type: 'event.system.state', payload: decodeSystemState(ds.state) }];
+		return [{ type: 'event.z21.status', payload: decodeSystemState(ds.state) }];
 	}
 
 	if (ds.kind !== 'ds.x.bus') {
@@ -64,17 +40,17 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 
 	// Status changed :contentReference[oaicite:13]{index=13}
 	if (xHeader === 0x62 && b.length >= 3) {
-		const db1 = b[1];
-		if (db1 === 0x22) {
-			return [{ type: 'event.z21.status', statusMask: b[2] }];
+		const db0 = b[1];
+		if (db0 === 0x22) {
+			return [{ type: 'event.system.state', statusMask: b[2] }];
 		}
 	}
 
 	// Loco info :contentReference[oaicite:14]{index=14}
-	if (xHeader === 0xef && b.length >= 0) {
+	if (xHeader === 0xef && b.length >= 5) {
 		const adrMsb = b[1] & 0x3f;
 		const adrLsb = b[2];
-		const addr = (adrMsb << 8) | adrLsb;
+		const addr = (adrMsb << 8) + adrLsb;
 
 		const db2 = b[3];
 		const speedStepCode = db2 & 0x07;
@@ -91,7 +67,6 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 
 /**
  * Decodes a 16-byte system state payload into typed fields.
- *
  * @param state - Raw system state bytes from a Z21 dataset.
  * @returns Parsed Z21SystemState structure.
  */
@@ -110,16 +85,8 @@ function decodeSystemState(state: Uint8Array): Z21SystemState {
 	};
 }
 
-export const enum CentralStatus {
-	EmergencyStop = 0x01,
-	TrackVoltageOff = 0x02,
-	ShortCircuit = 0x04,
-	ProgrammingModeActive = 0x20
-}
-
 /**
  * Derives human-friendly track flags from system state bitfields.
- *
  * @param sysState - Central state and extended state bytes.
  * @returns DerivedTrackFlags indicating power, emergency stop, short, programming mode.
  */
