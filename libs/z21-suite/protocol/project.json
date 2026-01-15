@@ -5,16 +5,6 @@
 	"projectType": "library",
 	"tags": ["type:protocol", "scope:z21", "platform:agnostic"],
 	"targets": {
-		"build": {
-			"executor": "@nx/js:tsc",
-			"outputs": ["{options.outputPath}"],
-			"options": {
-				"outputPath": "dist/libs/z21-suite/protocol",
-				"main": "libs/z21-suite/protocol/src/index.ts",
-				"tsConfig": "libs/z21-suite/protocol/tsconfig.lib.json",
-				"assets": ["libs/z21-suite/protocol/*.md"]
-			}
-		},
 		"test": {
 			"executor": "@nx/vitest:test",
 			"outputs": ["{options.reportsDirectory}"],

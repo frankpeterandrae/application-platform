@@ -2,11 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-/**
- * Cardinal direction a locomotive can travel.
- * 'FWD' denotes forward; 'REV' denotes reverse.
- */
-export type Direction = 'FWD' | 'REV';
+import { type Direction } from '@application-platform/z21-shared';
 
 /**
  * Possible turnout (switch) orientations.

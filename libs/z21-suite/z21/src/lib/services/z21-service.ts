@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type Direction } from '@application-platform/domain';
+import { type Direction } from '@application-platform/z21-shared';
 
 import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn, encodeLocoDrive128 } from '../codec/frames';
 import { type Z21Udp } from '../udp/udp';

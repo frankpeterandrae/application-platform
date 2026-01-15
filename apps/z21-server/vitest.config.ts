@@ -10,7 +10,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/.vite/libs/z21-suite/protocol'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/protocol'),
 	plugins: [tsconfigPaths()],
 	test: {
 		environment: 'node',

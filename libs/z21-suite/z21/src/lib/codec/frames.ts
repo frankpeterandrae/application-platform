@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type Direction } from '@application-platform/domain';
+import { type Direction } from '@application-platform/z21-shared';
 
 import { TrackPowerValue, XBusHeader, Z21LanHeader } from '../constants';
 

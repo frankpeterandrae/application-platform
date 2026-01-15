@@ -10,7 +10,7 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/.vite/libs/z21-suite/z21'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/z21'),
 	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
 	test: {
 		environment: 'jsdom',

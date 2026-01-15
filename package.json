@@ -28,7 +28,8 @@
 		"watch:shared-styles": "node scripts/watch-css.js",
 		"serve:watch": "concurrently \"nx run start\" \"nx run shared-ui-theme:watch-css\"",
 		"countlines": "cloc . --exclude-dir=.angular,.husky,.idea,.nx,.vscode,dist,node_modules,tmp,coverage --exclude-list-file=package-lock.json",
-		"foss": "license-checker --json --production --customPath licenseFormat.json --out tmp/foss-licenses.json && node ./scripts/combine-licenses.js"
+		"foss": "license-checker --json --production --customPath licenseFormat.json --out tmp/foss-licenses.json && node ./scripts/combine-licenses.js",
+		"release": "node tools/release.mjs"
 	},
 	"private": true,
 	"dependencies": {
