@@ -4,6 +4,7 @@
  */
 
 import * as z21 from '@application-platform/z21';
+import { vi, type Mock } from 'vitest';
 
 import { Z21EventHandler, type BroadcastFn } from './z21-service';
 
@@ -15,9 +16,9 @@ vi.mock('@application-platform/z21', async () => {
 describe('Z21EventHandler.handle', () => {
 	let broadcast: vi.MockedFunction<BroadcastFn>;
 	let trackStatusManager: {
-		updateFromXbusPower: vi.Mock;
-		updateFromSystemState: vi.Mock;
-		getStatus: vi.Mock;
+		updateFromXbusPower: Mock;
+		updateFromSystemState: Mock;
+		getStatus: Mock;
 	};
 	let handler: Z21EventHandler;
 
@@ -101,7 +102,7 @@ describe('Z21EventHandler.handle', () => {
 
 	it('updates track status from system.state events and broadcasts derived power state', () => {
 		vi.spyOn(trackStatusManager, 'getStatus').mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
-		(z21.deriveTrackFlagsFromSystemState as vi.Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
+		(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
 		trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
 		const payload = {
 			header: 0,

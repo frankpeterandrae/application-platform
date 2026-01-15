@@ -65,6 +65,11 @@ export class AppComponent {
 	public turnoutAddr = signal(12);
 
 	/**
+	 * Track power state signal; true if power is on, false if off.
+	 */
+	public powerOn = signal(false);
+
+	/**
 	 * Underlying WebSocket used for server communication.
 	 * Undefined if not yet connected or if connection has been closed.
 	 * @private
@@ -133,5 +138,19 @@ export class AppComponent {
 	private send(msg: ClientToServer): void {
 		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
 		this.ws.send(JSON.stringify(msg));
+	}
+
+	/**
+	 * Toggle track power state and send corresponding command to the server.
+	 * If power is currently on, it will be turned off, and vice versa.
+	 */
+	public togglePower(): void {
+		if (this.powerOn()) {
+			this.powerOn.set(false);
+			this.send({ type: 'system.command.trackpower.set', on: false });
+		} else {
+			this.powerOn.set(true);
+			this.send({ type: 'system.command.trackpower.set', on: true });
+		}
 	}
 }

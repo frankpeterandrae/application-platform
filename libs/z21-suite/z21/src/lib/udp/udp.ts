@@ -5,7 +5,9 @@
 import * as dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 
-import { parseZ21Datagram } from '../z21/codec';
+import { parseZ21Datagram } from '../codec/codec';
+import { Z21LanHeader, type Z21BroadcastFlag } from '../constants';
+import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
 import { dataToEvent } from '../z21/event';
 
 /**
@@ -65,7 +67,7 @@ export class Z21Udp extends EventEmitter {
 			console.log('[udp] rx datasets=', datasets.length, 'events=', events.length, 'hex', rawHex);
 
 			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
-			if (len === 0x0008 && header === 0x0010 && msg.length >= 8) {
+			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL && msg.length >= 8) {
 				const serial = msg.readUInt32LE(4);
 				this.emit('rx', {
 					type: 'serial',
@@ -114,20 +116,11 @@ export class Z21Udp extends EventEmitter {
 	}
 
 	/**
-	 * Sends a demo payload (0xDEADBEEF).
-	 */
-	public demoPing(): void {
-		this.sendRaw(Buffer.from([0xde, 0xad, 0xbe, 0xef]));
-	}
-
-	/**
 	 * Requests the Z21 serial number (Header 0x0010, DataLen 0x0004).
 	 */
 	public sendGetSerial(): void {
-		// DataLen=0x0004, Header=0x0010
-		const pkt = Buffer.alloc(4);
-		pkt.writeUInt16LE(0x0004, 0);
-		pkt.writeUInt16LE(0x0010, 2);
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL);
+
 		// eslint-disable-next-line no-console
 		console.log('[udp] tx GET_SERIAL ->', this.host + ':' + this.port, pkt.toString('hex'));
 		this.sendRaw(pkt);
@@ -137,24 +130,21 @@ export class Z21Udp extends EventEmitter {
 	 * Sets Z21 broadcast flags (Header 0x0050).
 	 * @param flags Bitmask of broadcast flags to enable
 	 */
-	public sendSetBroadcastFlags(flags: number): void {
-		const ptk = Buffer.alloc(8);
-		ptk.writeUInt16LE(0x0008, 0); // DataLen=0x0008
-		ptk.writeUInt16LE(0x0050, 2);
-		ptk.writeUInt32LE(flags >>> 0, 4); // Flags
+	public sendSetBroadcastFlags(flags: Z21BroadcastFlag): void {
+		const payload = Buffer.alloc(4);
+		payload.writeUInt32LE(flags >>> 0, 0);
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SET_BROADCASTFLAGS, payload);
 
 		// eslint-disable-next-line no-console
-		console.log('[udp] tx SET_BROADCAST_FLAGS ->', this.host + ':' + this.port, ptk.toString('hex'));
-		this.sendRaw(ptk);
+		console.log('[udp] tx SET_BROADCAST_FLAGS ->', this.host + ':' + this.port, pkt.toString('hex'));
+		this.sendRaw(pkt);
 	}
 
 	/**
 	 * Requests the current system state snapshot (Header 0x0085).
 	 */
 	public sendSystemStateGetData(): void {
-		const pkt = Buffer.alloc(4);
-		pkt.writeUInt16LE(0x0004, 0);
-		pkt.writeUInt16LE(0x0085, 2); // Header=0x0085
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATAGET);
 
 		// eslint-disable-next-line no-console
 		console.log('[udp] tx SYSTEM_STATE_GET_DATA ->', this.host + ':' + this.port, pkt.toString('hex'));

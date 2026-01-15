@@ -4,8 +4,7 @@
 		"outDir": "../../../dist/out-tsc",
 		"types": ["vitest/globals", "vitest/importMeta", "vite/client", "node", "vitest"],
 		"moduleResolution": "bundler",
-		"isolatedModules": true,
-		"composite": false
+		"isolatedModules": true
 	},
 	"files": ["src/test-setup.ts"],
 	"include": [

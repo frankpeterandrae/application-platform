@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { vi } from 'vitest';
+
 /// <reference types="vitest" />
 // Mock dgram module and related z21 helpers early so imports are replaced
 vi.mock('node:dgram', () => {
@@ -16,12 +18,14 @@ vi.mock('node:dgram', () => {
 	return { createSocket: vi.fn(() => socket) };
 });
 
-vi.mock('../z21/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
+// Mock the same module path used by the implementation imports
+vi.mock('../codec/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
 vi.mock('../z21/event', () => ({ dataToEvent: vi.fn(() => []) }));
 
 import * as dgram from 'node:dgram';
 
-import { parseZ21Datagram } from '../z21/codec';
+import { parseZ21Datagram } from '../codec/codec';
+import { Z21BroadcastFlag, Z21LanHeader } from '../constants';
 import { dataToEvent } from '../z21/event';
 
 import { Z21Udp } from './udp';
@@ -51,7 +55,7 @@ describe('Z21Udp', () => {
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
 		const msg = Buffer.alloc(8);
 		msg.writeUInt16LE(0x0008, 0);
-		msg.writeUInt16LE(0x0010, 2);
+		msg.writeUInt16LE(Z21LanHeader.LAN_GET_SERIAL, 2);
 		msg.writeUInt32LE(0xdeadbeef, 4);
 		const rx = vi.fn();
 		udp.on('rx', rx);
@@ -61,7 +65,7 @@ describe('Z21Udp', () => {
 		expect(rx).toHaveBeenCalledWith({
 			type: 'serial',
 			serial: 0xdeadbeef,
-			header: 0x0010,
+			header: Z21LanHeader.LAN_GET_SERIAL,
 			len: 0x0008,
 			rawHex: msg.toString('hex'),
 			from: { address: '1.2.3.4', port: 21105 }
@@ -128,17 +132,17 @@ describe('Z21Udp', () => {
 		udp.sendGetSerial();
 		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
 		expect(sent.readUInt16LE(0)).toBe(0x0004);
-		expect(sent.readUInt16LE(2)).toBe(0x0010);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_GET_SERIAL);
 	});
 
 	it('sendSetBroadcastFlags builds proper packet', () => {
 		const udp = new Z21Udp('h', 1);
 		const socket = getSocket();
-		udp.sendSetBroadcastFlags(0x12345678);
+		udp.sendSetBroadcastFlags(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
 		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
 		expect(sent.readUInt16LE(0)).toBe(0x0008);
-		expect(sent.readUInt16LE(2)).toBe(0x0050);
-		expect(sent.readUInt32LE(4)).toBe(0x12345678);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_SET_BROADCASTFLAGS);
+		expect(sent.readUInt32LE(4)).toBe(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
 	});
 
 	it('sendSystemStateGetData builds proper packet', () => {
@@ -147,7 +151,7 @@ describe('Z21Udp', () => {
 		udp.sendSystemStateGetData();
 		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
 		expect(sent.readUInt16LE(0)).toBe(0x0004);
-		expect(sent.readUInt16LE(2)).toBe(0x0085);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_SYSTEMSTATE_DATAGET);
 	});
 
 	it('stop closes socket gracefully', () => {

@@ -22,4 +22,15 @@
 	<button (click)="sendTurnout('DIVERGING')">Abzweig</button>
 </div>
 
+<div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
+	<button (click)="togglePower()">
+		Power
+		@if (powerOn()) {
+			ON
+		} @else {
+			OFF
+		}
+	</button>
+</div>
+
 <pre>{{ lastMsg() }}</pre>

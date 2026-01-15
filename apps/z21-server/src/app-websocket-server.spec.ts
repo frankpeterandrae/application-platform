@@ -4,6 +4,7 @@
  */
 
 import { isClientToServerMessage, PROTOCOL_VERSION } from '@application-platform/protocol';
+import { vi, type Mock } from 'vitest';
 
 import { AppWsServer } from './app-websocket-server';
 
@@ -14,9 +15,9 @@ vi.mock('@application-platform/protocol', async () => {
 
 describe('AppWsServer', () => {
 	let wsServer: {
-		onConnection: vi.Mock;
-		send: vi.Mock;
-		broadcast: vi.Mock;
+		onConnection: Mock;
+		send: Mock;
+		broadcast: Mock;
 	};
 	let server: AppWsServer;
 
@@ -30,7 +31,7 @@ describe('AppWsServer', () => {
 		vi.spyOn(global.console, 'log').mockImplementation(() => {
 			// do nothing
 		});
-		(isClientToServerMessage as unknown as vi.Mock).mockReset();
+		(isClientToServerMessage as unknown as Mock).mockReset();
 	});
 
 	it('sends session.ready on new connection', () => {
@@ -63,7 +64,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('rejects messages that fail validation', () => {
-		(isClientToServerMessage as unknown as vi.Mock).mockReturnValue(false);
+		(isClientToServerMessage as unknown as Mock).mockReturnValue(false);
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];
@@ -75,7 +76,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('forwards accepted messages to the provided handler', () => {
-		(isClientToServerMessage as unknown as vi.Mock).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
+		(isClientToServerMessage as unknown as Mock).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];

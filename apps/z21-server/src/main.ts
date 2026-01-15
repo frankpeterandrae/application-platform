@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import { LocoManager, TrackStatusManager } from '@application-platform/domain';
 import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
-import { Z21Udp } from '@application-platform/z21';
+import { Z21BroadcastFlag, Z21Service, Z21Udp } from '@application-platform/z21';
 
 import { AppWsServer } from './app-websocket-server';
 import { ClientMessageHandler } from './client-message-handler';
@@ -25,6 +25,12 @@ const cfg = loadConfig();
  * @remarks Initialized with host and UDP port from configuration.
  */
 const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort);
+
+/**
+ * Z21 service wrapper around the UDP gateway for higher-level operations.
+ * @remarks Used by the client message handler to send commands.
+ */
+const z21Service = new Z21Service(udp);
 
 /**
  * Manages locomotive states (speed, direction, functions).
@@ -65,7 +71,7 @@ const z21Handler = new Z21EventHandler(trackStatusManager, (msg) => wsServer.bro
  * - Emits resulting server-to-client updates
  * - Performs demo ping via Z21 UDP where relevant
  */
-const clientMessageHandler = new ClientMessageHandler(locoManager, udp, (msg) => wsServer.broadcast(msg));
+const clientMessageHandler = new ClientMessageHandler(locoManager, z21Service, (msg) => wsServer.broadcast(msg));
 
 // Connect Z21 UDP to handler
 udp.on('rx', (payload) => {
@@ -107,7 +113,7 @@ wsServer.onConnection(
 udp.start(21105);
 udp.sendGetSerial(); // -> should trigger 1 UDP response
 // Broadcasts aktivieren: basic + systemState
-udp.sendSetBroadcastFlags(0x00000101);
+udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic | Z21BroadcastFlag.SystemState);
 // Initial sofort ziehen (sonst wartest du ggf. bis zur nächsten Änderung)
 udp.sendSystemStateGetData();
 
