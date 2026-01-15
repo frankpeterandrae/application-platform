@@ -22,6 +22,7 @@ export default defineConfig({
 			'@application-platform/testing': resolve(__dirname, '../../shared/testing/src/index.ts'),
 			'@application-platform/domain': resolve(__dirname, '../../z21-suite/domain/src/index.ts'),
 			'@application-platform/protocol': resolve(__dirname, '../../z21-suite/protocol/src/index.ts'),
+			'@application-platform/server-utils': resolve(__dirname, '../../z21-suite/server-utils/src/index.ts'),
 			'@application-platform/z21': resolve(__dirname, '../../z21-suite/z21/src/index.ts')
 		}
 	},

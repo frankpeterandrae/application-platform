@@ -13,7 +13,7 @@
 		"build:demo": "nx run demo:build",
 		"lint": "nx run-many -t lint --all",
 		"lint:fix": "nx run-many -t lint --all --fix",
-		"test": "nx run-many -t test --all --skip-nx-cache",
+		"test": "nx run-many -t test --all",
 		"e2e": "nx run-many -t e2e --all",
 		"format": "prettier --config .prettierrc --log-level warn \"**/*.{ts,js,json,scss,html,mjs}\" --ignore-path .gitignore",
 		"format:check": "npm run format -- --check",

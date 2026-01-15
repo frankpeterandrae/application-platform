@@ -3,121 +3,90 @@
  * All rights reserved.
  */
 
-import { describe, expect, it } from 'vitest';
+import { parseZ21Datagram } from './codec';
 
-import { parseZ21Dataset } from './codec';
-
-function makeFrame(header: number, payloadBytes: number[]) {
-	const len = 4 + payloadBytes.length;
+const makeFrame = (header: number, payload: number[]): Buffer => {
+	const len = payload.length + 4;
 	const buf = Buffer.alloc(len);
 	buf.writeUint16LE(len, 0);
 	buf.writeUint16LE(header, 2);
-	for (let i = 0; i < payloadBytes.length; i++) buf[4 + i] = payloadBytes[i];
+	Buffer.from(payload).copy(buf, 4);
 	return buf;
-}
+};
 
-describe('parseZ21Dataset', () => {
-	it('parses a valid X-BUS frame when XOR matches and exposes xHeader and data without XOR', () => {
-		const xHeader = 0x61;
-		const body = [xHeader, 0x01];
-		const xor = body.reduce((x, b) => x ^ b, 0) & 0xff;
-		const payload = [...body, xor];
-		const buf = makeFrame(0x0040, payload);
+const xor8 = (data: number[]): number => data.reduce((acc, b) => (acc ^ b) & 0xff, 0);
 
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.x.bus');
-		expect((ds[0] as any).xHeader).toBe(xHeader);
-		expect(Array.from((ds[0] as any).data)).toEqual(body);
+describe('parseZ21Datagram', () => {
+	it('parses x.bus frame and strips trailing xor', () => {
+		const payload = [0x10, 0x01, 0x02];
+		const xor = xor8(payload);
+		const buf = makeFrame(0x0040, [...payload, xor]);
+
+		const res = parseZ21Datagram(buf);
+
+		expect(res).toEqual([{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from(payload) }]);
 	});
 
-	it('returns ds.x.bus even when XOR mismatches (visible for diagnostics)', () => {
-		const xHeader = 0x61;
-		const body = [xHeader, 0x02, 0x03];
-		const wrongXor = 0x00;
-		const payload = [...body, wrongXor];
-		const buf = makeFrame(0x0040, payload);
+	it('parses x.bus frame even when xor mismatches', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// do nothing
+		});
+		const payload = [0x21, 0x02, 0x03];
+		const xor = (xor8(payload) + 1) & 0xff;
+		const buf = makeFrame(0x0040, [...payload, xor]);
 
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.x.bus');
-		expect(Array.from((ds[0] as any).data)).toEqual(body);
+		const res = parseZ21Datagram(buf);
+
+		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: 0x21, data: Uint8Array.from(payload) });
+		expect(warnSpy).toHaveBeenCalled();
+		warnSpy.mockRestore();
 	});
 
-	it('parses a systemState frame only when payload length is exactly 16', () => {
-		const payload = Array.from({ length: 16 }, (_, i) => i & 0xff);
+	it('parses system.state frame with 16-byte payload', () => {
+		const payload = Array.from({ length: 16 }, (_, i) => i);
 		const buf = makeFrame(0x0084, payload);
 
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.system.state');
-		expect(Array.from((ds[0] as any).state)).toEqual(payload);
+		const res = parseZ21Datagram(buf);
+
+		expect(res).toEqual([{ kind: 'ds.system.state', state: Uint8Array.from(payload) }]);
 	});
 
-	it('parses multiple concatenated frames in order', () => {
-		const xBody = [0x61, 0x01];
-		const xor = xBody.reduce((x, b) => x ^ b, 0) & 0xff;
-		const frame1 = makeFrame(0x0040, [...xBody, xor]);
-		const sysPayload = Array.from({ length: 16 }, (_, i) => 0xff - i);
-		const frame2 = makeFrame(0x0084, sysPayload);
+	it('returns unknown for unrecognized header', () => {
+		const payload = [0x01, 0x02];
+		const buf = makeFrame(0x9999, payload);
+
+		const res = parseZ21Datagram(buf);
+
+		expect(res).toEqual([{ kind: 'ds.unknown', header: 0x9999, payload: Buffer.from(payload) }]);
+	});
+
+	it('stops parsing on invalid length smaller than header size', () => {
+		const buf = Buffer.from([0x01, 0x00]);
+		expect(parseZ21Datagram(buf)).toEqual([]);
+	});
+
+	it('stops parsing when frame extends past buffer end', () => {
+		const len = 10;
+		const buf = Buffer.alloc(6);
+		buf.writeUint16LE(len, 0);
+		buf.writeUint16LE(0x0040, 2);
+		// payload incomplete
+		expect(parseZ21Datagram(buf)).toEqual([]);
+	});
+
+	it('parses multiple concatenated frames', () => {
+		const payload1 = [0x10, 0x01];
+		const xor1 = xor8(payload1);
+		const frame1 = makeFrame(0x0040, [...payload1, xor1]);
+		const payload2 = Array.from({ length: 16 }, (_, i) => i + 1);
+		const frame2 = makeFrame(0x0084, payload2);
 		const buf = Buffer.concat([frame1, frame2]);
 
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(2);
-		expect(ds[0].kind).toBe('ds.x.bus');
-		expect(ds[1].kind).toBe('ds.system.state');
-	});
+		const res = parseZ21Datagram(buf);
 
-	it('stops parsing when encountering a frame with declared length < 4', () => {
-		const bad = Buffer.alloc(4);
-		bad.writeUint16LE(3, 0);
-		bad.writeUint16LE(0x1234, 2);
-		const ds = parseZ21Dataset(bad);
-		expect(ds).toHaveLength(0);
-	});
-
-	it('parses earlier frames and stops at truncated frame that extends past buffer end', () => {
-		const xBody = [0x61, 0x01];
-		const xor = xBody.reduce((x, b) => x ^ b, 0) & 0xff;
-		const frame1 = makeFrame(0x0040, [...xBody, xor]);
-		const frame2 = makeFrame(0x0040, [0x10, 0x11, 0x22]);
-		const partial = frame2.subarray(0, Math.max(0, frame2.length - 2));
-		const buf = Buffer.concat([frame1, partial]);
-
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.x.bus');
-	});
-
-	// New tests for missing edge cases
-	it('returns ds.unknown for systemState header with wrong payload length', () => {
-		const payload = Array.from({ length: 15 }, (_, i) => i & 0xff);
-		const buf = makeFrame(0x0084, payload);
-
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.unknown');
-		expect((ds[0] as any).header).toBe(0x0084);
-		expect(Array.from((ds[0] as any).payload)).toEqual(payload);
-	});
-
-	it('returns ds.unknown for unknown header', () => {
-		const payload = [0x01, 0x02];
-		const buf = makeFrame(0x1234, payload);
-
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.unknown');
-		expect((ds[0] as any).header).toBe(0x1234);
-	});
-
-	it('returns ds.unknown for x-bus payload too short', () => {
-		const payload = [0x61]; // only xHeader, requires at least 2 bytes
-		const buf = makeFrame(0x0040, payload);
-
-		const ds = parseZ21Dataset(buf);
-		expect(ds).toHaveLength(1);
-		expect(ds[0].kind).toBe('ds.unknown');
-		expect((ds[0] as any).header).toBe(0x0040);
+		expect(res).toEqual([
+			{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from(payload1) },
+			{ kind: 'ds.system.state', state: Uint8Array.from(payload2) }
+		]);
 	});
 });

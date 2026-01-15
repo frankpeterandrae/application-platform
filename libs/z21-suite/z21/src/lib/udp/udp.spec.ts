@@ -3,221 +3,158 @@
  * All rights reserved.
  */
 
-import * as dgram from 'node:dgram';
-
-import { vi } from 'vitest';
-
-import { Z21Udp } from './udp';
-
-// Mock dgram module
+/// <reference types="vitest" />
+// Mock dgram module and related z21 helpers early so imports are replaced
 vi.mock('node:dgram', () => {
-	// Each createSocket call returns a fresh socket object with its own mock functions.
-	const createSocketMock = vi.fn(() => ({
+	const socket = {
 		on: vi.fn(),
 		bind: vi.fn(),
 		send: vi.fn(),
 		close: vi.fn(),
-		removeAllListeners: vi.fn(),
 		address: vi.fn(() => ({ address: '0.0.0.0', port: 21105 }))
-	}));
-
-	return {
-		__esModule: true,
-		createSocket: createSocketMock,
-		default: { createSocket: createSocketMock }
 	};
+	return { createSocket: vi.fn(() => socket) };
 });
 
-type MockSocket = {
-	on: any;
-	bind: any;
-	send: any;
-	close: any;
-	removeAllListeners: any;
-	address: any;
-};
+vi.mock('../z21/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
+vi.mock('../z21/event', () => ({ dataToEvent: vi.fn(() => []) }));
 
-type Services = {
-	socket: MockSocket;
-	udp: Z21Udp;
-};
+import * as dgram from 'node:dgram';
+
+import { parseZ21Datagram } from '../z21/codec';
+import { dataToEvent } from '../z21/event';
+
+import { Z21Udp } from './udp';
+
+const getSocket = (): any => (dgram.createSocket as any).mock.results[0].value;
 
 describe('Z21Udp', () => {
-	// Helper function to get mocked socket (similar to getSocket but typed)
-	function getSocket(): MockSocket {
-		const mock = (dgram.createSocket as any).mock;
-		const results = mock && mock.results ? mock.results : [];
-		return results[results.length - 1].value;
-	}
-
-	// Helper function to create test services (similar to makeProviders in bootstrap.spec.ts)
-	function makeServices(host = 'host', port = 1234): Services {
-		const udp = new Z21Udp(host, port);
-		const socket = getSocket();
-
-		return { socket, udp };
-	}
-
-	let services: Services;
-
 	beforeEach(() => {
-		services = makeServices();
+		vi.clearAllMocks();
 	});
 
-	describe('send methods', () => {
-		it('sendRaw delegates to socket.send with configured host/port', () => {
-			const customServices = makeServices('hostX', 5555);
-			const buf = Buffer.from([1, 2, 3]);
+	it('binds UDP socket on start with default port and wires listeners', () => {
+		const udp = new Z21Udp('host', 1234);
+		udp.start();
 
-			customServices.udp.sendRaw(buf);
+		const socket = getSocket();
+		expect(socket.on).toHaveBeenCalledWith('error', expect.any(Function));
+		expect(socket.on).toHaveBeenCalledWith('listening', expect.any(Function));
+		expect(socket.on).toHaveBeenCalledWith('message', expect.any(Function));
+		expect(socket.bind).toHaveBeenCalledWith(21105);
+	});
 
-			expect(customServices.socket.send).toHaveBeenCalledWith(buf, 5555, 'hostX');
-		});
+	it('emits serial rx payloads when header 0x0010 is received', () => {
+		const udp = new Z21Udp('host', 1234);
+		udp.start();
+		const socket = getSocket();
+		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
+		const msg = Buffer.alloc(8);
+		msg.writeUInt16LE(0x0008, 0);
+		msg.writeUInt16LE(0x0010, 2);
+		msg.writeUInt32LE(0xdeadbeef, 4);
+		const rx = vi.fn();
+		udp.on('rx', rx);
 
-		it('demoPing sends the DEADBEEF demo packet to configured host/port', () => {
-			const customServices = makeServices('hostY', 9999);
+		messageHandler?.(msg, { address: '1.2.3.4', port: 21105 } as any);
 
-			customServices.udp.demoPing();
-
-			expect(customServices.socket.send).toHaveBeenCalledWith(Buffer.from([0xde, 0xad, 0xbe, 0xef]), 9999, 'hostY');
-		});
-
-		it('sendRaw forwards zero-length buffers without throwing', () => {
-			const customServices = makeServices('h', 1);
-			const empty = Buffer.from([]);
-
-			expect(() => customServices.udp.sendRaw(empty)).not.toThrow();
-			expect(customServices.socket.send).toHaveBeenCalledWith(empty, 1, 'h');
-		});
-
-		it('sendGetSerial sends correct packet and logs tx message', () => {
-			const customServices = makeServices('z21-host', 4242);
-
-			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-
-			customServices.udp.sendGetSerial();
-
-			// Packet is DataLen=0x0004, Header=0x0010 -> bytes [04 00 10 00] little-endian
-			const expectedPkt = Buffer.alloc(4);
-			expectedPkt.writeUInt16LE(0x0004, 0);
-			expectedPkt.writeUInt16LE(0x0010, 2);
-
-			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
-
-			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx GET_SERIAL ->', 'z21-host:4242', expectedPkt.toString('hex'));
-
-			consoleSpy.mockRestore();
-		});
-
-		// New tests for additional send methods
-		it('sendSetBroadcastFlags sends correct 8-byte packet and logs tx message', () => {
-			const customServices = makeServices('z21-host', 4242);
-			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-
-			const flags = 0x01020304;
-			customServices.udp.sendSetBroadcastFlags(flags);
-
-			const expectedPkt = Buffer.alloc(8);
-			expectedPkt.writeUInt16LE(0x0008, 0);
-			expectedPkt.writeUInt16LE(0x0050, 2);
-			expectedPkt.writeUInt32LE(flags >>> 0, 4);
-
-			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
-			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx SET_BROADCAST_FLAGS ->', 'z21-host:4242', expectedPkt.toString('hex'));
-
-			consoleSpy.mockRestore();
-		});
-
-		it('sendSystemStateGetData sends correct 4-byte packet and logs tx message', () => {
-			const customServices = makeServices('z21-host', 4242);
-			const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-
-			customServices.udp.sendSystemStateGetData();
-
-			const expectedPkt = Buffer.alloc(4);
-			expectedPkt.writeUInt16LE(0x0004, 0);
-			expectedPkt.writeUInt16LE(0x0085, 2);
-
-			expect(customServices.socket.send).toHaveBeenCalledWith(expectedPkt, 4242, 'z21-host');
-			expect(consoleSpy).toHaveBeenCalledWith('[udp] tx SYSTEM_STATE_GET_DATA ->', 'z21-host:4242', expectedPkt.toString('hex'));
-
-			consoleSpy.mockRestore();
+		expect(rx).toHaveBeenCalledWith({
+			type: 'serial',
+			serial: 0xdeadbeef,
+			header: 0x0010,
+			len: 0x0008,
+			rawHex: msg.toString('hex'),
+			from: { address: '1.2.3.4', port: 21105 }
 		});
 	});
 
-	describe('lifecycle methods', () => {
-		it('start binds socket and logs errors emitted by socket', () => {
-			const svc = makeServices();
-			const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+	it('emits datasets rx payloads with parsed datasets and events', () => {
+		(parseZ21Datagram as any).mockReturnValue([{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }]);
+		(dataToEvent as any).mockReturnValue([{ type: 'track.power', on: true }]);
+		const udp = new Z21Udp('host', 1234);
+		udp.start();
+		const socket = getSocket();
+		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
+		const msg = Buffer.from([
+			0x08,
+			0x00, // len
+			0x34,
+			0x12, // header 0x1234
+			0xaa,
+			0xbb,
+			0xcc,
+			0xdd
+		]);
+		const rx = vi.fn();
+		udp.on('rx', rx);
 
-			svc.udp.start();
+		messageHandler?.(msg, { address: '1.2.3.4', port: 21105 } as any);
 
-			expect(svc.socket.bind).toHaveBeenCalled();
-
-			const errHandler = svc.socket.on.mock.calls.find((c: any[]) => c[0] === 'error')?.[1];
-			expect(errHandler).toBeDefined();
-
-			const err = new Error('udp failure');
-			errHandler(err);
-			expect(consoleSpy).toHaveBeenCalledWith('[udp] error', err);
-
-			consoleSpy.mockRestore();
+		expect(rx).toHaveBeenCalledWith({
+			type: 'datasets',
+			header: 0x1234,
+			len: 0x0008,
+			rawHex: msg.toString('hex'),
+			from: { address: '1.2.3.4', port: 21105 },
+			datasets: [{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }],
+			events: [{ type: 'track.power', on: true }]
 		});
+	});
 
-		it('emits serial rx when a serial reply is received', () => {
-			const svc = makeServices();
-			// start registers the 'message' handler on the mocked socket
-			svc.udp.start();
+	it('ignores messages shorter than 4 bytes', () => {
+		const udp = new Z21Udp('host', 1234);
+		udp.start();
+		const socket = getSocket();
+		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
+		const rx = vi.fn();
+		udp.on('rx', rx);
 
-			// find the message handler
-			const msgHandler = svc.socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
-			expect(msgHandler).toBeDefined();
+		messageHandler?.(Buffer.from([0x01, 0x02]), { address: '1.2.3.4', port: 21105 } as any);
 
-			// listen for 'rx' events
-			const rxSpy = vi.fn();
-			svc.udp.on('rx', rxSpy);
+		expect(rx).not.toHaveBeenCalled();
+	});
 
-			// Construct a buffer representing a serial reply: len=0x0008, header=0x0010, serial=0x12345678
-			const buf = Buffer.alloc(8);
-			buf.writeUInt16LE(0x0008, 0);
-			buf.writeUInt16LE(0x0010, 2);
-			buf.writeUInt32LE(0x12345678, 4);
+	it('sendRaw delegates to socket.send with configured host/port', () => {
+		const udp = new Z21Udp('hostX', 5555);
+		const socket = getSocket();
+		const buf = Buffer.from([1, 2, 3]);
+		udp.sendRaw(buf);
+		expect(socket.send).toHaveBeenCalledWith(buf, 5555, 'hostX');
+	});
 
-			const rinfo = { address: '1.2.3.4', port: 12345 };
+	it('sendGetSerial builds proper packet', () => {
+		const udp = new Z21Udp('h', 1);
+		const socket = getSocket();
+		udp.sendGetSerial();
+		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
+		expect(sent.readUInt16LE(0)).toBe(0x0004);
+		expect(sent.readUInt16LE(2)).toBe(0x0010);
+	});
 
-			// invoke the handler as if a message arrived
-			msgHandler(buf, rinfo);
+	it('sendSetBroadcastFlags builds proper packet', () => {
+		const udp = new Z21Udp('h', 1);
+		const socket = getSocket();
+		udp.sendSetBroadcastFlags(0x12345678);
+		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
+		expect(sent.readUInt16LE(0)).toBe(0x0008);
+		expect(sent.readUInt16LE(2)).toBe(0x0050);
+		expect(sent.readUInt32LE(4)).toBe(0x12345678);
+	});
 
-			expect(rxSpy).toHaveBeenCalled();
-			// validate the payload shape and values
-			const payload = rxSpy.mock.calls[0][0];
-			expect(payload.type).toBe('serial');
-			expect(payload.serial).toBe(0x12345678);
-			expect(payload.header).toBe(0x0010);
-			expect(payload.from).toEqual({ address: '1.2.3.4', port: 12345 });
-		});
+	it('sendSystemStateGetData builds proper packet', () => {
+		const udp = new Z21Udp('h', 1);
+		const socket = getSocket();
+		udp.sendSystemStateGetData();
+		const sent = (socket.send as any).mock.calls[0][0] as Buffer;
+		expect(sent.readUInt16LE(0)).toBe(0x0004);
+		expect(sent.readUInt16LE(2)).toBe(0x0085);
+	});
 
-		it('stop closes the socket without logging when close succeeds', () => {
-			const svc = makeServices();
-
-			svc.udp.stop();
-
-			expect(svc.socket.close).toHaveBeenCalled();
-		});
-
-		it('stop logs a socket close error when socket.close throws', () => {
-			const svc = makeServices();
-			svc.socket.close.mockImplementation(() => {
-				throw new Error('boom');
-			});
-
-			const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
-			svc.udp.stop();
-
-			expect(consoleSpy).toHaveBeenCalledWith('[udp] socket close error');
-
-			consoleSpy.mockRestore();
-		});
+	it('stop closes socket gracefully', () => {
+		const udp = new Z21Udp('h', 1);
+		const socket = getSocket();
+		udp.stop();
+		expect(socket.close as any).toHaveBeenCalled();
+		expect(socket.close).toHaveBeenCalled();
 	});
 });

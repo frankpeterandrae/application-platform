@@ -2,33 +2,11 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-
-import dgram from 'node:dgram';
+import * as dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 
-import { parseZ21Dataset, type Z21Dataset } from '../z21/codec';
-import { dataToEvent, type Z21Event, type Z21SystemState } from '../z21/event';
-
-export type Z21RxPayload =
-	| { type: 'serial'; serial: number; header: number; len: number; rawHex: string; from: { address: string; port: number } }
-	| { type: 'raw'; header: number; len: number; rawHex: string; from: { address: string; port: number } }
-	| {
-			type: 'datasets';
-			header: number;
-			len: number;
-			rawHex: string;
-			datasets: Z21Dataset[];
-			events: Z21Event[];
-			from: { address: string; port: number };
-	  }
-	| {
-			type: 'systemstate';
-			header: number;
-			len: number;
-			rawHex: string;
-			from: { address: string; port: number };
-			payload: Z21SystemState;
-	  };
+import { parseZ21Datagram } from '../z21/codec';
+import { dataToEvent } from '../z21/event';
 
 /**
  * Thin Z21 UDP client that:
@@ -40,8 +18,8 @@ export class Z21Udp extends EventEmitter {
 	private readonly sock = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 
 	/**
-	 * @param host - Z21 central hostname/IP to send commands to
-	 * @param port - UDP port of the Z21 central
+	 * @param host Z21 central hostname/IP to send commands to
+	 * @param port UDP port of the Z21 central
 	 */
 	constructor(
 		private readonly host: string,
@@ -52,10 +30,11 @@ export class Z21Udp extends EventEmitter {
 
 	/**
 	 * Starts the UDP socket and begins listening for inbound Z21 datagrams.
+	 * @param listenPort Local UDP port to bind to (default 21105)
 	 */
 	public start(listenPort = 21105): void {
 		// eslint-disable-next-line no-console
-		this.sock.on('error', (err) => console.error('[udp] error', err));
+		this.sock.on('error', (err: Error) => console.error('[udp] error', err));
 
 		this.sock.on('listening', () => {
 			const a = this.sock.address();
@@ -63,9 +42,10 @@ export class Z21Udp extends EventEmitter {
 			console.log('[udp] listening on', a);
 		});
 
-		this.sock.on('message', (msg, rinfo) => {
+		this.sock.on('message', (msg: Buffer, rinfo: dgram.RemoteInfo) => {
 			// eslint-disable-next-line no-console
 			console.log('[udp] rx raw', rinfo.address + ':' + rinfo.port, 'len', msg.length, 'hex', msg.toString('hex'));
+
 			// Z21 dataset: [lenLE16][headerLE16][data...]
 			if (msg.length < 4) return;
 
@@ -75,10 +55,14 @@ export class Z21Udp extends EventEmitter {
 			const from = { address: rinfo.address, port: rinfo.port };
 
 			// 1) Datagram -> Datasets
-			const datasets = parseZ21Dataset(msg);
+			const datasets = parseZ21Datagram(msg);
 
 			// 2) Datasets -> Domain Events (track.power, system.state, ...)
 			const events = datasets.flatMap(dataToEvent);
+
+			// Optional: Debug
+			// eslint-disable-next-line no-console
+			console.log('[udp] rx datasets=', datasets.length, 'events=', events.length, 'hex', rawHex);
 
 			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
 			if (len === 0x0008 && header === 0x0010 && msg.length >= 8) {
@@ -130,14 +114,14 @@ export class Z21Udp extends EventEmitter {
 	}
 
 	/**
-	 * Sends a demo ping packet (0xDEADBEEF) to the Z21 central.
+	 * Sends a demo payload (0xDEADBEEF).
 	 */
 	public demoPing(): void {
 		this.sendRaw(Buffer.from([0xde, 0xad, 0xbe, 0xef]));
 	}
 
 	/**
-	 * Sends a GET_SERIAL command to the Z21 central.
+	 * Requests the Z21 serial number (Header 0x0010, DataLen 0x0004).
 	 */
 	public sendGetSerial(): void {
 		// DataLen=0x0004, Header=0x0010
@@ -170,7 +154,7 @@ export class Z21Udp extends EventEmitter {
 	public sendSystemStateGetData(): void {
 		const pkt = Buffer.alloc(4);
 		pkt.writeUInt16LE(0x0004, 0);
-		pkt.writeUInt16LE(0x0085, 2); // Header=0x0020
+		pkt.writeUInt16LE(0x0085, 2); // Header=0x0085
 
 		// eslint-disable-next-line no-console
 		console.log('[udp] tx SYSTEM_STATE_GET_DATA ->', this.host + ':' + this.port, pkt.toString('hex'));

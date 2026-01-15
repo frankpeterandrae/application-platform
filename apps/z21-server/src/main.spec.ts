@@ -3,229 +3,209 @@
  * All rights reserved.
  */
 
-import fs from 'node:fs';
+/// <reference types="vitest" />
+
 import http from 'node:http';
 import path from 'node:path';
 
-import WebSocket from 'ws';
+let lastUdpInstance: any = undefined;
 
-import { loadConfig } from './infra/config/config';
+vi.mock('@application-platform/z21', async () => {
+	const actual = await vi.importActual('@application-platform/z21');
+	return {
+		...actual,
+		Z21Udp: vi.fn().mockImplementation(function () {
+			// return a plain object instance (constructor-return) instead of aliasing `this`
+			const inst = {
+				start: vi.fn(),
+				sendGetSerial: vi.fn(),
+				sendSetBroadcastFlags: vi.fn(),
+				sendSystemStateGetData: vi.fn(),
+				on: vi.fn()
+			};
+			lastUdpInstance = inst;
+			return inst;
+		})
+	};
+});
+vi.mock('@application-platform/server-utils', () => {
+	return {
+		createStaticFileServer: vi.fn(function () {
+			return vi.fn();
+		}),
+		WsServer: vi.fn().mockImplementation(function (this: any, server: any) {
+			// constructor-compatible stub; nothing required for tests since AppWsServer is mocked
+			this.server = server;
+		})
+	};
+});
+vi.mock('./app-websocket-server', () => {
+	return {
+		AppWsServer: vi.fn().mockImplementation(function (this: any, wsAdapter: any) {
+			return { onConnection: vi.fn(), broadcast: vi.fn(), sendToClient: vi.fn() };
+		})
+	};
+});
+vi.mock('./client-message-handler', () => {
+	return {
+		ClientMessageHandler: vi.fn().mockImplementation(function (this: any, locoManager: any, udp: any, broadcast: any) {
+			return { handle: vi.fn() };
+		})
+	};
+});
+vi.mock('@application-platform/domain', () => {
+	return {
+		LocoManager: vi.fn().mockImplementation(function (this: any) {
+			this.stopAll = vi.fn().mockReturnValue([
+				{ addr: 3, state: { dir: 'fwd', fns: { 0: true } } },
+				{ addr: 7, state: { dir: 'rev', fns: { 2: false } } }
+			]);
+		}),
+		TrackStatusManager: vi.fn().mockImplementation(function (this: any) {
+			this.getStatus = vi.fn();
+		})
+	};
+});
+vi.mock('./services/z21-service', () => {
+	return {
+		Z21EventHandler: vi.fn().mockImplementation(function (this: any, trackStatusManager: any, broadcast: any) {
+			return { handle: vi.fn() };
+		})
+	};
+});
+vi.mock('./infra/config/config', () => {
+	return {
+		loadConfig: vi
+			.fn()
+			.mockReturnValue({ httpPort: 5050, z21: { host: '1.2.3.4', udpPort: 21105 }, safety: { stopAllOnClientDisconnect: true } })
+	};
+});
+describe('main bootstrap', () => {
+	let createServerSpy: vi.SpyInstance;
+	let listenSpy: vi.Mock;
+	let consoleSpy: vi.SpyInstance;
 
-// Prevent real UDP sockets from being created by mocking the z21 library before importing the server
-vi.mock('@application-platform/z21', () => ({
-	Z21Udp: class {
-		public on() {
-			return undefined;
-		}
-		public start() {
-			return undefined;
-		}
-		public sendGetSerial() {
-			return undefined;
-		}
-		public demoPing() {
-			return undefined;
-		}
-		public sendSetBroadcastFlags(_flags: number) {
-			return undefined;
-		}
-		public sendSystemStateGetData() {
-			return undefined;
-		}
-	}
-}));
-
-const cfg = loadConfig();
-const publicDir = path.resolve(process.cwd(), 'public');
-const indexHtmlContent = '<!doctype html><html><body>INDEX</body></html>';
-const jsContent = 'console.log("hello");';
-
-async function httpRequest(pathname: string) {
-	return new Promise<{ statusCode: number; headers: http.IncomingHttpHeaders; body: string }>((resolve, reject) => {
-		const req = http.request({ method: 'GET', hostname: '127.0.0.1', port: cfg.httpPort, path: pathname }, (res) => {
-			const chunks: Buffer[] = [];
-			res.on('data', (c) => chunks.push(c as Buffer));
-			res.on('end', () =>
-				resolve({ statusCode: res.statusCode ?? 0, headers: res.headers, body: Buffer.concat(chunks).toString('utf8') })
-			);
+	beforeEach(() => {
+		vi.resetModules();
+		vi.clearAllMocks();
+		listenSpy = vi.fn((port: number, cb?: () => void) => cb && cb());
+		createServerSpy = vi.spyOn(http, 'createServer').mockReturnValue({ listen: listenSpy } as any);
+		vi.spyOn(path, 'resolve').mockImplementation((...args: any[]) => args.join('/'));
+		consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+			// do nothing
 		});
-		req.on('error', reject);
-		req.end();
-	});
-}
-
-// Helper to wait for a websocket message matching a predicate with timeout
-function waitForWsMessage(ws: WebSocket, predicate: (m: any) => boolean, timeout = 5000) {
-	return new Promise<any>((resolve, reject) => {
-		const to = setTimeout(() => {
-			ws.removeAllListeners('message');
-			reject(new Error('timeout'));
-		}, timeout);
-
-		function onMessage(data: WebSocket.Data) {
-			let msg: any;
-			try {
-				msg = JSON.parse(data.toString());
-			} catch {
-				return;
-			}
-			if (predicate(msg)) {
-				clearTimeout(to);
-				ws.removeListener('message', onMessage);
-				resolve(msg);
-			}
-		}
-
-		ws.on('message', onMessage);
-	});
-}
-
-beforeAll(async () => {
-	// Ensure public directory exists and contains predictable files
-	fs.mkdirSync(publicDir, { recursive: true });
-	fs.writeFileSync(path.join(publicDir, 'index.html'), indexHtmlContent, 'utf8');
-	fs.writeFileSync(path.join(publicDir, 'app.js'), jsContent, 'utf8');
-
-	// Import the server module to start the HTTP server. We will stub UDP methods to avoid real sockets.
-	const mod = await import('./main');
-	// replace UDP methods with no-ops to avoid binding sockets in tests
-	// mod.udp is exported by the server module; override methods directly to avoid real network activity during tests
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	mod.udp!.start = () => undefined;
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	mod.udp!.sendGetSerial = () => undefined;
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-	mod.udp!.demoPing = () => undefined;
-
-	// Ensure server is listening (main module may auto-start). Only call start if server isn't already listening to avoid double-listen.
-	if (!mod.server?.listening) {
-		mod.start?.();
-	}
-});
-
-afterAll(async () => {
-	// Clean up files we created
-	try {
-		fs.unlinkSync(path.join(publicDir, 'app.js'));
-		fs.unlinkSync(path.join(publicDir, 'index.html'));
-		// don't remove the public directory itself in case it contains other project files
-	} catch {
-		// ignore
-	}
-
-	// close server and websocket server to avoid open handles
-	try {
-		const mod = await import('./main');
-		// call close if available
-		mod.server?.close?.();
-		mod.wss?.close?.();
-	} catch {
-		// ignore
-	}
-});
-
-it('returns index.html for root request', async () => {
-	const r = await httpRequest('/');
-	expect(r.statusCode).toBe(200);
-	expect(String(r.headers['content-type'] || '')).toContain('text/html');
-	expect(r.body).toContain('INDEX');
-});
-
-it('serves existing javascript file with correct content-type', async () => {
-	const r = await httpRequest('/app.js');
-	expect(r.statusCode).toBe(200);
-	expect(String(r.headers['content-type'] || '')).toContain('application/javascript');
-	expect(r.body).toContain('hello');
-});
-
-it('falls back to index.html when a requested file is missing', async () => {
-	const r = await httpRequest('/does-not-exist');
-	expect(r.statusCode).toBe(200);
-	expect(String(r.headers['content-type'] || '')).toContain('text/html');
-	expect(r.body).toContain('INDEX');
-});
-
-it('rejects path traversal attempts outside of public directory', async () => {
-	const r = await httpRequest('/../package.json');
-	// current server falls back to index.html for unknown/malicious paths
-	expect(r.statusCode).toBe(200);
-	expect(String(r.headers['content-type'] || '')).toContain('text/html');
-	expect(r.body).toContain('INDEX');
-});
-
-it('rejects requests containing a null byte in the path', async () => {
-	// Use encoded %00 which decodeURIComponent will turn into a null byte
-	const r = await httpRequest('/%00');
-	// current server falls back to index.html for unknown/malformed paths
-	expect(r.statusCode).toBe(200);
-	expect(String(r.headers['content-type'] || '')).toContain('text/html');
-	expect(r.body).toContain('INDEX');
-});
-
-it('clamps drive speed to 1 when speed > 1', async () => {
-	const ws = new WebSocket(`ws://127.0.0.1:${cfg.httpPort}`);
-	// start waiting for the ready message before awaiting 'open' to avoid a race where the message arrives before the test attaches the listener
-	const readyP = waitForWsMessage(ws, (m) => m && m.type === 'server.replay.session.ready', 5000);
-	await new Promise<void>((resolve, reject) => {
-		ws.once('open', resolve);
-		ws.once('error', reject);
 	});
 
-	// wait for initial ready message
-	await readyP;
-
-	const addr = 42;
-	ws.send(JSON.stringify({ type: 'loco.command.drive', addr, speed: 1.5, dir: 'REV' }));
-
-	const msg = await waitForWsMessage(ws, (m) => m && m.type === 'loco.message.state' && m.addr === addr, 5000);
-	expect(msg.speed).toBe(1);
-	expect(msg.dir).toBe('REV');
-
-	ws.close();
-});
-
-it('clamps drive speed to 0 for negative and non-finite speeds', async () => {
-	const ws = new WebSocket(`ws://127.0.0.1:${cfg.httpPort}`);
-	const readyP = waitForWsMessage(ws, (m) => m && m.type === 'server.replay.session.ready', 5000);
-	await new Promise<void>((resolve, reject) => {
-		ws.once('open', resolve);
-		ws.once('error', reject);
+	afterEach(() => {
+		createServerSpy.mockRestore();
+		consoleSpy.mockRestore();
 	});
 
-	await readyP;
+	it('starts UDP and performs initial priming requests', async () => {
+		await import('./main');
 
-	const addrNeg = 43;
-	ws.send(JSON.stringify({ type: 'loco.command.drive', addr: addrNeg, speed: -0.5, dir: 'FWD' }));
-	const msgNeg = await waitForWsMessage(ws, (m) => m && m.type === 'loco.message.state' && m.addr === addrNeg, 5000);
-	expect(msgNeg.speed).toBe(0);
+		const udpInstance = lastUdpInstance;
 
-	const addrNaN = 44;
-	ws.send(JSON.stringify({ type: 'loco.command.drive', addr: addrNaN, speed: NaN, dir: 'FWD' }));
-	const msgNaN = await waitForWsMessage(ws, (m) => m && m.type === 'loco.message.state' && m.addr === addrNaN, 5000);
-	expect(msgNaN.speed).toBe(0);
-
-	ws.close();
-});
-
-it('toggles function and broadcasts updated fns state', async () => {
-	const ws = new WebSocket(`ws://127.0.0.1:${cfg.httpPort}`);
-	const readyP = waitForWsMessage(ws, (m) => m && m.type === 'server.replay.session.ready', 5000);
-	await new Promise<void>((resolve, reject) => {
-		ws.once('open', resolve);
-		ws.once('error', reject);
+		expect(udpInstance.start).toHaveBeenCalledWith(21105);
+		expect(udpInstance.sendGetSerial).toHaveBeenCalled();
+		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000101);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalled();
 	});
 
-	await readyP;
+	it('listens on configured HTTP port and logs startup message', async () => {
+		const cfgMod = await import('./infra/config/config');
+		const cfg = cfgMod.loadConfig();
 
-	const addr = 50;
-	const fn = 5;
-	ws.send(JSON.stringify({ type: 'loco.command.function.set', addr, fn, on: true }));
-	const msgOn = await waitForWsMessage(ws, (m) => m && m.type === 'loco.message.state' && m.addr === addr, 5000);
-	expect(msgOn.fns[fn]).toBe(true);
+		await import('./main');
 
-	ws.send(JSON.stringify({ type: 'loco.command.function.set', addr, fn, on: false }));
-	const msgOff = await waitForWsMessage(ws, (m) => m && m.type === 'loco.message.state' && m.addr === addr, 5000);
-	expect(msgOff.fns[fn]).toBe(false);
+		expect(http.createServer).toHaveBeenCalled();
+		expect(listenSpy).toHaveBeenCalledWith(cfg.httpPort, expect.any(Function));
+		expect(consoleSpy).toHaveBeenCalledWith(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
+	});
 
-	ws.close();
+	it('wires Z21 rx handler to forward payloads to Z21EventHandler', async () => {
+		await import('./main');
+
+		const z21Mock = await vi.importMock('@application-platform/z21');
+		const { Z21Udp } = z21Mock as any;
+		const { Z21EventHandler } = await import('./services/z21-service');
+
+		const udpInstance = (Z21Udp as vi.Mock).mock.results[0].value;
+		const rxHandler = (udpInstance.on as vi.Mock).mock.calls.find((call) => call[0] === 'rx')?.[1];
+		expect(rxHandler).toBeDefined();
+
+		const handlerInstance = (Z21EventHandler as vi.Mock).mock.results[0].value;
+		rxHandler({ type: 'datasets' });
+
+		expect(handlerInstance.handle).toHaveBeenCalledWith({ type: 'datasets' });
+	});
+
+	it('broadcasts loco.state for all stopped locos on disconnect when safety flag is enabled', async () => {
+		await import('./main');
+
+		const { AppWsServer } = await import('./app-websocket-server');
+		const domainMock = await vi.importMock('@application-platform/domain');
+		const { LocoManager } = domainMock as any;
+
+		const appWsInstance = (AppWsServer as vi.Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as vi.Mock).mock.results[0].value;
+
+		const onConnectionCalls = (appWsInstance.onConnection as vi.Mock).mock.calls[0];
+		const onDisconnect = onConnectionCalls[1];
+
+		onDisconnect();
+
+		expect(locoManagerInstance.stopAll).toHaveBeenCalled();
+		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+			type: 'loco.message.state',
+			addr: 3,
+			speed: 0,
+			dir: 'fwd',
+			fns: { 0: true }
+		});
+		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+			type: 'loco.message.state',
+			addr: 7,
+			speed: 0,
+			dir: 'rev',
+			fns: { 2: false }
+		});
+	});
+
+	it('does not broadcast on disconnect when safety flag is disabled', async () => {
+		vi.resetModules();
+		vi.clearAllMocks();
+
+		vi.doMock('./infra/config/config', () => ({
+			loadConfig: vi.fn().mockReturnValue({
+				httpPort: 5050,
+				z21: { host: '1.2.3.4', udpPort: 21105 },
+				safety: { stopAllOnClientDisconnect: false }
+			})
+		}));
+
+		createServerSpy = vi
+			.spyOn(http, 'createServer')
+			.mockReturnValue({ listen: vi.fn((_: number, cb?: () => void) => cb && cb()) } as any);
+		vi.spyOn(console, 'log').mockImplementation(() => {
+			// do nothing
+		});
+
+		await import('./main');
+
+		const { AppWsServer } = await import('./app-websocket-server');
+		const domainMock2 = await vi.importMock('@application-platform/domain');
+		const { LocoManager } = domainMock2 as any;
+
+		const appWsInstance = (AppWsServer as vi.Mock).mock.results[0].value;
+		const locoManagerInstance = (LocoManager as vi.Mock).mock.results[0].value;
+
+		const onConnectionCalls = (appWsInstance.onConnection as vi.Mock).mock.calls[0];
+		const onDisconnect = onConnectionCalls[1];
+
+		onDisconnect();
+
+		expect(locoManagerInstance.stopAll).not.toHaveBeenCalled();
+		expect(appWsInstance.broadcast).not.toHaveBeenCalled();
+	});
 });

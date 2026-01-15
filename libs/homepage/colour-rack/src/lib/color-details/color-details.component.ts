@@ -34,6 +34,6 @@ export class ColorDetailsComponent {
 		if (types?.every((type) => type in ColorType)) {
 			return types.map((type) => ColorType[type as keyof typeof ColorType]).join('-');
 		}
-		return 'Unknown';
+		return 'ds.unknown';
 	}
 }

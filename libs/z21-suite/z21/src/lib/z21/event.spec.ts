@@ -41,8 +41,8 @@ describe('dataToEvent', () => {
 		const events = dataToEvent(ds as any);
 		expect(events).toHaveLength(1);
 		const e = events[0];
-		expect(e.type).toBe('event.system.state');
-		if (e.type === 'event.system.state') {
+		expect(e.type).toBe('event.z21.status');
+		if (e.type === 'event.z21.status') {
 			expect(e.payload.mainCurrent_mA).toBe(-300);
 			expect(e.payload.progCurrent_mA).toBe(150);
 			expect(e.payload.filteredMainCurrent_mA).toBe(-100);
@@ -55,7 +55,7 @@ describe('dataToEvent', () => {
 		}
 	});
 
-	it('parses ds.x.bus loco.info frames', () => {
+	it("parses ds.x.bus 'event.loco.info frames", () => {
 		const addr = 0x0123;
 		const adrMsb = (addr >> 8) & 0x3f;
 		const adrLsb = addr & 0xff;

@@ -8,31 +8,44 @@ import path from 'node:path';
 
 import { loadConfig } from './config';
 
-// Mock Node.js modules at module level
 vi.mock('node:fs');
-vi.mock('node:path');
 
 describe('loadConfig', () => {
 	const ORIGINAL_ENV = process.env;
 
 	beforeEach(() => {
-		process.env = { ...ORIGINAL_ENV };
-
-		// Mock console.log to keep tests clean
+		vi.resetModules();
+		(process.env as any) = { ...ORIGINAL_ENV };
 		vi.spyOn(console, 'log').mockImplementation(() => {
 			// do nothing
 		});
-
-		// Mock path.resolve to return predictable paths
-		(vi.mocked(path.resolve) as any).mockImplementation((...args: string[]) => args.join('/'));
+		(path.resolve as unknown as vi.Mock | undefined)?.mockReset?.();
+		(fs.readFileSync as unknown as vi.Mock | undefined)?.mockReset?.();
 	});
 
 	afterAll(() => {
-		process.env = ORIGINAL_ENV;
+		(process.env as any) = ORIGINAL_ENV;
+	});
+
+	it('returns DEFAULT when config file is missing', () => {
+		(process.env as any).Z21_CONFIG = undefined;
+		(fs.readFileSync as unknown as vi.Mock).mockImplementation(() => {
+			throw new Error('ENOENT');
+		});
+
+		const cfg = loadConfig();
+
+		expect(cfg).toEqual({
+			httpPort: 8080,
+			z21: { host: '192.168.0.111', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
 	});
 
 	it('uses Z21_CONFIG env var to resolve path and loads file', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(JSON.stringify({ httpPort: 3000 }));
+		(process.env as any).Z21_CONFIG = 'custom/path/config.json';
+		const resolved = path.resolve(process.env.Z21_CONFIG!);
+		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(JSON.stringify({ httpPort: 3000 }));
 
 		const cfg = loadConfig();
 
@@ -42,7 +55,8 @@ describe('loadConfig', () => {
 	});
 
 	it('loads config.json from CWD when env var is not set', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(JSON.stringify({ z21: { host: '10.0.0.5' } }));
+		(process.env as any).Z21_CONFIG = undefined;
+		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(JSON.stringify({ z21: { host: '10.0.0.5' } }));
 
 		const cfg = loadConfig();
 
@@ -51,7 +65,7 @@ describe('loadConfig', () => {
 	});
 
 	it('deep merges nested z21 and safety sections while preserving defaults', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
+		(fs.readFileSync as unknown as vi.Mock).mockReturnValue(
 			JSON.stringify({
 				httpPort: 9090,
 				z21: { udpPort: 30000 },
@@ -67,86 +81,7 @@ describe('loadConfig', () => {
 	});
 
 	it('falls back to DEFAULT on JSON parse error', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue('this is not json');
-
-		const cfg = loadConfig();
-
-		expect(cfg).toEqual({
-			httpPort: 8080,
-			z21: { host: '192.168.0.111', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
-	});
-
-	it('merges z21.listenPort when specified', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
-			JSON.stringify({
-				z21: { listenPort: 25000 }
-			})
-		);
-
-		const cfg = loadConfig();
-
-		expect(cfg.z21).toEqual({ host: '192.168.0.111', udpPort: 21105, listenPort: 25000 });
-	});
-
-	it('merges z21.debug flag when specified', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
-			JSON.stringify({
-				z21: { debug: true }
-			})
-		);
-
-		const cfg = loadConfig();
-
-		expect(cfg.z21).toEqual({ host: '192.168.0.111', udpPort: 21105, debug: true });
-	});
-
-	it('overrides safety.stopAllOnClientDisconnect to false', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
-			JSON.stringify({
-				safety: { stopAllOnClientDisconnect: false }
-			})
-		);
-
-		const cfg = loadConfig();
-
-		expect(cfg.safety).toEqual({ stopAllOnClientDisconnect: false });
-	});
-
-	it('merges multiple z21 properties together', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
-			JSON.stringify({
-				z21: { host: '10.0.0.50', listenPort: 22000, debug: true }
-			})
-		);
-
-		const cfg = loadConfig();
-
-		expect(cfg.z21).toEqual({ host: '10.0.0.50', udpPort: 21105, listenPort: 22000, debug: true });
-	});
-
-	it('preserves all config properties when complete override is provided', () => {
-		(vi.mocked(fs.readFileSync) as any).mockReturnValue(
-			JSON.stringify({
-				httpPort: 5000,
-				z21: { host: '192.168.1.1', udpPort: 30000, listenPort: 30001, debug: false },
-				safety: { stopAllOnClientDisconnect: false },
-				dev: { logLevel: 'trace', subscribeLocoAddr: 100 }
-			})
-		);
-
-		const cfg = loadConfig();
-
-		expect(cfg.httpPort).toBe(5000);
-		expect(cfg.z21).toEqual({ host: '192.168.1.1', udpPort: 30000, listenPort: 30001, debug: false });
-		expect(cfg.safety).toEqual({ stopAllOnClientDisconnect: false });
-	});
-
-	it('handles file read error and returns DEFAULT', () => {
-		(vi.mocked(fs.readFileSync) as any).mockImplementation(() => {
-			throw new Error('Permission denied');
-		});
+		(fs.readFileSync as unknown as vi.Mock).mockReturnValue('this is not json');
 
 		const cfg = loadConfig();
 

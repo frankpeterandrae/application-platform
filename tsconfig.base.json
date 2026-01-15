@@ -31,7 +31,8 @@
 			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
 			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],
 			"@application-platform/protocol": ["libs/z21-suite/protocol/src/index.ts"],
-			"@application-platform/z21": ["libs/z21-suite/z21/src/index.ts"]
+			"@application-platform/z21": ["libs/z21-suite/z21/src/index.ts"],
+			"@application-platform/server-utils": ["libs/z21-suite/server-utils/src/index.ts"]
 		},
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,

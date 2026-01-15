@@ -3,5 +3,4 @@
  * All rights reserved.
  */
 
-export * from './lib/loco-manager';
-export * from './lib/track';
+// global vitest.setup.ts handles vi.resetAllMocks for tests
