@@ -10,7 +10,7 @@
 			"outputs": ["{options.reportsDirectory}"],
 			"options": {
 				"tsConfig": "libs/z21-suite/domain//tsconfig.spec.json",
-				"vitestConfig": "libs/z21-suite/domain//vitest.config.ts",
+				"vitestConfig": "libs/z21-suite/domain//vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/z21-suite/domain",
 				"passWithNoTests": true
 			}

@@ -6,7 +6,7 @@ import { KeyValuePipe, type KeyValue } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import type { ClientToServer, ServerToClient } from '@application-platform/protocol';
 import { PROTOCOL_VERSION } from '@application-platform/protocol';
-import { type Direction } from '@application-platform/z21-shared';
+import { type Direction, type TurnoutState } from '@application-platform/z21-shared';
 
 /**
  * Root application component for the z21 UI.
@@ -142,7 +142,7 @@ export class AppComponent {
 	 * @param state - Either 'STRAIGHT' or 'DIVERGING'.
 	 *                The message includes `pulseMs: 200` as an example pulse duration.
 	 */
-	public sendTurnout(state: 'STRAIGHT' | 'DIVERGING'): void {
+	public sendTurnout(state: TurnoutState): void {
 		this.send({ type: 'switching.command.turnout.set', addr: this.turnoutAddr(), state, pulseMs: 200 });
 	}
 

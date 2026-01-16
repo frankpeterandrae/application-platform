@@ -2,13 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type Direction } from '@application-platform/z21-shared';
-
-/**
- * Possible turnout (switch) orientations.
- * 'STRAIGHT' routes straight; 'DIVERGING' routes onto a diverging path.
- */
-export type TurnoutState = 'STRAIGHT' | 'DIVERGING';
+import { type Direction, type TurnoutState } from '@application-platform/z21-shared';
 
 /**
  * Sources that can emit feedback events.

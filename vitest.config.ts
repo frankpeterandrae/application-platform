@@ -7,12 +7,13 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/root'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite'),
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./vitest.setup.ts'],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/index.html'),
 		include: ['**/*.spec.ts', '**/*.test.ts', '**/*.vi.ts', '**/*.d.ts'],
 		silent: false
 	},

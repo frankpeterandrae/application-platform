@@ -40,16 +40,16 @@ export class Z21EventHandler {
 			return;
 		}
 
+		// top-level system state snapshots use the 'ds.system.state' kind
 		if (payload.type === 'system.state') {
 			this.broadcast({
 				type: 'system.message.z21.rx',
 				rawHex: payload.rawHex,
 				datasets: [{ kind: 'ds.system.state', from: payload.from, payload: payload.payload }],
-				events: [{ type: 'ds.system.state', state: payload.payload }]
+				events: [{ type: 'event.system.state', state: payload.payload }]
 			});
+			return;
 		}
-
-		if (payload.type !== 'datasets') return;
 
 		// Process events
 		for (const e of payload.events) {
@@ -76,19 +76,29 @@ export class Z21EventHandler {
 					'estop?',
 					status.emergencyStop
 				);
+				continue;
 			}
 
 			if (e.type === 'event.loco.info') {
 				this.updateLocoInfoFromZ21(e as unknown as LocoInfo);
+				continue;
+			}
+
+			if (e.type === 'event.turnout.info') {
+				this.broadcast({ type: 'switching.message.turnout.state', addr: e.addr, state: e.state });
+				continue;
 			}
 		}
 
-		this.broadcast({
-			type: 'system.message.z21.rx',
-			rawHex: payload.rawHex,
-			datasets: payload.datasets,
-			events: payload.events
-		});
+		// Only emit raw z21.rx when there are no events to process (empty events array)
+		if (payload.events.length === 0) {
+			this.broadcast({
+				type: 'system.message.z21.rx',
+				rawHex: payload.rawHex,
+				datasets: payload.datasets,
+				events: payload.events
+			});
+		}
 	}
 
 	/**

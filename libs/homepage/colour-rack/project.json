@@ -10,14 +10,11 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/homepage/colour-rack/tsconfig.spec.json",
-				"vitestConfig": "libs/homepage/colour-rack/vitest.config.ts",
+				"vitestConfig": "libs/homepage/colour-rack/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/homepage/colour-rack",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

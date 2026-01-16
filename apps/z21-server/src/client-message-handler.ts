@@ -82,8 +82,9 @@ export class ClientMessageHandler {
 
 			case 'switching.command.turnout.set': {
 				// Update turnout state and notify clients
-				this.z21Service.demoPing();
-				this.broadcast({ type: 'switching.message.turnout.state', addr: msg.addr, state: msg.state });
+				const port: 0 | 1 = msg.state === 'DIVERGING' ? 1 : 0;
+				this.z21Service.setTurnout(msg.addr, port, { queue: true, pulseMs: msg.pulseMs ?? 100 });
+				this.z21Service.getTurnoutInfo(msg.addr);
 				return;
 			}
 		}

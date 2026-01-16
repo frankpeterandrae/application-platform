@@ -485,7 +485,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Get turnout information.
-	 * TODO: add handling
 	 */
 	LAN_X_GET_TURNOUT_INFO: {
 		lanHeader: Z21LanHeader.LAN_X,
@@ -493,7 +492,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Turnout information response.
-	 * TODO: add handling
 	 */
 	LAN_X_TURNOUT_INFO: {
 		lanHeader: Z21LanHeader.LAN_X,
@@ -517,7 +515,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Set turnout state.
-	 * TODO: add handling
 	 */
 	LAN_X_SET_TURNOUT: {
 		lanHeader: Z21LanHeader.LAN_X,

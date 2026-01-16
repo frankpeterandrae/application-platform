@@ -11,17 +11,18 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/homepage-app'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/z21-ui'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/apps/z21-ui/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

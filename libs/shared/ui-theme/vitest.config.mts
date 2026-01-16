@@ -11,17 +11,18 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/colour-rack'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/ui-theme'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: ['./src/test-setup.ts', resolve(__dirname, '../../../vitest.setup.ts')],
-		reporters: ['default', 'verbose'],
+		setupFiles: ['../../vitest.setup.ts'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/libs/shared/ui-theme/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

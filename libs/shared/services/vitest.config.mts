@@ -9,7 +9,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/shared-services'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/services'),
 	resolve: {
 		alias: {
 			'@application-platform/colour-rack': resolve(__dirname, '../../homepage/colour-rack/src/index.ts'),
@@ -30,11 +30,12 @@ export default defineConfig({
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/libs/shared/services/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

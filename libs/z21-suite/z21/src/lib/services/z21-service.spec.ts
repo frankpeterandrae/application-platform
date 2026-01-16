@@ -195,4 +195,390 @@ describe('Z21Service', () => {
 			expect(buf.length).toBeGreaterThan(0);
 		});
 	});
+
+	describe('setLocoFunction', () => {
+		it('sends locomotive function command to UDP', () => {
+			service.setLocoFunction(100, 0, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('encodes function OFF type', () => {
+			service.setLocoFunction(100, 5, 0b00);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('encodes function ON type', () => {
+			service.setLocoFunction(100, 10, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('encodes function TOGGLE type', () => {
+			service.setLocoFunction(100, 15, 0b10);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('sends different buffers for different function numbers', () => {
+			service.setLocoFunction(100, 0, 0b01);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setLocoFunction(100, 1, 0b01);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('sends different buffers for different switch types', () => {
+			service.setLocoFunction(100, 5, 0b00);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setLocoFunction(100, 5, 0b01);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('sends different buffers for different addresses', () => {
+			service.setLocoFunction(100, 5, 0b01);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setLocoFunction(200, 5, 0b01);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('handles function number 0', () => {
+			service.setLocoFunction(100, 0, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles function number 31', () => {
+			service.setLocoFunction(100, 31, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles minimum locomotive address', () => {
+			service.setLocoFunction(1, 5, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles maximum locomotive address', () => {
+			service.setLocoFunction(9999, 5, 0b01);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('getLocoInfo', () => {
+		it('sends locomotive info request to UDP', () => {
+			service.getLocoInfo(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('sends different buffers for different addresses', () => {
+			service.getLocoInfo(100);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getLocoInfo(200);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('handles minimum locomotive address', () => {
+			service.getLocoInfo(1);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles maximum locomotive address', () => {
+			service.getLocoInfo(9999);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('sends buffer with non-zero length', () => {
+			service.getLocoInfo(100);
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('produces consistent buffer for same address', () => {
+			service.getLocoInfo(100);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getLocoInfo(100);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+	});
+
+	describe('getTurnoutInfo', () => {
+		it('sends turnout info request to UDP', () => {
+			service.getTurnoutInfo(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('sends different buffers for different addresses', () => {
+			service.getTurnoutInfo(100);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getTurnoutInfo(200);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('handles minimum accessory address', () => {
+			service.getTurnoutInfo(0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles maximum accessory address', () => {
+			service.getTurnoutInfo(16383);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles mid-range accessory address', () => {
+			service.getTurnoutInfo(500);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('sends buffer with non-zero length', () => {
+			service.getTurnoutInfo(100);
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('produces consistent buffer for same address', () => {
+			service.getTurnoutInfo(100);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getTurnoutInfo(100);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+	});
+
+	describe('setTurnout', () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.clearAllTimers();
+			vi.useRealTimers();
+		});
+
+		it('sends turnout activation command immediately', () => {
+			service.setTurnout(100, 0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('sends turnout deactivation command after default pulse time', () => {
+			service.setTurnout(100, 0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+
+		it('sends turnout deactivation command after custom pulse time', () => {
+			service.setTurnout(100, 0, { pulseMs: 200 });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+
+			vi.advanceTimersByTime(200);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+
+		it('does not send deactivation before pulse time', () => {
+			service.setTurnout(100, 0, { pulseMs: 200 });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('sends different buffers for activation and deactivation', () => {
+			service.setTurnout(100, 0);
+			const activationBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			vi.advanceTimersByTime(100);
+			const deactivationBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(activationBuffer).not.toEqual(deactivationBuffer);
+		});
+
+		it('sends different buffers for port 0 and port 1', () => {
+			service.setTurnout(100, 0);
+			const port0Buffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setTurnout(100, 1);
+			const port1Buffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(port0Buffer).not.toEqual(port1Buffer);
+		});
+
+		it('uses default queue flag when not specified', () => {
+			service.setTurnout(100, 0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('respects custom queue flag', () => {
+			service.setTurnout(100, 0, { queue: false });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('cancels previous timer when setting same turnout again', () => {
+			service.setTurnout(100, 0, { pulseMs: 200 });
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+
+			vi.advanceTimersByTime(50);
+
+			service.setTurnout(100, 0, { pulseMs: 200 });
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+
+			vi.advanceTimersByTime(150);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+
+			vi.advanceTimersByTime(50);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+
+		it('does not cancel timer for different turnout addresses', () => {
+			service.setTurnout(100, 0, { pulseMs: 200 });
+			service.setTurnout(200, 0, { pulseMs: 200 });
+
+			vi.advanceTimersByTime(200);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(4);
+		});
+
+		it('handles minimum accessory address', () => {
+			service.setTurnout(0, 0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('handles maximum accessory address', () => {
+			service.setTurnout(16383, 0);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
+		it('sends both activation and deactivation for complete cycle', () => {
+			service.setTurnout(100, 0);
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('sends activation with same queue flag for both commands', () => {
+			service.setTurnout(100, 0, { queue: false });
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+
+		it('handles multiple concurrent turnout operations', () => {
+			service.setTurnout(100, 0, { pulseMs: 100 });
+			service.setTurnout(200, 1, { pulseMs: 150 });
+			service.setTurnout(300, 0, { pulseMs: 200 });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+
+			vi.advanceTimersByTime(100);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(4);
+
+			vi.advanceTimersByTime(50);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(5);
+
+			vi.advanceTimersByTime(50);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(6);
+		});
+
+		it('cleans up timer after deactivation completes', () => {
+			service.setTurnout(100, 0);
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+
+		it('does not send deactivation if timer was replaced', () => {
+			service.setTurnout(100, 0, { pulseMs: 100 });
+
+			vi.advanceTimersByTime(50);
+
+			service.setTurnout(100, 1, { pulseMs: 200 });
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+
+			vi.advanceTimersByTime(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+
+		it('sends activation and deactivation immediately when pulseMs is zero', () => {
+			service.setTurnout(50, 1, { pulseMs: 0 });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			vi.runAllTimers();
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+
+		it('sends deactivation after a very short pulse duration', () => {
+			service.setTurnout(75, 0, { pulseMs: 1 });
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			vi.advanceTimersByTime(1);
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+		});
+	});
 });

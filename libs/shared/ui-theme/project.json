@@ -10,14 +10,11 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/ui-theme/vitest.config.ts",
+				"vitestConfig": "libs/shared/ui-theme/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/shared/ui-theme",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
 		},
 		"watch-css": {
 			"executor": "nx:run-commands",

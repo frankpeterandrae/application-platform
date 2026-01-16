@@ -10,17 +10,18 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21/domain'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/domain'),
 	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
 	test: {
+		outputFile: resolve(process.cwd(), 'test-result/libs/z21-suite/domain/index.html'),
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

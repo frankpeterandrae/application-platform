@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type CsStatus, type LocoInfo, type SystemState, type TrackPower, type UnlonwnXBus } from '@application-platform/z21-shared';
+import type { CsStatus, LocoInfo, SystemState, TrackPower, TurnoutInfo, UnlonwnXBus } from '@application-platform/z21-shared';
 
 /**
  * Discrete events derived from Z21 datasets.
@@ -10,9 +10,10 @@ import { type CsStatus, type LocoInfo, type SystemState, type TrackPower, type U
  * - event.cs.status: Central station status bitmask
  * - event.loco.info: Locomotive speed/function info
  * - event.system.state: Parsed Z21 system state snapshot
+ * - event.turnout.info: Turnout state info
  * - event.unknown.x.bus: Unrecognized X-Bus payload for diagnostics
  */
-export type Z21Event = TrackPower | CsStatus | LocoInfo | SystemState | UnlonwnXBus;
+export type Z21Event = TrackPower | CsStatus | LocoInfo | SystemState | TurnoutInfo | UnlonwnXBus;
 
 /**
  * Derived flags for track state computed from system state bitfields.

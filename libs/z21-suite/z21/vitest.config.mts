@@ -13,14 +13,15 @@ export default defineConfig({
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/z21'),
 	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
 	test: {
+		outputFile: resolve(process.cwd(), 'test-result/libs/z21-suite/z21/index.html'),
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8' as const,
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

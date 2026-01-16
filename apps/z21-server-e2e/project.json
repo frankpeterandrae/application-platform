@@ -10,7 +10,7 @@
 			"outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
 			"options": {
 				"tsConfig": "apps/z21-server-e2e/tsconfig.spec.json",
-				"vitestConfig": "apps/z21-server-e2e/vitest.config.ts",
+				"vitestConfig": "apps/z21-server-e2e/vitest.config.mts",
 				"reportsDirectory": "../../coverage/z21-server-e2e",
 				"passWithNoTests": true
 			},

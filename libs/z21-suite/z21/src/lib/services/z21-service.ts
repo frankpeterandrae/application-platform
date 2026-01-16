@@ -6,9 +6,11 @@ import { type Direction } from '@application-platform/z21-shared';
 
 import {
 	encdodeLanXGetLocoInfo,
+	encodeLanXGetTurnoutInfo,
 	encodeLanXSetLocoFunction,
 	encodeLanXSetTrackPowerOff,
 	encodeLanXSetTrackPowerOn,
+	encodeLanXSetTurnout,
 	encodeLocoDrive128
 } from '../codec/frames';
 import { type LocoFunctionSwitchType } from '../constants';
@@ -19,6 +21,7 @@ import { type Z21Udp } from '../udp/udp';
  * Provides methods to send track power commands and demo payloads.
  */
 export class Z21Service {
+	private readonly turnoutOffTimers = new Map<number, NodeJS.Timeout>();
 	/**
 	 * Creates an instance of Z21Service.
 	 * @param udp - The UDP transport service for communicating with Z21.
@@ -77,6 +80,61 @@ export class Z21Service {
 		// eslint-disable-next-line no-console
 		console.log('[z21] tx GET_LOCO_INFO', `addr=${address}`, buf.toString('hex'));
 		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Request turnout information from the Z21.
+	 *
+	 * Encodes the LAN/X TURNOUT_INFO command and sends it to the central.
+	 * @param address - Address of the turnout to query.
+	 */
+	public getTurnoutInfo(address: number): void {
+		const buf = encodeLanXGetTurnoutInfo(address);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx TURNOUT_INFO', `addr=${address}`, buf.toString('hex'));
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Sets a turnout to a specified position with optional queuing and pulse duration.
+	 * Sends an activation command followed by a deactivation command after the pulse duration.
+	 * @param address - Turnout address
+	 * @param port - Port (0 or 1) to set the turnout position
+	 * @param opts - Optional settings:
+	 *  - queue: Whether to queue the command (default: true)
+	 *   - pulseMs: Duration in milliseconds before deactivating the turnout (default: 100ms)
+	 */
+	public setTurnout(address: number, port: 0 | 1, opts?: { queue?: boolean; pulseMs?: number }): void {
+		const queueFlag = opts?.queue ?? true;
+		const pulseMs = opts?.pulseMs ?? 100;
+
+		const existingTimer = this.turnoutOffTimers.get(address);
+		if (existingTimer) {
+			clearTimeout(existingTimer);
+			this.turnoutOffTimers.delete(address);
+		}
+
+		// Activate (A=1)
+		const buf = encodeLanXSetTurnout(address, port, true, queueFlag);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx TURNOUT SET', `addr=${address}`, `port=${port}`, `A=1`, `queue=${queueFlag}`, buf.toString('hex'));
+		this.udp.sendRaw(buf);
+
+		// Deactivate (A=0) after pulseMs
+		const timer = setTimeout(() => {
+			if (!this.turnoutOffTimers.has(address) || this.turnoutOffTimers.get(address) !== timer) {
+				return;
+			}
+
+			this.turnoutOffTimers.delete(address);
+
+			const bufOff = encodeLanXSetTurnout(address, port, false, queueFlag);
+			// eslint-disable-next-line no-console
+			console.log('[z21] tx TURNOUT SET', `addr=${address}`, `port=${port}`, `A=0`, `queue=${queueFlag}`, bufOff.toString('hex'));
+			this.udp.sendRaw(bufOff);
+		}, pulseMs);
+
+		this.turnoutOffTimers.set(address, timer);
 	}
 
 	/**

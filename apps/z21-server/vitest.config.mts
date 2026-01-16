@@ -5,23 +5,23 @@
 
 import { resolve } from 'node:path';
 
-import angular from '@analogjs/vite-plugin-angular';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/homepage-feature'),
-	plugins: [angular(), tsconfigPaths()],
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/z21-server'),
+	plugins: [tsconfigPaths()],
 	test: {
-		environment: 'jsdom',
+		environment: 'node',
 		globals: true,
-		setupFiles: [resolve(__dirname, '../../../vitest.setup.ts')],
-		reporters: ['default', 'verbose'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/apps/z21-server/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+		passWithNoTests: true,
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

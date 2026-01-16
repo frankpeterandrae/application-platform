@@ -45,6 +45,8 @@ export type SystemState = { type: 'event.z21.status'; payload: Z21SystemState };
  */
 export type UnlonwnXBus = { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
 
+export type TurnoutInfo = { type: 'event.turnout.info'; addr: number; state: TurnoutState };
+
 /**
  * Parsed Z21 system state fields, as defined by the protocol.
  */
@@ -59,3 +61,5 @@ export type Z21SystemState = {
 	centralStateEx: number; // uint8 (Bitfeld)
 	capabilities: number; // uint8
 };
+
+export type TurnoutState = 'STRAIGHT' | 'DIVERGING' | 'UNKNOWN';

@@ -153,15 +153,12 @@
 				"buildTarget": "homepage:build"
 			}
 		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
-		},
 		"test": {
 			"executor": "@nx/vitest:test",
 			"outputs": ["{options.reportsDirectory}"],
 			"options": {
 				"tsConfig": "apps/homepage/tsconfig.spec.json",
-				"vitestConfig": "apps/homepage/vitest.config.ts",
+				"vitestConfig": "apps/homepage/vitest.config.mts",
 				"reportsDirectory": "../../coverage/apps/homepage",
 				"passWithNoTests": true
 			}
