@@ -6,6 +6,7 @@
 import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
 import { LocoFunctionSwitchType, type Z21Service } from '@application-platform/z21';
+import type { Direction } from '@application-platform/z21-shared';
 
 /**
  * Function signature used to emit server-to-client protocol messages.
@@ -19,6 +20,11 @@ export type BroadcastFn = (msg: ServerToClient) => void;
  * server-to-client updates.
  */
 export class ClientMessageHandler {
+	private readonly driveThrottleMs = 50;
+
+	private readonly pendingDrives = new Map<number, { speed: number; dir: Direction }>();
+	private readonly driveTimers = new Map<number, NodeJS.Timeout>();
+
 	/**
 	 * Creates a new ClientMessageHandler.
 	 * @param locoManager - Manages locomotive state (speed, direction, functions)
@@ -59,7 +65,8 @@ export class ClientMessageHandler {
 			case 'loco.command.drive': {
 				// Update locomotive speed/direction and inform clients of the new state
 				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
-				this.z21Service.setLocoDrive(msg.addr, msg.speed, msg.dir);
+				this.pendingDrives.set(msg.addr, { speed: msg.speed, dir: msg.dir });
+				this.scheduleDrive(msg.addr);
 				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
 				return;
 			}
@@ -82,6 +89,13 @@ export class ClientMessageHandler {
 
 			case 'loco.command.eStop': {
 				// Emergency stop a locomotive and broadcast the updated state
+				const t = this.driveTimers.get(msg.addr);
+				if (t) {
+					clearTimeout(t);
+				}
+
+				this.driveTimers.delete(msg.addr);
+				this.pendingDrives.delete(msg.addr);
 				this.z21Service.setLocoEStop(msg.addr);
 				this.z21Service.getLocoInfo(msg.addr);
 				return;
@@ -95,5 +109,27 @@ export class ClientMessageHandler {
 				return;
 			}
 		}
+	}
+
+	private scheduleDrive(addr: number): void {
+		if (this.driveTimers.has(addr)) {
+			return;
+		}
+
+		const timer = setTimeout(() => {
+			this.driveTimers.delete(addr);
+
+			const next = this.pendingDrives.get(addr);
+
+			if (!next) {
+				return;
+			}
+
+			this.pendingDrives.delete(addr);
+
+			this.z21Service.setLocoDrive(addr, next.speed, next.dir);
+		}, this.driveThrottleMs);
+
+		this.driveTimers.set(addr, timer);
 	}
 }

@@ -6,7 +6,7 @@
 import type { ClientToServer } from '@application-platform/protocol';
 import { LocoFunctionSwitchType } from '@application-platform/z21';
 import type { MockedFunction } from 'vitest';
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { ClientMessageHandler, type BroadcastFn } from './client-message-handler';
 
@@ -24,6 +24,8 @@ describe('ClientMessageHandler.handle', () => {
 		setLocoFunction: Mock;
 		setTurnout: Mock;
 		getTurnoutInfo: Mock;
+		setLocoEStop: Mock;
+		getLocoInfo: Mock;
 	};
 	let handler: ClientMessageHandler;
 
@@ -42,7 +44,9 @@ describe('ClientMessageHandler.handle', () => {
 			setTurnout: vi.fn(),
 			getTurnoutInfo: vi.fn(),
 			getState: vi.fn(),
-			setState: vi.fn()
+			setState: vi.fn(),
+			setLocoEStop: vi.fn(),
+			getLocoInfo: vi.fn()
 		} as any;
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, broadcast);
 	});
@@ -77,11 +81,21 @@ describe('ClientMessageHandler.handle', () => {
 	});
 
 	describe('loco.command.drive', () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.runOnlyPendingTimers();
+			vi.useRealTimers();
+		});
+
 		it('sets locomotive speed and direction and broadcasts updated state', () => {
 			locoManager.setSpeed.mockReturnValue({ speed: 42, dir: 'REV', fns: { 1: true } });
 			handler.handle({ type: 'loco.command.drive', addr: 5, speed: 42, dir: 'REV' } as ClientToServer);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(5, 42, 'REV');
+			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(5, 42, 'REV');
 			expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', addr: 5, speed: 42, dir: 'REV', fns: { 1: true } });
 		});
@@ -91,6 +105,7 @@ describe('ClientMessageHandler.handle', () => {
 			handler.handle({ type: 'loco.command.drive', addr: 10, speed: 0, dir: 'FWD' } as ClientToServer);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(10, 0, 'FWD');
+			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(10, 0, 'FWD');
 			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ speed: 0 }));
 		});
@@ -100,6 +115,7 @@ describe('ClientMessageHandler.handle', () => {
 			handler.handle({ type: 'loco.command.drive', addr: 10, speed: 1, dir: 'FWD' } as ClientToServer);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(10, 1, 'FWD');
+			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(10, 1, 'FWD');
 		});
 
@@ -107,6 +123,7 @@ describe('ClientMessageHandler.handle', () => {
 			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {} });
 			handler.handle({ type: 'loco.command.drive', addr: 100, speed: 0.5, dir: 'FWD' } as ClientToServer);
 
+			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(100, 0.5, 'FWD');
 			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ dir: 'FWD' }));
 		});
@@ -115,6 +132,7 @@ describe('ClientMessageHandler.handle', () => {
 			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'REV', fns: {} });
 			handler.handle({ type: 'loco.command.drive', addr: 100, speed: 0.5, dir: 'REV' } as ClientToServer);
 
+			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(100, 0.5, 'REV');
 			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ dir: 'REV' }));
 		});
@@ -135,6 +153,7 @@ describe('ClientMessageHandler.handle', () => {
 			z21Service.setLocoDrive.mockImplementation(() => callOrder.push('z21'));
 
 			handler.handle({ type: 'loco.command.drive', addr: 1, speed: 0, dir: 'FWD' } as ClientToServer);
+			vi.advanceTimersByTime(50);
 
 			expect(callOrder).toEqual(['locoManager', 'z21']);
 		});
@@ -399,6 +418,35 @@ describe('ClientMessageHandler.handle', () => {
 			handler.handle({ type: 'switching.command.turnout.set', addr: 100, state: 'STRAIGHT' } as ClientToServer);
 
 			expect(broadcast).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('loco.eStop', () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.clearAllTimers();
+			vi.useRealTimers();
+		});
+
+		it('sends emergency stop and requests loco info', () => {
+			handler.handle({ type: 'loco.command.eStop', addr: 99 } as ClientToServer);
+
+			expect(z21Service.setLocoEStop).toHaveBeenCalledWith(99);
+			expect(z21Service.getLocoInfo).toHaveBeenCalledWith(99);
+		});
+
+		it('cancels pending throttled drive before it fires', () => {
+			handler.handle({ type: 'loco.command.drive', addr: 5, speed: 0.7, dir: 'FWD' } as ClientToServer);
+			handler.handle({ type: 'loco.command.eStop', addr: 5 } as ClientToServer);
+
+			vi.advanceTimersByTime(100);
+
+			expect(z21Service.setLocoDrive).not.toHaveBeenCalledWith(5, expect.anything(), expect.anything());
+			// emergency stop still issued
+			expect(z21Service.setLocoEStop).toHaveBeenCalledWith(5);
 		});
 	});
 });
