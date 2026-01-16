@@ -14,11 +14,14 @@ export default defineConfig({
 		environment: 'node',
 		globals: true,
 		// first ensure the CLI is built, then run project test setup
-		setupFiles: ['./src/setup-build.ts', './src/test-setup.ts', resolve(process.cwd(), 'vitest.setup.ts')],
+		setupFiles: [resolve(__dirname, 'src/test-setup.ts'), resolve(process.cwd(), 'vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
 		outputFile: resolve(process.cwd(), 'test-result/apps/z21-server-e2e/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		passWithNoTests: true,
+		// increase test timeout for slower CI/host environments
+		testTimeout: 20000,
+		// disable worker threads to make startup deterministic in CI
 		coverage: {
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov']

@@ -14,7 +14,7 @@
 				"reportsDirectory": "../../coverage/z21-server-e2e",
 				"passWithNoTests": true
 			},
-			"dependsOn": ["z21-server:build", "z21-server:serve"]
+			"dependsOn": ["z21-server:build"]
 		}
 	}
 }

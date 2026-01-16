@@ -101,7 +101,7 @@ export const enum Z21LanHeader {
  * commands in different protocol contexts (e.g., 0x23 is both DCC_WRITE_REGISTER and CV_READ).
  */
 /* eslint-disable @typescript-eslint/no-duplicate-enum-values */
-const enum XBusHeader {
+export const enum XBusHeader {
 	/** Set track power ON/OFF */
 	STATUS = 0x21,
 	/** DCC: read CV register */
@@ -530,7 +530,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: track power off.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_TRACK_POWER_OFF: {
 		lanHeader: Z21LanHeader.LAN_X,
@@ -539,7 +538,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: track power on.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_TRACK_POWER_ON: {
 		lanHeader: Z21LanHeader.LAN_X,
