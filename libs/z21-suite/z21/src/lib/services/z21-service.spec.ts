@@ -51,32 +51,6 @@ describe('Z21Service', () => {
 		});
 	});
 
-	describe('demoPing', () => {
-		it('sends demo payload 0xDEADBEEF to UDP', () => {
-			service.demoPing();
-
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			expect(mockUdp.sendRaw).toHaveBeenCalledWith(Buffer.from([0xde, 0xad, 0xbe, 0xef]));
-		});
-
-		it('sends exactly 4 bytes for demo ping', () => {
-			service.demoPing();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBe(4);
-		});
-
-		it('sends correct hex values in demo payload', () => {
-			service.demoPing();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer[0]).toBe(0xde);
-			expect(buffer[1]).toBe(0xad);
-			expect(buffer[2]).toBe(0xbe);
-			expect(buffer[3]).toBe(0xef);
-		});
-	});
-
 	describe('setLocoDrive', () => {
 		it('sends locomotive drive command to UDP', () => {
 			service.setLocoDrive(1845, 0.5, 'FWD');
