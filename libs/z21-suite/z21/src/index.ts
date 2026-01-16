@@ -7,6 +7,7 @@ export * from './lib/codec/codec-types';
 export * from './lib/codec/codec';
 export * from './lib/constants';
 export * from './lib/helper/x-bus-encoder';
+export * from './lib/lan-x/dispatch';
 export * from './lib/lan-x/encode';
 export * from './lib/services/z21-service';
 export * from './lib/udp/udp-types';
