@@ -9,17 +9,17 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/testing'),
 	test: {
-		environment: 'node',
+		environment: 'jsdom',
 		globals: true,
-		// first ensure the CLI is built, then run project test setup
-		setupFiles: ['./src/setup-build.ts', './src/test-setup.ts', resolve(process.cwd(), 'vitest.setup.ts')],
-		reporters: ['default', 'verbose'],
+		setupFiles: ['./src/test-setup.ts'],
+		reporters: ['html', 'default', 'verbose'],
+		outputFile: resolve(process.cwd(), 'test-result/libs/shared/testing/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
-		passWithNoTests: true,
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'lcov']
+			reporter: ['html', 'text', 'lcov']
 		}
 	}
 });

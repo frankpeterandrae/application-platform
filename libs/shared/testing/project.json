@@ -10,14 +10,11 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/shared/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/vitest.config.ts",
+				"vitestConfig": "libs/shared/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/shared/testing",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
 		}
 	}
 }

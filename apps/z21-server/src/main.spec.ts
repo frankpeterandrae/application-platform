@@ -154,7 +154,7 @@ describe('main bootstrap', () => {
 		expect(handlerInstance.handle).toHaveBeenCalledWith({ type: 'datasets' });
 	});
 
-	it('broadcasts loco.state for all stopped locos on disconnect when safety flag is enabled', async () => {
+	it('broadcasts loco.message.state for all stopped locos on disconnect when safety flag is enabled', async () => {
 		await import('./main');
 
 		const { AppWsServer } = await import('./app-websocket-server');

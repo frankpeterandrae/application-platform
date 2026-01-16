@@ -5,21 +5,20 @@
 
 import { resolve } from 'node:path';
 
-import angular from '@analogjs/vite-plugin-angular';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/homepage'),
-	plugins: [angular(), tsconfigPaths()],
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/z21-server-e2e'),
 	test: {
-		environment: 'jsdom',
+		environment: 'node',
 		globals: true,
-		setupFiles: ['./src/test-setup.ts'],
+		// first ensure the CLI is built, then run project test setup
+		setupFiles: ['./src/setup-build.ts', './src/test-setup.ts', resolve(process.cwd(), 'vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/apps/homepage/index.html'),
+		outputFile: resolve(process.cwd(), 'test-result/apps/z21-server-e2e/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+		passWithNoTests: true,
 		coverage: {
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov']

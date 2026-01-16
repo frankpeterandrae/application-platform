@@ -10,14 +10,11 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json",
-				"vitestConfig": "libs/demo/demo-feature/vitest.config.ts",
+				"vitestConfig": "libs/demo/demo-feature/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/demo/demo-feature",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"]
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

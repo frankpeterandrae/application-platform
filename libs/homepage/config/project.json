@@ -10,13 +10,10 @@
 			"executor": "@nx/vitest:test",
 			"options": {
 				"tsConfig": "libs/homepage/config/tsconfig.spec.json",
-				"vitestConfig": "libs/homepage/config/vitest.config.ts",
+				"vitestConfig": "libs/homepage/config/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/homepage/config",
 				"passWithNoTests": true
 			}
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint"
 		}
 	}
 }
