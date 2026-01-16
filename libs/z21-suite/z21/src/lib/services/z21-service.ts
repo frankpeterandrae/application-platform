@@ -35,6 +35,8 @@ export class Z21Service {
 	 */
 	public sendTrackPower(on: boolean): void {
 		const buf = on ? encodeLanXSetTrackPowerOn() : encodeLanXSetTrackPowerOff();
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx TRACK_POWER', on ? 'ON' : 'OFF', buf.toString('hex'));
 		this.udp.sendRaw(buf);
 	}
 
@@ -118,7 +120,7 @@ export class Z21Service {
 		// Activate (A=1)
 		const buf = encodeLanXSetTurnout(address, port, true, queueFlag);
 		// eslint-disable-next-line no-console
-		console.log('[z21] tx TURNOUT SET', `addr=${address}`, `port=${port}`, `A=1`, `queue=${queueFlag}`, buf.toString('hex'));
+		console.log('[z21] tx TURNOUT_SET', `addr=${address}`, `port=${port}`, `A=1`, `queue=${queueFlag}`, buf.toString('hex'));
 		this.udp.sendRaw(buf);
 
 		// Deactivate (A=0) after pulseMs
@@ -131,7 +133,7 @@ export class Z21Service {
 
 			const bufOff = encodeLanXSetTurnout(address, port, false, queueFlag);
 			// eslint-disable-next-line no-console
-			console.log('[z21] tx TURNOUT SET', `addr=${address}`, `port=${port}`, `A=0`, `queue=${queueFlag}`, bufOff.toString('hex'));
+			console.log('[z21] tx TURNOUT_SET', `addr=${address}`, `port=${port}`, `A=0`, `queue=${queueFlag}`, bufOff.toString('hex'));
 			this.udp.sendRaw(bufOff);
 		}, pulseMs);
 

@@ -117,7 +117,7 @@ wsServer.onConnection(
  * - Enable broadcast flags (basic + systemState)
  * - Pull current system state immediately
  */
-udp.start(21105);
+udp.start(cfg.z21.listenPort ?? 21105);
 udp.sendGetSerial(); // -> should trigger 1 UDP response
 // Broadcasts aktivieren: basic + systemState
 udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);

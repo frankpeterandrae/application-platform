@@ -372,7 +372,7 @@ export default [
 
 	// tests: weniger streng
 	{
-		files: ['**/*.spec.ts', '**/*test*.ts'],
+		files: ['**/*.spec.ts', '**/*test*.ts', '**/*e2e*.ts'],
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'off',
 			'jsdoc/require-jsdoc': 'off',
