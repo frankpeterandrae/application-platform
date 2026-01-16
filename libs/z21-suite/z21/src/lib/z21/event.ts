@@ -42,6 +42,13 @@ function decodeLocoInfo(b: Uint8Array<ArrayBufferLike>): Z21Event[] {
 	const forward = (db3 & SpeedByteMask.DIRECTION_FORWARD) !== 0;
 	const SPEED_VALUE_MASK = SpeedByteMask.VALUE;
 	const speedRaw = db3 & SPEED_VALUE_MASK;
+	// In the X-BUS protocol, a speed value of 1 encodes "emergency stop".
+	// Regular speed steps are encoded as (step + 1), so:
+	//   - 0 means "stop"
+	//   - 1 means "emergency stop"
+	//   - >= 2 represent increasing speed steps.
+	const isEmergencyStop = speedRaw === 1;
+	const speedStep = speedRaw <= 1 ? 0 : speedRaw - 1;
 
 	const db4 = b[5];
 	const isDoubleTraction = (db4 & LowFunctionsByteMask.D) !== 0;
@@ -106,7 +113,8 @@ function decodeLocoInfo(b: Uint8Array<ArrayBufferLike>): Z21Event[] {
 			isDoubleTraction,
 			isSmartsearch,
 			speedSteps,
-			speedRaw,
+			speed: speedStep,
+			emergencyStop: isEmergencyStop,
 			forward,
 			functionMap
 		}

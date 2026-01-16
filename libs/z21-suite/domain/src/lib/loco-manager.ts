@@ -9,6 +9,7 @@ export type LocoState = {
 	speed: number;
 	dir: Direction;
 	fns: Record<number, boolean>;
+	estop?: boolean;
 };
 
 /**
@@ -130,9 +131,10 @@ export class LocoManager {
 	 */
 	public updateLocoInfoFromZ21(locoInfo: LocoInfo): { addr: number; state: LocoState } {
 		const st = this.locos.get(locoInfo.addr) ?? { speed: 0, dir: 'FWD', fns: {} };
-		st.speed = locoInfo.speedRaw;
+		st.speed = locoInfo.speed;
 		st.dir = locoInfo.forward ? 'FWD' : 'REV';
 		st.fns = { ...locoInfo.functionMap };
+		st.estop = locoInfo.emergencyStop;
 
 		this.locos.set(locoInfo.addr, st);
 

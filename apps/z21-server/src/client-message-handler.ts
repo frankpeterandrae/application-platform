@@ -60,7 +60,7 @@ export class ClientMessageHandler {
 				// Update locomotive speed/direction and inform clients of the new state
 				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
 				this.z21Service.setLocoDrive(msg.addr, msg.speed, msg.dir);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
+				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
 				return;
 			}
 
@@ -68,7 +68,7 @@ export class ClientMessageHandler {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, msg.on);
 				this.z21Service.setLocoFunction(msg.addr, msg.fn, msg.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
+				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
 				return;
 			}
 
@@ -76,7 +76,14 @@ export class ClientMessageHandler {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, !(this.locoManager.getState(msg.addr)?.fns[msg.fn] ?? false));
 				this.z21Service.setLocoFunction(msg.addr, msg.fn, LocoFunctionSwitchType.Toggle);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns });
+				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
+				return;
+			}
+
+			case 'loco.command.eStop': {
+				// Emergency stop a locomotive and broadcast the updated state
+				this.z21Service.setLocoEStop(msg.addr);
+				this.z21Service.getLocoInfo(msg.addr);
 				return;
 			}
 

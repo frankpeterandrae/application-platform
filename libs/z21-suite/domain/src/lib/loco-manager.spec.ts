@@ -2,6 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+
 import { LocoManager } from './loco-manager';
 
 describe('LocoManager', () => {
@@ -76,22 +77,126 @@ describe('LocoManager', () => {
 		expect(manager.getState(2)?.speed).toBe(0);
 	});
 
-	it('subscribeLocoInfoOnce returns true when new and false on subsequent calls', () => {
-		const res1 = manager.subscribeLocoInfoOnce(42);
-		expect(res1).toBe(true);
-		const res2 = manager.subscribeLocoInfoOnce(42);
-		expect(res2).toBe(false);
-		// subscribe should ensure loco exists
-		expect(manager.getState(42)).toBeDefined();
+	it('updateLocoInfoFromZ21 sets estop flag when emergencyStop is true', () => {
+		const result = manager.updateLocoInfoFromZ21({
+			addr: 100,
+			speed: 0.5,
+			forward: true,
+			functionMap: {},
+			isMmLoco: false,
+			isOccupied: true,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 28,
+			emergencyStop: true
+		} as any);
+
+		expect(result.state.estop).toBe(true);
+		expect(manager.getState(100)?.estop).toBe(true);
 	});
 
-	it('updateLocoInfoFromZ21 updates loco state and returns addr/state pair', () => {
-		const info = { addr: 99, speedRaw: 0.75, forward: false, functionMap: { 0: true, 2: true } } as any;
-		const res = manager.updateLocoInfoFromZ21(info);
-		expect(res.addr).toBe(99);
-		expect(res.state.speed).toBe(0.75);
-		expect(res.state.dir).toBe('REV');
-		expect(res.state.fns[0]).toBe(true);
-		expect(res.state.fns[2]).toBe(true);
+	it('updateLocoInfoFromZ21 sets estop false when emergencyStop is false', () => {
+		const result = manager.updateLocoInfoFromZ21({
+			addr: 200,
+			speed: 0.3,
+			forward: false,
+			functionMap: { 0: true, 5: false },
+			isMmLoco: false,
+			isOccupied: false,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 128,
+			emergencyStop: false
+		} as any);
+
+		expect(result.state.estop).toBe(false);
+		expect(manager.getState(200)?.estop).toBe(false);
+	});
+
+	it('updateLocoInfoFromZ21 updates estop and speed simultaneously', () => {
+		manager.setSpeed(50, 0.5, 'FWD');
+		const result = manager.updateLocoInfoFromZ21({
+			addr: 50,
+			speed: 0.0,
+			forward: true,
+			functionMap: {},
+			isMmLoco: false,
+			isOccupied: true,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 28,
+			emergencyStop: true
+		} as any);
+
+		expect(result.state.speed).toBe(0);
+		expect(result.state.estop).toBe(true);
+	});
+
+	it('updateLocoInfoFromZ21 preserves previous estop state when updating', () => {
+		manager.updateLocoInfoFromZ21({
+			addr: 75,
+			speed: 0.5,
+			forward: true,
+			functionMap: { 0: true },
+			isMmLoco: false,
+			isOccupied: false,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 28,
+			emergencyStop: true
+		} as any);
+
+		manager.updateLocoInfoFromZ21({
+			addr: 75,
+			speed: 0.7,
+			forward: true,
+			functionMap: { 0: true },
+			isMmLoco: false,
+			isOccupied: false,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 28,
+			emergencyStop: false
+		} as any);
+
+		expect(manager.getState(75)?.estop).toBe(false);
+	});
+
+	it('ensureLoco creates loco with undefined estop', () => {
+		const state = manager.ensureLoco(300);
+		expect(state.estop).toBeUndefined();
+		expect(manager.getState(300)).toEqual({ speed: 0, dir: 'FWD', fns: {} });
+	});
+
+	it('subscribeLocoInfoOnce returns true on first call', () => {
+		const result = manager.subscribeLocoInfoOnce(400);
+		expect(result).toBe(true);
+		expect(manager.getState(400)).toBeDefined();
+	});
+
+	it('subscribeLocoInfoOnce returns false on second call', () => {
+		manager.subscribeLocoInfoOnce(500);
+		const result = manager.subscribeLocoInfoOnce(500);
+		expect(result).toBe(false);
+	});
+
+	it('stopAll preserves estop state when setting speed to zero', () => {
+		manager.updateLocoInfoFromZ21({
+			addr: 600,
+			speed: 0.6,
+			forward: true,
+			functionMap: {},
+			isMmLoco: false,
+			isOccupied: false,
+			isDoubleTraction: false,
+			isSmartsearch: false,
+			speedSteps: 28,
+			emergencyStop: true
+		} as any);
+
+		const stopped = manager.stopAll();
+		const stoppedState = stopped.find((s) => s.addr === 600);
+		expect(stoppedState?.state.speed).toBe(0);
+		expect(stoppedState?.state.estop).toBe(true);
 	});
 });

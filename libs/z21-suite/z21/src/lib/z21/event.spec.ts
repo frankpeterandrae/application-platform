@@ -87,7 +87,8 @@ describe('dataToEvent', () => {
 				isDoubleTraction: false,
 				isSmartsearch: true,
 				speedSteps: 28,
-				speedRaw: 0x14 & SpeedByteMask.VALUE,
+				speed: 0x13 & SpeedByteMask.VALUE,
+				emergencyStop: false,
 				forward: true,
 				functionMap: {
 					0: true,
@@ -235,7 +236,8 @@ describe('dataToEvent', () => {
 				isDoubleTraction: false,
 				isSmartsearch: false,
 				speedSteps: 14,
-				speedRaw: 0x0a & SpeedByteMask.VALUE,
+				speed: 0x09 & SpeedByteMask.VALUE,
+				emergencyStop: false,
 				forward: true,
 				functionMap: {
 					0: false,
@@ -267,7 +269,8 @@ describe('dataToEvent', () => {
 				isDoubleTraction: false,
 				isSmartsearch: false,
 				speedSteps: 128,
-				speedRaw: 0x40,
+				speed: 0x3f & SpeedByteMask.VALUE,
+				emergencyStop: false,
 				forward: false,
 				functionMap: {
 					0: false,
@@ -440,7 +443,7 @@ describe('dataToEvent', () => {
 		expect(events[0]).toMatchObject({
 			type: 'event.loco.info',
 			forward: false,
-			speedRaw: 0x50,
+			speed: 0x4f & SpeedByteMask.VALUE,
 			functionMap: {
 				0: true,
 				1: true,
@@ -491,7 +494,145 @@ describe('dataToEvent', () => {
 		expect(events[0]).toMatchObject({
 			type: 'event.loco.info',
 			addr: (addrMsb << 8) + addrLsb,
-			speedRaw: 0x7f
+			speed: 0x7e & SpeedByteMask.VALUE
+		});
+	});
+
+	it('emits loco.info with emergency stop when speed raw value is 1', () => {
+		const addrMsb = 0x02 & AddessByteMask.MSB;
+		const addrLsb = 0x0a;
+		const db2 = 2;
+		const db3 = SpeedByteMask.DIRECTION_FORWARD | 0x01;
+		const db4 = 0x00;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			addr: (addrMsb << 8) + addrLsb,
+			emergencyStop: true,
+			speed: 0
+		});
+	});
+
+	it('emits loco.info with emergency stop false when speed raw value is not 1', () => {
+		const addrMsb = 0x03 & AddessByteMask.MSB;
+		const addrLsb = 0x0b;
+		const db2 = 2;
+		const db3 = SpeedByteMask.DIRECTION_FORWARD | 0x02;
+		const db4 = 0x00;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			emergencyStop: false,
+			speed: 0x01 & SpeedByteMask.VALUE
+		});
+	});
+
+	it('emits loco.info with emergency stop and zero speed when raw speed is 1', () => {
+		const addrMsb = 0x01 & AddessByteMask.MSB;
+		const addrLsb = 0x20;
+		const db2 = 2;
+		const db3 = 0x01;
+		const db4 = 0x00;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			emergencyStop: true,
+			speed: 0,
+			forward: false
+		});
+	});
+
+	it('emits loco.info with emergency stop and max speed difference', () => {
+		const addrMsb = 0x04 & AddessByteMask.MSB;
+		const addrLsb = 0x30;
+		const db2 = 2;
+		const db3 = SpeedByteMask.DIRECTION_FORWARD | 0x7f;
+		const db4 = 0x00;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			emergencyStop: false,
+			speed: 0x7e & SpeedByteMask.VALUE
+		});
+	});
+
+	it('distinguishes emergency stop from zero speed', () => {
+		const addrMsbEstop = 0x05 & AddessByteMask.MSB;
+		const addrLsbEstop = 0x40;
+		const db2Estop = 2;
+		const db3Estop = SpeedByteMask.DIRECTION_FORWARD | 0x01;
+		const db4Estop = 0x00;
+		const dataEstop = Uint8Array.from([0xef, addrMsbEstop, addrLsbEstop, db2Estop, db3Estop, db4Estop]);
+
+		const addrMsbZero = 0x06 & AddessByteMask.MSB;
+		const addrLsbZero = 0x50;
+		const db2Zero = 2;
+		const db3Zero = SpeedByteMask.DIRECTION_FORWARD | 0x00;
+		const db4Zero = 0x00;
+		const dataZero = Uint8Array.from([0xef, addrMsbZero, addrLsbZero, db2Zero, db3Zero, db4Zero]);
+
+		const eventsEstop = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data: dataEstop });
+		const eventsZero = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data: dataZero });
+
+		expect(eventsEstop[0]).toMatchObject({
+			emergencyStop: true,
+			speed: 0
+		});
+		expect(eventsZero[0]).toMatchObject({
+			emergencyStop: false,
+			speed: 0
+		});
+	});
+
+	it('emits loco.info with emergency stop false for medium speed values', () => {
+		const addrMsb = 0x07 & AddessByteMask.MSB;
+		const addrLsb = 0x60;
+		const db2 = 2;
+		const db3 = SpeedByteMask.DIRECTION_FORWARD | 0x40;
+		const db4 = 0x00;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			emergencyStop: false,
+			speed: 0x3f & SpeedByteMask.VALUE
+		});
+	});
+
+	it('emits loco.info with all flags and emergency stop true', () => {
+		const addrMsb = 0x08 & AddessByteMask.MSB;
+		const addrLsb = 0x70;
+		const db2 = InfoByteMask.MM_LOCO | InfoByteMask.OCCUPIED | 2;
+		const db3 = 0x01;
+		const db4 = LowFunctionsByteMask.D | LowFunctionsByteMask.S;
+		const db5 = 0xff;
+		const data = Uint8Array.from([0xef, addrMsb, addrLsb, db2, db3, db4, db5]);
+
+		const events = dataToEvent({ kind: 'ds.x.bus', xHeader: 0xef, data });
+
+		expect(events[0]).toMatchObject({
+			type: 'event.loco.info',
+			isMmLoco: true,
+			isOccupied: true,
+			isDoubleTraction: true,
+			isSmartsearch: true,
+			emergencyStop: true,
+			speed: 0,
+			forward: false
 		});
 	});
 

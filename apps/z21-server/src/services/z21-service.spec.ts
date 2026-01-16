@@ -515,6 +515,67 @@ describe('Z21EventHandler.handle', () => {
 
 			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ addr: 9999 }));
 		});
+
+		it('broadcasts loco state with estop false', () => {
+			(locoManager as any).updateLocoInfoFromZ21.mockReturnValue({
+				addr: 100,
+				state: { speed: 0, dir: 'FWD', fns: {}, estop: false }
+			});
+			const payload = {
+				type: 'datasets' as const,
+				rawHex: '0xd8',
+				from: { address: '127.0.0.1', port: 21105 },
+				datasets: [],
+				events: [{ type: 'event.loco.info' as const, addr: 100 }]
+			} as any;
+
+			handler.handle(payload);
+
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ estop: false }));
+		});
+
+		it('broadcasts loco state with estop true', () => {
+			(locoManager as any).updateLocoInfoFromZ21.mockReturnValue({
+				addr: 100,
+				state: { speed: 0, dir: 'FWD', fns: {}, estop: true }
+			});
+			const payload = {
+				type: 'datasets' as const,
+				rawHex: '0xd9',
+				from: { address: '127.0.0.1', port: 21105 },
+				datasets: [],
+				events: [{ type: 'event.loco.info' as const, addr: 100 }]
+			} as any;
+
+			handler.handle(payload);
+
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ estop: true }));
+		});
+
+		it('includes all locomotive fields in broadcast', () => {
+			(locoManager as any).updateLocoInfoFromZ21.mockReturnValue({
+				addr: 500,
+				state: { speed: 0.6, dir: 'REV', fns: { 0: true }, estop: false }
+			});
+			const payload = {
+				type: 'datasets' as const,
+				rawHex: '0xda',
+				from: { address: '127.0.0.1', port: 21105 },
+				datasets: [],
+				events: [{ type: 'event.loco.info' as const, addr: 500 }]
+			} as any;
+
+			handler.handle(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'loco.message.state',
+				addr: 500,
+				speed: 0.6,
+				dir: 'REV',
+				fns: { 0: true },
+				estop: false
+			});
+		});
 	});
 
 	describe('event.unknown.x.bus', () => {

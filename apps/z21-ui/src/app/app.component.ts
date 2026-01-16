@@ -150,6 +150,14 @@ export class AppComponent {
 		return Math.max(0, Math.min(1, x));
 	}
 
+	/**
+	 * Send an emergency stop command for the currently selected locomotive.
+	 * This will immediately halt the locomotive on the track.
+	 */
+	public sendEStop(): void {
+		this.send({ type: 'loco.command.eStop', addr: this.addr() });
+	}
+
 	private uiSpeedToStep128(ui: number): number {
 		// 0..1 -> 0..126
 		return Math.round(this.clamp01(ui) * 126);
@@ -206,6 +214,7 @@ export class AppComponent {
 			case 'server.replay.session.ready':
 			case 'feedback.message.changed':
 			case 'system.message.z21.rx':
+			case 'loco.message.eStop':
 				// no-op for now
 				break;
 			default:

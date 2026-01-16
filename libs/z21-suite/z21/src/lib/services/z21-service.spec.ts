@@ -581,4 +581,60 @@ describe('Z21Service', () => {
 			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 	});
+
+	describe('setLocoEStop', () => {
+		it('sends emergency stop command to UDP', () => {
+			service.setLocoEStop(100);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('sends emergency stop with minimum address', () => {
+			service.setLocoEStop(1);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('sends emergency stop with maximum address', () => {
+			service.setLocoEStop(9999);
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('sends different buffers for different addresses', () => {
+			service.setLocoEStop(100);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setLocoEStop(200);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).not.toEqual(buffer2);
+		});
+
+		it('sends same buffer for repeated calls with same address', () => {
+			service.setLocoEStop(150);
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setLocoEStop(150);
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('creates a valid LAN_X formatted message', () => {
+			service.setLocoEStop(100);
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
+		});
+	});
 });

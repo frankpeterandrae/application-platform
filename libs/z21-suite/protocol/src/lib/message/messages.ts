@@ -30,6 +30,7 @@ export function isClientToServerMessage(msg: unknown): msg is ClientToServer {
 		(msgType === 'server.command.session.hello' ||
 			msgType === 'system.command.trackpower.set' ||
 			msgType === 'loco.command.drive' ||
+			msgType === 'loco.command.eStop' ||
 			msgType === 'loco.command.function.set' ||
 			msgType === 'loco.command.function.toggle' ||
 			msgType === 'switching.command.turnout.set')

@@ -99,7 +99,7 @@ wsServer.onConnection(
 			 */
 			const stopped = locoManager.stopAll();
 			for (const { addr, state } of stopped) {
-				wsServer.broadcast({ type: 'loco.message.state', addr, speed: 0, dir: state.dir, fns: state.fns });
+				wsServer.broadcast({ type: 'loco.message.state', addr, speed: 0, dir: state.dir, fns: state.fns, estop: state.estop });
 			}
 		}
 	},
