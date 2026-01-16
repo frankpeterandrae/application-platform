@@ -72,7 +72,7 @@ jobs:
             -Dsonar.sources=apps,libs
             -Dsonar.tests=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test-setup.ts
-            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/demo-e2e/**,**/homepage-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
+            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
             -Dsonar.javascript.lcov.reportPaths=coverage/**/lcov.info
 
   build-and-deploy:
