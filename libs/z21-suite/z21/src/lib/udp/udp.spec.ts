@@ -2,6 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import * as dgram from 'node:dgram';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,8 +21,6 @@ vi.mock('node:dgram', () => {
 // Mock the same module path used by the implementation imports
 vi.mock('../codec/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
 vi.mock('../z21/event', () => ({ dataToEvent: vi.fn(() => []) }));
-
-import * as dgram from 'node:dgram';
 
 import { parseZ21Datagram } from '../codec/codec';
 import { Z21BroadcastFlag, Z21LanHeader } from '../constants';
