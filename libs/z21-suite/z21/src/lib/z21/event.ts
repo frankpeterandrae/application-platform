@@ -13,11 +13,11 @@ import {
 	F29ToF31FunctionsByteMask,
 	F5ToF12FunctionsByteMask,
 	InfoByteMask,
-	LAN_X_COMMANDS,
 	LowFunctionsByteMask,
 	SpeedByteMask,
 	type LanXCommandKey
 } from '../constants';
+import { resolveLanXCommand } from '../lan-x/dispatch';
 
 import { CentralStatus, CentralStatusEx, type DerivedTrackFlags, type Z21Event } from './event-types';
 
@@ -158,7 +158,7 @@ export function dataToEvent(ds: Z21Dataset): Z21Event[] {
 	const b = ds.data;
 	const xHeader = b[0];
 
-	const command: LanXCommandKey = decodeData(b);
+	const command: LanXCommandKey = resolveLanXCommand(b);
 	if (command === 'LAN_X_BC_TRACK_POWER_OFF') {
 		return [{ type: 'event.track.power', on: false }];
 	} else if (command === 'LAN_X_BC_TRACK_POWER_ON') {
@@ -227,34 +227,4 @@ export function deriveTrackFlagsFromSystemState(sysState: { centralState: number
 		shortCircuitInternal,
 		cseRCN2130Mode
 	};
-}
-
-/**
- * Decodes the LAN X command from raw X-Bus data.
- *
- * @param data - Raw X-Bus data bytes.
- * @returns The identified LanXCommandKey, or 'LAN_X_UNKNOWN_COMMAND' if unrecognized.
- */
-function decodeData(data: Uint8Array): LanXCommandKey {
-	const header = data[0];
-	const commandByte = data[1];
-
-	if (header === LAN_X_COMMANDS.LAN_X_TURNOUT_INFO.xBusHeader) {
-		if (data.length === 3) {
-			return 'LAN_X_GET_TURNOUT_INFO';
-		} else if (data.length >= 4) {
-			return 'LAN_X_TURNOUT_INFO';
-		}
-	} else {
-		/** decode LAN X command */
-		for (const [key, value] of Object.entries(LAN_X_COMMANDS)) {
-			const hasXBusCmd = 'xBusCmd' in value;
-			if (hasXBusCmd && header === value.xBusHeader && commandByte === value.xBusCmd) {
-				return key as LanXCommandKey;
-			} else if (!hasXBusCmd && header === value.xBusHeader) {
-				return key as LanXCommandKey;
-			}
-		}
-	}
-	return 'LAN_X_UNKNOWN_COMMAND';
 }
