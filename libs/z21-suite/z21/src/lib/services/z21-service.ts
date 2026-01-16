@@ -4,8 +4,9 @@
  */
 import { type Direction } from '@application-platform/z21-shared';
 
+import { type LocoFunctionSwitchType } from '../constants';
 import {
-	encdodeLanXGetLocoInfo,
+	encodeLanXGetLocoInfo,
 	encodeLanXGetTurnoutInfo,
 	encodeLanXSetLocoEStop,
 	encodeLanXSetLocoFunction,
@@ -13,8 +14,7 @@ import {
 	encodeLanXSetTrackPowerOn,
 	encodeLanXSetTurnout,
 	encodeLocoDrive128
-} from '../codec/frames';
-import { type LocoFunctionSwitchType } from '../constants';
+} from '../lan-x/encode';
 import { type Z21Udp } from '../udp/udp';
 
 /**
@@ -79,7 +79,7 @@ export class Z21Service {
 	 * @param address - Address of the locomotive to query.
 	 */
 	public getLocoInfo(address: number): void {
-		const buf = encdodeLanXGetLocoInfo(address);
+		const buf = encodeLanXGetLocoInfo(address);
 		// eslint-disable-next-line no-console
 		console.log('[z21] tx GET_LOCO_INFO', `addr=${address}`, buf.toString('hex'));
 		this.udp.sendRaw(buf);
@@ -150,12 +150,5 @@ export class Z21Service {
 		// eslint-disable-next-line no-console
 		console.log('[z21] tx LOCO_ESTOP', `addr=${address}`, buf.toString('hex'));
 		this.udp.sendRaw(buf);
-	}
-
-	/**
-	 * Sends a demo payload (0xDEADBEEF) to the Z21 device for testing purposes.
-	 */
-	public demoPing(): void {
-		this.udp.sendRaw(Buffer.from([0xde, 0xad, 0xbe, 0xef]));
 	}
 }
