@@ -26,7 +26,8 @@ export type LocoInfo = {
 	type: 'event.loco.info';
 	addr: number;
 	speedSteps: 14 | 28 | 128;
-	speedRaw: number;
+	speed: number;
+	emergencyStop: boolean;
 	forward: boolean;
 	isMmLoco: boolean;
 	isOccupied: boolean;

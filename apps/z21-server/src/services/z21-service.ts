@@ -86,7 +86,6 @@ export class Z21EventHandler {
 
 			if (e.type === 'event.turnout.info') {
 				this.broadcast({ type: 'switching.message.turnout.state', addr: e.addr, state: e.state });
-				continue;
 			}
 		}
 
@@ -136,7 +135,8 @@ export class Z21EventHandler {
 			addr: locoState.addr,
 			speed: locoState.state.speed,
 			dir: locoState.state.dir,
-			fns: locoState.state.fns
+			fns: locoState.state.fns,
+			estop: locoState.state.estop
 		});
 	}
 }

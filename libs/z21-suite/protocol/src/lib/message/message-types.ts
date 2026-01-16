@@ -23,6 +23,7 @@ export type ClientToServer =
 	| { type: 'server.command.session.hello'; protocolVersion: string; clientName?: string }
 	| { type: 'system.command.trackpower.set'; on: boolean }
 	| { type: 'loco.command.drive'; addr: number; speed: number; dir: Direction; steps?: 14 | 28 | 128 }
+	| { type: 'loco.command.eStop'; addr: number }
 	| { type: 'loco.command.function.set'; addr: number; fn: number; on: boolean }
 	| { type: 'loco.command.function.toggle'; addr: number; fn: number }
 	| { type: 'switching.command.turnout.set'; addr: number; state: TurnoutState; pulseMs?: number };
@@ -39,7 +40,8 @@ export type ClientToServer =
 export type ServerToClient =
 	| { type: 'server.replay.session.ready'; protocolVersion: string; serverTime?: string }
 	| { type: 'system.message.trackpower'; on: boolean; short?: boolean; emergencyStop?: boolean }
-	| { type: 'loco.message.state'; addr: number; speed: number; dir: Direction; fns: Record<number, boolean> }
+	| { type: 'loco.message.state'; addr: number; speed: number; dir: Direction; fns: Record<number, boolean>; estop?: boolean }
+	| { type: 'loco.message.eStop'; addr: number }
 	| { type: 'switching.message.turnout.state'; addr: number; state: TurnoutState }
 	| { type: 'feedback.message.changed'; source: SourceType; addr: number; value: 0 | 1 }
 	| { type: 'system.message.z21.rx'; datasets: unknown[]; events: unknown[]; rawHex: string };

@@ -7,6 +7,7 @@ import { type Direction } from '@application-platform/z21-shared';
 import {
 	encdodeLanXGetLocoInfo,
 	encodeLanXGetTurnoutInfo,
+	encodeLanXSetLocoEStop,
 	encodeLanXSetLocoFunction,
 	encodeLanXSetTrackPowerOff,
 	encodeLanXSetTrackPowerOn,
@@ -135,6 +136,18 @@ export class Z21Service {
 		}, pulseMs);
 
 		this.turnoutOffTimers.set(address, timer);
+	}
+
+	/**
+	 * Sends an emergency stop command for a locomotive to the Z21 device.
+	 *
+	 * @param address - Locomotive address to emergency stop.
+	 */
+	public setLocoEStop(address: number): void {
+		const buf = encodeLanXSetLocoEStop(address);
+		// eslint-disable-next-line no-console
+		console.log('[z21] tx LOCO_ESTOP', `addr=${address}`, buf.toString('hex'));
+		this.udp.sendRaw(buf);
 	}
 
 	/**

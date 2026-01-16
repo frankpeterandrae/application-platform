@@ -264,3 +264,14 @@ function hasXbusCmd(command: unknown): command is { xBusCmd: number } {
 	const has = Object.hasOwn(command as object, 'xBusCmd');
 	return has && typeof (command as { xBusCmd?: unknown }).xBusCmd === 'number';
 }
+
+/**
+ * Encode a LAN_X SET_LOCO_E_STOP command for a given locomotive address.
+ *
+ * @param address - Locomotive numeric address to emergency stop (1..9999)
+ * @returns Buffer containing the SET_LOCO_E_STOP LAN_X command.
+ */
+export function encodeLanXSetLocoEStop(address: number): Buffer {
+	const { adrMsb, adrLsb } = endcodeLocoAddress(address);
+	return encodeLanX('LAN_X_SET_LOCO_E_STOP', [adrMsb, adrLsb]);
+}

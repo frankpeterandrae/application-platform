@@ -22,6 +22,7 @@
 		(pointercancel)="draggingSpeed.set(false)"
 		(input)="setSpeed(+$any($event.target).value)"
 	/>
+	<button (click)="sendEStop()">Stop</button>
 	<button (click)="dir.set(dir() === 'FWD' ? 'REV' : 'FWD')">Dir: {{ dir() }}</button>
 	@for (fn of functions() | keyvalue: numericKeySort; track fn.key) {
 		<button (click)="sendFn(+fn.key, !fn.value)">F{{ fn.key }}: {{ fn.value }}</button>
