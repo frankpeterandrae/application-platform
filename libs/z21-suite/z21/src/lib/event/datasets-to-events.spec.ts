@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
+import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
 
 import { datasetsToEvents } from './datasets-to-events';
 
@@ -32,20 +32,16 @@ describe('datasetsToEvents', () => {
 
 	it('emits event.system.state for status changed dataset', () => {
 		const xlan = LAN_X_COMMANDS.LAN_X_STATUS_CHANGED;
-		const data = Uint8Array.from([xlan.lanHeader, xlan.xBusHeader, xlan.xBusCmd, 0xaa]);
-		const events = datasetsToEvents({ kind: 'ds.x.bus', xHeader: Z21LanHeader.LAN_X, data: data });
+		const data = Uint8Array.from([xlan.xBusCmd, 0xaa]);
+		const events = datasetsToEvents({ kind: 'ds.x.bus', xHeader: xlan.xHeader, data: data });
 
 		expect(events).toEqual([{ type: 'event.system.state', statusMask: 0xaa }]);
 	});
 
-	it('returns unknown.x.bus when no decoder matches', () => {
-		const payload = Uint8Array.from([0xfe, 0x01, 0x02]);
-		const events = datasetsToEvents({ kind: 'ds.x.bus', xHeader: 0xfe, data: payload });
-
-		expect(events).toEqual([{ type: 'event.unknown.x.bus', xHeader: 0xfe, bytes: Array.from(payload) }]);
-	});
-
 	it('returns empty array for non-x.bus non-system datasets', () => {
-		expect(datasetsToEvents({ kind: 'ds.unknown', header: 0x1234, payload: Buffer.from([0x01]) })).toEqual([]);
+		const payload = Buffer.from([0x01]);
+		expect(datasetsToEvents({ kind: 'ds.unknown', header: 0x1234, payload })).toEqual([
+			{ type: 'event.unknown.lan_x', xHeader: 0x1234, bytes: Array.from(payload) }
+		]);
 	});
 });

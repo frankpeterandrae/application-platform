@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 /**
  * X-BUS protocol headers used within LAN_X wrapped messages.
  * These headers identify specific X-BUS command or event types.
@@ -5,7 +10,7 @@
  * commands in different protocol contexts (e.g., 0x23 is both DCC_WRITE_REGISTER and CV_READ).
  */
 /* eslint-disable @typescript-eslint/no-duplicate-enum-values */
-export const enum XBusHeader {
+export const enum XHeader {
 	/** Set track power ON/OFF */
 	STATUS = 0x21,
 	/** DCC: read CV register */

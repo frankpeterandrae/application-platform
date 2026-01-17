@@ -27,7 +27,7 @@ describe('encodeLanXGetLocoInfo', () => {
 		const result = encodeLanXGetLocoInfo(100);
 
 		const locoInfoCommand = LAN_X_COMMANDS.LAN_X_GET_LOCO_INFO;
-		expect(result[4]).toBe(locoInfoCommand.xBusHeader);
+		expect(result[4]).toBe(locoInfoCommand.xHeader);
 	});
 
 	it('includes LOCO_INFO command byte', () => {

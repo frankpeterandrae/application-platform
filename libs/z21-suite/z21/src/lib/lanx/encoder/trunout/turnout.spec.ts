@@ -27,7 +27,7 @@ describe('encodeLanXGetTurnoutInfo', () => {
 		const result = encodeLanXGetTurnoutInfo(100);
 
 		const turnoutInfoCommand = LAN_X_COMMANDS.LAN_X_GET_TURNOUT_INFO;
-		expect(result[4]).toBe(turnoutInfoCommand.xBusHeader);
+		expect(result[4]).toBe(turnoutInfoCommand.xHeader);
 	});
 
 	it('encodes minimum accessory address', () => {
@@ -123,7 +123,7 @@ describe('encodeLanXSetTurnout', () => {
 		const result = encodeLanXSetTurnout(100, 0, true, false);
 
 		const setTurnoutCommand = LAN_X_COMMANDS.LAN_X_SET_TURNOUT;
-		expect(result[4]).toBe(setTurnoutCommand.xBusHeader);
+		expect(result[4]).toBe(setTurnoutCommand.xHeader);
 	});
 
 	it('encodes port 0 activated', () => {

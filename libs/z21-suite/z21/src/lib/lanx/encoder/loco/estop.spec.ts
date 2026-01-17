@@ -34,7 +34,7 @@ describe('encodeLanXSetLocoEStop', () => {
 		const result = encodeLanXSetLocoEStop(100);
 
 		const eStopCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_E_STOP;
-		expect(result[4]).toBe(eStopCommand.xBusHeader);
+		expect(result[4]).toBe(eStopCommand.xHeader);
 	});
 
 	it('encodes minimum address correctly', () => {

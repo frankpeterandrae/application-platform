@@ -45,15 +45,13 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 		const header = buf.readUint16LE(offset + 2);
 		const payload = buf.subarray(offset + 4, offset + len);
 
-		// eslint-disable-next-line no-console
-		console.log('[z21] Detected', header, header === Z21LanHeader.LAN_X, 'frame with payload:', payload);
 		if (header === Z21LanHeader.LAN_X) {
 			// X-BUS tunneling: payload = [XHeader, DB..., XOR]
 			if (payload.length >= 2) {
 				const xHeader = payload[0];
-				const bodyWithXor = payload.subarray(0);
-				const bodyNoXor = bodyWithXor.subarray(0, bodyWithXor.length - 1);
-				const xorByte = bodyWithXor[bodyWithXor.length - 1];
+				const bodyNoXor = payload.subarray(0, payload.length - 1);
+				const xorByte = payload[payload.length - 1];
+				const db = bodyNoXor.subarray(1);
 
 				const calc = xor8(bodyNoXor);
 				// XOR check: if false, deliver anyway (you want to see UDP drops/bugs)
@@ -62,7 +60,8 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 					console.warn(`[z21] X-BUS XOR mismatch: calc=0x${calc.toString(16)}, recv=0x${xorByte.toString(16)}`);
 				}
 
-				out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(bodyNoXor) });
+				// Ensure we expose a plain Uint8Array (not a Buffer) for the x.bus data
+				out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
 			} else {
 				out.push({ kind: 'ds.unknown', header, payload });
 			}
