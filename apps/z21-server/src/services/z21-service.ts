@@ -5,7 +5,7 @@
 
 import { type LocoManager, type TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
-import { deriveTrackFlagsFromSystemState, type DerivedTrackFlags, type Z21RxPayload } from '@application-platform/z21';
+import { dataToEvent, deriveTrackFlagsFromSystemState, type DerivedTrackFlags, type Z21RxPayload } from '@application-platform/z21';
 import type { LocoInfo } from '@application-platform/z21-shared';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
@@ -51,8 +51,9 @@ export class Z21EventHandler {
 			return;
 		}
 
+		const events = payload.datasets.flatMap(dataToEvent);
 		// Process events
-		for (const e of payload.events) {
+		for (const e of events) {
 			if (e.type === 'event.track.power') {
 				this.updateTrackPowerFromXbus(e.on);
 			}
@@ -95,7 +96,7 @@ export class Z21EventHandler {
 			type: 'system.message.z21.rx',
 			rawHex: payload.rawHex,
 			datasets: payload.datasets,
-			events: payload.events
+			events
 		});
 	}
 
