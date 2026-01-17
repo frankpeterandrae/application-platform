@@ -1,0 +1,91 @@
+name: Tag z21-ui / z21-server on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extract bumps from PR labels (fail on conflicts)
+        id: bumps
+        run: |
+          LABELS='${{ toJson(github.event.pull_request.labels) }}'
+          echo "$LABELS" > labels.json
+
+          extract_bump () {
+            local comp="$1"
+            local pattern="release:${comp}:(patch|minor|major)"
+            local matches
+            matches=$(cat labels.json | grep -oE "$pattern" | sort -u || true)
+            local count
+            count=$(echo "$matches" | sed '/^$/d' | wc -l | tr -d ' ')
+            if [ "$count" -eq 0 ]; then
+              echo ""
+              return 0
+            fi
+            if [ "$count" -gt 1 ]; then
+              echo "ERROR: multiple release labels for $comp: $matches"
+              exit 1
+            fi
+            echo "$matches" | sed -E "s/^release:${comp}://"
+          }
+
+          UI_BUMP=$(extract_bump "z21-ui")
+          SRV_BUMP=$(extract_bump "z21-server")
+
+          echo "ui=$UI_BUMP" >> $GITHUB_OUTPUT
+          echo "server=$SRV_BUMP" >> $GITHUB_OUTPUT
+
+      - name: Tag z21-ui
+        if: steps.bumps.outputs.ui != ''
+        run: |
+          git fetch --tags
+
+          PREFIX="z21-ui@"
+          LAST=$(git tag --list "${PREFIX}*" --sort=-v:refname | head -n 1)
+          BASE="0.1.0"
+          if [ -n "$LAST" ]; then BASE="${LAST#${PREFIX}}"; fi
+
+          IFS='.' read -r MA MI PA <<< "$BASE"
+          case "${{ steps.bumps.outputs.ui }}" in
+            major) MA=$((MA+1)); MI=0; PA=0 ;;
+            minor) MI=$((MI+1)); PA=0 ;;
+            patch) PA=$((PA+1)) ;;
+          esac
+
+          TAG="${PREFIX}${MA}.${MI}.${PA}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Tagged $TAG"
+
+      - name: Tag z21-server
+        if: steps.bumps.outputs.server != ''
+        run: |
+          git fetch --tags
+
+          PREFIX="z21-server@"
+          LAST=$(git tag --list "${PREFIX}*" --sort=-v:refname | head -n 1)
+          BASE="0.1.0"
+          if [ -n "$LAST" ]; then BASE="${LAST#${PREFIX}}"; fi
+
+          IFS='.' read -r MA MI PA <<< "$BASE"
+          case "${{ steps.bumps.outputs.server }}" in
+            major) MA=$((MA+1)); MI=0; PA=0 ;;
+            minor) MI=$((MI+1)); PA=0 ;;
+            patch) PA=$((PA+1)) ;;
+          esac
+
+          TAG="${PREFIX}${MA}.${MI}.${PA}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Tagged $TAG"

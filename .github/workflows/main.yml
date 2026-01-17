@@ -1,0 +1,114 @@
+name: Main - Full CI + Sonar + Deploy homepage
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_homepage: ${{ steps.flags.outputs.deploy_homepage }}
+      base: ${{ steps.shas.outputs.base }}
+      head: ${{ steps.shas.outputs.head }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Determine base/head SHAs
+        id: shas
+        run: |
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "base=HEAD~1" >> $GITHUB_OUTPUT
+            echo "head=HEAD" >> $GITHUB_OUTPUT
+          else
+            echo "base=${{ github.event.before }}" >> $GITHUB_OUTPUT
+            echo "head=${{ github.event.after }}" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci --ignore-scripts
+
+      - name: Decide deploy (only if homepage affected)
+        id: flags
+        run: |
+          npx nx show projects --affected --target=build --base=${{ steps.shas.outputs.base }} --head=${{ steps.shas.outputs.head }} > affected.txt || true
+          echo "Affected projects:"; cat affected.txt || true
+
+          if grep -E '(^|[^a-zA-Z0-9_-])homepage([^a-zA-Z0-9_-]|$)' affected.txt >/dev/null 2>&1; then
+            echo "deploy_homepage=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_homepage=false" >> $GITHUB_OUTPUT
+          fi
+
+  ci:
+    needs: [decide]
+    uses: ./.github/workflows/_reusable-nx-ci.yml
+    with:
+      mode: main
+      run_sonar: true
+      sonar_project_key: ${{ secrets.PROJECT_KEY }}
+      sonar_org: ${{ secrets.SONAR_ORG }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy-homepage:
+    needs: [decide, ci]
+    if: needs.decide.outputs.deploy_homepage == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci --ignore-scripts
+
+      - name: Build homepage package (prod)
+        run: npx nx run homepage:build-production
+
+      - name: Create deploy marker tag (homepage@YYYY.MM.DD+N)
+        run: |
+          git fetch --tags
+
+          DATE=$(TZ=Europe/Berlin date +%Y.%m.%d)
+          PREFIX="homepage@${DATE}+"
+
+          LAST_N=$(git tag --list "${PREFIX}*" \
+            | sed -E "s/^${PREFIX}([0-9]+)$/\1/" \
+            | sort -n \
+            | tail -n 1)
+
+          if [ -z "$LAST_N" ]; then
+            NEXT_N=1
+          else
+            NEXT_N=$((LAST_N+1))
+          fi
+
+          TAG="${PREFIX}${NEXT_N}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Deploy marker: $TAG"
+
+      - name: Upload to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@a51268f67f6605236975928ae28b0f7e9971d50a
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: dist/production/
+          server-dir: /html/
