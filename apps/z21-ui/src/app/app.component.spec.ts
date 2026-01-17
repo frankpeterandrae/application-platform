@@ -8,6 +8,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { MockedLanguageToggleComponent } from '@application-platform/testing';
+import { TurnoutState } from '@application-platform/z21-shared';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -104,12 +105,12 @@ describe('AppComponent', () => {
 		const WS_OPEN = (global as any).WebSocket?.OPEN ?? 1;
 		(comp as any).ws = { readyState: WS_OPEN, send: mockSend } as any;
 
-		comp.sendTurnout('DIVERGING');
+		comp.sendTurnout(TurnoutState.DIVERGING);
 
 		expect(mockSend).toHaveBeenCalledTimes(1);
 		const sent = JSON.parse(mockSend.mock.calls[0][0]);
 		expect(sent.type).toBe('switching.command.turnout.set');
-		expect(sent.state).toBe('DIVERGING');
+		expect(sent.state).toBe(TurnoutState.DIVERGING);
 		expect(sent.pulseMs).toBe(200);
 		expect(sent.addr).toBe(comp.turnoutAddr());
 	});

@@ -16,5 +16,5 @@ export type TrackStatus = {
 	/** Indicates whether the track is in programming mode. */
 	programmingMode?: boolean;
 	/** Source of the status information, e.g., external bus or system state. */
-	source?: 'ds.x.bus' | 'ds.system.state';
+	source?: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x';
 };

@@ -103,4 +103,21 @@ describe('TrackStatusManager', () => {
 		const status = manager.updateFromSystemState({ powerOn: true });
 		expect(status.source).toBe('ds.system.state');
 	});
+
+	it('updateFromLanX maps payload to track status and preserves power when emergencyStop true', () => {
+		// normal mapping when emergencyStop is false
+		let res = manager.updateFromLanX({ payload: { emergencyStop: false, powerOn: true, shortCircuit: true } } as any);
+		expect(res.powerOn).toBe(true);
+		expect(res.short).toBe(true);
+		expect(res.emergencyStop).toBe(false);
+		expect(res.source).toBe('ds.lan.x');
+
+		// when emergencyStop is true, preserve existing powerOn value
+		manager.updateFromXbusPower(false); // set authoritative powerOn to false
+		res = manager.updateFromLanX({ payload: { emergencyStop: true, powerOn: true, shortCircuit: false } } as any);
+		expect(res.powerOn).toBe(false); // preserved from previous xbus
+		expect(res.emergencyStop).toBe(true);
+		expect(res.short).toBe(false);
+		expect(res.source).toBe('ds.lan.x');
+	});
 });

@@ -4,6 +4,7 @@
  */
 
 import { datasetsToEvents, deriveTrackFlagsFromSystemState, parseZ21Datagram } from '@application-platform/z21';
+import { TurnoutState } from '@application-platform/z21-shared';
 import type { MockedFunction } from 'vitest';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
@@ -36,6 +37,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		updateFromXbusPower: Mock;
 		updateFromSystemState: Mock;
 		getStatus: Mock;
+		updateFromLanX: Mock;
 	};
 	let handler: Z21EventHandler;
 	let locoManager: {
@@ -57,7 +59,8 @@ describe('Z21EventHandler.handleDatagram', () => {
 		trackStatusManager = {
 			updateFromXbusPower: vi.fn().mockReturnValue({ short: false }),
 			updateFromSystemState: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined }),
-			getStatus: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined })
+			getStatus: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined }),
+			updateFromLanX: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined })
 		};
 		locoManager = {
 			getState: vi.fn(),
@@ -327,7 +330,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			// Mock datasetsToEvents to return a variety of events to exercise branches.
 			vi.mocked(datasetsToEvents).mockReturnValueOnce([
 				{ type: 'event.track.power', on: true } as any,
-				{ type: 'event.turnout.info', addr: 42, state: 'STRAIGHT' } as any,
+				{ type: 'event.turnout.info', addr: 42, state: TurnoutState.STRAIGHT } as any,
 				{ type: 'event.loco.info', addr: 5, speed: 10, dir: 1, fns: {}, estop: false } as any,
 				{ type: 'event.unknown.lan_x', xHeader: 0x99, bytes: [1, 2, 3] } as any,
 				{ type: 'some.weird.event', foo: 'bar' } as any
@@ -348,7 +351,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			// turnout.info -> switching.message.turnout.state
 			expect(broadcast).toHaveBeenCalledWith(
-				expect.objectContaining({ type: 'switching.message.turnout.state', addr: 42, state: 'STRAIGHT' })
+				expect.objectContaining({ type: 'switching.message.turnout.state', addr: 42, state: TurnoutState.STRAIGHT })
 			);
 
 			// loco.info -> triggers locoManager.updateLocoInfoFromZ21 and subsequent broadcast
@@ -360,6 +363,137 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			// default unknown event -> falls to logUnknown with scope 'x_bus'
 			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.scope === 'x_bus')).toBe(true);
+		});
+	});
+
+	describe('track power events', () => {
+		it('broadcasts track power from xbus events using track status manager result', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.track.power', on: false }] as any);
+			trackStatusManager.updateFromXbusPower.mockReturnValue({ short: true });
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xbe',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(trackStatusManager.updateFromXbusPower).toHaveBeenCalledWith(false);
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				on: false,
+				short: true
+			});
+		});
+	});
+
+	describe('z21.status events', () => {
+		it('updates track status from LAN X status and broadcasts resulting power state', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.z21.status', status: 0x01 }] as any);
+			trackStatusManager.updateFromLanX.mockReturnValue({ powerOn: true, short: false, emergencyStop: true });
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xcf',
+				from: { address: '10.0.0.5', port: 12345 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(trackStatusManager.updateFromLanX).toHaveBeenCalledWith({ type: 'event.z21.status', status: 0x01 });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				on: true,
+				short: false,
+				emergencyStop: true
+			});
+		});
+	});
+
+	// Additional tests to cover remaining branches in z21-event-handler
+	describe('additional event branches', () => {
+		it('handles event.system.state from datasetsToEvents and updates track status', () => {
+			// Arrange
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: false });
+			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: false, emergencyStop: false });
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValueOnce([
+				{ type: 'event.system.state', payload: { centralState: 0x12, centralStateEx: 0x34 } } as any
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([0x02, 0x00, 0x00, 0x00]),
+				rawHex: '0x99',
+				from: { address: '1.2.3.4', port: 9999 }
+			} as any;
+
+			// Act
+			handler.handleDatagram(payload);
+
+			// Assert
+			expect(deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 0x12, centralStateEx: 0x34 });
+			expect(trackStatusManager.updateFromSystemState).toHaveBeenCalled();
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.trackpower', on: true }));
+		});
+
+		it('logs unknown x.bus events with xHeader and bytes', () => {
+			const mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } as any;
+			const localHandler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any, mockLogger);
+
+			vi.mocked(parseZ21Datagram).mockReturnValueOnce([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValueOnce([
+				{ type: 'event.unknown.x.bus', xHeader: 0x99, bytes: [1, 2, 3] } as any
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([0x02, 0x00, 0x00, 0x00]),
+				rawHex: '0xbeef',
+				from: { address: '5.6.7.8', port: 4242 }
+			} as any;
+
+			localHandler.handleDatagram(payload);
+
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.scope === 'x_bus' && c[1]?.xHeader === 0x99)).toBe(true);
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => Array.isArray(c[1]?.bytes) && c[1]?.bytes.length === 3)).toBe(true);
+		});
+
+		it('processes ds.system.state special broadcast and also handles event.system.state afterwards', () => {
+			// Make parse return both a ds.system.state and another ds so the loop continues
+			vi.mocked(parseZ21Datagram).mockReturnValueOnce([
+				{
+					kind: 'ds.system.state',
+					state: new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xaa, 0xbb, 0, 0])
+				},
+				{ kind: 'ds.x.bus' }
+			] as any);
+
+			// datasetsToEvents should yield an event.system.state to exercise the events path too
+			vi.mocked(datasetsToEvents).mockReturnValueOnce([
+				{ type: 'event.system.state', payload: { centralState: 0x05, centralStateEx: 0x06 } } as any
+			] as any);
+
+			// Capture calls
+			(deriveTrackFlagsFromSystemState as Mock).mockClear();
+			trackStatusManager.updateFromSystemState.mockClear();
+
+			const payload = {
+				raw: Buffer.from([0x14, 0x00, 0x84, 0x00, /* state bytes follow but parseZ21Datagram is mocked */ 0x00]),
+				rawHex: '0x77',
+				from: { address: '10.10.10.10', port: 1010 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			// decodeSystemState for ds.system.state uses indexes 12 and 13 -> 0xAA and 0xBB
+			expect(deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 0xaa, centralStateEx: 0xbb });
+			// and also called for the event.system.state payload (0x05, 0x06)
+			expect(deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 0x05, centralStateEx: 0x06 });
+			expect(trackStatusManager.updateFromSystemState).toHaveBeenCalled();
+			// ensure the special broadcast for the ds.system.state occurred
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.z21.rx' }));
 		});
 	});
 });
