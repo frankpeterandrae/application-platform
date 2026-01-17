@@ -2,7 +2,15 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import type { CsStatus, LocoInfo, SystemState, TrackPower, TurnoutInfo, UnknownLanX, UnknownXBus } from '@application-platform/z21-shared';
+import type {
+	LocoInfoEvent,
+	SystemStateEvent,
+	TrackPowerEvent,
+	TurnoutInfoEvent,
+	UnknownLanXEvent,
+	UnknownXBusEvent,
+	Z21StatusEvent
+} from '@application-platform/z21-shared';
 
 /**
  * Discrete events derived from Z21 datasets.
@@ -14,7 +22,14 @@ import type { CsStatus, LocoInfo, SystemState, TrackPower, TurnoutInfo, UnknownL
  * - event.unknown.lan_x: Unrecognized LAN-X command for diagnostics
  * - event.unknown.x.bus: Unrecognized X-Bus message for diagnostics
  */
-export type Z21Event = TrackPower | CsStatus | LocoInfo | SystemState | TurnoutInfo | UnknownLanX | UnknownXBus;
+export type Z21Event =
+	| TrackPowerEvent
+	| Z21StatusEvent
+	| LocoInfoEvent
+	| SystemStateEvent
+	| TurnoutInfoEvent
+	| UnknownLanXEvent
+	| UnknownXBusEvent;
 
 /**
  * Derived flags for track state computed from system state bitfields.
@@ -51,24 +66,3 @@ export const enum CentralStatusEx {
 	ShortCircuitInternal = 0x08,
 	CseRCN2130Mode = 0x20
 }
-
-/**
- * Event for unrecognized LAN-X commands.
- */
-export type UnknownLanXEvent = {
-	type: 'unknown.lan_x';
-	command: string; // or LanXCommandKey
-	xHeader: number; // XBusHeader
-	db: number[]; // db0.. as numbers
-	raw: number[]; // full LAN_X bytes (optional but helpful)
-};
-
-/**
- * Event for unrecognized X-Bus messages.
- */
-export type UnknownXBusEvent = {
-	type: 'unknown.x.bus';
-	xHeader: number;
-	db: number[];
-	raw: number[];
-};

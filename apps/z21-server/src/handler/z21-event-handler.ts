@@ -13,7 +13,7 @@ import {
 	Z21UdpDatagram,
 	type DerivedTrackFlags
 } from '@application-platform/z21';
-import { LocoInfo, Logger, Z21LanHeader } from '@application-platform/z21-shared';
+import { LocoInfoEvent, Logger, Z21LanHeader, Z21StatusEvent } from '@application-platform/z21-shared';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
 
@@ -25,7 +25,7 @@ export class Z21EventHandler {
 		private readonly trackStatusManager: TrackStatusManager,
 		private readonly broadcast: BroadcastFn,
 		private readonly locoManager: LocoManager,
-		private logger: Logger
+		private readonly logger: Logger
 	) {}
 
 	/**
@@ -113,7 +113,7 @@ export class Z21EventHandler {
 
 			for (const event of events) {
 				switch (event.type) {
-					case 'event.z21.status': {
+					case 'event.system.state': {
 						const flags = deriveTrackFlagsFromSystemState({
 							centralState: event.payload.centralState,
 							centralStateEx: event.payload.centralStateEx
@@ -122,7 +122,7 @@ export class Z21EventHandler {
 						break;
 					}
 					case 'event.loco.info': {
-						this.updateLocoInfoFromZ21(event as unknown as LocoInfo);
+						this.updateLocoInfoFromZ21(event);
 						break;
 					}
 					case 'event.turnout.info': {
@@ -142,7 +142,8 @@ export class Z21EventHandler {
 						});
 						break;
 					}
-					case 'event.system.state': {
+					case 'event.z21.status': {
+						this.updateTrackStatusFromLanX(event);
 						break;
 					}
 					case 'event.unknown.x.bus': {
@@ -209,10 +210,20 @@ export class Z21EventHandler {
 		});
 	}
 
+	private updateTrackStatusFromLanX(csStatusEvent: Z21StatusEvent): void {
+		const status = this.trackStatusManager.updateFromLanX(csStatusEvent);
+		this.broadcast({
+			type: 'system.message.trackpower',
+			on: status.powerOn ?? false,
+			short: status.short ?? false,
+			emergencyStop: status.emergencyStop
+		});
+	}
+
 	/**
 	 * Updates locomotive information from Z21 event and notifies clients.
 	 */
-	private updateLocoInfoFromZ21(locoInfo: LocoInfo): void {
+	private updateLocoInfoFromZ21(locoInfo: LocoInfoEvent): void {
 		const locoState = this.locoManager.updateLocoInfoFromZ21(locoInfo);
 		this.broadcast({
 			type: 'loco.message.state',

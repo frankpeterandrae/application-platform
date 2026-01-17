@@ -3,7 +3,9 @@
  * All rights reserved.
  */
 
-import { type TrackStatus } from './track-types';
+import type { Z21StatusEvent } from '@application-platform/z21-shared';
+
+import type { TrackStatus } from './track-types';
 
 /**
  * Manages and merges track power/status state coming from X-Bus power events
@@ -45,6 +47,28 @@ export class TrackStatusManager {
 			source: this.status.source ?? 'ds.system.state'
 		};
 
+		return this.getStatus();
+	}
+
+	/**
+	 * Updates track status from LAN X central status event, respecting X-Bus power precedence.
+	 *
+	 *
+	 * @param z21StatusEvent - The central status event from LAN X.
+	 * @returns Updated track status.
+	 */
+	public updateFromLanX(z21StatusEvent: Z21StatusEvent): TrackStatus {
+		const powerOn = z21StatusEvent.payload.emergencyStop
+			? // Map Z21StatusEvent.payload.shortCircuit to TrackStatus.shortOn !== undefined
+				this.status.powerOn
+			: z21StatusEvent.payload.powerOn;
+
+		this.status = {
+			powerOn,
+			emergencyStop: z21StatusEvent.payload.emergencyStop,
+			short: z21StatusEvent.payload.shortCircuit,
+			source: 'ds.lan.x'
+		};
 		return this.getStatus();
 	}
 }

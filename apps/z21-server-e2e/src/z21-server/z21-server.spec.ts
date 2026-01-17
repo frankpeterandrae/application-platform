@@ -2,6 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import { TurnoutState } from '@application-platform/z21-shared';
 import { describe, expect, it } from 'vitest';
 
 import { sendUdpHex, startFakeZ21, startServerAndConnectWs, stopCtx, waitFor, waitForWsType } from '../support/e2e-helpers';
@@ -160,7 +161,7 @@ describe('server e2e', () => {
 			const locoState = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
 			expect(locoState.addr).toBe(12);
-			expect(locoState.state).toBe('STRAIGHT');
+			expect(locoState.state).toBe(TurnoutState.STRAIGHT);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -172,7 +173,7 @@ describe('server e2e', () => {
 			const locoState = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
 			expect(locoState.addr).toBe(12);
-			expect(locoState.state).toBe('DIVERGING');
+			expect(locoState.state).toBe(TurnoutState.DIVERGING);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -233,7 +234,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 12, state: 'STRAIGHT', pulseMs: 200 }));
+			ctx.ws.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 12, state: TurnoutState.STRAIGHT, pulseMs: 200 }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {

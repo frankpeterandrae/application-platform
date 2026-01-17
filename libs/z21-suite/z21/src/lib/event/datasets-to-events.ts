@@ -21,7 +21,7 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 	// eslint-disable-next-line no-console
 	console.log('Converting dataset to events:', ds);
 	if (ds.kind === 'ds.system.state') {
-		return [{ type: 'event.z21.status', payload: decodeSystemState(ds.state) }];
+		return [{ type: 'event.system.state', payload: decodeSystemState(ds.state) }];
 	}
 
 	if (ds.kind === 'ds.x.bus') {

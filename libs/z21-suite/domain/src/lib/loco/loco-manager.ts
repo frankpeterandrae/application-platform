@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type Direction, type LocoInfo } from '@application-platform/z21-shared';
+import { type Direction, type LocoInfoEvent } from '@application-platform/z21-shared';
 
 export type LocoState = {
 	speed: number;
@@ -125,7 +125,7 @@ export class LocoManager {
 	 * @param locoInfo - LocoInfo data from Z21
 	 * @returns The address and updated state of the locomotive
 	 */
-	public updateLocoInfoFromZ21(locoInfo: LocoInfo): { addr: number; state: LocoState } {
+	public updateLocoInfoFromZ21(locoInfo: LocoInfoEvent): { addr: number; state: LocoState } {
 		const st = this.locos.get(locoInfo.addr) ?? { speed: 0, dir: 'FWD', fns: {} };
 		st.speed = locoInfo.speed;
 		st.dir = locoInfo.direction;

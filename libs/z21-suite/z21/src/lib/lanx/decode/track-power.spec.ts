@@ -11,19 +11,19 @@ type TrackPowerEvent = Extract<Z21Event, { type: 'event.track.power' }>;
 
 describe('decodeLanXTrackPower', () => {
 	it('returns track.power off when command is LAN_X_BC_TRACK_POWER_OFF', () => {
-		const events = decodeLanXTrackPowerPayload('LAN_X_BC_TRACK_POWER_OFF', new Uint8Array()) as TrackPowerEvent[];
+		const events = decodeLanXTrackPowerPayload('LAN_X_BC_TRACK_POWER_OFF') as TrackPowerEvent[];
 
 		expect(events).toEqual([{ type: 'event.track.power', on: false }]);
 	});
 
 	it('returns track.power on when command is LAN_X_BC_TRACK_POWER_ON', () => {
-		const events = decodeLanXTrackPowerPayload('LAN_X_BC_TRACK_POWER_ON', new Uint8Array()) as TrackPowerEvent[];
+		const events = decodeLanXTrackPowerPayload('LAN_X_BC_TRACK_POWER_ON') as TrackPowerEvent[];
 
 		expect(events).toEqual([{ type: 'event.track.power', on: true }]);
 	});
 
 	it('returns empty array for other commands', () => {
-		const events = decodeLanXTrackPowerPayload('LAN_X_UNKNOWN_COMMAND', new Uint8Array()) as TrackPowerEvent[];
+		const events = decodeLanXTrackPowerPayload('LAN_X_UNKNOWN_COMMAND') as TrackPowerEvent[];
 
 		expect(events).toEqual([]);
 	});
