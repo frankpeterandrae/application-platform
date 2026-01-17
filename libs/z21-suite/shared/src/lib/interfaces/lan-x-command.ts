@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-import { type POM_Options } from './pom-options';
-import { type XBusCmd } from './x-bus-cmd';
-import { type XHeader } from './x-header';
+import { type POM_Options } from '../types/pom-options';
+import { type XBusCmd } from '../types/x-bus-cmd';
+import { type XHeader } from '../types/x-header';
 
 /**
  * LAN_X command structure.

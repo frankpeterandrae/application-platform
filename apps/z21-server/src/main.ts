@@ -8,13 +8,13 @@ import path from 'node:path';
 
 import { LocoManager, TrackStatusManager } from '@application-platform/domain';
 import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
-import { Z21BroadcastFlag, Z21Service, Z21Udp } from '@application-platform/z21';
+import { Z21BroadcastFlag, Z21CommandService, Z21Udp } from '@application-platform/z21';
 import { createConsoleLogger, LogLevel } from '@application-platform/z21-shared';
 
-import { AppWsServer } from './app-websocket-server';
-import { ClientMessageHandler } from './client-message-handler';
+import { ClientMessageHandler } from './handler/client-message-handler';
+import { Z21EventHandler } from './handler/z21-event-handler';
 import { loadConfig } from './infra/config/config';
-import { Z21EventHandler } from './services/z21-service';
+import { AppWsServer } from './infra/ws/app-websocket-server';
 
 /**
  * Loads server configuration (HTTP port, Z21 connection details, safety flags).
@@ -39,7 +39,7 @@ const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort, logger.child({ component: 
  * Z21 service wrapper around the UDP gateway for higher-level operations.
  * @remarks Used by the client message handler to send commands.
  */
-const z21Service = new Z21Service(udp, logger.child({ component: 'z21.service' }));
+const z21Service = new Z21CommandService(udp, logger.child({ component: 'z21.service' }));
 
 /**
  * Manages locomotive states (speed, direction, functions).

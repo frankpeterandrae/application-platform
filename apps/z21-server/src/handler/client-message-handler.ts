@@ -5,7 +5,7 @@
 
 import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
-import { LocoFunctionSwitchType, type Z21Service } from '@application-platform/z21';
+import { LocoFunctionSwitchType, type Z21CommandService } from '@application-platform/z21';
 import { Direction, TurnoutState } from '@application-platform/z21-shared';
 
 /**
@@ -33,7 +33,7 @@ export class ClientMessageHandler {
 	 */
 	constructor(
 		private readonly locoManager: LocoManager,
-		private readonly z21Service: Z21Service,
+		private readonly z21Service: Z21CommandService,
 		private readonly broadcast: BroadcastFn
 	) {}
 

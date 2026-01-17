@@ -24,6 +24,15 @@ vi.mock('@application-platform/z21-shared', () => {
 });
 vi.mock('@application-platform/z21', async () => {
 	const actual = await vi.importActual('@application-platform/z21');
+	// create a shared mock impl and reuse for both Z21CommandService and Z21Service
+	const z21ServiceMock = vi.fn().mockImplementation(function (_udp, _logger) {
+		return {
+			sendTrackPower: vi.fn(),
+			demoPing: vi.fn(),
+			setLocoDrive: vi.fn(),
+			getLocoInfo: vi.fn()
+		};
+	});
 	return {
 		...actual,
 		Z21Udp: vi.fn().mockImplementation(function () {
@@ -38,14 +47,9 @@ vi.mock('@application-platform/z21', async () => {
 			lastUdpInstance = inst;
 			return inst;
 		}),
-		Z21Service: vi.fn().mockImplementation(function (_udp) {
-			return {
-				sendTrackPower: vi.fn(),
-				demoPing: vi.fn(),
-				setLocoDrive: vi.fn(),
-				getLocoInfo: vi.fn()
-			};
-		}),
+		// Provide Z21CommandService which `main.ts` constructs; also provide Z21Service for tests (same mock)
+		Z21CommandService: z21ServiceMock,
+		Z21Service: z21ServiceMock,
 		Z21BroadcastFlag: {
 			None: 0x00000000,
 			Basic: 0x00000001,
@@ -59,19 +63,21 @@ vi.mock('@application-platform/server-utils', () => {
 			return vi.fn();
 		}),
 		WsServer: vi.fn().mockImplementation(function (this: any, _server: any) {
-			// constructor-compatible stub; nothing required for tests since AppWsServer is mocked
 			this.server = _server;
+			this.onConnection = vi.fn();
+			this.send = vi.fn();
+			this.broadcast = vi.fn();
 		})
 	};
 });
-vi.mock('./app-websocket-server', () => {
+vi.mock('./infra/ws/app-websocket-server', () => {
 	return {
 		AppWsServer: vi.fn().mockImplementation(function (this: any, _wsAdapter: any) {
 			return { onConnection: vi.fn(), broadcast: vi.fn(), sendToClient: vi.fn() };
 		})
 	};
 });
-vi.mock('./client-message-handler', () => {
+vi.mock('./handler/client-message-handler', () => {
 	return {
 		ClientMessageHandler: vi.fn().mockImplementation(function (this: any, _locoManager: any, _udp: any, _broadcast: any) {
 			return { handleDatagram: vi.fn() };
@@ -92,7 +98,7 @@ vi.mock('@application-platform/domain', () => {
 		})
 	};
 });
-vi.mock('./services/z21-service', () => {
+vi.mock('./handler/z21-event-handler', () => {
 	return {
 		Z21EventHandler: vi.fn().mockImplementation(function (this: any, _trackStatusManager: any, _broadcast: any) {
 			// Provide handleDatagram which `main` invokes when UDP datagrams arrive
@@ -165,7 +171,7 @@ describe('main bootstrap', () => {
 
 		const z21Mock = await vi.importMock('@application-platform/z21');
 		const { Z21Udp } = z21Mock as any;
-		const { Z21EventHandler } = await import('./services/z21-service');
+		const { Z21EventHandler } = await import('./handler/z21-event-handler');
 
 		const udpInstance = (Z21Udp as Mock).mock.results[0].value;
 		const datagramHandler = (udpInstance.on as Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
@@ -181,7 +187,7 @@ describe('main bootstrap', () => {
 	it('broadcasts loco.message.state for all stopped locos on disconnect when safety flag is enabled', async () => {
 		await import('./main');
 
-		const { AppWsServer } = await import('./app-websocket-server');
+		const { AppWsServer } = await import('./infra/ws/app-websocket-server');
 		const domainMock = await vi.importMock('@application-platform/domain');
 		const { LocoManager } = domainMock as any;
 
@@ -231,7 +237,7 @@ describe('main bootstrap', () => {
 
 		await import('./main');
 
-		const { AppWsServer } = await import('./app-websocket-server');
+		const { AppWsServer } = await import('./infra/ws/app-websocket-server');
 		const domainMock2 = await vi.importMock('@application-platform/domain');
 		const { LocoManager } = domainMock2 as any;
 
@@ -250,7 +256,7 @@ describe('main bootstrap', () => {
 	it('requests loco info on connection when subscribeLocoInfoOnce returns true', async () => {
 		await import('./main');
 
-		const { AppWsServer } = await import('./app-websocket-server');
+		const { AppWsServer } = await import('./infra/ws/app-websocket-server');
 		const z21Mock = await vi.importMock('@application-platform/z21');
 		const domainMock = await vi.importMock('@application-platform/domain');
 		const { Z21Service } = z21Mock as any;
@@ -275,7 +281,7 @@ describe('main bootstrap', () => {
 	it('does not request loco info on connection when subscribeLocoInfoOnce returns false', async () => {
 		await import('./main');
 
-		const { AppWsServer } = await import('./app-websocket-server');
+		const { AppWsServer } = await import('./infra/ws/app-websocket-server');
 		const z21Mock = await vi.importMock('@application-platform/z21');
 		const domainMock = await vi.importMock('@application-platform/domain');
 		const { Z21Service } = z21Mock as any;

@@ -3,5 +3,5 @@
  * All rights reserved.
  */
 
-export * from './lib/loco-manager';
+export * from './lib/loco/loco-manager';
 export * from './lib/track';

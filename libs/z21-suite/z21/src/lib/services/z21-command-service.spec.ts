@@ -8,10 +8,10 @@ import { beforeEach, describe, expect, it, vi, type Mocked } from 'vitest';
 import { SpeedByteMask } from '../constants';
 import { type Z21Udp } from '../udp/udp';
 
-import { Z21Service } from './z21-service';
+import { Z21CommandService } from './z21-command-service';
 
-describe('Z21Service', () => {
-	let service: Z21Service;
+describe('Z21CommandService', () => {
+	let service: Z21CommandService;
 	let mockUdp: Mocked<Z21Udp>;
 
 	beforeEach(() => {
@@ -24,7 +24,7 @@ describe('Z21Service', () => {
 			warn: vi.fn(),
 			error: vi.fn()
 		} as any;
-		service = new Z21Service(mockUdp, mockLogger);
+		service = new Z21CommandService(mockUdp, mockLogger);
 	});
 
 	describe('sendTrackPower', () => {

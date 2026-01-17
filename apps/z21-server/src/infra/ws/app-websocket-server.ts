@@ -32,7 +32,7 @@ export class AppWsServer {
 	 */
 	constructor(
 		private readonly wsServer: WsServer,
-		private logger: Logger
+		private readonly logger: Logger
 	) {}
 
 	/**
