@@ -9,11 +9,16 @@ import { WebSocketServer } from 'ws';
 import { WsServer } from './websocket-server';
 
 vi.mock('ws', () => {
-	const clients = new Set();
+	// Do not use a closure-shared clients Set; create one per mocked instance instead.
 	// Create a mock constructor function that initializes instance props and returns the instance.
 	const WebSocketServer = vi.fn(function (this: any, _opts?: any) {
-		this.clients = clients;
+		this.clients = new Set();
 		this.on = vi.fn();
+		this.close = vi.fn(() => {
+			for (const c of this.clients) {
+				if (c && typeof c.close === 'function') c.close();
+			}
+		});
 		return this;
 	});
 	return { WebSocketServer };
@@ -23,11 +28,12 @@ type WsMock = {
 	on: Mock;
 	send: Mock;
 	readyState: number;
+	close: Mock;
 };
 
 describe('WsServer', () => {
 	let wsServer: WsServer;
-	let wssInstance: { on: Mock; clients: Set<WsMock> };
+	let wssInstance: { on: Mock; clients: Set<WsMock>; close: Mock };
 
 	beforeEach(() => {
 		(WebSocketServer as unknown as Mock).mockClear();
@@ -35,7 +41,7 @@ describe('WsServer', () => {
 		instance?.on?.mockReset?.();
 		instance?.clients?.clear?.();
 		wsServer = new WsServer({} as any);
-		wssInstance = (WebSocketServer as unknown as Mock).mock.results[0].value as { on: Mock; clients: Set<WsMock> };
+		wssInstance = (WebSocketServer as unknown as Mock).mock.results[0].value as { on: Mock; clients: Set<WsMock>; close: Mock };
 	});
 
 	it('registers connection handler and wires message and close events', () => {
@@ -44,7 +50,7 @@ describe('WsServer', () => {
 		wsServer.onConnection(onMessage, onDisconnect);
 		const connectionHandler = wssInstance.on.mock.calls.find((c: any[]) => c[0] === 'connection')?.[1];
 
-		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1 };
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
 		connectionHandler?.(ws);
 
 		const messageHandler = ws.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -61,7 +67,7 @@ describe('WsServer', () => {
 		const onMessage = vi.fn();
 		wsServer.onConnection(onMessage);
 		const connectionHandler = wssInstance.on.mock.calls.find((c: any[]) => c[0] === 'connection')?.[1];
-		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1 };
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
 		connectionHandler?.(ws);
 		const closeHandler = ws.on.mock.calls.find((c: any[]) => c[0] === 'close')?.[1];
 
@@ -71,7 +77,7 @@ describe('WsServer', () => {
 	});
 
 	it('sends string directly and serializes objects', () => {
-		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1 };
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
 		wsServer.send(ws as any, 'hi');
 		wsServer.send(ws as any, { a: 1 });
 
@@ -80,9 +86,9 @@ describe('WsServer', () => {
 	});
 
 	it('broadcasts only to open clients and serializes non-string messages', () => {
-		const wsOpen1: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1 };
-		const wsOpen2: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1 };
-		const wsClosed: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 3 };
+		const wsOpen1: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+		const wsOpen2: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+		const wsClosed: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 3, close: vi.fn() };
 		wssInstance.clients.add(wsOpen1);
 		wssInstance.clients.add(wsOpen2);
 		wssInstance.clients.add(wsClosed);
@@ -92,5 +98,12 @@ describe('WsServer', () => {
 		expect(wsOpen1.send).toHaveBeenCalledWith(JSON.stringify({ msg: 'hello' }));
 		expect(wsOpen2.send).toHaveBeenCalledWith(JSON.stringify({ msg: 'hello' }));
 		expect(wsClosed.send).not.toHaveBeenCalled();
+	});
+
+	it('close calls underlying wss.close', () => {
+		const wsOpen1: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 3, close: vi.fn() };
+		wssInstance.clients.add(wsOpen1);
+		wsServer.close();
+		expect(wssInstance.close).toHaveBeenCalled();
 	});
 });

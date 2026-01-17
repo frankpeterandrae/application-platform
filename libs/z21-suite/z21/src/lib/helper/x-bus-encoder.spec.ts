@@ -21,7 +21,7 @@ describe('encodeXBusLanFrame', () => {
 		const buf = encodeXBusLanFrame(header, payload);
 		expect(buf.readUInt16LE(0)).toBe(4 + payload.length);
 		expect(buf.readUInt16LE(2)).toBe(header);
-		expect(buf.slice(4).equals(payload)).toBe(true);
+		expect(buf.subarray(4).equals(payload)).toBe(true);
 	});
 
 	it('treats empty Buffer same as undefined (produces 4-byte LAN_X frame)', () => {

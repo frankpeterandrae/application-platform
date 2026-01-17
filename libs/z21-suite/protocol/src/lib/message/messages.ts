@@ -3,9 +3,14 @@
  * All rights reserved.
  */
 
-import type { ClientToServer } from './message-types';
+import { ClientToServer, CLIENT_TO_SERVER_TYPES, ServerToClient, SERVER_TO_CLIENT_TYPES } from './message-types';
 
 export const PROTOCOL_VERSION = '1.0.0' as const;
+
+/**
+ * Helper type for objects with a type property
+ */
+type MessageWithType = { type: unknown };
 
 /**
  * Type guard that validates whether an unknown value is a valid ClientToServer message.
@@ -21,18 +26,34 @@ export const PROTOCOL_VERSION = '1.0.0' as const;
  * @returns True if msg is a valid ClientToServer message, false otherwise
  */
 export function isClientToServerMessage(msg: unknown): msg is ClientToServer {
-	if (!msg || typeof msg !== 'object') {
-		return false;
-	}
-	const msgType = (msg as Record<string, unknown>)['type'];
 	return (
-		typeof msgType === 'string' &&
-		(msgType === 'server.command.session.hello' ||
-			msgType === 'system.command.trackpower.set' ||
-			msgType === 'loco.command.drive' ||
-			msgType === 'loco.command.eStop' ||
-			msgType === 'loco.command.function.set' ||
-			msgType === 'loco.command.function.toggle' ||
-			msgType === 'switching.command.turnout.set')
+		typeof msg === 'object' &&
+		msg !== null &&
+		'type' in msg &&
+		typeof (msg as MessageWithType).type === 'string' &&
+		Boolean((CLIENT_TO_SERVER_TYPES as Record<string, true>)[(msg as MessageWithType).type as string])
+	);
+}
+
+/**
+ * Type guard that validates whether an unknown value is a valid ServerToClient message.
+ *
+ * Checks that:
+ * - The value is a non-null object
+ * - It has a 'type' property that is a string
+ * - The type matches one of the supported server-to-client message types
+ *
+ * This function automatically supports new message types added to the ServerToClient union.
+ *
+ * @param msg - The value to validate
+ * @returns True if msg is a valid ServerToClient message, false otherwise
+ */
+export function isServerToClientMessage(msg: unknown): msg is ServerToClient {
+	return (
+		typeof msg === 'object' &&
+		msg !== null &&
+		'type' in msg &&
+		typeof (msg as MessageWithType).type === 'string' &&
+		Boolean((SERVER_TO_CLIENT_TYPES as Record<string, true>)[(msg as MessageWithType).type as string])
 	);
 }

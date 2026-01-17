@@ -2,6 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+
 import { TurnoutState } from '@application-platform/z21-shared';
 import { describe, expect, it } from 'vitest';
 

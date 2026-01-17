@@ -47,7 +47,7 @@ export class AppWsServer {
 	 */
 	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wsServer.onConnection(
-			(data, ws) => {
+			(data) => {
 				// Parse and validate message
 				this.logger.debug('[ws] raw', { data });
 				let msg: unknown;
@@ -98,5 +98,12 @@ export class AppWsServer {
 	 */
 	public broadcast(msg: ServerToClient): void {
 		this.wsServer.broadcast(msg);
+	}
+
+	/**
+	 * Closes the WebSocket server and all active connections.
+	 */
+	public close(): void {
+		this.wsServer.close();
 	}
 }

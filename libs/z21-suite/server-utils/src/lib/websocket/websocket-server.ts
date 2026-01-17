@@ -88,4 +88,11 @@ export class WsServer {
 			}
 		}
 	}
+
+	/**
+	 * Closes the WebSocket server, terminating all connections.
+	 */
+	public close(): void {
+		this.wss.close();
+	}
 }

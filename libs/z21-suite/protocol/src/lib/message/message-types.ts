@@ -2,46 +2,74 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type Direction, type TurnoutState } from '@application-platform/z21-shared';
+
+// Import individual types for union definitions
+import type { LocoDrive } from './client/loco-drive';
+import type { LocoEStop } from './client/loco-estop';
+import type { LocoFunctionSet } from './client/loco-function-set';
+import type { LocoFunctionToggle } from './client/loco-function-toggle';
+import type { SessionHello } from './client/session-hello';
+import type { TrackpowerSet } from './client/trackpower-set';
+import type { TurnoutSet } from './client/turnout-set';
+import type { FeedbackChanged } from './server/feedback-changed';
+import type { LocoEStopEvent } from './server/loco-estop-event';
+import type { LocoState } from './server/loco-state';
+import type { SessionReady } from './server/session-ready';
+import type { SystemTrackPower } from './server/system-trackpower';
+import type { TurnoutState_Message } from './server/turnout-state';
+import type { Z21Rx } from './server/z21-rx';
 
 /**
- * Sources that can emit feedback events.
- * 'RBUS', 'CAN', and 'LOCONET' correspond to supported bus types.
+ * Union of all messages a client may send to the server.
+ *
+ * When you add a new ClientToServer message type:
+ * 1. Import the type
+ * 2. Add it to this union
  */
-export type SourceType = 'RBUS' | 'CAN' | 'LOCONET';
+export type ClientToServer = SessionHello | TrackpowerSet | LocoDrive | LocoEStop | LocoFunctionSet | LocoFunctionToggle | TurnoutSet;
+
+type ClientToServerType = ClientToServer['type'];
 
 /**
- * Messages a client may send to the server.
- * - server.command.session.hello: announces protocol version and optional client name.
- * - system.command.trackpower.set: toggles track power.
- * - loco.command.drive: sets locomotive speed/direction with optional speed steps.
- * - loco.command.function.set: toggles a locomotive function by number.
- * - loco.command.function.toggle: toggles a locomotive function by number.
- * - switching.command.turnout.set: changes a turnout state with optional pulse duration.
+ * Set of all valid ClientToServer message types.
+ * Automatically created from the ClientToServerType union.
+ * Used for runtime validation in isClientToServerMessage().
+ *
+ * Note: This requires that all message types in the union have a literal 'type' property.
  */
-export type ClientToServer =
-	| { type: 'server.command.session.hello'; protocolVersion: string; clientName?: string }
-	| { type: 'system.command.trackpower.set'; on: boolean }
-	| { type: 'loco.command.drive'; addr: number; speed: number; dir: Direction; steps?: 14 | 28 | 128 }
-	| { type: 'loco.command.eStop'; addr: number }
-	| { type: 'loco.command.function.set'; addr: number; fn: number; on: boolean }
-	| { type: 'loco.command.function.toggle'; addr: number; fn: number }
-	| { type: 'switching.command.turnout.set'; addr: number; state: TurnoutState; pulseMs?: number };
+export const CLIENT_TO_SERVER_TYPES = {
+	'loco.command.drive': true,
+	'loco.command.eStop': true,
+	'loco.command.function.set': true,
+	'loco.command.function.toggle': true,
+	'server.command.session.hello': true,
+	'switching.command.turnout.set': true,
+	'system.command.trackpower.set': true
+} as const satisfies Record<ClientToServerType, true>;
 
 /**
- * Messages the server may send to a client.
- * - server.replay.session.ready: confirms readiness and protocol version.
- * - system.message.trackpower: reports power state and optional fault flags.
- * - loco.message.state: reports locomotive speed, direction, and function states.
- * - switching.message.turnout.state: reports turnout position.
- * - feedback.message.changed: reports a feedback sensor change from a given source.
- * - system.message.z21.rx: forwards raw Z21 datasets/events with hex payload.
+ * Union of all messages the server may send to a client.
+ *
+ * When you add a new ServerToClient message type:
+ * 1. Import the type
+ * 2. Add it to this union
  */
-export type ServerToClient =
-	| { type: 'server.replay.session.ready'; protocolVersion: string; serverTime?: string }
-	| { type: 'system.message.trackpower'; on: boolean; short?: boolean; emergencyStop?: boolean }
-	| { type: 'loco.message.state'; addr: number; speed: number; dir: Direction; fns: Record<number, boolean>; estop?: boolean }
-	| { type: 'loco.message.eStop'; addr: number }
-	| { type: 'switching.message.turnout.state'; addr: number; state: TurnoutState }
-	| { type: 'feedback.message.changed'; source: SourceType; addr: number; value: 0 | 1 }
-	| { type: 'system.message.z21.rx'; datasets: unknown[]; events: unknown[]; rawHex: string };
+export type ServerToClient = SessionReady | SystemTrackPower | LocoState | LocoEStopEvent | TurnoutState_Message | FeedbackChanged | Z21Rx;
+
+type ServerToClientType = ServerToClient['type'];
+/**
+ * Set of all valid ServerToClient message types.
+ * Automatically created from the ServerToClientType union.
+ * Used for runtime validation in isServerToClientMessage().
+ *
+ * Note: This requires that all message types in the union have a literal 'type' property.
+ */
+export const SERVER_TO_CLIENT_TYPES = {
+	'feedback.message.changed': true,
+	'loco.message.eStop': true,
+	'loco.message.state': true,
+	'server.replay.session.ready': true,
+	'switching.message.turnout.state': true,
+	'system.message.trackpower': true,
+	'system.message.z21.rx': true
+} as const satisfies Record<ServerToClientType, true>;

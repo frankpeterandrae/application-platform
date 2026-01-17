@@ -13,6 +13,7 @@ import path from 'node:path';
  * - safety: runtime safety features
  */
 export type ServerConfig = {
+	dev?: { subscribeLocoAddr: number };
 	httpPort: number;
 	z21: { host: string; udpPort: number; listenPort?: number; debug?: boolean };
 	safety: { stopAllOnClientDisconnect: boolean };

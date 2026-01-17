@@ -15,5 +15,4 @@ export * from './lib/lanx/encoder';
 export * from './lib/services/z21-command-service';
 export * from './lib/system/decode-system-state';
 export * from './lib/system/derive-track-flags';
-export * from './lib/udp/udp-types';
 export * from './lib/udp/udp';
