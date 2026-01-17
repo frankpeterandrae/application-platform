@@ -105,7 +105,6 @@ export class Z21Udp extends EventEmitter {
 	 */
 	public sendRaw(buf: Buffer): void {
 		this.logger.debug('[udp] tx', { from: { address: this.host, port: this.port }, len: buf.length, hex: toHex(buf) });
-
 		this.sock.send(buf, this.port, this.host);
 	}
 
@@ -114,9 +113,6 @@ export class Z21Udp extends EventEmitter {
 	 */
 	public sendGetSerial(): void {
 		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_GET_SERIAL_NUMBER);
-
-		// eslint-disable-next-line no-console
-		console.log('[udp] tx GET_SERIAL ->', this.host + ':' + this.port, pkt.toString('hex'));
 		this.sendRaw(pkt);
 	}
 
@@ -128,9 +124,6 @@ export class Z21Udp extends EventEmitter {
 		const payload = Buffer.alloc(4);
 		payload.writeUInt32LE(flags >>> 0, 0);
 		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SET_BROADCASTFLAGS, payload);
-
-		// eslint-disable-next-line no-console
-		console.log('[udp] tx SET_BROADCAST_FLAGS ->', this.host + ':' + this.port, pkt.toString('hex'));
 		this.sendRaw(pkt);
 	}
 
@@ -138,10 +131,16 @@ export class Z21Udp extends EventEmitter {
 	 * Requests the current system state snapshot (Header 0x0085).
 	 */
 	public sendSystemStateGetData(): void {
-		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATAGET);
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
+		this.sendRaw(pkt);
+	}
 
-		// eslint-disable-next-line no-console
-		console.log('[udp] tx SYSTEM_STATE_GET_DATA ->', this.host + ':' + this.port, pkt.toString('hex'));
+	/**
+	 * Logs off from the Z21 central station (Header 0x0030).
+	 * Used when the server deactivates the session (no clients connected).
+	 */
+	public sendLogOff(): void {
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_LOGOFF);
 		this.sendRaw(pkt);
 	}
 }

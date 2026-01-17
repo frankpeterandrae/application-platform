@@ -6,7 +6,17 @@
 import { TurnoutState } from '@application-platform/z21-shared';
 import { describe, expect, it } from 'vitest';
 
-import { sendUdpHex, startFakeZ21, startServerAndConnectWs, stopCtx, waitFor, waitForWsType } from '../support/e2e-helpers';
+import {
+	connectWs,
+	delay,
+	sendUdpHex,
+	startFakeZ21,
+	startServer,
+	startServerAndConnectWs,
+	stopCtx,
+	waitFor,
+	waitForWsType
+} from '../support/e2e-helpers';
 
 describe('server e2e', () => {
 	describe('loco.message.state broadcasts', () => {
@@ -212,7 +222,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 47, dir: 'FWD', steps: 128 }));
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 47, dir: 'FWD', steps: 128 }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -235,7 +245,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 12, state: TurnoutState.STRAIGHT, pulseMs: 200 }));
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 12, state: TurnoutState.STRAIGHT, pulseMs: 200 }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -258,7 +268,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
+			ctx.ws?.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -281,7 +291,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'loco.command.eStop', addr: 1845 }));
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.eStop', addr: 1845 }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -304,7 +314,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// WS command wie bei dir im Log:
-			ctx.ws.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 7, on: true }));
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 7, on: true }));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -321,5 +331,164 @@ describe('server e2e', () => {
 			await z21.close();
 			await stopCtx(ctx);
 		});
+	});
+	describe('session lifecycle', () => {
+		it('activates Z21 session on first WS client (broadcastflags + systemstate)', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			// Before first WS client connects, session must be inactive => no UDP traffic
+			await delay(200);
+			expect(z21.rx.length).toBe(0);
+
+			const ws = await connectWs(base.httpPort);
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
+				label: 'z21 rx activate',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS (Basic)
+			expect(hex).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+
+			await stopCtx({ ...base, ws: ws.ws });
+			await z21.close();
+		}, 20000);
+
+		it('deactivates Z21 session on last WS client (LAN_LOGOFF)', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			const ws = await connectWs(base.httpPort);
+
+			// ensure activation traffic happened, then ignore it for this test
+			await waitFor(() => (z21.rx.length >= 1 ? z21.rx.length : undefined), { label: 'z21 rx pre', timeoutMs: 2000 });
+			z21.rx.splice(0);
+
+			// Closing the last client should trigger LAN_LOGOFF
+			ws.ws.close();
+
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+				label: 'z21 rx logoff',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			await stopCtx({ ...base, ws: ws.ws });
+			await z21.close();
+		}, 20000);
+
+		it('kicks a zombie WS client via ping/pong and deactivates Z21 session (LAN_LOGOFF)', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			const ws1 = await connectWs(base.httpPort);
+
+			// Activation traffic abwarten und dann ignorieren
+			await waitFor(() => (z21.rx.length >= 1 ? z21.rx.length : undefined), { label: 'z21 rx pre', timeoutMs: 2000 });
+			z21.rx.splice(0);
+
+			// "Zombie": Socket halb-offen simulieren, indem wir keine pongs liefern können.
+			// Praktisch: wir beenden einfach den underlying TCP socket ohne Close-Handshake.
+			// ws (node 'ws') exposes _socket; das ist intern, aber für e2e ok.
+
+			const raw: any = ws1.ws as any;
+			raw._socket?.destroy();
+
+			// Jetzt muss der server per heartbeat feststellen: kein pong => terminate => disconnect => LAN_LOGOFF
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+				label: 'z21 rx logoff after zombie kick',
+				timeoutMs: 3000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			await stopCtx({ ...base, ws: ws1.ws });
+			await z21.close();
+		}, 20000);
+
+		it('does not deactivate Z21 session while at least one WS client is still connected (no LAN_LOGOFF)', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			const ws1 = await connectWs(base.httpPort);
+
+			// Activation traffic abwarten, dann ignorieren (wir testen nur "kein logoff")
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
+				label: 'z21 rx activate (2 frames)',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+			z21.rx.splice(0);
+
+			const ws2 = await connectWs(base.httpPort);
+
+			// Ein Client geht weg, aber Session muss aktiv bleiben
+			ws1.ws.close();
+
+			// kurz warten: wenn dein Code fälschlich logoff schickt, taucht es jetzt auf
+			await delay(500);
+
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).not.toContain('04003000'); // LAN_LOGOFF
+
+			// Cleanup: jetzt erst der letzte Client -> dann MUSS logoff kommen
+			ws2.ws.close();
+
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+				label: 'z21 rx logoff on last disconnect',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			await stopCtx({ ...base, ws: ws2.ws });
+			await z21.close();
+		}, 20000);
+
+		it('re-activates Z21 session after reconnect (activate -> logoff -> activate)', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			// 1) first connect => activation
+			const ws1 = await connectWs(base.httpPort);
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
+				label: 'z21 rx activate #1',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const hex1 = z21.rx.map((b) => b.toString('hex'));
+			expect(hex1).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
+			expect(hex1).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+
+			// 2) disconnect => logoff
+			z21.rx.splice(0);
+			ws1.ws.close();
+
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+				label: 'z21 rx logoff',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			// 3) second connect => activation again
+			z21.rx.splice(0);
+			const ws2 = await connectWs(base.httpPort);
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
+				label: 'z21 rx activate #2',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const hex2 = z21.rx.map((b) => b.toString('hex'));
+			expect(hex2).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
+			expect(hex2).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+
+			await stopCtx({ ...base, ws: ws2.ws });
+			await z21.close();
+		}, 20000);
 	});
 });

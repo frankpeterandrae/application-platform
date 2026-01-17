@@ -176,7 +176,18 @@ describe('Z21Udp', () => {
 
 		const sent = (socket.send as Mock).mock.calls[0][0] as Buffer;
 		expect(sent.readUInt16LE(0)).toBe(0x0004);
-		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_SYSTEMSTATE_DATAGET);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
+	});
+
+	it('sendLogOff builds proper packet', () => {
+		const udp = new Z21Udp('h', 1, mockLogger);
+		const socket = getSocket();
+
+		udp.sendLogOff();
+
+		const sent = (socket.send as Mock).mock.calls[0][0] as Buffer;
+		expect(sent.readUInt16LE(0)).toBe(0x0004);
+		expect(sent.readUInt16LE(2)).toBe(Z21LanHeader.LAN_LOGOFF);
 	});
 
 	it('stop closes socket gracefully', () => {

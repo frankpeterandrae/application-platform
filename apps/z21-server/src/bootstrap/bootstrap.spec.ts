@@ -16,6 +16,7 @@ vi.mock('@application-platform/z21', () => {
 				sendGetSerial: vi.fn(),
 				sendSetBroadcastFlags: vi.fn(),
 				sendSystemStateGetData: vi.fn(),
+				sendLogOff: vi.fn(),
 				on: vi.fn()
 			};
 		}),
@@ -148,9 +149,6 @@ describe('Bootstrap', () => {
 		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
 
 		expect(udpInstance.start).toHaveBeenCalledWith(21105);
-		expect(udpInstance.sendGetSerial).toHaveBeenCalled();
-		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000001);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalled();
 	});
 
 	it('listens on configured HTTP port', () => {
@@ -536,5 +534,156 @@ describe('Bootstrap', () => {
 		const result = bootstrap.start();
 
 		expect(result).toBe(bootstrap);
+	});
+	it('activates Z21 session on first client and starts heartbeat', () => {
+		vi.useFakeTimers();
+
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		bootstrap.start();
+
+		const { Z21Udp } = z21;
+		const { AppWsServer } = appWsMock;
+
+		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+
+		const initialCalls = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onConnect = onConnectionCalls[2];
+
+		onConnect();
+
+		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000001);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 1);
+
+		vi.advanceTimersByTime(60_000);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 2);
+
+		vi.useRealTimers();
+	});
+
+	it('does not reactivate Z21 session on subsequent connections', () => {
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		bootstrap.start();
+
+		const { Z21Udp } = z21;
+		const { AppWsServer } = appWsMock;
+
+		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onConnect = onConnectionCalls[2];
+
+		onConnect();
+		onConnect();
+
+		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledTimes(1);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(1);
+	});
+
+	it('deactivates Z21 session and heartbeat when last client disconnects', () => {
+		vi.useFakeTimers();
+
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		bootstrap.start();
+
+		const { Z21Udp } = z21;
+		const { AppWsServer } = appWsMock;
+
+		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+
+		const initialCalls = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onConnect = onConnectionCalls[2];
+		const onDisconnect = onConnectionCalls[1];
+
+		onConnect();
+
+		const callsBeforeAdvance = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+
+		vi.advanceTimersByTime(60_000);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(callsBeforeAdvance + 1);
+
+		onDisconnect();
+
+		expect(udpInstance.sendLogOff).toHaveBeenCalledTimes(1);
+
+		const callsAfterDisconnect = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+		vi.advanceTimersByTime(120_000);
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(callsAfterDisconnect);
+
+		vi.useRealTimers();
+	});
+
+	it('assigns and reuses WebSocket client ids via getWsClientId', () => {
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		const ws1 = {};
+		const ws2 = {};
+
+		const id1 = (bootstrap as any).getWsClientId(ws1);
+		const id1again = (bootstrap as any).getWsClientId(ws1);
+		const id2 = (bootstrap as any).getWsClientId(ws2);
+
+		expect(id1).toBeGreaterThan(0);
+		expect(id1again).toBe(id1);
+		expect(id2).toBeGreaterThan(0);
+		expect(id2).not.toBe(id1);
+	});
+
+	it('startZ21Heartbeat/stopZ21Heartbeat schedule and cancel periodic sendSystemStateGetData', () => {
+		vi.useFakeTimers();
+
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		const { Z21Udp } = z21;
+		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value as { sendSystemStateGetData: Mock };
+
+		const initialCalls = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+
+		// start heartbeat directly (private)
+		(bootstrap as any).startZ21Heartbeat();
+
+		// advance by one interval (60_000 ms)
+		vi.advanceTimersByTime(60_000);
+
+		expect((udpInstance.sendSystemStateGetData as Mock).mock.calls.length).toBeGreaterThan(initialCalls);
+
+		// stop heartbeat and verify no further calls after more time passes
+		(bootstrap as any).stopZ21Heartbeat();
+		const callsAfterStop = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+
+		vi.advanceTimersByTime(120_000);
+
+		expect((udpInstance.sendSystemStateGetData as Mock).mock.calls.length).toBe(callsAfterStop);
+
+		vi.useRealTimers();
 	});
 });

@@ -17,7 +17,7 @@ export type MessageHandler = (msg: ClientToServer) => void;
 /**
  * Callback signature for handling client disconnects.
  */
-export type DisconnectHandler = () => void;
+export type DisconnectHandler = (ws: WsWebSocket) => void;
 
 /**
  * AppWsServer is a thin wrapper around the underlying WsServer.
@@ -64,9 +64,9 @@ export class AppWsServer {
 
 				onMessage(msg);
 			},
-			() => {
+			(ws) => {
 				if (onDisconnect) {
-					onDisconnect();
+					onDisconnect(ws);
 				}
 			},
 			(ws) => {

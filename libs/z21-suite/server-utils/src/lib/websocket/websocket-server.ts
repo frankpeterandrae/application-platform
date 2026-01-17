@@ -7,7 +7,7 @@ import type * as http from 'node:http';
 
 import { WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
 
-import type { ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
+import type { AliveWebsocket, ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
 
 /**
  * WebSocket server wrapper that simplifies connection handling and messaging.
@@ -21,12 +21,14 @@ import type { ConnectHandler, DisconnectHandler, MessageHandler } from './websoc
 export class WsServer {
 	private readonly wss: WebSocketServer;
 
+	private heartbeatTimer?: NodeJS.Timeout;
 	/**
 	 * Creates a new WebSocket server attached to an HTTP server.
 	 * @param server - The HTTP server to attach the WebSocket server to
 	 */
 	constructor(server: http.Server) {
 		this.wss = new WebSocketServer({ server });
+		this.startHeartbeat();
 	}
 
 	/**
@@ -42,6 +44,12 @@ export class WsServer {
 	 */
 	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wss.on('connection', (ws) => {
+			const aliveWs = ws as AliveWebsocket;
+			aliveWs.isAlive = true;
+			aliveWs.on('pong', () => {
+				aliveWs.isAlive = true;
+			});
+
 			if (onConnect) {
 				onConnect(ws);
 			}
@@ -91,8 +99,41 @@ export class WsServer {
 
 	/**
 	 * Closes the WebSocket server, terminating all connections.
+	 * Also stops the heartbeat timer.
 	 */
 	public close(): void {
+		if (this.heartbeatTimer) {
+			clearInterval(this.heartbeatTimer);
+			this.heartbeatTimer = undefined;
+		}
 		this.wss.close();
+	}
+
+	/**
+	 * Starts the heartbeat mechanism to monitor connection health.
+	 * Pings clients at regular intervals and terminates unresponsive connections.
+	 * The interval duration can be configured via the WS_HEARTBEAT_MS environment variable.
+	 * Defaults to 30 seconds if not set.
+	 */
+	private startHeartbeat(): void {
+		const intervalMs = Number(process.env['WS_HEARTBEAT_MS'] ?? '30000'); // 30 seconds
+		this.heartbeatTimer = setInterval(() => {
+			for (const client of this.wss.clients) {
+				const aliveWs = client as AliveWebsocket;
+
+				if (aliveWs.readyState !== WebSocket.OPEN) {
+					continue;
+				}
+
+				if (!aliveWs.isAlive) {
+					client.terminate();
+					continue;
+				}
+				aliveWs.isAlive = false;
+				aliveWs.ping();
+			}
+		}, intervalMs);
+
+		this.heartbeatTimer?.unref();
 	}
 }

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 /**
  * X-BUS locomotive command types.
  * Used in LOCO_DRIVE X-BUS header messages.
@@ -63,7 +68,6 @@ export const enum XBusCmd {
 	CV_POM_ACCESSORY = 0x31,
 	/** Request the firmware version of  of the Z21 central. */
 	FIRMWARE_VERSION = 0x0a,
-
 	/** Drive command encoding for 14 speed steps. */
 	LOCO_DRIVE_14 = 0x10,
 	/** Drive command encoding for 28 speed steps. */
