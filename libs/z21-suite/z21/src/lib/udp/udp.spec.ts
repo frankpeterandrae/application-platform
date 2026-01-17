@@ -23,6 +23,13 @@ vi.mock('node:dgram', () => {
 	return { createSocket: vi.fn(() => socket) };
 });
 
+const mockLogger = {
+	debug: vi.fn(),
+	info: vi.fn(),
+	warn: vi.fn(),
+	error: vi.fn()
+} as any;
+
 const getSocket = (): any => (dgram.createSocket as any).mock.results[0].value;
 
 describe('Z21Udp', () => {
@@ -31,7 +38,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('binds UDP socket on start with default port and wires listeners', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 
 		const socket = getSocket();
@@ -40,7 +47,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('allows custom listen port', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start(54321);
 
 		const socket = getSocket();
@@ -48,7 +55,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('emits datagram event with raw buffer and sender info', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -66,7 +73,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('emits datagram for serial number response', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -87,7 +94,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('emits datagram for any message length', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -104,7 +111,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('converts buffer to hex string correctly', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -118,7 +125,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('does not start twice', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const bindCallCount = (socket.bind as Mock).mock.calls.length;
@@ -129,7 +136,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('sendRaw delegates to socket.send with configured host/port', () => {
-		const udp = new Z21Udp('hostX', 5555);
+		const udp = new Z21Udp('hostX', 5555, mockLogger);
 		const socket = getSocket();
 		const buf = Buffer.from([1, 2, 3]);
 
@@ -139,7 +146,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('sendGetSerial builds proper packet', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		const socket = getSocket();
 
 		udp.sendGetSerial();
@@ -150,7 +157,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('sendSetBroadcastFlags builds proper packet', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		const socket = getSocket();
 
 		udp.sendSetBroadcastFlags(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
@@ -162,7 +169,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('sendSystemStateGetData builds proper packet', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		const socket = getSocket();
 
 		udp.sendSystemStateGetData();
@@ -173,7 +180,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('stop closes socket gracefully', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		udp.start();
 		const socket = getSocket();
 
@@ -183,7 +190,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('stop does nothing when not started', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		const socket = getSocket();
 
 		udp.stop();
@@ -192,7 +199,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('stop removes all listeners', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		udp.start();
 		const socket = getSocket();
 
@@ -202,7 +209,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('can be restarted after stop', () => {
-		const udp = new Z21Udp('h', 1);
+		const udp = new Z21Udp('h', 1, mockLogger);
 		udp.start();
 		udp.stop();
 
@@ -213,7 +220,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('handles different sender addresses', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];
@@ -230,7 +237,7 @@ describe('Z21Udp', () => {
 	});
 
 	it('preserves raw buffer in datagram event', () => {
-		const udp = new Z21Udp('host', 1234);
+		const udp = new Z21Udp('host', 1234, mockLogger);
 		udp.start();
 		const socket = getSocket();
 		const messageHandler = socket.on.mock.calls.find((c: any[]) => c[0] === 'message')?.[1];

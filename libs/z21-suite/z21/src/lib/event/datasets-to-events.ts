@@ -29,6 +29,11 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 		return decodeLanXPayload(ds.xHeader, lanXBytes);
 	}
 
+	if (ds.kind === 'ds.bad_xor') {
+		// Already logged at a lower level; skip further processing.
+		return [];
+	}
+
 	// Specific decoders for known X-Bus payloads
 	return [{ type: 'event.unknown.lan_x', xHeader: ds.header, bytes: Array.from(ds.payload) }];
 }

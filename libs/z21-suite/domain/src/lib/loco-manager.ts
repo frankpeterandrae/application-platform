@@ -111,11 +111,7 @@ export class LocoManager {
 	 * @returns True if subscription was added, false if already subscribed
 	 */
 	public subscribeLocoInfoOnce(addr: number): boolean {
-		// eslint-disable-next-line no-console
-		console.log('before ensureLoco', addr, this.locoInfoSubscribed.has(addr));
 		this.ensureLoco(addr);
-		// eslint-disable-next-line no-console
-		console.log('afert ensureLoco', addr, this.locoInfoSubscribed.has(addr));
 		if (this.locoInfoSubscribed.has(addr)) {
 			return false;
 		}

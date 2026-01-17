@@ -5,6 +5,7 @@
 
 import { isClientToServerMessage, PROTOCOL_VERSION, type ClientToServer, type ServerToClient } from '@application-platform/protocol';
 import type { ConnectHandler, WsServer } from '@application-platform/server-utils';
+import { Logger } from '@application-platform/z21-shared';
 import type { WebSocket as WsWebSocket } from 'ws';
 
 /**
@@ -27,8 +28,12 @@ export class AppWsServer {
 	/**
 	 * Creates a new AppWsServer.
 	 * @param wsServer - The underlying WebSocket server adapter
+	 * @param logger - Logger instance for logging events
 	 */
-	constructor(private readonly wsServer: WsServer) {}
+	constructor(
+		private readonly wsServer: WsServer,
+		private logger: Logger
+	) {}
 
 	/**
 	 * Registers connection handlers.
@@ -44,8 +49,7 @@ export class AppWsServer {
 		this.wsServer.onConnection(
 			(data, ws) => {
 				// Parse and validate message
-				// eslint-disable-next-line no-console
-				console.log('[ws] raw', data);
+				this.logger.debug('[ws] raw', { data });
 				let msg: unknown;
 				try {
 					msg = JSON.parse(data as string);
@@ -53,12 +57,10 @@ export class AppWsServer {
 					return;
 				}
 				if (!isClientToServerMessage(msg)) {
-					// eslint-disable-next-line no-console
-					console.log('[ws] rejected', msg);
+					this.logger.info('[ws] rejected', { msg, reason: 'invalid message' });
 					return;
 				}
-				// eslint-disable-next-line no-console
-				console.log('[ws] accepted', msg.type);
+				this.logger.info('[ws] accepted', { type: msg.type });
 
 				onMessage(msg);
 			},

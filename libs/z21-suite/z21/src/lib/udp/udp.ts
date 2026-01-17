@@ -5,7 +5,7 @@
 import * as dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 
-import { Z21LanHeader } from '@application-platform/z21-shared';
+import { Z21LanHeader, type Logger } from '@application-platform/z21-shared';
 
 import { type Z21BroadcastFlag } from '../constants';
 import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
@@ -19,7 +19,12 @@ export type Z21UdpDatagram = {
 };
 
 /**
+ * Converts a Uint8Array to a hex string representation, truncating if it exceeds maxBytes.
  *
+ * @param buf - Input byte array
+ * @param maxBytes - Maximum number of bytes to convert (default 512)
+ *
+ * @returns Hex string representation of the byte array
  */
 function toHex(buf: Uint8Array, maxBytes = 512): string {
 	const len = Math.min(buf.length, maxBytes);
@@ -41,12 +46,12 @@ export class Z21Udp extends EventEmitter {
 	/**
 	 * @param host Z21 central hostname/IP to send commands to
 	 * @param port UDP port of the Z21 central
-	 * @param debug Enable debug logging of sent/received UDP datagrams
+	 * @param logger Logger instance for debug/info/warn/error logging
 	 */
 	constructor(
 		private readonly host: string,
 		private readonly port: number,
-		private readonly debug = false
+		private readonly logger: Logger
 	) {
 		super();
 	}
@@ -65,10 +70,7 @@ export class Z21Udp extends EventEmitter {
 			const from = { address: rinfo.address, port: rinfo.port };
 			const rawHex = toHex(msg);
 
-			if (this.debug) {
-				// eslint-disable-next-line no-console
-				console.log('[udp] rx <-', `${from.address}:${from.port}`, `len=${msg.length}`, rawHex);
-			}
+			this.logger.debug('[udp] rx <-', { from, len: msg.length, hex: rawHex });
 
 			this.emit('datagram', { from, raw: msg, rawHex } satisfies Z21UdpDatagram);
 		});
@@ -102,10 +104,8 @@ export class Z21Udp extends EventEmitter {
 	 * @param buf Raw datagram payload
 	 */
 	public sendRaw(buf: Buffer): void {
-		if (this.debug) {
-			// eslint-disable-next-line no-console
-			console.log('[z21][udp] tx', `${this.host}:${this.port}`, `len=${buf.length}`, toHex(buf));
-		}
+		this.logger.debug('[udp] tx', { from: { address: this.host, port: this.port }, len: buf.length, hex: toHex(buf) });
+
 		this.sock.send(buf, this.port, this.host);
 	}
 

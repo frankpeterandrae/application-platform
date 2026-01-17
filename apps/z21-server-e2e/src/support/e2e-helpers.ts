@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import type { ChildProcess } from 'node:child_process';
-import { execSync, spawn } from 'node:child_process';
+import type { ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import * as dgram from 'node:dgram';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
@@ -13,7 +13,7 @@ import * as path from 'node:path';
 import WebSocket from 'ws';
 
 export type E2eCtx = {
-	proc: ChildProcess;
+	proc: ChildProcessWithoutNullStreams;
 	logs: string[];
 	ws: WebSocket;
 	messages: any[];
@@ -25,7 +25,6 @@ export function waitFor<T>(
 	fn: () => T | undefined,
 	opts: { timeoutMs?: number; stepMs?: number; label?: string; dump?: () => string } = {}
 ): Promise<T> {
-	// default timeout shortened to 12s to fail fast during local iteration
 	const { timeoutMs = 12000, stepMs = 20, label = 'waitFor', dump } = opts;
 	const start = Date.now();
 	return new Promise<T>((resolve, reject) => {
@@ -64,27 +63,21 @@ export async function startServerAndConnectWs(): Promise<E2eCtx> {
 
 	const cfgPath = mkTmpConfig(httpPort, fakeZ21Port);
 
-	const candidates = [path.join(process.cwd(), 'dist/apps/z21-server/main.js'), path.join(process.cwd(), 'dist/apps/server/main.js')];
-
-	let serverPath = candidates.find((p) => fs.existsSync(p));
-	if (!serverPath) {
-		// try to build on-demand (skip cache so artifact is written)
-		try {
-			console.log('[e2e-helper] server build not found; running: npx nx build z21-server --skip-nx-cache');
-			execSync('npx nx build z21-server --skip-nx-cache', { stdio: 'inherit' });
-		} catch (err) {
-			// ignore, we'll error below if not produced
-		}
-		serverPath = candidates.find((p) => fs.existsSync(p));
-	}
-	if (!serverPath) {
-		throw new Error(`Server build output not found; tried:\n${candidates.join('\n')}\nRun: nx build z21-server`);
+	const serverPath = path.join(process.cwd(), 'dist/apps/z21-server/main.js');
+	if (!fs.existsSync(serverPath)) {
+		throw new Error(`Server build output not found: ${serverPath}\nRun: nx build z21-server`);
 	}
 
 	const logs: string[] = [];
 	const proc = spawn('node', [serverPath], {
-		env: { ...process.env, Z21_CONFIG: cfgPath },
-		stdio: ['ignore', 'pipe', 'pipe']
+		env: {
+			...process.env,
+			Z21_CONFIG: cfgPath,
+			LOG_LEVEL: process.env['LOG_LEVEL'] ?? 'silent',
+			LOG_PRETTY: process.env['LOG_PRETTY'] ?? '0'
+		},
+		// use 'pipe' for stdin so the ChildProcess type has non-null stdin (ChildProcessWithoutNullStreams)
+		stdio: ['pipe', 'pipe', 'pipe']
 	});
 
 	proc.stdout.on('data', (d) => {
@@ -98,60 +91,71 @@ export async function startServerAndConnectWs(): Promise<E2eCtx> {
 		console.error('[server]', s.trimEnd());
 	});
 
-	// wait for server to report HTTP bind in logs
-	await waitFor(() => logs.find((l) => l.includes('[server] http://0.0.0.0:')), {
-		label: 'server boot',
-		dump: () => `\nLOGS:\n${logs.join('')}`
-	});
+	await waitFor(
+		() => {
+			const candidate = new WebSocket(`ws://127.0.0.1:${httpPort}`);
+			candidate.on('message', (data) => {
+				try {
+					messages.push(JSON.parse(data.toString()));
+				} catch {
+					/* ignore */
+				}
+			});
+			return new Promise<WebSocket | undefined>((resolve) => {
+				candidate.once('open', () => resolve(candidate));
+				candidate.once('error', () => {
+					try {
+						candidate.close();
+					} catch {
+						// ignore
+					}
+					resolve(undefined);
+				});
+			});
+		},
+		{ label: 'ws connect', timeoutMs: 12000 }
+	);
 
-	// pick the actual port logged by the server (fallback to requested httpPort)
-	const bootLog = logs.find((l) => l.includes('[server] http://0.0.0.0:')) || '';
-	const m = (bootLog as string).match(/http:\/\/0\.0\.0\.0:(\d+)/);
-	const actualHttpPort = m ? Number(m[1]) : httpPort;
-	console.log(`[e2e-helper] connecting WS to ${actualHttpPort} (requested ${httpPort})`);
-
-	const ws = new WebSocket(`ws://127.0.0.1:${actualHttpPort}`);
+	// 2) WS verbinden
+	const ws = await connectWsWithRetry(`ws://127.0.0.1:${httpPort}`, 12000);
 	const messages: any[] = [];
 
 	ws.on('message', (data) => {
 		const s = data.toString();
-		console.log('[ws] rx', s);
 		try {
 			messages.push(JSON.parse(s));
 		} catch {
-			// ignore non-json
+			// ignore
 		}
 	});
-
-	await new Promise<void>((resolve, reject) => {
-		ws.once('open', () => resolve());
-		ws.once('error', reject);
+	await waitFor(() => messages.find((m) => m?.type === 'server.replay.session.ready'), {
+		label: 'server.replay.session.ready',
+		timeoutMs: 4000
 	});
-
-	// wait for session.ready (increase to 10s temporarily for stable local debug)
-	await waitFor(
-		() =>
-			messages.find((m) => {
-				const t = typeof m?.type === 'string' ? m.type : undefined;
-				return t === 'session.ready' || (t ? t.endsWith('.session.ready') : false);
-			}),
-		{ label: 'session.ready', timeoutMs: 10000 }
-	);
 
 	return { proc, logs, ws, messages, httpPort, fakeZ21Port };
 }
 
+async function connectWsWithRetry(url: string, timeoutMs = 12000): Promise<WebSocket> {
+	const start = Date.now();
+	while (Date.now() - start < timeoutMs) {
+		try {
+			const ws = new WebSocket(url);
+			await new Promise<void>((resolve, reject) => {
+				ws.once('open', resolve);
+				ws.once('error', reject);
+			});
+			return ws;
+		} catch {
+			await new Promise((r) => setTimeout(r, 50));
+		}
+	}
+	throw new Error(`timeout (ws connect) ${url}`);
+}
+
 export async function stopCtx(ctx: E2eCtx): Promise<void> {
-	try {
-		ctx.ws.close();
-	} catch {
-		// ignore
-	}
-	try {
-		ctx.proc.kill('SIGTERM');
-	} catch {
-		// ignore
-	}
+	ctx.ws.close();
+	ctx.proc.kill('SIGTERM');
 }
 
 export async function sendUdpHex(hex: string, port = 21105): Promise<void> {

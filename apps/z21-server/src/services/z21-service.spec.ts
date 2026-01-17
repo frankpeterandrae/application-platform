@@ -72,7 +72,13 @@ describe('Z21EventHandler.handleDatagram', () => {
 			locoInfoSubscribed: vi.fn(),
 			clamp01: vi.fn()
 		};
-		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager);
+		const mockLogger = {
+			debug: vi.fn(),
+			info: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn()
+		} as any;
+		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any, mockLogger);
 	});
 
 	describe('serial datagrams', () => {
@@ -286,24 +292,74 @@ describe('Z21EventHandler.handleDatagram', () => {
 		});
 	});
 
-	describe('handler behavior', () => {
-		it('broadcasts z21.rx envelope for all datagrams', () => {
-			vi.mocked(parseZ21Datagram).mockReturnValue([]);
-			vi.mocked(datasetsToEvents).mockReturnValue([]);
+	describe('dataset and event handling', () => {
+		it('logs unknown and bad_xor datasets', () => {
+			const mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } as any;
+			const localHandler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any, mockLogger);
+
+			vi.mocked(parseZ21Datagram).mockReturnValueOnce([
+				{ kind: 'ds.unknown', reason: 'badframe', header: 0x4321 } as any,
+				{ kind: 'ds.bad_xor', calc: 0x12, recv: 0x34 } as any
+			] as any);
 
 			const payload = {
-				raw: Buffer.alloc(4, 0),
-				rawHex: '0xf2',
-				from: { address: '127.0.0.1', port: 21105 }
+				raw: Buffer.from([0x02, 0x00, 0x00, 0x00]),
+				rawHex: '0xdead',
+				from: { address: '1.2.3.4', port: 1234 }
 			} as any;
+			localHandler.handleDatagram(payload);
 
-			handler.handleDatagram(payload);
-
-			expect(broadcast).toHaveBeenCalledWith(
-				expect.objectContaining({
-					type: 'system.message.z21.rx'
-				})
+			expect(mockLogger.warn).toHaveBeenCalled();
+			// ensure called at least once for unknown frame and once for bad_xor
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.unknownKind === 'ds.unknown')).toBe(true);
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.unknownKind === 'ds.bad_xor' || c[1]?.calc !== undefined)).toBe(
+				true
 			);
+		});
+
+		it('processes events and routes them correctly', () => {
+			const mockLogger = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() } as any;
+			const localHandler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any, mockLogger);
+
+			// Make parseZ21Datagram return a single dummy dataset so the loop runs.
+			vi.mocked(parseZ21Datagram).mockReturnValueOnce([{ kind: 'ds.x.bus' } as any] as any);
+
+			// Mock datasetsToEvents to return a variety of events to exercise branches.
+			vi.mocked(datasetsToEvents).mockReturnValueOnce([
+				{ type: 'event.track.power', on: true } as any,
+				{ type: 'event.turnout.info', addr: 42, state: 'STRAIGHT' } as any,
+				{ type: 'event.loco.info', addr: 5, speed: 10, dir: 1, fns: {}, estop: false } as any,
+				{ type: 'event.unknown.lan_x', xHeader: 0x99, bytes: [1, 2, 3] } as any,
+				{ type: 'some.weird.event', foo: 'bar' } as any
+			] as any);
+
+			// Mock locoManager response for updateLocoInfoFromZ21
+			locoManager.updateLocoInfoFromZ21.mockReturnValueOnce({ addr: 5, state: { speed: 10, dir: 'FWD', fns: {}, estop: false } });
+
+			const payload = {
+				raw: Buffer.from([0x02, 0x00, 0x00, 0x00]),
+				rawHex: '0xbeef',
+				from: { address: '1.2.3.4', port: 4321 }
+			} as any;
+			localHandler.handleDatagram(payload);
+
+			// track.power -> broadcast for trackpower
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.trackpower', on: true }));
+
+			// turnout.info -> switching.message.turnout.state
+			expect(broadcast).toHaveBeenCalledWith(
+				expect.objectContaining({ type: 'switching.message.turnout.state', addr: 42, state: 'STRAIGHT' })
+			);
+
+			// loco.info -> triggers locoManager.updateLocoInfoFromZ21 and subsequent broadcast
+			expect(locoManager.updateLocoInfoFromZ21).toHaveBeenCalled();
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'loco.message.state', addr: 5 }));
+
+			// unknown lan_x -> logger.warn called with scope lan_x
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.scope === 'lan_x')).toBe(true);
+
+			// default unknown event -> falls to logUnknown with scope 'x_bus'
+			expect(mockLogger.warn.mock.calls.some((c: any[]) => c[1]?.scope === 'x_bus')).toBe(true);
 		});
 	});
 });
