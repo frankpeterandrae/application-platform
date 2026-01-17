@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 /**
  * Options for Programming on the Main (POM) commands.
  * Used in CV_POM X-BUS header messages.

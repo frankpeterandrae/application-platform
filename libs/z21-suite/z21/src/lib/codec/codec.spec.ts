@@ -43,7 +43,7 @@ describe('parseZ21Datagram', () => {
 
 	it('parses system.state frame with 16-byte payload', () => {
 		const payload = Array.from({ length: 16 }, (_, i) => i);
-		const buf = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, payload);
+		const buf = makeFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED, payload);
 
 		const res = parseZ21Datagram(buf);
 
@@ -80,7 +80,7 @@ describe('parseZ21Datagram', () => {
 		const xor1 = xbusXor(payload1);
 		const frame1 = makeFrame(Z21LanHeader.LAN_X, [...payload1, xor1]);
 		const payload2 = Array.from({ length: 16 }, (_, i) => i + 1);
-		const frame2 = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, payload2);
+		const frame2 = makeFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED, payload2);
 		const buf = Buffer.concat([frame1, frame2]);
 
 		const res = parseZ21Datagram(buf);

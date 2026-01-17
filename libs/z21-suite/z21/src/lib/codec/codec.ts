@@ -64,7 +64,7 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 			} else {
 				out.push({ kind: 'ds.unknown', header, payload, reason: 'x-bus too short' });
 			}
-		} else if (header === Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED && payload.length === 16) {
+		} else if (header === Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED && payload.length === 16) {
 			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
 		} else {
 			out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });

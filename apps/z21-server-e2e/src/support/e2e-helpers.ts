@@ -17,8 +17,8 @@ type WsMessage = { type: string; [key: string]: unknown };
 export type E2eCtx = {
 	proc: ChildProcessWithoutNullStreams;
 	logs: string[];
-	ws: WebSocket;
-	messages: WsMessage[];
+	ws?: WebSocket;
+	messages?: WsMessage[];
 	httpPort: number;
 	fakeZ21Port: number;
 };
@@ -156,8 +156,32 @@ async function connectWsWithRetry(url: string, timeoutMs = 12000): Promise<WebSo
 }
 
 export async function stopCtx(ctx: E2eCtx): Promise<void> {
-	ctx.ws.close();
+	if (ctx.ws) {
+		ctx.ws.close();
+	}
 	ctx.proc.kill('SIGTERM');
+	if (ctx.ws && ctx.ws.readyState === WebSocket.OPEN) {
+		await new Promise<void>((resolve) => {
+			ctx.ws!.once('close', () => resolve());
+			ctx.ws!.close();
+			// fallback, falls close nie kommt
+			setTimeout(resolve, 500).unref?.();
+		});
+	}
+
+	await new Promise<void>((resolve) => {
+		ctx.proc.once('exit', () => resolve());
+		ctx.proc.kill('SIGTERM');
+		// fallback: hart killen, falls er hängt
+		setTimeout(() => {
+			try {
+				ctx.proc.kill('SIGKILL');
+			} catch {
+				// ignore
+			}
+			resolve();
+		}, 1500).unref?.();
+	});
 }
 
 export async function sendUdpHex(hex: string, port = 21105): Promise<void> {
@@ -170,10 +194,10 @@ export async function sendUdpHex(hex: string, port = 21105): Promise<void> {
 }
 
 export async function waitForWsType<T = unknown>(ctx: E2eCtx, type: string, timeoutMs = 4000): Promise<T> {
-	return (await waitFor(() => ctx.messages.find((m) => m?.type === type), {
+	return (await waitFor(() => ctx.messages?.find((m) => m?.type === type), {
 		label: `ws ${type}`,
 		timeoutMs,
-		dump: () => `\nWS:\n${ctx.messages.map((m) => JSON.stringify(m)).join('\n')}`
+		dump: () => `\nWS:\n${ctx.messages?.map((m) => JSON.stringify(m)).join('\n')}`
 	})) as T;
 }
 
@@ -198,4 +222,76 @@ export async function startFakeZ21(port: number): Promise<FakeZ21> {
 				sock.close(() => resolve());
 			})
 	};
+}
+
+export function delay(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function startServer(): Promise<E2eCtx> {
+	const httpPort = 18000 + Math.floor(Math.random() * 1000);
+	const fakeZ21Port = 20000 + Math.floor(Math.random() * 1000);
+
+	const cfgPath = mkTmpConfig(httpPort, fakeZ21Port);
+
+	const serverPath = path.join(process.cwd(), 'dist/apps/z21-server/main.js');
+	if (!fs.existsSync(serverPath)) {
+		throw new Error(`Server build output not found: ${serverPath}\nRun: nx build server`);
+	}
+
+	const logs: string[] = [];
+	const proc = spawn('node', [serverPath], {
+		env: {
+			...process.env,
+			Z21_CONFIG: cfgPath,
+			// wichtig: e2e soll silent/clean sein
+			LOG_LEVEL: process.env['LOG_LEVEL'] ?? 'silent',
+			WS_HEARTBEAT_MS: '200'
+		}
+	});
+
+	proc.stdout.on('data', (d) => {
+		const s = d.toString();
+		logs.push(s);
+		if (process.env['E2E_DEBUG'] === '1') {
+			console.log('[server]', s.trimEnd());
+		}
+	});
+	proc.stderr.on('data', (d) => {
+		const s = d.toString();
+		logs.push(s);
+		if (process.env['E2E_DEBUG'] === '1') {
+			console.error('[server]', s.trimEnd());
+		}
+	});
+
+	// Wait until server reports it has started (NO WS connect here!)
+	await waitFor(() => (logs.join('').includes('server.started') ? true : undefined), {
+		label: 'server.started',
+		timeoutMs: 12000,
+		dump: () => `\nLOGS:\n${logs.join('')}`
+	});
+
+	return { proc, logs, httpPort, fakeZ21Port };
+}
+
+export async function connectWs(httpPort: number): Promise<{ ws: WebSocket; messages: WsMessage[] }> {
+	const url = `ws://127.0.0.1:${httpPort}`;
+	const ws = new WebSocket(url);
+
+	await new Promise<void>((resolve, reject) => {
+		ws.once('open', resolve);
+		ws.once('error', reject);
+	});
+
+	const messages: WsMessage[] = [];
+	ws.on('message', (data) => {
+		try {
+			messages.push(JSON.parse(data.toString()));
+		} catch {
+			// ignore non-json
+		}
+	});
+
+	return { ws, messages };
 }

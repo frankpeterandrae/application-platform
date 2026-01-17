@@ -106,4 +106,128 @@ describe('WsServer', () => {
 		wsServer.close();
 		expect(wssInstance.close).toHaveBeenCalled();
 	});
+
+	it('broadcasts string messages directly without serialization', () => {
+		const wsOpen: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+		wssInstance.clients.add(wsOpen);
+
+		wsServer.broadcast('plain text');
+
+		expect(wsOpen.send).toHaveBeenCalledWith('plain text');
+	});
+
+	it('calls onConnect when client connects', () => {
+		const onMessage = vi.fn();
+		const onConnect = vi.fn();
+		wsServer.onConnection(onMessage, undefined, onConnect);
+		const connectionHandler = wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+
+		expect(connectionHandler).toBeDefined();
+		connectionHandler?.(ws);
+
+		expect(onConnect).toHaveBeenCalledTimes(1);
+		expect(onConnect).toHaveBeenCalledWith(ws);
+	});
+
+	it('does not call onConnect if not provided', () => {
+		const onMessage = vi.fn();
+		wsServer.onConnection(onMessage);
+		const connectionHandler = wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+
+		expect(() => connectionHandler?.(ws)).not.toThrow();
+	});
+
+	it('converts Buffer message data to string', () => {
+		const onMessage = vi.fn();
+		wsServer.onConnection(onMessage);
+		const connectionHandler = wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		const ws: WsMock = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+		connectionHandler?.(ws);
+		const messageHandler = ws.on.mock.calls.find((c) => c[0] === 'message')?.[1];
+		const buffer = { toString: vi.fn().mockReturnValue('converted') };
+
+		messageHandler?.(buffer);
+
+		expect(buffer.toString).toHaveBeenCalledTimes(1);
+		expect(onMessage).toHaveBeenCalledTimes(1);
+		expect(onMessage).toHaveBeenCalledWith('converted', ws);
+	});
+
+	it('sets isAlive to true on new connection', () => {
+		const onMessage = vi.fn();
+		wsServer.onConnection(onMessage);
+		const connectionHandler = wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		const ws: any = { on: vi.fn(), send: vi.fn(), readyState: 1, close: vi.fn() };
+
+		connectionHandler?.(ws);
+
+		expect(ws.isAlive).toBe(true);
+	});
+
+	it('sets isAlive to true when pong is received', () => {
+		const onMessage = vi.fn();
+		wsServer.onConnection(onMessage);
+		const connectionHandler = wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		const ws: any = { on: vi.fn(), send: vi.fn(), readyState: 1 };
+		connectionHandler?.(ws);
+		const pongHandler = ws.on.mock.calls.find((c: any) => c[0] === 'pong')?.[1];
+		ws.isAlive = false;
+
+		pongHandler?.();
+
+		expect(ws.isAlive).toBe(true);
+	});
+
+	it('heartbeat pings alive clients and terminates unresponsive clients', () => {
+		// set short interval before constructing server to ensure constructor-created heartbeat respects env
+		process.env['WS_HEARTBEAT_MS'] = '10';
+		vi.useFakeTimers();
+
+		// construct a fresh WsServer instance so the heartbeat interval picks up the env value
+		const localWsServer = new WsServer({} as any);
+		const localWssInstance = (WebSocketServer as unknown as Mock).mock.results.slice(-1)[0].value as { clients: Set<any> };
+
+		const alive = { on: vi.fn(), send: vi.fn(), readyState: 1, isAlive: true, ping: vi.fn(), terminate: vi.fn() } as any;
+		const dead = { on: vi.fn(), send: vi.fn(), readyState: 1, isAlive: false, ping: vi.fn(), terminate: vi.fn() } as any;
+
+		localWssInstance.clients.add(alive);
+		localWssInstance.clients.add(dead);
+
+		// advance timers so heartbeat runs at least once
+		vi.advanceTimersByTime(50);
+
+		// alive client should have been pinged
+		expect(alive.ping).toHaveBeenCalled();
+
+		// dead client should have been terminated
+		expect(dead.terminate).toHaveBeenCalled();
+
+		vi.useRealTimers();
+		delete process.env['WS_HEARTBEAT_MS'];
+	});
+
+	it('heartbeat does not ping clients that are not OPEN', () => {
+		vi.useFakeTimers();
+		// create server with default heartbeat
+		const localWsServer = new WsServer({} as any);
+		const localWssInstance = (WebSocketServer as unknown as Mock).mock.results.slice(-1)[0].value as { clients: Set<any> };
+
+		const notOpen = { on: vi.fn(), send: vi.fn(), readyState: 3, isAlive: true, ping: vi.fn(), terminate: vi.fn() } as any;
+
+		localWssInstance.clients.add(notOpen);
+
+		// call private startHeartbeat to ensure an interval is present (constructor already started one,
+		// but calling again is harmless in test contexts)
+		(localWsServer as any).startHeartbeat?.();
+
+		// fast-forward a tick to let heartbeat logic run
+		vi.advanceTimersByTime(50);
+
+		expect(notOpen.ping).not.toHaveBeenCalled();
+		expect(notOpen.terminate).not.toHaveBeenCalled();
+
+		vi.useRealTimers();
+	});
 });

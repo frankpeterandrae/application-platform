@@ -23,3 +23,8 @@ export type DisconnectHandler = (ws: WsWebSocket) => void;
  * @param ws - The newly connected WebSocket
  */
 export type ConnectHandler = (ws: WsWebSocket) => void;
+
+/**
+ * Extended WebSocket type that includes an isAlive property for connection health tracking.
+ */
+export type AliveWebsocket = WsWebSocket & { isAlive: boolean };
