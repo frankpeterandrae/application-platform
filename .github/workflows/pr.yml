@@ -1,0 +1,80 @@
+name: PR - CI + Sonar + z21 default labels
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  ci:
+    uses: ./.github/workflows/_reusable-nx-ci.yml
+    with:
+      mode: pr
+      base: ${{ github.event.pull_request.base.sha }}
+      head: ${{ github.event.pull_request.head.sha }}
+      run_sonar: true
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      PROJECT_KEY: ${{ secrets.PROJECT_KEY }}
+      SONAR_ORG: ${{ secrets.SONAR_ORG }}
+
+  default-release-labels:
+    runs-on: ubuntu-latest
+    needs: [ci]
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci --ignore-scripts
+
+      - name: Detect affected projects
+        id: aff
+        run: |
+          npx nx show projects --affected --base=${{ github.event.pull_request.base.sha }} --head=${{ github.event.pull_request.head.sha }} > affected.txt || true
+          cat affected.txt
+
+          if grep -E '(^|[^a-zA-Z0-9_-])z21-ui([^a-zA-Z0-9_-]|$)' affected.txt >/dev/null 2>&1; then
+            echo "ui=true" >> $GITHUB_OUTPUT
+          else
+            echo "ui=false" >> $GITHUB_OUTPUT
+          fi
+
+          if grep -E '(^|[^a-zA-Z0-9_-])z21-server([^a-zA-Z0-9_-]|$)' affected.txt >/dev/null 2>&1; then
+            echo "server=true" >> $GITHUB_OUTPUT
+          else
+            echo "server=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set default patch labels (if missing)
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+
+            const uiLabels = ["release:z21-ui:patch","release:z21-ui:minor","release:z21-ui:major"];
+            const srvLabels = ["release:z21-server:patch","release:z21-server:minor","release:z21-server:major"];
+
+            const needUi = "${{ steps.aff.outputs.ui }}" === "true";
+            const needSrv = "${{ steps.aff.outputs.server }}" === "true";
+
+            const toAdd = [];
+            if (needUi && !labels.some(l => uiLabels.includes(l))) toAdd.push("release:z21-ui:patch");
+            if (needSrv && !labels.some(l => srvLabels.includes(l))) toAdd.push("release:z21-server:patch");
+
+            if (toAdd.length) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number, labels: toAdd });
+            }

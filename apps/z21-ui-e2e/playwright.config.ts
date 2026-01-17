@@ -3,35 +3,32 @@
  * All rights reserved.
  */
 
-import { fileURLToPath } from 'url';
-
-import { workspaceRoot } from '@nx/devkit';
-import { nxE2EPreset } from '@nx/playwright/preset';
 import { defineConfig, devices } from '@playwright/test';
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
+const baseURL = process.env['BASE_URL'] || 'http://127.0.0.1:4210';
 
-// Determine a filename compatible with both CommonJS and ESM
-const __currentFileName = typeof __filename !== 'undefined' ? __filename : fileURLToPath(import.meta.url);
+const config = defineConfig({
+	timeout: 30_000, // pro Test
+	globalTimeout: 10 * 60_000, // gesamter Run (CI)
+	workers: process.env['CI'] ? 2 : undefined,
+	retries: process.env['CI'] ? 1 : 0,
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
-export default defineConfig({
-	...nxE2EPreset(__currentFileName, { testDir: './src' }),
-	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+	// WICHTIG: verhindert "hängt nach Erfolg"
+	forbidOnly: !!process.env['CI'],
+	reporter: process.env['CI'] ? [['list']] : 'html',
+	testDir: './src',
 	use: {
 		baseURL,
-		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-		trace: 'on-first-retry'
+		trace: process.env['CI'] ? 'on-first-retry' : 'on'
 	},
-	/* Run your local dev server before starting the tests */
 	webServer: {
-		command: 'npx nx run z21-ui:serve',
-		url: 'http://localhost:4200',
-		reuseExistingServer: true,
-		cwd: workspaceRoot
+		command: 'npx nx run z21-ui:serve:development --port=4210 --host=127.0.0.1',
+		url: baseURL,
+		reuseExistingServer: false,
+		timeout: 120_000,
+		stdout: 'pipe',
+		stderr: 'pipe'
 	},
 	projects: [
 		{
@@ -48,25 +45,7 @@ export default defineConfig({
 			name: 'webkit',
 			use: { ...devices['Desktop Safari'] }
 		}
-
-		// Uncomment for mobile browsers support
-		/* {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    }, */
-
-		// Uncomment for branded browsers
-		/* {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    } */
 	]
 });
+
+module.exports = config;

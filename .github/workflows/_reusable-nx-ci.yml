@@ -1,0 +1,115 @@
+name: _Reusable NX CI
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        description: "pr = affected, main = full"
+        required: true
+        type: string
+      base:
+        description: "Base SHA/ref for affected"
+        required: false
+        type: string
+      head:
+        description: "Head SHA/ref for affected"
+        required: false
+        type: string
+      run_sonar:
+        required: true
+        type: boolean
+    secrets:
+      SONAR_TOKEN:
+        required: false
+      PROJECT_KEY:
+        required: false
+      SONAR_ORG:
+        required: false
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci --ignore-scripts
+
+      - name: Lint
+        run: |
+          if [ "${{ inputs.mode }}" = "main" ]; then
+            npx nx run-many --target=lint --all --configuration=ci
+          else
+            npx nx affected --target=lint --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+          fi
+
+      - name: Test (with coverage)
+        run: |
+          if [ "${{ inputs.mode }}" = "main" ]; then
+            npx nx run-many --target=test --all --configuration=ci
+          else
+            npx nx affected --target=test --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+          fi
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install Playwright OS deps
+        run: npx playwright install-deps
+
+      - name: E2E
+        run: |
+          if [ "${{ inputs.mode }}" = "main" ]; then
+            npx nx run-many --target=e2e --all --configuration=ci
+          else
+            npx nx affected --target=e2e --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+          fi
+
+      - name: Build
+        run: |
+          if [ "${{ inputs.mode }}" = "main" ]; then
+            npx nx run-many --target=build --all --configuration=ci
+          else
+            npx nx affected --target=build --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+          fi
+
+      - name: Debug coverage files
+        run: |
+          ls -la coverage || true
+          find coverage -name lcov.info -maxdepth 6 -print || true
+
+      - name: Validate Sonar secrets
+        if: ${{ inputs.run_sonar }}
+        run: |
+          if [ -z "${{ secrets.PROJECT_KEY }}" ] || [ -z "${{ secrets.SONAR_ORG }}" ]; then
+            echo "ERROR: missing Sonar secrets (PROJECT_KEY / SONAR_ORG)"
+            exit 1
+          fi
+
+      - name: SonarCloud Scan
+        if: ${{ inputs.run_sonar }}
+        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORG }}
+            -Dsonar.sources=apps,libs
+            -Dsonar.tests=apps,libs
+            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.test-setup.ts
+            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
+            -Dsonar.javascript.lcov.reportPaths=coverage/**/lcov.info
