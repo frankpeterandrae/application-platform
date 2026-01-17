@@ -3,9 +3,10 @@
  * All rights reserved.
  */
 
-import { type LanXCommandKey } from '@application-platform/z21-shared';
+import type { LanXCommandKey, XHeader } from '@application-platform/z21-shared';
 
-import { type Z21Event } from '../../event/event-types';
+import type { Z21Event } from '../../event/event-types';
+import { resolveLanXCommand } from '../dispatch';
 
 import { decodeLanXLocoInfoPayload } from './loco-info';
 import { decodeLanXStatusChangedPayload } from './status-changed';
@@ -26,14 +27,14 @@ const DECODERS: Partial<Record<LanXCommandKey, LanXPayloadDecoder>> = {
 /**
  * Decodes the LAN X payload from raw X-Bus data.
  *
- * @param command - The LanXCommandKey to decode.
- * @param lanXBytes - Raw Lan X data bytes.
+ * @param xHeader - The X-Bus header value.
+ * @param payload - Raw X-Bus data bytes.
  *
  * @returns Array of Z21Event entries produced from the dataset.
  */
-export function decodeLanXPayload(command: LanXCommandKey, lanXBytes: Uint8Array): Z21Event[] {
+export function decodeLanXPayload(xHeader: XHeader, payload: Uint8Array): Z21Event[] {
+	const command = resolveLanXCommand(xHeader, payload);
 	const fn = DECODERS[command];
 	if (!fn) return [];
-	const payload = lanXBytes.subarray(2); // [...payload] (nach LAN_X + header + cmd)
 	return fn(command, payload);
 }

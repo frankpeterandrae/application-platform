@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 
-import { deriveTrackFlagsFromSystemState } from '@application-platform/z21';
+import { deriveTrackFlagsFromSystemState, Z21RxPayload } from '@application-platform/z21';
+import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
 import type { MockedFunction } from 'vitest';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
@@ -88,7 +89,7 @@ describe('Z21EventHandler.handle', () => {
 			rawHex: '0x02',
 			payload: { centralState: 1, centralStateEx: 2 },
 			from: { address: '127.0.0.1', port: 21105 }
-		} as any;
+		} as Z21RxPayload;
 
 		handler.handle(payload);
 
@@ -105,6 +106,7 @@ describe('Z21EventHandler.handle', () => {
 
 	it('updates and broadcasts track power when x-bus event is received', () => {
 		trackStatusManager.updateFromXbusPower.mockReturnValue({ short: true });
+		const xlan = LAN_X_COMMANDS.LAN_X_BC_TRACK_POWER_ON;
 		const payload = {
 			header: 0,
 			len: 0,
@@ -114,11 +116,11 @@ describe('Z21EventHandler.handle', () => {
 			datasets: [
 				{
 					kind: 'ds.x.bus' as const,
-					xHeader: 0x61,
-					data: new Uint8Array([0x61, 0x01])
+					xHeader: xlan.xHeader,
+					data: new Uint8Array([xlan.xBusCmd])
 				}
 			]
-		} as any;
+		} as Z21RxPayload;
 
 		handler.handle(payload);
 		expect(trackStatusManager.updateFromXbusPower).toHaveBeenCalledWith(true);
@@ -134,18 +136,6 @@ describe('Z21EventHandler.handle', () => {
 		(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
 		trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
 
-		const systemStatePayload = {
-			mainCurrent_mA: 100,
-			progCurrent_mA: 50,
-			filteredMainCurrent_mA: 75,
-			temperature_C: 25,
-			supplyVoltage_mV: 15000,
-			vccVoltage_mV: 5000,
-			centralState: 0x03,
-			centralStateEx: 0x04,
-			capabilities: 0
-		};
-
 		const payload = {
 			header: 0,
 			len: 0,
@@ -158,7 +148,7 @@ describe('Z21EventHandler.handle', () => {
 					state: new Uint8Array(16)
 				}
 			]
-		} as any;
+		} as Z21RxPayload;
 
 		handler.handle(payload);
 
@@ -178,6 +168,7 @@ describe('Z21EventHandler.handle', () => {
 		// recreate handler with the new locoManager mock
 		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any);
 
+		const xlan = LAN_X_COMMANDS.LAN_X_LOCO_INFO;
 		const payload = {
 			type: 'datasets' as const,
 			rawHex: '0x99',
@@ -185,11 +176,11 @@ describe('Z21EventHandler.handle', () => {
 			datasets: [
 				{
 					kind: 'ds.x.bus' as const,
-					xHeader: 0xef,
-					data: new Uint8Array([0xef, 0xc0, 0x64, 0x00, 0x84, 0x01])
+					xHeader: xlan.xHeader,
+					data: new Uint8Array([0xc0, 0x64, 0x00, 0x84, 0x01])
 				}
 			]
-		} as any;
+		} as Z21RxPayload;
 
 		handler.handle(payload);
 
@@ -205,6 +196,7 @@ describe('Z21EventHandler.handle', () => {
 	});
 
 	it('processes turnout.info events from datasets and broadcasts switching.message.turnout.state', () => {
+		const xlan = LAN_X_COMMANDS.LAN_X_TURNOUT_INFO;
 		const payload = {
 			type: 'datasets' as const,
 			rawHex: '0x9a',
@@ -212,11 +204,11 @@ describe('Z21EventHandler.handle', () => {
 			datasets: [
 				{
 					kind: 'ds.x.bus' as const,
-					xHeader: 0x43,
-					data: new Uint8Array([0x43, 0x00, 0x0a, 0x01])
+					xHeader: xlan.xHeader,
+					data: new Uint8Array([0x00, 0x0a, 0x01])
 				}
 			]
-		} as any;
+		} as Z21RxPayload;
 
 		handler.handle(payload);
 
@@ -235,7 +227,7 @@ describe('Z21EventHandler.handle', () => {
 				from: { address: '127.0.0.1', port: 21105 },
 				datasets: [],
 				events: []
-			} as any;
+			} as unknown as Z21RxPayload;
 
 			handler.handle(payload);
 
@@ -250,7 +242,7 @@ describe('Z21EventHandler.handle', () => {
 				rawHex: '0x10',
 				serial: 456,
 				from: { address: '192.168.1.1', port: 54321 }
-			} as any;
+			} as Z21RxPayload;
 
 			handler.handle(payload);
 
@@ -267,7 +259,7 @@ describe('Z21EventHandler.handle', () => {
 				rawHex: '0x11',
 				serial: 0,
 				from: { address: '127.0.0.1', port: 21105 }
-			} as any;
+			} as Z21RxPayload;
 
 			handler.handle(payload);
 
@@ -284,7 +276,7 @@ describe('Z21EventHandler.handle', () => {
 				rawHex: '0x12',
 				serial: 0xffffffff,
 				from: { address: '127.0.0.1', port: 21105 }
-			} as any;
+			} as Z21RxPayload;
 
 			handler.handle(payload);
 
@@ -303,7 +295,7 @@ describe('Z21EventHandler.handle', () => {
 				rawHex: '0x20',
 				payload: { centralState: 0, centralStateEx: 0 },
 				from: { address: '10.0.0.1', port: 12345 }
-			} as any;
+			} as Z21RxPayload;
 
 			handler.handle(payload);
 
@@ -326,7 +318,7 @@ describe('Z21EventHandler.handle', () => {
 				rawHex: '0x21',
 				payload: statePayload,
 				from: { address: '127.0.0.1', port: 21105 }
-			} as any;
+			} as Z21RxPayload;
 
 			handler.handle(payload);
 

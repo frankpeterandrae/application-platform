@@ -33,7 +33,7 @@ describe('encodeLanXSetTrackPowerOff', () => {
 		const result = encodeLanXSetTrackPowerOff();
 
 		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
-		expect(result[4]).toBe(trackPowerOff.xBusHeader);
+		expect(result[4]).toBe(trackPowerOff.xHeader);
 	});
 
 	it('includes Off track power value', () => {
@@ -46,7 +46,7 @@ describe('encodeLanXSetTrackPowerOff', () => {
 	it('includes valid xor checksum', () => {
 		const result = encodeLanXSetTrackPowerOff();
 		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
-		const payload = [trackPowerOff.xBusHeader, trackPowerOff.xBusCmd];
+		const payload = [trackPowerOff.xHeader, trackPowerOff.xBusCmd];
 		const expectedXor = xbusXor(payload);
 
 		expect(result[6]).toBe(expectedXor);
@@ -91,7 +91,7 @@ describe('encodeLanXSetTrackPowerOn', () => {
 		const result = encodeLanXSetTrackPowerOn();
 
 		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
-		expect(result[4]).toBe(trackPowerOn.xBusHeader);
+		expect(result[4]).toBe(trackPowerOn.xHeader);
 	});
 
 	it('includes On track power value', () => {
@@ -104,7 +104,7 @@ describe('encodeLanXSetTrackPowerOn', () => {
 	it('includes valid xor checksum', () => {
 		const result = encodeLanXSetTrackPowerOn();
 		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
-		const payload = [trackPowerOn.xBusHeader, trackPowerOn.xBusCmd];
+		const payload = [trackPowerOn.xHeader, trackPowerOn.xBusCmd];
 		const expectedXor = xbusXor(payload);
 
 		expect(result[6]).toBe(expectedXor);

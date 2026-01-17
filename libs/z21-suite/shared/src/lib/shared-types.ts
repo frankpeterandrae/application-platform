@@ -2,7 +2,6 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type LanXCommandKey } from './lan-x-types';
 
 /**
  * Cardinal direction a locomotive can travel.
@@ -47,14 +46,9 @@ export type LocoInfo = {
 export type SystemState = { type: 'event.z21.status'; payload: Z21SystemState };
 
 /**
- * Unknown X-Bus message with header and raw byte data.
- */
-export type UnlonwnXBus = { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
-
-/**
  * Unknown LAN X message with command key and raw byte data.
  */
-export type UnknownLanX = { type: 'event.unknown.lan_x'; command: LanXCommandKey; bytes: number[] };
+export type UnknownLanX = { type: 'event.unknown.lan_x'; xHeader: number; bytes: number[] };
 
 /**
  * Turnout information message indicating the state of a turnout.

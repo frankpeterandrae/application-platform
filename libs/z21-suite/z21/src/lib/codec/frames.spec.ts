@@ -41,7 +41,7 @@ describe('encodeLanX', () => {
 
 	it('copies xbus payload and checksum correctly', () => {
 		const result = encodeLanX('LAN_X_SET_TRACK_POWER_OFF');
-		const xbus = [LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF.xBusHeader, LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF.xBusCmd];
+		const xbus = [LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF.xHeader, LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF.xBusCmd];
 		const expectedXor = xbusXor(xbus);
 
 		expect(result[4]).toBe(xbus[0]);

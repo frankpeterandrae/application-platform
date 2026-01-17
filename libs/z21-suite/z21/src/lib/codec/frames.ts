@@ -32,7 +32,7 @@ export function xbusXor(bytes: readonly number[]): number {
  */
 export function encodeLanX(xLanCommand: LanXCommandKey, xbus: readonly number[] = []): Buffer {
 	const command = LAN_X_COMMANDS[xLanCommand];
-	const xbusHeader = command.xBusHeader;
+	const xbusHeader = command.xHeader;
 
 	// Build full X-BUS payload: header, optional cmd, and additional data
 	const fullXbus = hasXbusCmd(command) ? [xbusHeader, command.xBusCmd, ...xbus] : [xbusHeader, ...xbus];

@@ -20,7 +20,7 @@ describe('encodeLanXSetLocoFunction', () => {
 		const result = encodeLanXSetLocoFunction(100, 0, 0b00);
 
 		const fullCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_FUNCTION;
-		expect(result[4]).toBe(fullCommand.xBusHeader);
+		expect(result[4]).toBe(fullCommand.xHeader);
 		expect(result[5]).toBe(fullCommand.xBusCmd);
 		expect(result[8]).toBe(0b00000000);
 	});

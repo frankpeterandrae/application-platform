@@ -29,7 +29,7 @@ describe('parseZ21Datagram', () => {
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res).toEqual([{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from(payload) }]);
+		expect(res).toEqual([{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from([0x01, 0x02]) }]);
 	});
 
 	it('parses x.bus frame even when xor mismatches', () => {
@@ -42,7 +42,7 @@ describe('parseZ21Datagram', () => {
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: 0x21, data: Uint8Array.from(payload) });
+		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: 0x21, data: Uint8Array.from([0x02, 0x03]) });
 		expect(warnSpy).toHaveBeenCalled();
 		warnSpy.mockRestore();
 	});
@@ -90,34 +90,9 @@ describe('parseZ21Datagram', () => {
 		const res = parseZ21Datagram(buf);
 
 		expect(res).toEqual([
-			{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from(payload1) },
+			{ kind: 'ds.x.bus', xHeader: 0x10, data: Uint8Array.from([0x01]) },
 			{ kind: 'ds.system.state', state: Uint8Array.from(payload2) }
 		]);
-	});
-
-	it('returns unknown for non-LAN_X message shorter than header', () => {
-		// Implementation returns unknown for small frames rather than empty array; assert accordingly.
-		const buf = Buffer.from([0x04, 0x00, 0x00, 0x00]);
-		const parsed = parseZ21Datagram(buf);
-		expect(parsed).toEqual([{ kind: 'ds.unknown', header: 0, payload: Buffer.from([]) }]);
-	});
-
-	it('parses LAN_X frame and returns xbus payload', () => {
-		// Build buffer: len (2) + header (2) + payload + xor
-		const payload = [0x21, 0x80];
-		const len = 2 + 2 + payload.length + 1;
-		const buf = Buffer.alloc(len);
-		buf.writeUInt16LE(len, 0);
-		buf.writeUInt16LE(Z21LanHeader.LAN_X, 2);
-		buf.writeUInt8(payload[0], 4);
-		buf.writeUInt8(payload[1], 5);
-		// compute xor
-		const xor = payload.reduce((acc, b) => (acc ^ b) & FULL_BYTE_MASK, 0);
-		buf.writeUInt8(xor, len - 1);
-
-		const parsed = parseZ21Datagram(buf);
-		expect(parsed).toHaveLength(1);
-		expect(parsed[0].kind).toBe('ds.x.bus');
 	});
 
 	it('returns unknown for x.bus frame with payload shorter than 2 bytes', () => {

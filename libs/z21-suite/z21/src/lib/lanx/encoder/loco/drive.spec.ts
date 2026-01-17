@@ -17,7 +17,7 @@ describe('encodeLocoDrive128', () => {
 		const fullCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_DRIVE_128;
 		expect(Buffer.isBuffer(result)).toBe(true);
 		expect(result.readUInt16LE(2)).toBe(Z21LanHeader.LAN_X);
-		expect(result[4]).toBe(fullCommand.xBusHeader);
+		expect(result[4]).toBe(fullCommand.xHeader);
 		expect(result[5]).toBe(fullCommand.xBusCmd);
 	});
 
@@ -26,7 +26,7 @@ describe('encodeLocoDrive128', () => {
 
 		const fullCommand = LAN_X_COMMANDS.LAN_X_SET_LOCO_DRIVE_128;
 		expect(Buffer.isBuffer(result)).toBe(true);
-		expect(result[4]).toBe(fullCommand.xBusHeader);
+		expect(result[4]).toBe(fullCommand.xHeader);
 		expect(result[5]).toBe(fullCommand.xBusCmd);
 	});
 
