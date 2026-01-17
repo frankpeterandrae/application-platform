@@ -7,7 +7,7 @@ import { datasetsToEvents, deriveTrackFlagsFromSystemState, parseZ21Datagram } f
 import type { MockedFunction } from 'vitest';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
-import { Z21EventHandler, type BroadcastFn } from './z21-service';
+import { Z21EventHandler, type BroadcastFn } from './z21-event-handler';
 
 vi.mock('@application-platform/z21', async () => {
 	const actual = await vi.importActual('@application-platform/z21');

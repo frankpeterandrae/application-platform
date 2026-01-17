@@ -21,10 +21,10 @@ import { type Z21Udp } from '../udp/udp';
  * Service for controlling Z21 model railroad command station via UDP.
  * Provides methods to send track power commands and demo payloads.
  */
-export class Z21Service {
+export class Z21CommandService {
 	private readonly turnoutOffTimers = new Map<number, NodeJS.Timeout>();
 	/**
-	 * Creates an instance of Z21Service.
+	 * Creates an instance of Z21CommandService.
 	 * @param udp - The UDP transport service for communicating with Z21.
 	 * @param logger - Logger instance for logging messages.
 	 */

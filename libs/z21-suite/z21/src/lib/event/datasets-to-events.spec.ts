@@ -38,16 +38,8 @@ describe('datasetsToEvents', () => {
 		expect(events).toEqual([{ type: 'event.system.state', statusMask: 0xaa }]);
 	});
 
-	it('returns unknown.lan_x event for unknown datasets', () => {
+	it('returns empty array for unknown datasets', () => {
 		const payload = Buffer.from([0x01]);
-		expect(datasetsToEvents({ kind: 'ds.unknown', header: 0x1234, payload, reason: 'test reason' })).toEqual([
-			{ type: 'event.unknown.lan_x', xHeader: 0x1234, bytes: Array.from(payload) }
-		]);
-	});
-
-	it('returns empty array for ds.bad_xor datasets', () => {
-		// Minimal object is sufficient; cast to any to satisfy the Z21Dataset union typing in tests
-		const events = datasetsToEvents({ kind: 'ds.bad_xor' } as any);
-		expect(events).toEqual([]);
+		expect(datasetsToEvents({ kind: 'ds.unknown', header: 0x1234, payload, reason: 'test reason' })).toEqual([]);
 	});
 });

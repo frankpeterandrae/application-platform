@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 
-import { type LanXCommand } from './lan-x-command';
+import { type LanXCommand } from '../interfaces/lan-x-command';
+
 import { POM_Options } from './pom-options';
 import { XBusCmd } from './x-bus-cmd';
 import { XHeader } from './x-header';

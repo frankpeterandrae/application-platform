@@ -3,6 +3,6 @@
  * All rights reserved.
  */
 
-export * from './lib/http-server';
-export * from './lib/websocket-server-types';
-export * from './lib/websocket-server';
+export * from './lib/http/http-server';
+export * from './lib/websocket/websocket-server-types';
+export * from './lib/websocket/websocket-server';
