@@ -4,4 +4,5 @@
  */
 
 export * from './lib/loco/loco-manager';
+export * from './lib/system/command-station-info';
 export * from './lib/track';

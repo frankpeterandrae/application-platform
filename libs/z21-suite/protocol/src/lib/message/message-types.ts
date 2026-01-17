@@ -4,21 +4,17 @@
  */
 
 // Import individual types for union definitions
-import type { LocoDrive } from './client/loco-drive';
-import type { LocoEStop } from './client/loco-estop';
-import type { LocoFunctionSet } from './client/loco-function-set';
-import type { LocoFunctionToggle } from './client/loco-function-toggle';
-import type { SessionHello } from './client/session-hello';
-import type { TrackpowerSet } from './client/trackpower-set';
-import type { TurnoutSet } from './client/turnout-set';
-import type { FeedbackChanged } from './server/feedback-changed';
-import type { LocoEStopEvent } from './server/loco-estop-event';
-import type { LocoState } from './server/loco-state';
-import type { SessionReady } from './server/session-ready';
-import type { SystemTrackPower } from './server/system-trackpower';
-import type { TurnoutState_Message } from './server/turnout-state';
-import type { Z21Rx } from './server/z21-rx';
-
+import type { LocoDrive, LocoEStop, LocoFunctionSet, LocoFunctionToggle, SessionHello, TrackpowerSet, TurnoutSet } from './client';
+import type {
+	FeedbackChanged,
+	LocoEStopEvent,
+	LocoState,
+	SessionReady,
+	SystemTrackPower,
+	SystemVersion,
+	TurnoutState_Message,
+	Z21Rx
+} from './server';
 /**
  * Union of all messages a client may send to the server.
  *
@@ -54,7 +50,15 @@ export const CLIENT_TO_SERVER_TYPES = {
  * 1. Import the type
  * 2. Add it to this union
  */
-export type ServerToClient = SessionReady | SystemTrackPower | LocoState | LocoEStopEvent | TurnoutState_Message | FeedbackChanged | Z21Rx;
+export type ServerToClient =
+	| FeedbackChanged
+	| LocoEStopEvent
+	| LocoState
+	| SessionReady
+	| SystemTrackPower
+	| SystemVersion
+	| TurnoutState_Message
+	| Z21Rx;
 
 type ServerToClientType = ServerToClient['type'];
 /**
@@ -71,5 +75,6 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'server.replay.session.ready': true,
 	'switching.message.turnout.state': true,
 	'system.message.trackpower': true,
-	'system.message.z21.rx': true
+	'system.message.z21.rx': true,
+	'system.message.z21.version': true
 } as const satisfies Record<ServerToClientType, true>;

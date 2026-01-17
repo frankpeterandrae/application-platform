@@ -11,12 +11,11 @@ import { XHeader } from './x-header';
 
 /**
  * Map of all LAN_X command combinations.
- * Structure: [LAN_X (0x0040), XBusHeader, XBusCmd]
+ * Structure: [LAN_X (0x0040), XHeader, XBusCmd]
  */
 export const LAN_X_COMMANDS = {
 	/**
 	 * Get version of the Z21 central.
-	 * TODO: add handling
 	 */
 	LAN_X_GET_VERSION: {
 		xHeader: XHeader.STATUS,
@@ -192,7 +191,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Version information response.
-	 * TODO: add handling
 	 */
 	LAN_X_GET_VERSION_ANSWER: {
 		xHeader: XHeader.VESION_ANSWER,

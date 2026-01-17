@@ -8,6 +8,7 @@ import { type LocoFunctionSwitchType } from '../constants';
 import {
 	encodeLanXGetLocoInfo,
 	encodeLanXGetTurnoutInfo,
+	encodeLanXGetVersion,
 	encodeLanXSetLocoEStop,
 	encodeLanXSetLocoFunction,
 	encodeLanXSetTrackPowerOff,
@@ -146,6 +147,15 @@ export class Z21CommandService {
 		const buf = encodeLanXSetLocoEStop(address);
 		// eslint-disable-next-line no-console
 		console.log('[z21] tx LOCO_ESTOP', `addr=${address}`, buf.toString('hex'));
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Requests the Z21 firmware version information.
+	 */
+	public getVersion(): void {
+		const buf = encodeLanXGetVersion();
+		this.logger.debug('[z21] tx GET_VERSION', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }

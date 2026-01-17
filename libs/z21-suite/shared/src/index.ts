@@ -10,6 +10,7 @@ export * from './lib/events/turnout-info-event';
 export * from './lib/events/unknown-lan-x-event';
 export * from './lib/events/unknown-x-bus-event';
 export * from './lib/events/z21-status-event';
+export * from './lib/events/z21-version-event';
 export * from './lib/interfaces/lan-x-command';
 export * from './lib/logging/logger';
 export * from './lib/types/lan-x-types';

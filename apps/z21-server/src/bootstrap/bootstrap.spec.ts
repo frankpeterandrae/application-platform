@@ -25,7 +25,8 @@ vi.mock('@application-platform/z21', () => {
 				sendTrackPower: vi.fn(),
 				demoPing: vi.fn(),
 				setLocoDrive: vi.fn(),
-				getLocoInfo: vi.fn()
+				getLocoInfo: vi.fn(),
+				getVersion: vi.fn()
 			};
 		}),
 		Z21BroadcastFlag: {
@@ -86,6 +87,12 @@ vi.mock('@application-platform/domain', () => {
 		}),
 		TrackStatusManager: vi.fn().mockImplementation(function () {
 			return { getStatus: vi.fn() };
+		}),
+		CommandStationInfo: vi.fn().mockImplementation(function () {
+			return {
+				getVersion: vi.fn().mockReturnValue({ model: 'Z21', firmwareVersion: '2.0.0' }),
+				hasVersion: vi.fn().mockReturnValue(true)
+			};
 		})
 	};
 });
