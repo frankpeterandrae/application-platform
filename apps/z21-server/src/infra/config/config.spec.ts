@@ -46,7 +46,6 @@ describe('loadConfig', () => {
 
 	it('uses Z21_CONFIG env var to resolve path and loads file', () => {
 		(process.env as any).Z21_CONFIG = 'custom/path/config.json';
-		const resolved = path.resolve(process.env.Z21_CONFIG!);
 		(fs.readFileSync as unknown as Mock).mockReturnValue(JSON.stringify({ httpPort: 3000 }));
 
 		const cfg = loadConfig();

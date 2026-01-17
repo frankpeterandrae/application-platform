@@ -5,11 +5,13 @@
 
 import { resolve } from 'node:path';
 
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/z21-server-e2e'),
+	plugins: [tsconfigPaths()],
 	test: {
 		environment: 'node',
 		globals: true,

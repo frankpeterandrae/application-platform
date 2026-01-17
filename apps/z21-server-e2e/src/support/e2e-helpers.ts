@@ -12,11 +12,13 @@ import * as path from 'node:path';
 
 import WebSocket from 'ws';
 
+type WsMessage = { type: string; [key: string]: unknown };
+
 export type E2eCtx = {
 	proc: ChildProcessWithoutNullStreams;
 	logs: string[];
 	ws: WebSocket;
-	messages: any[];
+	messages: WsMessage[];
 	httpPort: number;
 	fakeZ21Port: number;
 };
@@ -47,7 +49,7 @@ export function mkTmpConfig(httpPort: number, fakeZ21Port: number, listenPort?: 
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'z21-e2e-'));
 	const cfgPath = path.join(dir, 'config.json');
 
-	const cfg: any = {
+	const cfg: { httpPort: number; z21: Record<string, unknown>; safety: { stopAllOnClientDisconnect: boolean } } = {
 		httpPort,
 		z21: { host: '127.0.0.1', udpPort: fakeZ21Port, ...(listenPort ? { listenPort } : {}) },
 		safety: { stopAllOnClientDisconnect: false }
@@ -116,9 +118,9 @@ export async function startServerAndConnectWs(): Promise<E2eCtx> {
 		{ label: 'ws connect', timeoutMs: 12000 }
 	);
 
-	// 2) WS verbinden
+	// 2) connect ws
 	const ws = await connectWsWithRetry(`ws://127.0.0.1:${httpPort}`, 12000);
-	const messages: any[] = [];
+	const messages: WsMessage[] = [];
 
 	ws.on('message', (data) => {
 		const s = data.toString();
@@ -167,12 +169,12 @@ export async function sendUdpHex(hex: string, port = 21105): Promise<void> {
 	udp.close();
 }
 
-export async function waitForWsType<T = any>(ctx: E2eCtx, type: string, timeoutMs = 4000): Promise<T> {
-	return waitFor(() => ctx.messages.find((m) => m?.type === type), {
+export async function waitForWsType<T = unknown>(ctx: E2eCtx, type: string, timeoutMs = 4000): Promise<T> {
+	return (await waitFor(() => ctx.messages.find((m) => m?.type === type), {
 		label: `ws ${type}`,
 		timeoutMs,
 		dump: () => `\nWS:\n${ctx.messages.map((m) => JSON.stringify(m)).join('\n')}`
-	}) as Promise<T>;
+	})) as T;
 }
 
 export type FakeZ21 = {

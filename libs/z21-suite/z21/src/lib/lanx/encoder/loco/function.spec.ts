@@ -84,7 +84,7 @@ describe('encodeLanXSetLocoFunction', () => {
 	it('includes valid xor checksum', () => {
 		const result = encodeLanXSetLocoFunction(100, 10, 0b01);
 
-		const payload = Array.from(result.slice(4, result.length - 1));
+		const payload = Array.from(result.subarray(4, result.length - 1));
 		const expectedXor = xbusXor(payload);
 		expect(result[result.length - 1]).toBe(expectedXor);
 	});
