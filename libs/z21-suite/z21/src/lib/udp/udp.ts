@@ -5,8 +5,10 @@
 import * as dgram from 'node:dgram';
 import { EventEmitter } from 'node:events';
 
+import { Z21LanHeader } from '@application-platform/z21-shared';
+
 import { parseZ21Datagram } from '../codec/codec';
-import { Z21LanHeader, type Z21BroadcastFlag } from '../constants';
+import { type Z21BroadcastFlag } from '../constants';
 import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
 
 /**

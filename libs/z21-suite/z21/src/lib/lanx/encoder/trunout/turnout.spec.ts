@@ -3,8 +3,10 @@
  * All rights reserved.
  */
 
+import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
+
 import { xbusXor } from '../../../codec/frames';
-import { AddessByteMask, FULL_BYTE_MASK, LAN_X_COMMANDS, Z21LanHeader } from '../../../constants';
+import { AddessByteMask, FULL_BYTE_MASK } from '../../../constants';
 
 import { encodeLanXGetTurnoutInfo, encodeLanXSetTurnout } from './turnout';
 

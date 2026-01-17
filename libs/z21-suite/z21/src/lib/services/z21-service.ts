@@ -14,7 +14,7 @@ import {
 	encodeLanXSetTrackPowerOn,
 	encodeLanXSetTurnout,
 	encodeLocoDrive128
-} from '../lan-x/encode';
+} from '../lanx/encoder';
 import { type Z21Udp } from '../udp/udp';
 
 /**

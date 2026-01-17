@@ -3,8 +3,9 @@
  * All rights reserved.
  */
 
+import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
+
 import { xbusXor } from '../../../codec/frames';
-import { LAN_X_COMMANDS, Z21LanHeader } from '../../../constants';
 
 import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn } from './track-power';
 

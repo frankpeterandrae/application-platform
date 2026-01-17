@@ -4,8 +4,13 @@
  */
 import * as dgram from 'node:dgram';
 
+import { Z21LanHeader } from '@application-platform/z21-shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { parseZ21Datagram } from '../codec/codec';
+import { Z21BroadcastFlag } from '../constants';
+
+import { Z21Udp } from './udp';
 // Mock dgram module and related z21 helpers early so imports are replaced
 vi.mock('node:dgram', () => {
 	const socket = {
@@ -20,11 +25,6 @@ vi.mock('node:dgram', () => {
 
 // Mock the same module path used by the implementation imports
 vi.mock('../codec/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
-
-import { parseZ21Datagram } from '../codec/codec';
-import { Z21BroadcastFlag, Z21LanHeader } from '../constants';
-
-import { Z21Udp } from './udp';
 
 const getSocket = (): any => (dgram.createSocket as any).mock.results[0].value;
 

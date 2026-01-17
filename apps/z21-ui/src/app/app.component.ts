@@ -6,7 +6,7 @@ import { KeyValuePipe, type KeyValue } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import type { ClientToServer, ServerToClient } from '@application-platform/protocol';
 import { PROTOCOL_VERSION } from '@application-platform/protocol';
-import { type Direction, type TurnoutState } from '@application-platform/z21-shared';
+import { TurnoutState, type Direction } from '@application-platform/z21-shared';
 
 /**
  * Root application component for the z21 UI.
@@ -27,6 +27,7 @@ import { type Direction, type TurnoutState } from '@application-platform/z21-sha
 	styleUrl: './app.component.scss'
 })
 export class AppComponent {
+	public readonly TurnoutState = TurnoutState;
 	/**
 	 * Indicates if the speed slider is currently being dragged.
 	 * Template can bind to this signal to adjust UI behavior during dragging.

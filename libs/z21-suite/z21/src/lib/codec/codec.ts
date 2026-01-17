@@ -2,8 +2,9 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import { Z21LanHeader } from '@application-platform/z21-shared';
 
-import { FULL_BYTE_MASK, Z21LanHeader } from '../constants';
+import { FULL_BYTE_MASK } from '../constants';
 
 import type { Z21Dataset } from './codec-types';
 
@@ -44,6 +45,8 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 		const header = buf.readUint16LE(offset + 2);
 		const payload = buf.subarray(offset + 4, offset + len);
 
+		// eslint-disable-next-line no-console
+		console.log('[z21] Detected', header, header === Z21LanHeader.LAN_X, 'frame with payload:', payload);
 		if (header === Z21LanHeader.LAN_X) {
 			// X-BUS tunneling: payload = [XHeader, DB..., XOR]
 			if (payload.length >= 2) {

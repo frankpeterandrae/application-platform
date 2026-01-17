@@ -3,9 +3,10 @@
  * All rights reserved.
  */
 
+import { Z21LanHeader } from '@application-platform/z21-shared';
 import { describe, expect, it, vi } from 'vitest';
 
-import { FULL_BYTE_MASK, Z21LanHeader } from '../constants';
+import { FULL_BYTE_MASK } from '../constants';
 
 import { parseZ21Datagram } from './codec';
 

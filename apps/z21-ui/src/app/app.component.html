@@ -32,8 +32,8 @@
 <div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
 	<label for="turnout">Weiche</label>
 	<input id="turnout" type="number" [value]="turnoutAddr()" (input)="turnoutAddr.set(+$any($event.target).value)" />
-	<button (click)="sendTurnout('STRAIGHT')">Gerade</button>
-	<button (click)="sendTurnout('DIVERGING')">Abzweig</button>
+	<button (click)="sendTurnout(TurnoutState.STRAIGHT)">Gerade</button>
+	<button (click)="sendTurnout(TurnoutState.DIVERGING)">Abzweig</button>
 </div>
 
 <div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">

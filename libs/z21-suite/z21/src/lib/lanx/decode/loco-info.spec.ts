@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { Direction } from '@application-platform/z21-shared';
+
 import {
 	AddessByteMask,
 	F13ToF20FunctionsByteMask,
@@ -13,13 +15,13 @@ import {
 	LowFunctionsByteMask,
 	SpeedByteMask
 } from '../../constants';
-import type { Z21Event } from '../../z21/event-types';
+import { type Z21Event } from '../../event/event-types';
 
-import { decodeLanXLocoInfo } from './loco-info';
+import { decodeLanXLocoInfoPayload } from './loco-info';
 
 type LocoInfoEvent = Extract<Z21Event, { type: 'event.loco.info' }>;
 
-describe('decodeLanXLocoInfo', () => {
+describe('decodeLanXLocoInfoPayload', () => {
 	it('decodes full payload with all flags and functions', () => {
 		const adrMsb = 0x12;
 		const adrLsb = 0x34;
@@ -62,9 +64,9 @@ describe('decodeLanXLocoInfo', () => {
 			F21ToF28FunctionsByteMask.F28;
 		const db8 = F29ToF31FunctionsByteMask.F29 | F29ToF31FunctionsByteMask.F30 | F29ToF31FunctionsByteMask.F31;
 
-		const data = new Uint8Array([0, adrMsb, adrLsb, db2, db3, db4, db5, db6, db7, db8]);
+		const data = new Uint8Array([adrMsb, adrLsb, db2, db3, db4, db5, db6, db7, db8]);
 
-		const [event] = decodeLanXLocoInfo(data) as LocoInfoEvent[];
+		const [event] = decodeLanXLocoInfoPayload(data) as LocoInfoEvent[];
 
 		expect(event.addr).toBe(((adrMsb & AddessByteMask.MSB) << 8) + adrLsb);
 		expect(event.type).toBe('event.loco.info');
@@ -75,7 +77,7 @@ describe('decodeLanXLocoInfo', () => {
 		expect(event.speedSteps).toBe(28);
 		expect(event.speed).toBe(4);
 		expect(event.emergencyStop).toBe(false);
-		expect(event.forward).toBe(true);
+		expect(event.direction).toBe(Direction.FWD);
 		expect(event.functionMap[0]).toBe(true);
 		expect(event.functionMap[4]).toBe(true);
 		expect(event.functionMap[5]).toBe(true);
@@ -89,20 +91,20 @@ describe('decodeLanXLocoInfo', () => {
 	});
 
 	it('maps speed steps and emergency stop when raw speed is 1', () => {
-		const data = new Uint8Array([0, 0, 1, 0b10, 0b00000001, 0, 0]);
+		const data = new Uint8Array([0, 1, 0b10, 0b00000001, 0, 0]);
 
-		const [event] = decodeLanXLocoInfo(data) as LocoInfoEvent[];
+		const [event] = decodeLanXLocoInfoPayload(data) as LocoInfoEvent[];
 
 		expect(event.speedSteps).toBe(28);
 		expect(event.emergencyStop).toBe(true);
 		expect(event.speed).toBe(0);
-		expect(event.forward).toBe(false);
+		expect(event.direction).toBe(Direction.REV);
 	});
 
 	it('maps speed steps to 14 when step code is 0 and speed raw is 0', () => {
-		const data = new Uint8Array([0, 0, 1, 0b00, 0b00000000, 0]);
+		const data = new Uint8Array([0, 1, 0b00, 0b00000000, 0]);
 
-		const [event] = decodeLanXLocoInfo(data) as LocoInfoEvent[];
+		const [event] = decodeLanXLocoInfoPayload(data) as LocoInfoEvent[];
 
 		expect(event.speedSteps).toBe(14);
 		expect(event.speed).toBe(0);
@@ -110,9 +112,9 @@ describe('decodeLanXLocoInfo', () => {
 	});
 
 	it('maps speed steps to 128 when step code is not 0 or 2', () => {
-		const data = new Uint8Array([0, 0, 1, 0b01, 0b00000110, 0]);
+		const data = new Uint8Array([0, 1, 0b01, 0b00000110, 0]);
 
-		const [event] = decodeLanXLocoInfo(data) as LocoInfoEvent[];
+		const [event] = decodeLanXLocoInfoPayload(data) as LocoInfoEvent[];
 
 		expect(event.speedSteps).toBe(128);
 		expect(event.speed).toBe(5);
@@ -120,9 +122,9 @@ describe('decodeLanXLocoInfo', () => {
 
 	it('handles minimal payload setting only F0-F4 functions', () => {
 		const db4 = LowFunctionsByteMask.L | LowFunctionsByteMask.F1;
-		const data = new Uint8Array([0, 0, 1, 0, 0, db4]);
+		const data = new Uint8Array([0, 1, 0, 0, db4]);
 
-		const [event] = decodeLanXLocoInfo(data) as LocoInfoEvent[];
+		const [event] = decodeLanXLocoInfoPayload(data) as LocoInfoEvent[];
 
 		expect(event.functionMap[0]).toBe(true);
 		expect(event.functionMap[1]).toBe(true);

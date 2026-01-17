@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Z21LanHeader } from '../constants';
+import { Z21LanHeader } from '@application-platform/z21-shared';
 
 import { encodeXBusLanFrame } from './x-bus-encoder';
 

@@ -3,4 +3,10 @@
  * All rights reserved.
  */
 
+export * from './lib/lan-x-command';
+export * from './lib/lan-x-types';
+export * from './lib/pom-options';
 export * from './lib/shared-types';
+export * from './lib/x-bus-cmd';
+export * from './lib/x-bus-header';
+export * from './lib/z21-lan-header';
