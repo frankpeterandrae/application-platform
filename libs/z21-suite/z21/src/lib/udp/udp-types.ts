@@ -6,7 +6,6 @@
 import type { Z21SystemState } from '@application-platform/z21-shared';
 
 import type { Z21Dataset } from '../codec/codec-types';
-import type { Z21Event } from '../z21/event-types';
 
 /**
  * Unified shape for inbound Z21 UDP payloads raised by Z21Udp.
@@ -30,7 +29,6 @@ export type Z21RxPayload =
 			rawHex: string;
 			from: { address: string; port: number };
 			datasets: Z21Dataset[];
-			events: Z21Event[];
 	  }
 	| {
 			type: 'system.state';

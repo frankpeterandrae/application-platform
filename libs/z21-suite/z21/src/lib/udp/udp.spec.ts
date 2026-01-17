@@ -20,11 +20,9 @@ vi.mock('node:dgram', () => {
 
 // Mock the same module path used by the implementation imports
 vi.mock('../codec/codec', () => ({ parseZ21Datagram: vi.fn(() => []) }));
-vi.mock('../z21/event', () => ({ dataToEvent: vi.fn(() => []) }));
 
 import { parseZ21Datagram } from '../codec/codec';
 import { Z21BroadcastFlag, Z21LanHeader } from '../constants';
-import { dataToEvent } from '../z21/event';
 
 import { Z21Udp } from './udp';
 
@@ -70,9 +68,8 @@ describe('Z21Udp', () => {
 		});
 	});
 
-	it('emits datasets rx payloads with parsed datasets and events', () => {
+	it('emits datasets rx payloads with parsed datasets', () => {
 		(parseZ21Datagram as any).mockReturnValue([{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }]);
-		(dataToEvent as any).mockReturnValue([{ type: 'event.track.power', on: true }]);
 		const udp = new Z21Udp('host', 1234);
 		udp.start();
 		const socket = getSocket();
@@ -98,8 +95,7 @@ describe('Z21Udp', () => {
 			len: 0x0008,
 			rawHex: msg.toString('hex'),
 			from: { address: '1.2.3.4', port: 21105 },
-			datasets: [{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }],
-			events: [{ type: 'event.track.power', on: true }]
+			datasets: [{ kind: 'system.state', state: Uint8Array.from([1, 2, 3, 4]) }]
 		});
 	});
 

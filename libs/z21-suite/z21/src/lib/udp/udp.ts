@@ -8,7 +8,6 @@ import { EventEmitter } from 'node:events';
 import { parseZ21Datagram } from '../codec/codec';
 import { Z21LanHeader, type Z21BroadcastFlag } from '../constants';
 import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
-import { dataToEvent } from '../z21/event';
 
 /**
  * Thin Z21 UDP client that:
@@ -59,12 +58,9 @@ export class Z21Udp extends EventEmitter {
 			// 1) Datagram -> Datasets
 			const datasets = parseZ21Datagram(msg);
 
-			// 2) Datasets -> Domain Events (track.power, system.state, ...)
-			const events = datasets.flatMap(dataToEvent);
-
 			// Optional: Debug
 			// eslint-disable-next-line no-console
-			console.log('[udp] rx datasets=', datasets.length, 'events=', events.length, 'hex', rawHex);
+			console.log('[udp] rx datasets=', datasets.length, 'hex', rawHex);
 
 			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
 			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL_NUMBER && msg.length >= 8) {
@@ -87,8 +83,7 @@ export class Z21Udp extends EventEmitter {
 				len: msg.length >= 2 ? msg.readUInt16LE(0) : msg.length,
 				rawHex,
 				from,
-				datasets,
-				events
+				datasets
 			});
 		});
 
