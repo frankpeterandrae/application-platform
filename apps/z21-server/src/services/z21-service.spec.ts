@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import * as z21 from '@application-platform/z21';
+import { deriveTrackFlagsFromSystemState } from '@application-platform/z21';
 import type { MockedFunction } from 'vitest';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
@@ -11,7 +11,7 @@ import { Z21EventHandler, type BroadcastFn } from './z21-service';
 
 vi.mock('@application-platform/z21', async () => {
 	const actual = await vi.importActual('@application-platform/z21');
-	return { ...actual, deriveTrackFlagsFromSystemState: vi.fn(actual.deriveTrackFlagsFromSystemState) };
+	return { ...actual, deriveTrackFlagsFromSystemState: vi.fn() };
 });
 
 describe('Z21EventHandler.handle', () => {
@@ -123,7 +123,7 @@ describe('Z21EventHandler.handle', () => {
 
 	it('updates track status from system.state events and broadcasts derived power state', () => {
 		vi.spyOn(trackStatusManager, 'getStatus').mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
-		(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
+		(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
 		trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
 		const payload = {
 			header: 0,
@@ -144,7 +144,7 @@ describe('Z21EventHandler.handle', () => {
 
 		handler.handle(payload);
 
-		expect(z21.deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 3, centralStateEx: 4 });
+		expect(deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 3, centralStateEx: 4 });
 		expect(trackStatusManager.updateFromSystemState).toHaveBeenCalledWith({ powerOn: true, emergencyStop: false, short: true });
 		expect(broadcast).toHaveBeenCalledWith({ type: 'system.message.trackpower', on: true, short: true, emergencyStop: false });
 	});
@@ -305,7 +305,7 @@ describe('Z21EventHandler.handle', () => {
 
 	describe('event.z21.status', () => {
 		it('derives track flags and updates track status manager', () => {
-			(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: false, short: true });
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: false, short: true });
 			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: false, short: true, emergencyStop: false });
 			trackStatusManager.getStatus.mockReturnValue({ powerOn: false, short: true, emergencyStop: false });
 
@@ -319,12 +319,12 @@ describe('Z21EventHandler.handle', () => {
 
 			handler.handle(payload);
 
-			expect(z21.deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 0x06, centralStateEx: 0x00 });
+			expect(deriveTrackFlagsFromSystemState).toHaveBeenCalledWith({ centralState: 0x06, centralStateEx: 0x00 });
 			expect(trackStatusManager.updateFromSystemState).toHaveBeenCalledWith({ powerOn: false, short: true });
 		});
 
 		it('defaults powerOn to false when updateFromSystemState returns undefined', () => {
-			(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({});
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({});
 			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: undefined, short: false });
 			trackStatusManager.getStatus.mockReturnValue({ powerOn: undefined, short: false });
 
@@ -342,7 +342,7 @@ describe('Z21EventHandler.handle', () => {
 		});
 
 		it('defaults short to false when updateFromSystemState returns undefined', () => {
-			(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({});
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({});
 			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: undefined });
 			trackStatusManager.getStatus.mockReturnValue({ powerOn: true, short: undefined });
 
@@ -360,7 +360,7 @@ describe('Z21EventHandler.handle', () => {
 		});
 
 		it('includes emergencyStop flag in broadcast', () => {
-			(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ emergencyStop: true });
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ emergencyStop: true });
 			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: false, emergencyStop: true });
 			trackStatusManager.getStatus.mockReturnValue({ powerOn: true, short: false, emergencyStop: true });
 
@@ -378,7 +378,7 @@ describe('Z21EventHandler.handle', () => {
 		});
 
 		it('handles all central state flags', () => {
-			(z21.deriveTrackFlagsFromSystemState as Mock).mockReturnValue({
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({
 				powerOn: false,
 				short: true,
 				emergencyStop: true
@@ -579,21 +579,26 @@ describe('Z21EventHandler.handle', () => {
 	});
 
 	describe('event.unknown.x.bus', () => {
-		it('does not broadcast z21.rx when events array contains any event', () => {
+		it('broadcasts z21.rx even when events array contains unknown event', () => {
 			const payload = {
 				type: 'datasets' as const,
 				rawHex: '0xe1',
 				from: { address: '127.0.0.1', port: 21105 },
-				datasets: [{ kind: 'unknown', data: 'test' }],
+				datasets: [{ kind: 'ds.unknown', data: 'test' }],
 				events: [{ type: 'event.unknown.x.bus', xHeader: 0xff, bytes: [0x01, 0x02] }]
 			} as any;
 
 			handler.handle(payload);
 
-			expect(broadcast).not.toHaveBeenCalled();
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.z21.rx',
+				rawHex: '0xe1',
+				datasets: payload.datasets,
+				events: payload.events
+			});
 		});
 
-		it('does not broadcast z21.rx when a known event type is processed', () => {
+		it('broadcasts track power and z21.rx when track.power event is processed', () => {
 			trackStatusManager.updateFromXbusPower.mockReturnValue({ short: false });
 			const payload = {
 				type: 'datasets' as const,
@@ -605,8 +610,14 @@ describe('Z21EventHandler.handle', () => {
 
 			handler.handle(payload);
 
-			expect(broadcast).toHaveBeenCalledTimes(1);
 			expect(broadcast).toHaveBeenCalledWith({ type: 'system.message.trackpower', on: true, short: false });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.z21.rx',
+				rawHex: '0xe2',
+				datasets: payload.datasets,
+				events: payload.events
+			});
+			expect(broadcast).toHaveBeenCalledTimes(2);
 		});
 	});
 
