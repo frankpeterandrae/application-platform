@@ -90,14 +90,13 @@ export class Z21EventHandler {
 		}
 
 		// Only emit raw z21.rx when there are no events to process (empty events array)
-		if (payload.events.length === 0) {
-			this.broadcast({
-				type: 'system.message.z21.rx',
-				rawHex: payload.rawHex,
-				datasets: payload.datasets,
-				events: payload.events
-			});
-		}
+
+		this.broadcast({
+			type: 'system.message.z21.rx',
+			rawHex: payload.rawHex,
+			datasets: payload.datasets,
+			events: payload.events
+		});
 	}
 
 	/**
