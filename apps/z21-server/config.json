@@ -2,7 +2,8 @@
 	"httpPort": 8080,
 	"z21": {
 		"host": "192.168.178.111",
-		"udpPort": 21105
+		"udpPort": 21105,
+		"debug": true
 	},
 	"safety": {
 		"stopAllOnClientDisconnect": true

@@ -7,9 +7,26 @@ import { EventEmitter } from 'node:events';
 
 import { Z21LanHeader } from '@application-platform/z21-shared';
 
-import { parseZ21Datagram } from '../codec/codec';
 import { type Z21BroadcastFlag } from '../constants';
 import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
+
+export type Z21UdpFrom = { address: string; port: number };
+
+export type Z21UdpDatagram = {
+	from: Z21UdpFrom;
+	raw: Buffer;
+	rawHex: string;
+};
+
+/**
+ *
+ */
+function toHex(buf: Uint8Array, maxBytes = 512): string {
+	const len = Math.min(buf.length, maxBytes);
+	let out = '';
+	for (let i = 0; i < len; i++) out += buf[i].toString(16).padStart(2, '0');
+	return buf.length > maxBytes ? out + '…' : out;
+}
 
 /**
  * Thin Z21 UDP client that:
@@ -18,15 +35,18 @@ import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
  * - Sends common Z21 commands (serial, broadcast flags, system state)
  */
 export class Z21Udp extends EventEmitter {
-	private readonly sock = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+	private sock = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+	private started = false;
 
 	/**
 	 * @param host Z21 central hostname/IP to send commands to
 	 * @param port UDP port of the Z21 central
+	 * @param debug Enable debug logging of sent/received UDP datagrams
 	 */
 	constructor(
 		private readonly host: string,
-		private readonly port: number
+		private readonly port: number,
+		private readonly debug = false
 	) {
 		super();
 	}
@@ -36,57 +56,21 @@ export class Z21Udp extends EventEmitter {
 	 * @param listenPort Local UDP port to bind to (default 21105)
 	 */
 	public start(listenPort = 21105): void {
-		// eslint-disable-next-line no-console
-		this.sock.on('error', (err: Error) => console.error('[udp] error', err));
-
-		this.sock.on('listening', () => {
-			const a = this.sock.address();
-			// eslint-disable-next-line no-console
-			console.log('[udp] listening on', a);
-		});
+		if (this.started) {
+			return;
+		}
+		this.started = true;
 
 		this.sock.on('message', (msg: Buffer, rinfo: dgram.RemoteInfo) => {
-			// eslint-disable-next-line no-console
-			console.log('[udp] rx raw', rinfo.address + ':' + rinfo.port, 'len', msg.length, 'hex', msg.toString('hex'));
-
-			// Z21 dataset: [lenLE16][headerLE16][data...]
-			if (msg.length < 4) return;
-
-			const len = msg.readUInt16LE(0);
-			const header = msg.readUInt16LE(2);
-			const rawHex = msg.toString('hex');
 			const from = { address: rinfo.address, port: rinfo.port };
+			const rawHex = toHex(msg);
 
-			// 1) Datagram -> Datasets
-			const datasets = parseZ21Datagram(msg);
-
-			// Optional: Debug
-			// eslint-disable-next-line no-console
-			console.log('[udp] rx datasets=', datasets.length, 'hex', rawHex);
-
-			// Serial number reply: len=0x08, header=0x0010, data=uint32LE
-			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL_NUMBER && msg.length >= 8) {
-				const serial = msg.readUInt32LE(4);
-				this.emit('rx', {
-					type: 'serial',
-					serial,
-					header,
-					len,
-					rawHex,
-					from
-				});
-				return;
+			if (this.debug) {
+				// eslint-disable-next-line no-console
+				console.log('[udp] rx <-', `${from.address}:${from.port}`, `len=${msg.length}`, rawHex);
 			}
 
-			// 3) EIN rx-Event hochreichen (einheitlich)
-			this.emit('rx', {
-				type: 'datasets',
-				header: msg.length >= 4 ? msg.readUInt16LE(2) : 0,
-				len: msg.length >= 2 ? msg.readUInt16LE(0) : msg.length,
-				rawHex,
-				from,
-				datasets
-			});
+			this.emit('datagram', { from, raw: msg, rawHex } satisfies Z21UdpDatagram);
 		});
 
 		this.sock.bind(listenPort);
@@ -96,11 +80,20 @@ export class Z21Udp extends EventEmitter {
 	 * Stops the UDP socket, logging if close fails.
 	 */
 	public stop(): void {
+		if (!this.started) {
+			return;
+		}
+
+		this.started = false;
+
 		try {
 			this.sock.close();
-		} catch {
-			// eslint-disable-next-line no-console
-			console.error('[udp] socket close error');
+		} catch (err) {
+			this.emit('error', err instanceof Error ? err : new Error(String(err)));
+		} finally {
+			// Recreate socket so start() works again after stop()
+			this.sock.removeAllListeners();
+			this.sock = dgram.createSocket({ type: 'udp4', reuseAddr: true });
 		}
 	}
 
@@ -109,6 +102,10 @@ export class Z21Udp extends EventEmitter {
 	 * @param buf Raw datagram payload
 	 */
 	public sendRaw(buf: Buffer): void {
+		if (this.debug) {
+			// eslint-disable-next-line no-console
+			console.log('[z21][udp] tx', `${this.host}:${this.port}`, `len=${buf.length}`, toHex(buf));
+		}
 		this.sock.send(buf, this.port, this.host);
 	}
 

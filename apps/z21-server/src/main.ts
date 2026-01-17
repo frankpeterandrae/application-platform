@@ -24,7 +24,7 @@ const cfg = loadConfig();
  * Z21 UDP gateway used to communicate with the digital command station.
  * @remarks Initialized with host and UDP port from configuration.
  */
-const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort);
+const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort, cfg.z21.debug);
 
 /**
  * Z21 service wrapper around the UDP gateway for higher-level operations.
@@ -76,12 +76,12 @@ const clientMessageHandler = new ClientMessageHandler(locoManager, z21Service, (
 const TEST_LOCO_ADDR = 1845;
 
 // Connect Z21 UDP to handler
-udp.on('rx', (payload) => {
+udp.on('datagram', (dg) => {
 	/**
 	 * Dispatch inbound Z21 payloads to the handler,
 	 * which may update track status and broadcast events.
 	 */
-	z21Handler.handle(payload);
+	z21Handler.handleDatagram(dg);
 });
 
 // Connect WebSocket to handler
@@ -119,9 +119,9 @@ wsServer.onConnection(
  */
 udp.start(cfg.z21.listenPort ?? 21105);
 udp.sendGetSerial(); // -> should trigger 1 UDP response
-// Broadcasts aktivieren: basic + systemState
+// Enable broadcasts: basic + systemState
 udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
-// Initial sofort ziehen (sonst wartest du ggf. bis zur nächsten Änderung)
+// Fetch initial state immediately (otherwise you might wait until the next change event)
 udp.sendSystemStateGetData();
 
 /**

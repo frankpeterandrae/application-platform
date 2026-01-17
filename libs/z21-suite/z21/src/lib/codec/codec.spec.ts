@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { FULL_BYTE_MASK } from '../constants';
 
 import { parseZ21Datagram } from './codec';
+import { xbusXor } from './frames';
 
 const makeFrame = (header: number, payload: number[]): Buffer => {
 	const len = payload.length + 4;
@@ -19,12 +20,10 @@ const makeFrame = (header: number, payload: number[]): Buffer => {
 	return buf;
 };
 
-const xor8 = (data: number[]): number => data.reduce((acc, b) => (acc ^ b) & FULL_BYTE_MASK, 0);
-
 describe('parseZ21Datagram', () => {
 	it('parses x.bus frame and strips trailing xor', () => {
 		const payload = [0x10, 0x01, 0x02];
-		const xor = xor8(payload);
+		const xor = xbusXor(payload);
 		const buf = makeFrame(Z21LanHeader.LAN_X, [...payload, xor]);
 
 		const res = parseZ21Datagram(buf);
@@ -37,7 +36,7 @@ describe('parseZ21Datagram', () => {
 			// do nothing
 		});
 		const payload = [0x21, 0x02, 0x03];
-		const xor = (xor8(payload) + 1) & FULL_BYTE_MASK;
+		const xor = (xbusXor(payload) + 1) & FULL_BYTE_MASK;
 		const buf = makeFrame(Z21LanHeader.LAN_X, [...payload, xor]);
 
 		const res = parseZ21Datagram(buf);
@@ -81,7 +80,7 @@ describe('parseZ21Datagram', () => {
 
 	it('parses multiple concatenated frames', () => {
 		const payload1 = [0x10, 0x01];
-		const xor1 = xor8(payload1);
+		const xor1 = xbusXor(payload1);
 		const frame1 = makeFrame(Z21LanHeader.LAN_X, [...payload1, xor1]);
 		const payload2 = Array.from({ length: 16 }, (_, i) => i + 1);
 		const frame2 = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, payload2);

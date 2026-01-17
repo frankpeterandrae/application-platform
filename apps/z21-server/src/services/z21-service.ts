@@ -5,8 +5,15 @@
 
 import { type LocoManager, type TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
-import { datasetsToEvents, deriveTrackFlagsFromSystemState, type DerivedTrackFlags, type Z21RxPayload } from '@application-platform/z21';
-import type { LocoInfo } from '@application-platform/z21-shared';
+import {
+	datasetsToEvents,
+	decodeSystemState,
+	deriveTrackFlagsFromSystemState,
+	parseZ21Datagram,
+	Z21UdpDatagram,
+	type DerivedTrackFlags
+} from '@application-platform/z21';
+import { LocoInfo, Z21LanHeader } from '@application-platform/z21-shared';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
 
@@ -26,60 +33,71 @@ export class Z21EventHandler {
 	 * - system.state: forwards state snapshot
 	 * - datasets: processes contained events and rebroadcasts datasets/events
 	 */
-	public handle(payload: Z21RxPayload): void {
-		if (payload.type === 'serial') {
-			// eslint-disable-next-line no-console
-			console.log('[z21] serial =', payload.serial, 'from', payload.from);
+	public handleDatagram(dg: Z21UdpDatagram): void {
+		const { raw, rawHex, from } = dg;
+
+		// Envelope (for Serial etc.)
+		if (raw.length >= 4) {
+			const len = raw.readUInt16LE(0);
+			const header = raw.readUInt16LE(2);
+
+			// Serial-Reply (as previously handled in UDP-Layer)
+			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL_NUMBER && raw.length >= 8) {
+				const serial = raw.readUInt32LE(4);
+
+				// eslint-disable-next-line no-console
+				console.log('[z21] serial =', serial, 'from', from);
+
+				this.broadcast({
+					type: 'system.message.z21.rx',
+					rawHex,
+					datasets: [{ kind: 'serial', serial, from }],
+					events: [{ type: 'serial', serial }]
+				});
+				return;
+			}
+		}
+
+		// Datagram -> Datasets (this is now server responsibility)
+		const datasets = parseZ21Datagram(raw);
+
+		// SystemState-Snapshot (if you want to keep this "special" broadcast form)
+		// (in case parseZ21Datagram delivers system.state as Dataset)
+		const sys = datasets.find((d) => d.kind === 'ds.system.state');
+		if (sys?.kind === 'ds.system.state') {
+			// Previously this was payload.payload (already decoded).
+			// If you still want decoded state, decode here – not in the UDP-Layer.
+			// -> Use the existing decode function you already have.
+			const state = decodeSystemState(sys.state);
 
 			this.broadcast({
 				type: 'system.message.z21.rx',
-				rawHex: payload.rawHex,
-				datasets: [{ kind: 'serial', serial: payload.serial, from: payload.from }],
-				events: [{ type: 'serial', serial: payload.serial }]
+				rawHex,
+				datasets: [{ kind: 'ds.system.state', from, payload: state }],
+				events: [{ type: 'event.system.state', state }]
 			});
-			return;
+
+			// Derive track status as before
+			const flags = deriveTrackFlagsFromSystemState({
+				centralState: state.centralState,
+				centralStateEx: state.centralStateEx
+			});
+			this.updateTrackStatusFromSystemState(flags);
+
+			// Continue execution anyway (or return; depending on what you want)
+			// return; // optional
 		}
 
-		// top-level system state snapshots use the 'ds.system.state' kind
-		if (payload.type === 'system.state') {
-			this.broadcast({
-				type: 'system.message.z21.rx',
-				rawHex: payload.rawHex,
-				datasets: [{ kind: 'ds.system.state', from: payload.from, payload: payload.payload }],
-				events: [{ type: 'event.system.state', state: payload.payload }]
-			});
-			return;
-		}
-
-		const events = payload.datasets.flatMap(datasetsToEvents);
+		// Default: datasets -> events
+		const events = datasets.flatMap(datasetsToEvents);
 		// Process events
 		for (const e of events) {
-			// eslint-disable-next-line no-console
-			console.log('[z21.event] processing event:', e);
-
-			if (e.type === 'event.track.power') {
-				this.updateTrackPowerFromXbus(e.on);
-			}
-
 			if (e.type === 'event.z21.status') {
 				const flags = deriveTrackFlagsFromSystemState({
 					centralState: e.payload.centralState,
 					centralStateEx: e.payload.centralStateEx
 				});
 				this.updateTrackStatusFromSystemState(flags);
-
-				const status = this.trackStatusManager.getStatus();
-				// eslint-disable-next-line no-console
-				console.log(
-					'[z21] systemState cs=0x' + e.payload.centralState.toString(16).padStart(2, '0'),
-					'cse=0x' + e.payload.centralStateEx.toString(16).padStart(2, '0'),
-					'powerOn?',
-					status.powerOn,
-					'short?',
-					status.short,
-					'estop?',
-					status.emergencyStop
-				);
 				continue;
 			}
 
@@ -90,12 +108,19 @@ export class Z21EventHandler {
 
 			if (e.type === 'event.turnout.info') {
 				this.broadcast({ type: 'switching.message.turnout.state', addr: e.addr, state: e.state });
+				continue;
+			}
+
+			if (e.type === 'event.track.power') {
+				this.updateTrackPowerFromXbus(e.on);
 			}
 		}
 
 		// Only emit raw z21.rx when there are no events to process (empty events array)
 		// eslint-disable-next-line no-console
-		console.log('[z21.rx] rawHex=', payload.rawHex, 'datasets=', payload.datasets, 'events=', events);
+		console.log('[z21.rx] rawHex=', rawHex, 'datasets=', datasets, 'events=', events);
+
+		this.broadcast({ type: 'system.message.z21.rx', rawHex, datasets, events });
 	}
 
 	/**

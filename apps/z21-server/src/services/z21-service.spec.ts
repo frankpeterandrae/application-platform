@@ -3,8 +3,7 @@
  * All rights reserved.
  */
 
-import { deriveTrackFlagsFromSystemState, Z21RxPayload } from '@application-platform/z21';
-import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
+import { datasetsToEvents, deriveTrackFlagsFromSystemState, parseZ21Datagram } from '@application-platform/z21';
 import type { MockedFunction } from 'vitest';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
@@ -12,10 +11,26 @@ import { Z21EventHandler, type BroadcastFn } from './z21-service';
 
 vi.mock('@application-platform/z21', async () => {
 	const actual = await vi.importActual('@application-platform/z21');
-	return { ...actual, deriveTrackFlagsFromSystemState: vi.fn() };
+	return {
+		...actual,
+		deriveTrackFlagsFromSystemState: vi.fn(),
+		parseZ21Datagram: vi.fn(() => []),
+		datasetsToEvents: vi.fn(() => []),
+		decodeSystemState: vi.fn((state) => ({
+			mainCurrent_mA: state[0] | (state[1] << 8),
+			progCurrent_mA: state[2] | (state[3] << 8),
+			filteredMainCurrent_mA: state[4] | (state[5] << 8),
+			temperature_C: state[6] | (state[7] << 8),
+			supplyVoltage_mV: state[8] | (state[9] << 8),
+			vccVoltage_mV: state[10] | (state[11] << 8),
+			centralState: state[12],
+			centralStateEx: state[13],
+			capabilities: state[14] | (state[15] << 8)
+		}))
+	};
 });
 
-describe('Z21EventHandler.handle', () => {
+describe('Z21EventHandler.handleDatagram', () => {
 	let broadcast: MockedFunction<BroadcastFn>;
 	let trackStatusManager: {
 		updateFromXbusPower: Mock;
@@ -60,208 +75,32 @@ describe('Z21EventHandler.handle', () => {
 		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager);
 	});
 
-	it('forwards serial payloads to clients with raw dataset and event', () => {
-		const payload = {
-			header: 0,
-			len: 0,
-			type: 'serial' as const,
-			rawHex: '0x01',
-			serial: 123,
-			from: { address: '127.0.0.1', port: 21105 }
-		} as any;
-
-		handler.handle(payload);
-
-		expect(broadcast).toHaveBeenCalledTimes(1);
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'system.message.z21.rx',
-			rawHex: '0x01',
-			datasets: [{ kind: 'serial', serial: 123, from: { address: '127.0.0.1', port: 21105 } }],
-			events: [{ type: 'serial', serial: 123 }]
-		});
-	});
-
-	it('forwards system.state snapshots to clients', () => {
-		const payload = {
-			header: 0,
-			len: 0,
-			type: 'system.state' as const,
-			rawHex: '0x02',
-			payload: { centralState: 1, centralStateEx: 2 },
-			from: { address: '127.0.0.1', port: 21105 }
-		} as Z21RxPayload;
-
-		handler.handle(payload);
-
-		expect(broadcast).toHaveBeenCalledTimes(1);
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'system.message.z21.rx',
-			rawHex: '0x02',
-			datasets: [
-				{ kind: 'ds.system.state', from: { address: '127.0.0.1', port: 21105 }, payload: { centralState: 1, centralStateEx: 2 } }
-			],
-			events: [{ type: 'event.system.state', state: { centralState: 1, centralStateEx: 2 } }]
-		});
-	});
-
-	it('updates and broadcasts track power when x-bus event is received', () => {
-		trackStatusManager.updateFromXbusPower.mockReturnValue({ short: true });
-		const xlan = LAN_X_COMMANDS.LAN_X_BC_TRACK_POWER_ON;
-		const payload = {
-			header: 0,
-			len: 0,
-			type: 'datasets' as const,
-			rawHex: '0x03',
-			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [
-				{
-					kind: 'ds.x.bus' as const,
-					xHeader: xlan.xHeader,
-					data: new Uint8Array([xlan.xBusCmd])
-				}
-			]
-		} as Z21RxPayload;
-
-		handler.handle(payload);
-		expect(trackStatusManager.updateFromXbusPower).toHaveBeenCalledWith(true);
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'system.message.trackpower',
-			on: true,
-			short: true
-		});
-	});
-
-	it('processes system.state events from datasets and broadcasts system.message.trackpower', () => {
-		vi.spyOn(trackStatusManager, 'getStatus').mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
-		(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
-		trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
-
-		const payload = {
-			header: 0,
-			len: 0,
-			type: 'datasets' as const,
-			rawHex: '0x04',
-			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [
-				{
-					kind: 'ds.system.state' as const,
-					state: new Uint8Array(16)
-				}
-			]
-		} as Z21RxPayload;
-
-		handler.handle(payload);
-
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'system.message.trackpower',
-			on: true,
-			short: true,
-			emergencyStop: false
-		});
-	});
-
-	it('processes loco.info events from datasets and broadcasts loco.message.state', () => {
-		// prepare locoManager to return a loco state when updateLocoInfoFromZ21 is called
-		locoManager = {
-			updateLocoInfoFromZ21: vi.fn().mockReturnValue({ addr: 100, state: { speed: 0.5, dir: 'FWD', fns: { 0: true }, estop: false } })
-		} as unknown as MockedFunction<any>;
-		// recreate handler with the new locoManager mock
-		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any);
-
-		const xlan = LAN_X_COMMANDS.LAN_X_LOCO_INFO;
-		const payload = {
-			type: 'datasets' as const,
-			rawHex: '0x99',
-			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [
-				{
-					kind: 'ds.x.bus' as const,
-					xHeader: xlan.xHeader,
-					data: new Uint8Array([0xc0, 0x64, 0x00, 0x84, 0x01])
-				}
-			]
-		} as Z21RxPayload;
-
-		handler.handle(payload);
-
-		expect(locoManager.updateLocoInfoFromZ21).toHaveBeenCalled();
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'loco.message.state',
-			addr: 100,
-			speed: 0.5,
-			dir: 'FWD',
-			fns: { 0: true },
-			estop: false
-		});
-	});
-
-	it('processes turnout.info events from datasets and broadcasts switching.message.turnout.state', () => {
-		const xlan = LAN_X_COMMANDS.LAN_X_TURNOUT_INFO;
-		const payload = {
-			type: 'datasets' as const,
-			rawHex: '0x9a',
-			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [
-				{
-					kind: 'ds.x.bus' as const,
-					xHeader: xlan.xHeader,
-					data: new Uint8Array([0x00, 0x0a, 0x01])
-				}
-			]
-		} as Z21RxPayload;
-
-		handler.handle(payload);
-
-		expect(broadcast).toHaveBeenCalledWith({
-			type: 'switching.message.turnout.state',
-			addr: 10,
-			state: 'STRAIGHT'
-		});
-	});
-
-	describe('empty events array', () => {
-		it('does not broadcast when datasets array is empty', () => {
+	describe('serial datagrams', () => {
+		it('forwards serial number with correct from address', () => {
 			const payload = {
-				type: 'datasets' as const,
-				rawHex: '0xf1',
-				from: { address: '127.0.0.1', port: 21105 },
-				datasets: [],
-				events: []
-			} as unknown as Z21RxPayload;
-
-			handler.handle(payload);
-
-			expect(broadcast).not.toHaveBeenCalled();
-		});
-	});
-
-	describe('serial payloads', () => {
-		it('includes correct from address and port', () => {
-			const payload = {
-				type: 'serial' as const,
-				rawHex: '0x10',
-				serial: 456,
-				from: { address: '192.168.1.1', port: 54321 }
-			} as Z21RxPayload;
-
-			handler.handle(payload);
-
-			expect(broadcast).toHaveBeenCalledWith(
-				expect.objectContaining({
-					datasets: [expect.objectContaining({ from: { address: '192.168.1.1', port: 54321 } })]
-				})
-			);
-		});
-
-		it('handles serial number 0', () => {
-			const payload = {
-				type: 'serial' as const,
-				rawHex: '0x11',
-				serial: 0,
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0x7b, 0x00, 0x00, 0x00]),
+				rawHex: '0x01',
 				from: { address: '127.0.0.1', port: 21105 }
-			} as Z21RxPayload;
+			} as any;
 
-			handler.handle(payload);
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.z21.rx',
+				rawHex: '0x01',
+				datasets: [{ kind: 'serial', serial: 123, from: { address: '127.0.0.1', port: 21105 } }],
+				events: [{ type: 'serial', serial: 123 }]
+			});
+		});
+
+		it('handles serial number zero', () => {
+			const payload = {
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0x11',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -272,13 +111,12 @@ describe('Z21EventHandler.handle', () => {
 
 		it('handles maximum serial number', () => {
 			const payload = {
-				type: 'serial' as const,
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0xff, 0xff, 0xff, 0xff]),
 				rawHex: '0x12',
-				serial: 0xffffffff,
 				from: { address: '127.0.0.1', port: 21105 }
-			} as Z21RxPayload;
+			} as any;
 
-			handler.handle(payload);
+			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -286,45 +124,184 @@ describe('Z21EventHandler.handle', () => {
 				})
 			);
 		});
-	});
 
-	describe('system.state payloads', () => {
-		it('includes from address and port in datasets', () => {
+		it('preserves remote client address and port', () => {
 			const payload = {
-				type: 'system.state' as const,
-				rawHex: '0x20',
-				payload: { centralState: 0, centralStateEx: 0 },
-				from: { address: '10.0.0.1', port: 12345 }
-			} as Z21RxPayload;
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0xc8, 0x01, 0x00, 0x00]),
+				rawHex: '0x10',
+				from: { address: '192.168.1.1', port: 54321 }
+			} as any;
 
-			handler.handle(payload);
+			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
-					datasets: [expect.objectContaining({ from: { address: '10.0.0.1', port: 12345 } })]
+					datasets: [expect.objectContaining({ from: { address: '192.168.1.1', port: 54321 } })]
+				})
+			);
+		});
+	});
+
+	describe('system state events', () => {
+		it('broadcasts trackPower with all flags from system.state', () => {
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
+			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
+			vi.mocked(parseZ21Datagram).mockReturnValue([
+				{
+					kind: 'ds.system.state',
+					state: new Uint8Array([0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x03, 0x04, 0x00, 0x00])
+				}
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([
+					0x14, 0x00, 0x84, 0x00, 0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x03, 0x04, 0x00, 0x00
+				]),
+				rawHex: '0x04',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				on: true,
+				short: true,
+				emergencyStop: false
+			});
+		});
+
+		it('broadcasts emergency stop when flag is true', () => {
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: false, emergencyStop: true, short: false });
+			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: false, short: false, emergencyStop: true });
+			vi.mocked(parseZ21Datagram).mockReturnValue([
+				{
+					kind: 'ds.system.state',
+					state: new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+				}
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([
+					0x14, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+				]),
+				rawHex: '0x07',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				on: false,
+				short: false,
+				emergencyStop: true
+			});
+		});
+
+		it('broadcasts undefined when emergency stop is not set', () => {
+			(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: undefined, short: false });
+			trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: false, emergencyStop: undefined });
+			vi.mocked(parseZ21Datagram).mockReturnValue([
+				{
+					kind: 'ds.system.state',
+					state: new Uint8Array([0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x01, 0x00, 0x00, 0x00])
+				}
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([
+					0x14, 0x00, 0x84, 0x00, 0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x01, 0x00, 0x00, 0x00
+				]),
+				rawHex: '0x08',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				on: true,
+				short: false,
+				emergencyStop: undefined
+			});
+		});
+	});
+
+	describe('datagram metadata preservation', () => {
+		it('preserves rawHex in serial broadcasts', () => {
+			const customRawHex = '0xabcdef12';
+			const payload = {
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0x99, 0x03, 0x00, 0x00]),
+				rawHex: customRawHex,
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith(
+				expect.objectContaining({
+					rawHex: customRawHex
 				})
 			);
 		});
 
-		it('forwards complete payload object in events', () => {
-			const statePayload = {
-				mainCurrent_mA: 100,
-				progCurrent_mA: 50,
-				centralState: 0x03,
-				centralStateEx: 0x01
-			};
-			const payload = {
-				type: 'system.state' as const,
-				rawHex: '0x21',
-				payload: statePayload,
-				from: { address: '127.0.0.1', port: 21105 }
-			} as Z21RxPayload;
+		it('preserves rawHex in z21.rx envelope broadcasts', () => {
+			const customRawHex = '0x12345678';
 
-			handler.handle(payload);
+			const payload = {
+				raw: Buffer.from([0x06, 0x00, 0x40, 0x05, 0x61, 0x01]),
+				rawHex: customRawHex,
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
-					events: [{ type: 'event.system.state', state: statePayload }]
+					rawHex: customRawHex,
+					type: 'system.message.z21.rx'
+				})
+			);
+		});
+
+		it('preserves network source for remote clients', () => {
+			const payload = {
+				raw: Buffer.from([0x08, 0x00, 0x10, 0x00, 0x09, 0x03, 0x00, 0x00]),
+				rawHex: '0x30',
+				from: { address: '192.168.100.50', port: 65535 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith(
+				expect.objectContaining({
+					datasets: [
+						expect.objectContaining({
+							from: { address: '192.168.100.50', port: 65535 }
+						})
+					]
+				})
+			);
+		});
+	});
+
+	describe('handler behavior', () => {
+		it('broadcasts z21.rx envelope for all datagrams', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([]);
+			vi.mocked(datasetsToEvents).mockReturnValue([]);
+
+			const payload = {
+				raw: Buffer.alloc(4, 0),
+				rawHex: '0xf2',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith(
+				expect.objectContaining({
+					type: 'system.message.z21.rx'
 				})
 			);
 		});
