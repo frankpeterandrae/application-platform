@@ -62,7 +62,7 @@ vi.mock('./app-websocket-server', () => {
 vi.mock('./client-message-handler', () => {
 	return {
 		ClientMessageHandler: vi.fn().mockImplementation(function (this: any, _locoManager: any, _udp: any, _broadcast: any) {
-			return { handle: vi.fn() };
+			return { handleDatagram: vi.fn() };
 		})
 	};
 });
@@ -83,7 +83,8 @@ vi.mock('@application-platform/domain', () => {
 vi.mock('./services/z21-service', () => {
 	return {
 		Z21EventHandler: vi.fn().mockImplementation(function (this: any, _trackStatusManager: any, _broadcast: any) {
-			return { handle: vi.fn() };
+			// Provide handleDatagram which `main` invokes when UDP datagrams arrive
+			return { handleDatagram: vi.fn() };
 		})
 	};
 });
@@ -137,7 +138,7 @@ describe('main bootstrap', () => {
 		expect(consoleSpy).toHaveBeenCalledWith(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
 	});
 
-	it('wires Z21 rx handler to forward payloads to Z21EventHandler', async () => {
+	it('wires Z21 datagram handler to dispatch payloads to Z21EventHandler', async () => {
 		await import('./main');
 
 		const z21Mock = await vi.importMock('@application-platform/z21');
@@ -145,13 +146,14 @@ describe('main bootstrap', () => {
 		const { Z21EventHandler } = await import('./services/z21-service');
 
 		const udpInstance = (Z21Udp as Mock).mock.results[0].value;
-		const rxHandler = (udpInstance.on as Mock).mock.calls.find((call) => call[0] === 'rx')?.[1];
-		expect(rxHandler).toBeDefined();
+		const datagramHandler = (udpInstance.on as Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
+		expect(datagramHandler).toBeDefined();
 
 		const handlerInstance = (Z21EventHandler as Mock).mock.results[0].value;
-		rxHandler({ type: 'datasets' });
+		const testDatagram = { raw: Buffer.from([0x04, 0x00]), rawHex: '0x01', from: { address: '127.0.0.1', port: 21105 } };
+		datagramHandler(testDatagram);
 
-		expect(handlerInstance.handle).toHaveBeenCalledWith({ type: 'datasets' });
+		expect(handlerInstance.handleDatagram).toHaveBeenCalledWith(testDatagram);
 	});
 
 	it('broadcasts loco.message.state for all stopped locos on disconnect when safety flag is enabled', async () => {

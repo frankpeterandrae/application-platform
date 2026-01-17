@@ -6,14 +6,21 @@ import { LAN_X_COMMANDS, Z21LanHeader, type LanXCommandKey } from '@application-
 
 import { AddessByteMask, FULL_BYTE_MASK } from '../constants';
 
+export type ByteLike = ReadonlyArray<number> | Uint8Array;
+
 /**
  * Calculates the XOR checksum for X-BUS protocol messages.
  * Performs bitwise XOR over all provided bytes to generate a checksum value.
  * @param bytes - Array of bytes to checksum
  * @returns The XOR checksum value (0-255)
  */
-export function xbusXor(bytes: readonly number[]): number {
-	return bytes.reduce((acc, b) => acc ^ (b & FULL_BYTE_MASK), 0) & FULL_BYTE_MASK;
+export function xbusXor(bytes: ByteLike): number {
+	let acc = 0;
+	for (let i = 0; i < bytes.length; i++) {
+		acc ^= bytes[i] & FULL_BYTE_MASK;
+	}
+
+	return acc & FULL_BYTE_MASK;
 }
 
 /**

@@ -14,7 +14,7 @@ import path from 'node:path';
  */
 export type ServerConfig = {
 	httpPort: number;
-	z21: { host: string; udpPort: number; listenPort?: number };
+	z21: { host: string; udpPort: number; listenPort?: number; debug?: boolean };
 	safety: { stopAllOnClientDisconnect: boolean };
 };
 
