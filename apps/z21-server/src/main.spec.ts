@@ -6,10 +6,22 @@
 import http from 'node:http';
 import path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock, type SpyInstance } from 'vitest';
+import { createConsoleLogger } from '@application-platform/z21-shared';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 let lastUdpInstance: any = undefined;
-
+vi.mock('@application-platform/z21-shared', () => {
+	const mockLogger = {
+		debug: vi.fn(),
+		info: vi.fn(),
+		warn: vi.fn(),
+		error: vi.fn(),
+		child: vi.fn().mockReturnThis()
+	};
+	return {
+		createConsoleLogger: vi.fn(() => mockLogger)
+	};
+});
 vi.mock('@application-platform/z21', async () => {
 	const actual = await vi.importActual('@application-platform/z21');
 	return {
@@ -96,23 +108,27 @@ vi.mock('./infra/config/config', () => {
 	};
 });
 describe('main bootstrap', () => {
-	let createServerSpy: SpyInstance;
+	let createServerSpy: ReturnType<typeof vi.spyOn>;
 	let listenSpy: Mock;
-	let consoleSpy: SpyInstance;
+	let consoleSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		vi.resetModules();
 		vi.clearAllMocks();
 		listenSpy = vi.fn((port: number, cb?: () => void) => cb && cb());
 		createServerSpy = vi.spyOn(http, 'createServer').mockReturnValue({ listen: listenSpy } as any);
-		vi.spyOn(path, 'resolve').mockImplementation((...args: any[]) => args.join('/'));
+		vi.spyOn(path, 'resolve').mockImplementation((...args: any[]) => {
+			// Simple mock that handles basic path resolution without duplicating base paths
+			if (args.length === 1) return args[0];
+			return path.join(...args);
+		});
 		consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {
 			// do nothing
 		});
 	});
 
 	afterEach(() => {
-		createServerSpy.mockRestore();
+		createServerSpy?.mockRestore?.();
 		consoleSpy.mockRestore();
 	});
 
@@ -135,7 +151,13 @@ describe('main bootstrap', () => {
 
 		expect(http.createServer).toHaveBeenCalled();
 		expect(listenSpy).toHaveBeenCalledWith(cfg.httpPort, expect.any(Function));
-		expect(consoleSpy).toHaveBeenCalledWith(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
+		// Check that logger.info was called with server.started
+		const loggerInstance = (createConsoleLogger as Mock).mock.results[0].value;
+		expect(loggerInstance.info).toHaveBeenCalledWith('server.started', {
+			httpPort: cfg.httpPort,
+			host: cfg.z21.host,
+			udpPort: cfg.z21.udpPort
+		});
 	});
 
 	it('wires Z21 datagram handler to dispatch payloads to Z21EventHandler', async () => {

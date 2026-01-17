@@ -65,7 +65,7 @@ describe('AppComponent', () => {
 		const sent = JSON.parse(mockSend.mock.calls[0][0]);
 		expect(sent.type).toBe('loco.command.drive');
 		expect(sent.addr).toBe(comp.addr());
-		expect(sent.speed).toBe(55);
+		expect(sent.speed).toBe(126);
 		expect(sent.dir).toBe(comp.dir());
 
 		// restore

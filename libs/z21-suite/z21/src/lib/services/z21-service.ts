@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { type Direction } from '@application-platform/z21-shared';
+import type { Direction, Logger } from '@application-platform/z21-shared';
 
 import { type LocoFunctionSwitchType } from '../constants';
 import {
@@ -26,8 +26,12 @@ export class Z21Service {
 	/**
 	 * Creates an instance of Z21Service.
 	 * @param udp - The UDP transport service for communicating with Z21.
+	 * @param logger - Logger instance for logging messages.
 	 */
-	constructor(private readonly udp: Z21Udp) {}
+	constructor(
+		private readonly udp: Z21Udp,
+		private readonly logger: Logger
+	) {}
 
 	/**
 	 * Sends a track power command to the Z21 device.
@@ -35,8 +39,7 @@ export class Z21Service {
 	 */
 	public sendTrackPower(on: boolean): void {
 		const buf = on ? encodeLanXSetTrackPowerOn() : encodeLanXSetTrackPowerOff();
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx TRACK_POWER', on ? 'ON' : 'OFF', buf.toString('hex'));
+		this.logger.debug('[z21] tx TRACK_POWER', { on: on ? 'ON' : 'OFF', hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 
@@ -49,8 +52,7 @@ export class Z21Service {
 	 */
 	public setLocoDrive(address: number, speed: number, forward: Direction): void {
 		const buf = encodeLocoDrive128(address, speed, forward);
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx LOCO_DRIVE', `addr=${address}`, `speed=${speed}`, forward, buf.toString('hex'));
+		this.logger.debug('[z21] tx LOCO_DRIVE', { address, speed, forward, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 
@@ -66,8 +68,7 @@ export class Z21Service {
 	 */
 	public setLocoFunction(address: number, fn: number, on: LocoFunctionSwitchType): void {
 		const buf = encodeLanXSetLocoFunction(address, fn, on);
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx LOCO_FUNCTION', `addr=${address}`, `fn=${fn}`, `on=${on}`, buf.toString('hex'));
+		this.logger.debug('[z21] tx LOCO_FUNCTION', { address, fn, on, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 
@@ -80,8 +81,7 @@ export class Z21Service {
 	 */
 	public getLocoInfo(address: number): void {
 		const buf = encodeLanXGetLocoInfo(address);
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx GET_LOCO_INFO', `addr=${address}`, buf.toString('hex'));
+		this.logger.debug('[z21] tx LOCO_INFO', { address, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 
@@ -93,8 +93,7 @@ export class Z21Service {
 	 */
 	public getTurnoutInfo(address: number): void {
 		const buf = encodeLanXGetTurnoutInfo(address);
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx TURNOUT_INFO', `addr=${address}`, buf.toString('hex'));
+		this.logger.debug('[z21] tx TURNOUT_INFO', { address, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 
@@ -119,8 +118,7 @@ export class Z21Service {
 
 		// Activate (A=1)
 		const buf = encodeLanXSetTurnout(address, port, true, queueFlag);
-		// eslint-disable-next-line no-console
-		console.log('[z21] tx TURNOUT_SET', `addr=${address}`, `port=${port}`, `A=1`, `queue=${queueFlag}`, buf.toString('hex'));
+		this.logger.debug('[z21] tx TURNOUT_SET', { address, port, A: 1, queue: queueFlag, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 
 		// Deactivate (A=0) after pulseMs
@@ -132,8 +130,7 @@ export class Z21Service {
 			this.turnoutOffTimers.delete(address);
 
 			const bufOff = encodeLanXSetTurnout(address, port, false, queueFlag);
-			// eslint-disable-next-line no-console
-			console.log('[z21] tx TURNOUT_SET', `addr=${address}`, `port=${port}`, `A=0`, `queue=${queueFlag}`, bufOff.toString('hex'));
+			this.logger.debug('[z21] tx LOCO_ESTOP', { address, hex: buf.toString('hex') });
 			this.udp.sendRaw(bufOff);
 		}, pulseMs);
 

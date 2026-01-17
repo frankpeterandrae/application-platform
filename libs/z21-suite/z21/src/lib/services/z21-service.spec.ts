@@ -18,7 +18,13 @@ describe('Z21Service', () => {
 		mockUdp = {
 			sendRaw: vi.fn()
 		} as any;
-		service = new Z21Service(mockUdp);
+		const mockLogger = {
+			debug: vi.fn(),
+			info: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn()
+		} as any;
+		service = new Z21Service(mockUdp, mockLogger);
 	});
 
 	describe('sendTrackPower', () => {

@@ -56,6 +56,11 @@ export type UnknownLanX = { type: 'event.unknown.lan_x'; xHeader: number; bytes:
 export type TurnoutInfo = { type: 'event.turnout.info'; addr: number; state: TurnoutState };
 
 /**
+ * Unknown X-Bus message with header and raw byte data.
+ */
+export type UnknownXBus = { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
+
+/**
  * Parsed Z21 system state fields, as defined by the protocol.
  */
 export type Z21SystemState = {

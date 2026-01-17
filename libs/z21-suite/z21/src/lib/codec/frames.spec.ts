@@ -4,9 +4,9 @@
  */
 import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
 
-import { FULL_BYTE_MASK } from '../constants';
+import { AddessByteMask, FULL_BYTE_MASK } from '../constants';
 
-import { encodeLanX, xbusXor } from './frames';
+import { encodeLanX, encodeLocoAddress, xbusXor } from './frames';
 
 describe('xbusXor', () => {
 	it('returns 0 for empty array', () => {
@@ -54,5 +54,27 @@ describe('encodeLanX', () => {
 		const result2 = encodeLanX('LAN_X_SET_TRACK_POWER_ON');
 
 		expect(result1).not.toEqual(result2);
+	});
+});
+
+describe('encodeLocoAddress', () => {
+	test('encodes small address without prefix', () => {
+		const r = encodeLocoAddress(127);
+		expect(r.adrMsb).toBe(0x00);
+		expect(r.adrLsb).toBe(0x7f);
+	});
+
+	test('encodes large address with 0xc0 prefix and masked high bits', () => {
+		const addr = 300;
+		const r = encodeLocoAddress(addr);
+		const expectedHigh = (0xc0 | ((addr >> 8) & AddessByteMask.MSB)) & FULL_BYTE_MASK;
+		const expectedLow = addr & FULL_BYTE_MASK;
+		expect(r.adrMsb).toBe(expectedHigh);
+		expect(r.adrLsb).toBe(expectedLow);
+	});
+
+	test('throws for out of range addresses', () => {
+		expect(() => encodeLocoAddress(0)).toThrow('out of range');
+		expect(() => encodeLocoAddress(10000)).toThrow('out of range');
 	});
 });

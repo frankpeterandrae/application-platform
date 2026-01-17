@@ -122,9 +122,7 @@ export class AppComponent {
 	public setSpeed(v: number): void {
 		const step = this.uiSpeedToStep128(v);
 		this.speed.set(v);
-		// eslint-disable-next-line no-console
-		console.log({ type: 'loco.command.drive', addr: this.addr(), speed: step, dir: this.dir(), steps: 128 });
-		this.send({ type: 'loco.command.drive', addr: this.addr(), speed: v, dir: this.dir(), steps: 128 });
+		this.send({ type: 'loco.command.drive', addr: this.addr(), speed: step, dir: this.dir(), steps: 128 });
 	}
 
 	/**

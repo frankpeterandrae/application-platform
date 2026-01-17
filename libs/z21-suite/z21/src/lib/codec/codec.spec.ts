@@ -4,7 +4,7 @@
  */
 
 import { Z21LanHeader } from '@application-platform/z21-shared';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { FULL_BYTE_MASK } from '../constants';
 
@@ -32,18 +32,13 @@ describe('parseZ21Datagram', () => {
 	});
 
 	it('parses x.bus frame even when xor mismatches', () => {
-		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-			// do nothing
-		});
 		const payload = [0x21, 0x02, 0x03];
 		const xor = (xbusXor(payload) + 1) & FULL_BYTE_MASK;
 		const buf = makeFrame(Z21LanHeader.LAN_X, [...payload, xor]);
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res[0]).toEqual({ kind: 'ds.x.bus', xHeader: 0x21, data: Uint8Array.from([0x02, 0x03]) });
-		expect(warnSpy).toHaveBeenCalled();
-		warnSpy.mockRestore();
+		expect(res[0]).toMatchObject({ kind: 'ds.bad_xor', calc: expect.any(String), recv: expect.any(String) });
 	});
 
 	it('parses system.state frame with 16-byte payload', () => {
@@ -61,7 +56,9 @@ describe('parseZ21Datagram', () => {
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res).toEqual([{ kind: 'ds.unknown', header: 0x9999, payload: Buffer.from(payload) }]);
+		expect(res).toEqual([
+			{ kind: 'ds.unknown', header: 0x9999, payload: Buffer.from(payload), reason: 'unrecognized header or invalid payload length' }
+		]);
 	});
 
 	it('stops parsing on invalid length smaller than header size', () => {
@@ -99,6 +96,6 @@ describe('parseZ21Datagram', () => {
 
 		const res = parseZ21Datagram(buf);
 
-		expect(res).toEqual([{ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload: Buffer.from([0x10]) }]);
+		expect(res).toEqual([{ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload: Buffer.from([0x10]), reason: 'x-bus too short' }]);
 	});
 });

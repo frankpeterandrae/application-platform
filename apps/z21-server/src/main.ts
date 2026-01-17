@@ -9,6 +9,7 @@ import path from 'node:path';
 import { LocoManager, TrackStatusManager } from '@application-platform/domain';
 import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
 import { Z21BroadcastFlag, Z21Service, Z21Udp } from '@application-platform/z21';
+import { createConsoleLogger, LogLevel } from '@application-platform/z21-shared';
 
 import { AppWsServer } from './app-websocket-server';
 import { ClientMessageHandler } from './client-message-handler';
@@ -20,17 +21,25 @@ import { Z21EventHandler } from './services/z21-service';
  */
 const cfg = loadConfig();
 
+const logLevel = (process.env['LOG_LEVEL'] as LogLevel) ?? 'debug';
+
+const logger = createConsoleLogger({
+	level: logLevel,
+	pretty: true,
+	context: { app: 'server' }
+});
+
 /**
  * Z21 UDP gateway used to communicate with the digital command station.
  * @remarks Initialized with host and UDP port from configuration.
  */
-const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort, cfg.z21.debug);
+const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort, logger.child({ component: 'z21.udp' }));
 
 /**
  * Z21 service wrapper around the UDP gateway for higher-level operations.
  * @remarks Used by the client message handler to send commands.
  */
-const z21Service = new Z21Service(udp);
+const z21Service = new Z21Service(udp, logger.child({ component: 'z21.service' }));
 
 /**
  * Manages locomotive states (speed, direction, functions).
@@ -56,15 +65,19 @@ const server = http.createServer(createStaticFileServer(publicDir));
  * Application WebSocket server wrapper that handles session handshake,
  * validation, and message routing.
  */
-const wsServer = new AppWsServer(new WsServer(server));
+const wsServer = new AppWsServer(new WsServer(server), logger.child({ component: 'ws.server' }));
 
 /**
  * Z21 inbound event handler:
  * - Updates track status (power/short/e-stop)
  * - Broadcasts datasets and derived events to connected clients
  */
-const z21Handler = new Z21EventHandler(trackStatusManager, (msg) => wsServer.broadcast(msg), locoManager);
-
+const z21Handler = new Z21EventHandler(
+	trackStatusManager,
+	(msg) => wsServer.broadcast(msg),
+	locoManager,
+	logger.child({ component: 'z21.handler' })
+);
 /**
  * Validated client message handler:
  * - Applies loco and turnout changes
@@ -128,6 +141,5 @@ udp.sendSystemStateGetData();
  * Start HTTP server and log bind address with Z21 connection info.
  */
 server.listen(cfg.httpPort, () => {
-	// eslint-disable-next-line no-console
-	console.log(`[server] http://0.0.0.0:${cfg.httpPort} (Z21 ${cfg.z21.host}:${cfg.z21.udpPort})`);
+	logger.info('server.started', { httpPort: cfg.httpPort, host: cfg.z21.host, udpPort: cfg.z21.udpPort });
 });

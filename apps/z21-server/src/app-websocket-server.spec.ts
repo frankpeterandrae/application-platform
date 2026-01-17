@@ -27,7 +27,13 @@ describe('AppWsServer', () => {
 			send: vi.fn(),
 			broadcast: vi.fn()
 		} as any;
-		server = new AppWsServer(wsServer as any);
+		const mockLogger = {
+			debug: vi.fn(),
+			info: vi.fn(),
+			warn: vi.fn(),
+			error: vi.fn()
+		} as any;
+		server = new AppWsServer(wsServer as any, mockLogger);
 		vi.spyOn(global.console, 'log').mockImplementation(() => {
 			// do nothing
 		});

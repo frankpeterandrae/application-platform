@@ -56,19 +56,18 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 				const calc = xor8(bodyNoXor);
 				// XOR check: if false, deliver anyway (you want to see UDP drops/bugs)
 				if (calc !== xorByte) {
-					// eslint-disable-next-line no-console
-					console.warn(`[z21] X-BUS XOR mismatch: calc=0x${calc.toString(16)}, recv=0x${xorByte.toString(16)}`);
+					out.push({ kind: 'ds.bad_xor', calc: calc.toString(16), recv: xorByte.toString(16) });
 				}
 
 				// Ensure we expose a plain Uint8Array (not a Buffer) for the x.bus data
 				out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
 			} else {
-				out.push({ kind: 'ds.unknown', header, payload });
+				out.push({ kind: 'ds.unknown', header, payload, reason: 'x-bus too short' });
 			}
 		} else if (header === Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED && payload.length === 16) {
 			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
 		} else {
-			out.push({ kind: 'ds.unknown', header, payload });
+			out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });
 		}
 
 		offset += len;
