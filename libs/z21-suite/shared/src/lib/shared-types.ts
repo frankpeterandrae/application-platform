@@ -2,17 +2,22 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import { type LanXCommandKey } from './lan-x-types';
 
 /**
  * Cardinal direction a locomotive can travel.
  * 'FWD' denotes forward; 'REV' denotes reverse.
  */
-export type Direction = 'FWD' | 'REV';
+export const Direction = {
+	FWD: 'FWD',
+	REV: 'REV'
+} as const;
+export type Direction = (typeof Direction)[keyof typeof Direction];
 
 /**
  * Z21 protocol message types for various functionalities.
  */
-export type TrackPower = { type: 'event.track.power'; on: boolean };
+export type TrackPower = { type: 'event.track.power'; on: boolean; emergencyStop?: boolean };
 
 /**
  * Derived track flags indicating power status.
@@ -28,7 +33,7 @@ export type LocoInfo = {
 	speedSteps: 14 | 28 | 128;
 	speed: number;
 	emergencyStop: boolean;
-	forward: boolean;
+	direction: Direction;
 	isMmLoco: boolean;
 	isOccupied: boolean;
 	isDoubleTraction: boolean;
@@ -46,6 +51,14 @@ export type SystemState = { type: 'event.z21.status'; payload: Z21SystemState };
  */
 export type UnlonwnXBus = { type: 'event.unknown.x.bus'; xHeader: number; bytes: number[] };
 
+/**
+ * Unknown LAN X message with command key and raw byte data.
+ */
+export type UnknownLanX = { type: 'event.unknown.lan_x'; command: LanXCommandKey; bytes: number[] };
+
+/**
+ * Turnout information message indicating the state of a turnout.
+ */
 export type TurnoutInfo = { type: 'event.turnout.info'; addr: number; state: TurnoutState };
 
 /**
@@ -63,4 +76,9 @@ export type Z21SystemState = {
 	capabilities: number; // uint8
 };
 
-export type TurnoutState = 'STRAIGHT' | 'DIVERGING' | 'UNKNOWN';
+export const TurnoutState = {
+	STRAIGHT: 'STRAIGHT',
+	DIVERGING: 'DIVERGING',
+	UNKNOWN: 'UNKNOWN'
+};
+export type TurnoutState = (typeof TurnoutState)[keyof typeof TurnoutState];

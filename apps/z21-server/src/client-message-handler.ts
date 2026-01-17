@@ -6,7 +6,7 @@
 import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
 import { LocoFunctionSwitchType, type Z21Service } from '@application-platform/z21';
-import type { Direction } from '@application-platform/z21-shared';
+import { Direction, TurnoutState } from '@application-platform/z21-shared';
 
 /**
  * Function signature used to emit server-to-client protocol messages.
@@ -103,7 +103,7 @@ export class ClientMessageHandler {
 
 			case 'switching.command.turnout.set': {
 				// Update turnout state and notify clients
-				const port: 0 | 1 = msg.state === 'DIVERGING' ? 1 : 0;
+				const port: 0 | 1 = msg.state === TurnoutState.DIVERGING ? 1 : 0;
 				this.z21Service.setTurnout(msg.addr, port, { queue: true, pulseMs: msg.pulseMs ?? 100 });
 				this.z21Service.getTurnoutInfo(msg.addr);
 				return;

@@ -1,4 +1,9 @@
-import { LAN_X_COMMANDS } from './constants';
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
 
 describe('LAN_X_COMMANDS Map', () => {
 	describe('Locomotive Control Commands', () => {

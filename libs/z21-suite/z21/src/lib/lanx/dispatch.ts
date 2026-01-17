@@ -1,5 +1,9 @@
-import type { LanXCommandKey } from '../constants';
-import { LAN_X_COMMANDS, XBusHeader } from '../constants';
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { LAN_X_COMMANDS, XBusHeader, type LanXCommandKey } from '@application-platform/z21-shared';
 
 /**
  * Decodes the LAN X command from raw X-Bus data.
@@ -8,10 +12,12 @@ import { LAN_X_COMMANDS, XBusHeader } from '../constants';
  * @returns The identified LanXCommandKey, or 'LAN_X_UNKNOWN_COMMAND' if unrecognized.
  */
 export function resolveLanXCommand(data: Uint8Array): LanXCommandKey {
-	const xHeader = data[0];
-	const xBusCmd = data.length > 1 ? data[1] : undefined;
+	const xHeader = data[1];
+	const xBusCmd = data.length > 2 ? data[2] : undefined;
 	const len = data.length;
 
+	// eslint-disable-next-line no-console
+	console.log('Resolving LAN X command for header:', xHeader, 'cmd:', xBusCmd, 'length:', len);
 	// Special handling for TURNOUT_INFO which has two variants based on length
 	if (xHeader === XBusHeader.TURNOUT_INFO) {
 		// TURNOUT_INFO requires at least 3 bytes (xHeader + 2 address bytes)

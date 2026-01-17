@@ -111,91 +111,124 @@ describe('Z21EventHandler.handle', () => {
 			type: 'datasets' as const,
 			rawHex: '0x03',
 			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [],
-			events: [{ type: 'event.track.power' as const, on: true }]
+			datasets: [
+				{
+					kind: 'ds.x.bus' as const,
+					xHeader: 0x61,
+					data: new Uint8Array([0x61, 0x01])
+				}
+			]
 		} as any;
 
 		handler.handle(payload);
-
-		expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.z21.rx' }));
+		expect(trackStatusManager.updateFromXbusPower).toHaveBeenCalledWith(true);
+		expect(broadcast).toHaveBeenCalledWith({
+			type: 'system.message.trackpower',
+			on: true,
+			short: true
+		});
 	});
 
-	it('updates track status from system.state events and broadcasts derived power state', () => {
+	it('processes system.state events from datasets and broadcasts system.message.trackpower', () => {
 		vi.spyOn(trackStatusManager, 'getStatus').mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
 		(deriveTrackFlagsFromSystemState as Mock).mockReturnValue({ powerOn: true, emergencyStop: false, short: true });
 		trackStatusManager.updateFromSystemState.mockReturnValue({ powerOn: true, short: true, emergencyStop: false });
+
+		const systemStatePayload = {
+			mainCurrent_mA: 100,
+			progCurrent_mA: 50,
+			filteredMainCurrent_mA: 75,
+			temperature_C: 25,
+			supplyVoltage_mV: 15000,
+			vccVoltage_mV: 5000,
+			centralState: 0x03,
+			centralStateEx: 0x04,
+			capabilities: 0
+		};
+
 		const payload = {
 			header: 0,
 			len: 0,
 			type: 'datasets' as const,
 			rawHex: '0x04',
 			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [],
-			events: [
+			datasets: [
 				{
-					type: 'event.z21.status' as const,
-					payload: { centralState: 3, centralStateEx: 4 }
+					kind: 'ds.system.state' as const,
+					state: new Uint8Array(16)
 				}
 			]
 		} as any;
 
 		handler.handle(payload);
 
-		expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.z21.rx' }));
+		expect(broadcast).toHaveBeenCalledWith({
+			type: 'system.message.trackpower',
+			on: true,
+			short: true,
+			emergencyStop: false
+		});
 	});
 
-	it('forwards loco.info events to locoManager and broadcasts loco.message.state', () => {
+	it('processes loco.info events from datasets and broadcasts loco.message.state', () => {
 		// prepare locoManager to return a loco state when updateLocoInfoFromZ21 is called
 		locoManager = {
-			updateLocoInfoFromZ21: vi.fn().mockReturnValue({ addr: 42, state: { speed: 0.5, dir: 'FWD', fns: [true, false] } })
+			updateLocoInfoFromZ21: vi.fn().mockReturnValue({ addr: 100, state: { speed: 0.5, dir: 'FWD', fns: { 0: true }, estop: false } })
 		} as unknown as MockedFunction<any>;
 		// recreate handler with the new locoManager mock
 		handler = new Z21EventHandler(trackStatusManager as any, broadcast, locoManager as any);
-
-		const locoInfoEvent = {
-			type: 'event.loco.info' as const,
-			addr: 42,
-			speed: 0.5,
-			dir: 'FWD',
-			fns: [true, false]
-		} as any;
 
 		const payload = {
 			type: 'datasets' as const,
 			rawHex: '0x99',
 			from: { address: '127.0.0.1', port: 21105 },
-			datasets: [],
-			events: [locoInfoEvent]
+			datasets: [
+				{
+					kind: 'ds.x.bus' as const,
+					xHeader: 0xef,
+					data: new Uint8Array([0xef, 0xc0, 0x64, 0x00, 0x84, 0x01])
+				}
+			]
 		} as any;
 
 		handler.handle(payload);
 
-		expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.z21.rx' }));
+		expect(locoManager.updateLocoInfoFromZ21).toHaveBeenCalled();
+		expect(broadcast).toHaveBeenCalledWith({
+			type: 'loco.message.state',
+			addr: 100,
+			speed: 0.5,
+			dir: 'FWD',
+			fns: { 0: true },
+			estop: false
+		});
 	});
 
-	describe('empty events array', () => {
-		it('broadcasts z21.rx with empty events array', () => {
-			const payload = {
-				type: 'datasets' as const,
-				rawHex: '0xf1',
-				from: { address: '127.0.0.1', port: 21105 },
-				datasets: [],
-				events: []
-			} as any;
+	it('processes turnout.info events from datasets and broadcasts switching.message.turnout.state', () => {
+		const payload = {
+			type: 'datasets' as const,
+			rawHex: '0x9a',
+			from: { address: '127.0.0.1', port: 21105 },
+			datasets: [
+				{
+					kind: 'ds.x.bus' as const,
+					xHeader: 0x43,
+					data: new Uint8Array([0x43, 0x00, 0x0a, 0x01])
+				}
+			]
+		} as any;
 
-			handler.handle(payload);
+		handler.handle(payload);
 
-			expect(broadcast).toHaveBeenCalledWith({
-				type: 'system.message.z21.rx',
-				rawHex: '0xf1',
-				datasets: [],
-				events: []
-			});
+		expect(broadcast).toHaveBeenCalledWith({
+			type: 'switching.message.turnout.state',
+			addr: 10,
+			state: 'STRAIGHT'
 		});
 	});
 
 	describe('empty events array', () => {
-		it('broadcasts z21.rx with empty events array', () => {
+		it('does not broadcast when datasets array is empty', () => {
 			const payload = {
 				type: 'datasets' as const,
 				rawHex: '0xf1',
@@ -206,12 +239,7 @@ describe('Z21EventHandler.handle', () => {
 
 			handler.handle(payload);
 
-			expect(broadcast).toHaveBeenCalledWith({
-				type: 'system.message.z21.rx',
-				rawHex: '0xf1',
-				datasets: [],
-				events: []
-			});
+			expect(broadcast).not.toHaveBeenCalled();
 		});
 	});
 

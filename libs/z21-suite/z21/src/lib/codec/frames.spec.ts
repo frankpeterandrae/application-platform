@@ -2,7 +2,9 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { FULL_BYTE_MASK, LAN_X_COMMANDS } from '../constants';
+import { LAN_X_COMMANDS } from '@application-platform/z21-shared';
+
+import { FULL_BYTE_MASK } from '../constants';
 
 import { encodeLanX, xbusXor } from './frames';
 

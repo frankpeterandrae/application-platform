@@ -5,6 +5,7 @@
 
 import type { ClientToServer } from '@application-platform/protocol';
 import { LocoFunctionSwitchType } from '@application-platform/z21';
+import { TurnoutState } from '@application-platform/z21-shared';
 import type { MockedFunction } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
@@ -335,45 +336,50 @@ describe('ClientMessageHandler.handle', () => {
 
 	describe('switching.command.turnout.set', () => {
 		it('sets turnout to STRAIGHT and calls getTurnoutInfo', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 9, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 9, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(9, 0, { queue: true, pulseMs: 100 });
 			expect(z21Service.getTurnoutInfo).toHaveBeenCalledWith(9);
 		});
 
 		it('sets turnout to DIVERGING and calls getTurnoutInfo', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 9, state: 'DIVERGING' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 9, state: TurnoutState.DIVERGING } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(9, 1, { queue: true, pulseMs: 100 });
 			expect(z21Service.getTurnoutInfo).toHaveBeenCalledWith(9);
 		});
 
 		it('uses port 0 for STRAIGHT state', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(10, 0, expect.any(Object));
 		});
 
 		it('uses port 1 for DIVERGING state', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: 'DIVERGING' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: TurnoutState.DIVERGING } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(10, 1, expect.any(Object));
 		});
 
 		it('uses default pulseMs of 100 when not specified', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 20, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 20, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(20, 0, { queue: true, pulseMs: 100 });
 		});
 
 		it('uses custom pulseMs when specified', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 20, state: 'STRAIGHT', pulseMs: 200 } as ClientToServer);
+			handler.handle({
+				type: 'switching.command.turnout.set',
+				addr: 20,
+				state: TurnoutState.STRAIGHT,
+				pulseMs: 200
+			} as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(20, 0, { queue: true, pulseMs: 200 });
 		});
 
 		it('always sets queue to true', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 30, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 30, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(30, 0, expect.objectContaining({ queue: true }));
 		});
@@ -383,39 +389,44 @@ describe('ClientMessageHandler.handle', () => {
 			z21Service.setTurnout.mockImplementation(() => callOrder.push('setTurnout'));
 			z21Service.getTurnoutInfo.mockImplementation(() => callOrder.push('getTurnoutInfo'));
 
-			handler.handle({ type: 'switching.command.turnout.set', addr: 1, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 1, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(callOrder).toEqual(['setTurnout', 'getTurnoutInfo']);
 		});
 
 		it('handles minimum accessory address', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 0, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 0, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(0, 0, expect.any(Object));
 			expect(z21Service.getTurnoutInfo).toHaveBeenCalledWith(0);
 		});
 
 		it('handles maximum accessory address', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 16383, state: 'DIVERGING' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 16383, state: TurnoutState.DIVERGING } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(16383, 1, expect.any(Object));
 			expect(z21Service.getTurnoutInfo).toHaveBeenCalledWith(16383);
 		});
 
 		it('handles pulseMs of 0', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 50, state: 'STRAIGHT', pulseMs: 0 } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 50, state: TurnoutState.STRAIGHT, pulseMs: 0 } as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(50, 0, { queue: true, pulseMs: 0 });
 		});
 
 		it('handles large pulseMs values', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 50, state: 'STRAIGHT', pulseMs: 5000 } as ClientToServer);
+			handler.handle({
+				type: 'switching.command.turnout.set',
+				addr: 50,
+				state: TurnoutState.STRAIGHT,
+				pulseMs: 5000
+			} as ClientToServer);
 
 			expect(z21Service.setTurnout).toHaveBeenCalledWith(50, 0, { queue: true, pulseMs: 5000 });
 		});
 
 		it('does not broadcast turnout state', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 100, state: 'STRAIGHT' } as ClientToServer);
+			handler.handle({ type: 'switching.command.turnout.set', addr: 100, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(broadcast).not.toHaveBeenCalled();
 		});

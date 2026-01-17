@@ -2,8 +2,9 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import { LAN_X_COMMANDS, Z21LanHeader, type LanXCommandKey } from '@application-platform/z21-shared';
 
-import { AddessByteMask, FULL_BYTE_MASK, LAN_X_COMMANDS, Z21LanHeader, type LanXCommandKey } from '../constants';
+import { AddessByteMask, FULL_BYTE_MASK } from '../constants';
 
 /**
  * Calculates the XOR checksum for X-BUS protocol messages.
