@@ -6,7 +6,7 @@
 import http from 'node:http';
 import path from 'node:path';
 
-import { LocoManager, TrackStatusManager } from '@application-platform/domain';
+import { CommandStationInfo, LocoManager, TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
 import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
 import { Z21BroadcastFlag, Z21CommandService, Z21Udp } from '@application-platform/z21';
@@ -105,7 +105,7 @@ export class Bootstrap {
 	/**
 	 * Mapping of WebSocket client objects to their unique IDs.
 	 */
-	private wsClientIds = new WeakMap<object, number>();
+	private readonly wsClientIds = new WeakMap<object, number>();
 
 	/**
 	 * Indicates whether a Z21 session is currently active.
@@ -119,6 +119,11 @@ export class Bootstrap {
 	private _z21HeartbeatTimer: NodeJS.Timeout | null = null;
 
 	/**
+	 * Information about the connected command station.
+	 */
+	private readonly commandStationInfo = new CommandStationInfo();
+
+	/**
 	 * Timer for sending periodic Z21 heartbeat messages.
 	 * @deprecated Use `z21HeartbeatTimer` instead.
 	 */
@@ -127,18 +132,6 @@ export class Bootstrap {
 	}
 
 	private set z21HaertbeatTimer(value: NodeJS.Timeout | null) {
-		this._z21HeartbeatTimer = value;
-	}
-
-	/**
-	 * Timer for sending periodic Z21 heartbeat messages.
-	 * Correctly spelled property name.
-	 */
-	private get z21HeartbeatTimer(): NodeJS.Timeout | null {
-		return this._z21HeartbeatTimer;
-	}
-
-	private set z21HeartbeatTimer(value: NodeJS.Timeout | null) {
 		this._z21HeartbeatTimer = value;
 	}
 
@@ -160,7 +153,8 @@ export class Bootstrap {
 			this.trackStatusManager,
 			broadcast,
 			this.locoManager,
-			this.logger.child({ component: 'z21.handler' })
+			this.logger.child({ component: 'z21.handler' }),
+			this.commandStationInfo
 		);
 
 		this.clientMessageHandler = new ClientMessageHandler(this.locoManager, this.z21CommandService, broadcast);
@@ -304,6 +298,17 @@ export class Bootstrap {
 			reason: 'first client connected',
 			wsClientCount: this.wsClientCount
 		});
+
+		if (this.commandStationInfo.hasVersion()) {
+			const version = this.commandStationInfo.getVersion();
+			this.wsServer.broadcast({
+				type: 'system.message.z21.version',
+				version: version?.versionString,
+				cmdsId: version?.cmdsId
+			});
+		} else {
+			this.z21CommandService.getVersion();
+		}
 
 		this.udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
 		this.udp.sendSystemStateGetData();

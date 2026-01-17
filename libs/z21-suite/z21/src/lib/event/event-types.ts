@@ -2,14 +2,15 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import type {
+import {
 	LocoInfoEvent,
 	SystemStateEvent,
 	TrackPowerEvent,
 	TurnoutInfoEvent,
 	UnknownLanXEvent,
 	UnknownXBusEvent,
-	Z21StatusEvent
+	Z21StatusEvent,
+	Z21VersionEvent
 } from '@application-platform/z21-shared';
 
 /**
@@ -23,13 +24,14 @@ import type {
  * - event.unknown.x.bus: Unrecognized X-Bus message for diagnostics
  */
 export type Z21Event =
-	| TrackPowerEvent
-	| Z21StatusEvent
 	| LocoInfoEvent
 	| SystemStateEvent
+	| TrackPowerEvent
 	| TurnoutInfoEvent
 	| UnknownLanXEvent
-	| UnknownXBusEvent;
+	| UnknownXBusEvent
+	| Z21StatusEvent
+	| Z21VersionEvent;
 
 /**
  * Derived flags for track state computed from system state bitfields.

@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import { type LocoManager, type TrackStatusManager } from '@application-platform/domain';
-import { type ServerToClient } from '@application-platform/protocol';
+import type { CommandStationInfo, LocoManager, TrackStatusManager } from '@application-platform/domain';
+import type { ServerToClient } from '@application-platform/protocol';
 import {
 	datasetsToEvents,
 	decodeSystemState,
@@ -25,7 +25,8 @@ export class Z21EventHandler {
 		private readonly trackStatusManager: TrackStatusManager,
 		private readonly broadcast: BroadcastFn,
 		private readonly locoManager: LocoManager,
-		private readonly logger: Logger
+		private logger: Logger,
+		private commandStationInfo: CommandStationInfo
 	) {}
 
 	/**
@@ -153,6 +154,12 @@ export class Z21EventHandler {
 							xHeader: event.xHeader,
 							bytes: event.bytes
 						});
+						break;
+					}
+					case 'event.z21.version': {
+						this.logger.info('event.z21.version', event);
+						this.commandStationInfo.setVersion(event);
+						this.broadcast({ type: 'system.message.z21.version', version: event.versionString, cmdsId: event.cmdsId });
 						break;
 					}
 					default: {

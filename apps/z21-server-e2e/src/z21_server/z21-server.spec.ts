@@ -491,4 +491,58 @@ describe('server e2e', () => {
 			await z21.close();
 		}, 20000);
 	});
+
+	describe('getversion', () => {
+		it('requests GET_VERSION on session activation and caches result for new clients', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			// 1) first WS client connects -> should trigger GET_VERSION
+			const ws1 = await connectWs(base.httpPort);
+
+			const GET_VERSION_REQ = '07004000212100'; // LEN=7, LAN_X, [0x21,0x21,XOR=0x00]
+
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === GET_VERSION_REQ), {
+				label: 'z21 rx GET_VERSION request',
+				timeoutMs: 3000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const countGetVersion = (): number => z21.rx.filter((b) => b.toString('hex') === GET_VERSION_REQ).length;
+
+			// Send a fake Z21 response
+			const major = 2;
+			const minor = 1;
+			const xor = (0x63 ^ 0x21 ^ major ^ minor) & 0xff;
+			const ANSWER = Buffer.from([0x09, 0x00, 0x40, 0x00, 0x63, 0x21, major, minor, xor]).toString('hex');
+			await sendUdpHex(ANSWER);
+
+			// Verify first client got version
+			const versionMsg1 = await waitFor(() => ws1.messages.find((m) => m?.type === 'system.message.z21.version'), {
+				label: 'ws1 system.version',
+				timeoutMs: 3000,
+				dump: () => `\nWS1:\n${ws1.messages.map((m) => JSON.stringify(m)).join('\n')}`
+			});
+
+			expect(versionMsg1).toBeDefined();
+			expect(versionMsg1.version).toMatch(/^V\d+\.\d+$/);
+
+			// Record initial GET_VERSION count
+			const initialCount = countGetVersion();
+			expect(initialCount).toBe(1);
+
+			// 2) second WS client connects quickly
+			const ws2 = await connectWs(base.httpPort);
+
+			// Give a bit of time for any pending version broadcasts
+			await delay(300);
+
+			// 3) Verify no second GET_VERSION was triggered by second client
+			const finalCount = countGetVersion();
+			expect(finalCount).toBe(initialCount); // Still only 1, no second request
+
+			await stopCtx({ ...base, ws: ws2.ws });
+			await z21.close();
+		}, 25000);
+	});
 });

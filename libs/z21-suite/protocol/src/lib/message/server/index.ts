@@ -8,5 +8,6 @@ export * from './loco-estop-event';
 export * from './loco-state';
 export * from './session-ready';
 export * from './system-trackpower';
+export * from './system-version';
 export * from './turnout-state';
 export * from './z21-rx';

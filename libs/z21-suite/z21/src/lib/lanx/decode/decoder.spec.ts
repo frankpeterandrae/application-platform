@@ -13,6 +13,7 @@ import * as locoInfo from './loco-info';
 import * as statusChanged from './status-changed';
 import * as trackPower from './track-power';
 import * as turnoutInfo from './turnout-info';
+import * as version from './version';
 
 type TrackPowerEvent = Extract<Z21Event, { type: 'event.track.power' }>;
 type Z21StatusEvent = Extract<Z21Event, { type: 'event.z21.status' }>;
@@ -24,6 +25,7 @@ type DecodersMock = {
 	decodeLanXTurnoutInfoPayload: Mock;
 	decodeLanXTrackPowerPayload: Mock;
 	decodeLanXStatusChangedPayload: Mock;
+	decodeLanXVersionPayload: Mock;
 };
 
 vi.mock('./loco-info', () => ({
@@ -45,7 +47,19 @@ vi.mock('./status-changed', () => ({
 		{
 			type: 'event.z21.status',
 			payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
-		} as Z21StatusEvent
+		}
+	])
+}));
+
+vi.mock('./version', () => ({
+	decodeLanXVersionPayload: vi.fn((payload: Uint8Array) => [
+		{
+			type: 'event.z21.version',
+			raw: Array.from(payload),
+			xbusVersion: payload[0],
+			versionString: `V${(payload[0] & 0xf0) >> 4}.${payload[0] & 0x0f}`,
+			cmdsId: payload[1]
+		}
 	])
 }));
 
@@ -53,7 +67,8 @@ const decoders = {
 	...locoInfo,
 	...turnoutInfo,
 	...statusChanged,
-	...trackPower
+	...trackPower,
+	...version
 } as DecodersMock;
 
 describe('decodeLanXCommand', () => {
@@ -98,5 +113,22 @@ describe('decodeLanXCommand', () => {
 		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.UNKNOWN_COMMAND]));
 
 		expect(events).toEqual([]);
+	});
+
+	it('returns event.z21.version for LAN_X_GET_VERSION_ANSWER', () => {
+		const payload = new Uint8Array([33, 2, 1]);
+
+		const events = decodeLanXPayload(XHeader.VESION_ANSWER, payload);
+
+		expect(decoders.decodeLanXVersionPayload).toHaveBeenCalledWith(payload);
+		expect(events).toEqual([
+			{
+				type: 'event.z21.version',
+				raw: [33, 2, 1],
+				xbusVersion: 33,
+				versionString: 'V2.1',
+				cmdsId: 2
+			}
+		] as any);
 	});
 });
