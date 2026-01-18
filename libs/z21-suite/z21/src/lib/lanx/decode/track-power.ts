@@ -23,5 +23,13 @@ export function decodeLanXTrackPowerPayload(command: LanXCommandKey): Extract<Z2
 		return [{ type: 'event.track.power', on: true }];
 	}
 
+	if (command === 'LAN_X_BC_PROGRAMMING_MODE') {
+		return [{ type: 'event.track.power', on: true, programmingMode: true }];
+	}
+
+	if (command === 'LAN_X_BC_TRACK_SHORT_CIRCUIT') {
+		return [{ type: 'event.track.power', on: false, shortCircuit: true }];
+	}
+
 	return [];
 }

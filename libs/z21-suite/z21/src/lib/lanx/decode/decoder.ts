@@ -18,8 +18,10 @@ export type LanXPayloadDecoder = (command: LanXCommandKey, payload: Uint8Array) 
 
 // Stepwise refactor: only LAN_X_LOCO_INFO is migrated for now.
 const DECODERS: Partial<Record<LanXCommandKey, LanXPayloadDecoder>> = {
+	LAN_X_BC_PROGRAMMING_MODE: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_POWER_OFF: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_POWER_ON: (cmd) => decodeLanXTrackPowerPayload(cmd),
+	LAN_X_BC_TRACK_SHORT_CIRCUIT: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_GET_VERSION_ANSWER: (_, payload) => decodeLanXVersionPayload(payload),
 	LAN_X_LOCO_INFO: (_, payload) => decodeLanXLocoInfoPayload(payload),
 	LAN_X_STATUS_CHANGED: (_, xBusBytes) => decodeLanXStatusChangedPayload(xBusBytes),

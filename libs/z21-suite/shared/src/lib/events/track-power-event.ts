@@ -3,4 +3,10 @@
  * All rights reserved.
  */
 
-export type TrackPowerEvent = { type: 'event.track.power'; on: boolean; emergencyStop?: boolean };
+export type TrackPowerEvent = {
+	type: 'event.track.power';
+	on: boolean;
+	emergencyStop?: boolean;
+	programmingMode?: boolean;
+	shortCircuit?: boolean;
+};
