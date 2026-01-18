@@ -14,7 +14,16 @@
 				"reportsDirectory": "../../coverage/z21-server-e2e",
 				"passWithNoTests": true
 			},
-			"dependsOn": ["z21-server:build"]
+			"dependsOn": ["z21-server:build"],
+			"configurations": {
+				"ci": {
+					"ci": true,
+					"executor": "@nx/vitest:test",
+					"options": {
+						"vitestConfig": "apps/z21-server-e2e/vitest.config.ci.mts"
+					}
+				}
+			}
 		}
 	}
 }

@@ -14,6 +14,7 @@ import {
 	encodeLanXSetTrackPowerOff,
 	encodeLanXSetTrackPowerOn,
 	encodeLanXSetTurnout,
+	encodeLanXSystemStatus,
 	encodeLocoDrive128
 } from '../lanx/encoder';
 import { type Z21Udp } from '../udp/udp';
@@ -156,6 +157,15 @@ export class Z21CommandService {
 	public getVersion(): void {
 		const buf = encodeLanXGetVersion();
 		this.logger.debug('[z21] tx GET_VERSION', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Requests the Z21 status information.
+	 */
+	public getStatus(): void {
+		const buf = encodeLanXSystemStatus();
+		this.logger.debug('[z21] tx GET_STATUS', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }
