@@ -9,6 +9,7 @@ export * from './track-power-event';
 export * from './turnout-info-event';
 export * from './unknown-lan-x-event';
 export * from './unknown-x-bus-event';
+export * from './z21-firmware-version-event';
 export * from './z21-status-event';
 export * from './z21-stopped-event';
 export * from './z21-version-event';

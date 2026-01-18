@@ -409,16 +409,14 @@ export const LAN_X_COMMANDS = {
 		xHeader: XHeader.LOCO_INFO_ANSWER
 	} as const satisfies LanXCommand,
 	/**
-	 * Get firmware version of the Z21 central
-	 * TODO: add handling
+	 * Get firmware xBusVersion of the Z21 central
 	 */
 	LAN_X_GET_FIRMWARE_VERSION: {
 		xHeader: XHeader.FIRMWARE_VERSION,
 		xBusCmd: XBusCmd.FIRMWARE_VERSION
 	} as const satisfies LanXCommand,
 	/**
-	 * Firmware version response
-	 * TODO: add handling
+	 * Firmware xBusVersion response
 	 */
 	LAN_X_GET_FIRMWARE_VERSION_ANSWER: {
 		xHeader: XHeader.FIRMWARE_VERSION_ANSWER,

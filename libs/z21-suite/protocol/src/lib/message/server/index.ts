@@ -7,6 +7,7 @@ export * from './feedback-changed';
 export * from './loco-estop-event';
 export * from './loco-state';
 export * from './session-ready';
+export * from './system-firmware-version';
 export * from './system-stop';
 export * from './system-trackpower';
 export * from './system-version';

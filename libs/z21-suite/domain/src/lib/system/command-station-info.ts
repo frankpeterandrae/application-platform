@@ -1,7 +1,18 @@
-export type CommandStationVersion = {
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+export type XbusVersion = {
 	xbusVersion?: number;
-	versionString?: string;
+	xBusVersionString?: string;
 	cmdsId?: number;
+	raw?: number[];
+};
+
+export type FirmwareVersion = {
+	major: number;
+	minor: number;
 	raw?: number[];
 };
 
@@ -10,27 +21,50 @@ export type CommandStationVersion = {
  * Holds information about the connected command station
  */
 export class CommandStationInfo {
-	private version?: CommandStationVersion;
+	private xBusVersion?: XbusVersion;
+	private firmwareVersion?: FirmwareVersion;
 
 	/**
-	 *  Get Command Station Version Information
+	 *  Get Command Station x-Bus Version Information
 	 */
-	public getVersion(): CommandStationVersion | undefined {
-		return this.version;
+	public getXBusVersion(): XbusVersion | undefined {
+		return this.xBusVersion;
 	}
 
 	/**
-	 * Set Command Station Version Information
-	 * @param value - version information
+	 * Set Command Station x-Bus Version Information
+	 * @param value - xBusVersion information
 	 */
-	public setVersion(value: CommandStationVersion): void {
-		this.version = value;
+	public setXBusVersion(value: XbusVersion): void {
+		this.xBusVersion = value;
 	}
 
 	/**
-	 * Check if version information is available
+	 * Check if xBusVersion information is available
 	 */
-	public hasVersion(): boolean {
-		return !!this.version;
+	public hasXBusVersion(): boolean {
+		return !!this.xBusVersion;
+	}
+
+	/**
+	 * Get Firmware Version Information
+	 */
+	public getFirmwareVersion(): FirmwareVersion | undefined {
+		return this.firmwareVersion;
+	}
+
+	/**
+	 * Set Firmware Version Information
+	 * @param value - Firmware version information
+	 */
+	public setFirmwareVersion(value: FirmwareVersion): void {
+		this.firmwareVersion = value;
+	}
+
+	/**
+	 * Check if Firmware Version information is available
+	 */
+	public hasFirmwareVersion(): boolean {
+		return !!this.firmwareVersion;
 	}
 }

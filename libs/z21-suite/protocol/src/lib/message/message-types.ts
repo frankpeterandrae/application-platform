@@ -10,6 +10,7 @@ import type {
 	LocoEStopEvent,
 	LocoState,
 	SessionReady,
+	SystemFirmwareVersion,
 	SystemTrackPower,
 	SystemVersion,
 	TurnoutState_Message,
@@ -65,6 +66,7 @@ export type ServerToClient =
 	| LocoEStopEvent
 	| LocoState
 	| SessionReady
+	| SystemFirmwareVersion
 	| SystemStop
 	| SystemTrackPower
 	| SystemVersion
@@ -85,8 +87,9 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'loco.message.state': true,
 	'server.replay.session.ready': true,
 	'switching.message.turnout.state': true,
+	'system.message.firmware.version': true,
 	'system.message.stop': true,
 	'system.message.trackpower': true,
-	'system.message.z21.rx': true,
-	'system.message.z21.version': true
+	'system.message.x.bus.version': true,
+	'system.message.z21.rx': true
 } as const satisfies Record<ServerToClientType, true>;

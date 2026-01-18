@@ -6,6 +6,7 @@ import type { Direction, Logger } from '@application-platform/z21-shared';
 
 import { type LocoFunctionSwitchType } from '../constants';
 import {
+	encodeLanXGetFirmwareVersion,
 	encodeLanXGetLocoInfo,
 	encodeLanXGetTurnoutInfo,
 	encodeLanXGetVersion,
@@ -155,7 +156,7 @@ export class Z21CommandService {
 	/**
 	 * Requests the Z21 firmware version information.
 	 */
-	public getVersion(): void {
+	public getXBusVersion(): void {
 		const buf = encodeLanXGetVersion();
 		this.logger.debug('[z21] tx GET_VERSION', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
@@ -176,6 +177,15 @@ export class Z21CommandService {
 	public setStop(): void {
 		const buf = encodeLanXSetStop();
 		this.logger.debug('[z21] tx SET_STOP', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Requests the Z21 firmware version information.
+	 */
+	public getFirmwareVersion(): void {
+		const buf = encodeLanXGetFirmwareVersion();
+		this.logger.debug('[z21] tx GET_FIRMWARE_VERSION', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }

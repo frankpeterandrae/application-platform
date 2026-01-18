@@ -55,3 +55,4 @@ vitest.config.*.timestamp*
 __screenshots__/
 /release/
 /test-result/
+/playwright-report/

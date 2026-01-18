@@ -1,35 +1,29 @@
-name: Tag z21-ui / z21-server after main CI
+name: _Reusable Tag z21-ui / z21-server
 
 on:
-  workflow_run:
-    workflows: ["Main - Full CI + Sonar + Deploy homepage"]
-    branches: [main]
-    types: [completed]
+  workflow_call: {}
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
   tag:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: read
     steps:
-      - name: Checkout main at the tested commit
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Find PR labels for this merge commit
+      - name: Find PR labels for current commit (merge commit on main)
         id: pr
         uses: actions/github-script@v8
         with:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const sha = context.payload.workflow_run.head_sha;
+            const sha = context.sha;
 
-            // Find PRs associated with this commit
             const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner, repo, commit_sha: sha
             });
@@ -39,7 +33,6 @@ jobs:
               return;
             }
 
-            // pick first PR (usually exactly one)
             const pr = prs.data[0];
             core.setOutput('found', 'true');
             core.setOutput('number', String(pr.number));

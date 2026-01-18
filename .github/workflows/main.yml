@@ -112,3 +112,14 @@ jobs:
           protocol: ftps
           local-dir: dist/production/
           server-dir: /html/
+
+  tag-z21:
+    name: Tag z21 after successful main
+    needs:
+      - ci-and-sonar
+      - deploy-homepage
+    if: ${{ always() && needs.ci-and-sonar.result == 'success' && (needs.deploy-homepage.result == 'success' || needs.deploy-homepage.result == 'skipped') }}
+    uses: ./.github/workflows/_reusable-tag-z21.yml
+    permissions:
+      contents: write
+      pull-requests: read
