@@ -156,27 +156,6 @@ describe('Z21CommandService', () => {
 	});
 
 	describe('setLocoFunction', () => {
-		it('sends setLocoFunction frames', () => {
-			service.setLocoFunction(6, 2, 1 as any);
-
-			expect(mockUdp.sendRaw).toHaveBeenCalled();
-			const buf = mockUdp.sendRaw.mock.calls[mockUdp.sendRaw.mock.calls.length - 1][0];
-			expect(Buffer.isBuffer(buf)).toBe(true);
-			expect(buf.length).toBeGreaterThan(0);
-		});
-	});
-
-	describe('getLocoInfo', () => {
-		it('sends getLocoInfo frames', () => {
-			service.getLocoInfo(12);
-			expect(mockUdp.sendRaw).toHaveBeenCalled();
-			const buf = mockUdp.sendRaw.mock.calls[mockUdp.sendRaw.mock.calls.length - 1][0];
-			expect(Buffer.isBuffer(buf)).toBe(true);
-			expect(buf.length).toBeGreaterThan(0);
-		});
-	});
-
-	describe('setLocoFunction', () => {
 		it('sends locomotive function command to UDP', () => {
 			service.setLocoFunction(100, 0, 0b01);
 
@@ -627,13 +606,6 @@ describe('Z21CommandService', () => {
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
-		it('sends buffer with positive length', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBeGreaterThan(0);
-		});
-
 		it('always produces same buffer for repeated calls', () => {
 			service.getVersion();
 			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
@@ -644,48 +616,27 @@ describe('Z21CommandService', () => {
 			expect(buffer1).toEqual(buffer2);
 		});
 
-		it('sends LAN_X formatted message', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const lanHeader = buffer.readUInt16LE(2);
-			expect(lanHeader).toBe(0x0040);
-		});
-
-		it('sends buffer with correct length encoding', () => {
+		it('sends LAN_X formatted message with correct structure', () => {
 			service.getVersion();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(7);
 			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
 		});
 
 		it('encodes LAN_X_GET_VERSION command structure correctly', () => {
 			service.getVersion();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// Byte 0-1: Length (0x07 0x00 in little-endian)
 			expect(buffer[0]).toBe(0x07);
 			expect(buffer[1]).toBe(0x00);
-			// Byte 2-3: LAN_X header (0x40 0x00 in little-endian)
 			expect(buffer[2]).toBe(0x40);
 			expect(buffer[3]).toBe(0x00);
-			// Byte 4: XBus header (0x21 for GET_VERSION)
 			expect(buffer[4]).toBe(0x21);
-			// Byte 5: XBus command (0x21 for GET_VERSION)
 			expect(buffer[5]).toBe(0x21);
-		});
-
-		it('includes valid XOR checksum in buffer', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// XOR checksum is last byte
-			const checksumByte = buffer[buffer.length - 1];
-			// Calculate expected checksum: XBus header ^ XBus command
-			const expectedChecksum = 0x21 ^ 0x21;
-			expect(checksumByte).toBe(expectedChecksum);
 		});
 
 		it('sends complete GET_VERSION frame matching expected hex', () => {
@@ -693,67 +644,7 @@ describe('Z21CommandService', () => {
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const hex = buffer.toString('hex');
-			// Expected: 07004000212100
-			// Length: 0x0007, Header: 0x0040, XBus: 0x21 0x21, XOR: 0x00
 			expect(hex).toBe('07004000212100');
-		});
-
-		it('creates a valid LAN_X formatted message with proper structure', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const len = buffer.readUInt16LE(0);
-			expect(len).toBe(buffer.length);
-			const lanHeader = buffer.readUInt16LE(2);
-			expect(lanHeader).toBe(0x0040);
-			// Verify XBus portion starts at byte 4
-			expect(buffer.length).toBeGreaterThan(4);
-		});
-
-		it('sends buffer that matches encoding function output', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// Buffer should be exactly 7 bytes as per LAN_X_GET_VERSION specification
-			expect(buffer.length).toBe(7);
-			// Should start with length prefix
-			expect(buffer.readUInt16LE(0)).toBe(7);
-			// Should contain LAN_X header
-			expect(buffer.readUInt16LE(2)).toBe(0x0040);
-		});
-
-		it('uses correct XBus header for STATUS group', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// XBus header for GET_VERSION should be 0x21 (STATUS group)
-			expect(buffer[4]).toBe(0x21);
-		});
-
-		it('uses correct XBus command byte for GET_VERSION', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// XBus command for GET_VERSION should be 0x21
-			expect(buffer[5]).toBe(0x21);
-		});
-
-		it('does not include extra data bytes after checksum', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// Buffer should be exactly 7 bytes: 2(length) + 2(header) + 2(xbus) + 1(checksum)
-			expect(buffer.length).toBe(7);
-		});
-
-		it('produces buffer that can be sent directly over UDP', () => {
-			service.getVersion();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			// Verify buffer is valid for UDP transmission
-			expect(Buffer.isBuffer(buffer)).toBe(true);
-			expect(buffer.length).toBeGreaterThan(0);
-			expect(buffer.length).toBeLessThanOrEqual(1472); // Max UDP payload size
 		});
 	});
 
@@ -766,13 +657,6 @@ describe('Z21CommandService', () => {
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
-		it('sends buffer with positive length', () => {
-			service.getStatus();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBeGreaterThan(0);
-		});
-
 		it('always produces same buffer for repeated calls', () => {
 			service.getStatus();
 			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
@@ -783,21 +667,15 @@ describe('Z21CommandService', () => {
 			expect(buffer1).toEqual(buffer2);
 		});
 
-		it('sends LAN_X formatted message', () => {
-			service.getStatus();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const lanHeader = buffer.readUInt16LE(2);
-			expect(lanHeader).toBe(0x0040);
-		});
-
-		it('sends buffer with correct length encoding', () => {
+		it('sends LAN_X formatted message with correct structure', () => {
 			service.getStatus();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(7);
 			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
 		});
 
 		it('encodes LAN_X_GET_STATUS command structure correctly', () => {
@@ -812,15 +690,6 @@ describe('Z21CommandService', () => {
 			expect(buffer[5]).toBe(0x24);
 		});
 
-		it('includes valid XOR checksum in buffer', () => {
-			service.getStatus();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const checksumByte = buffer[buffer.length - 1];
-			const expectedChecksum = 0x21 ^ 0x24;
-			expect(checksumByte).toBe(expectedChecksum);
-		});
-
 		it('sends complete GET_STATUS frame matching expected hex', () => {
 			service.getStatus();
 
@@ -828,55 +697,119 @@ describe('Z21CommandService', () => {
 			const hex = buffer.toString('hex');
 			expect(hex).toBe('07004000212405');
 		});
+	});
 
-		it('creates a valid LAN_X formatted message with proper structure', () => {
-			service.getStatus();
+	describe('setStop', () => {
+		it('sends global emergency stop command to UDP', () => {
+			service.setStop();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			service.setStop();
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setStop();
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_X formatted message with correct structure', () => {
+			service.setStop();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(6);
 			expect(len).toBe(buffer.length);
 			const lanHeader = buffer.readUInt16LE(2);
 			expect(lanHeader).toBe(0x0040);
-			expect(buffer.length).toBeGreaterThan(4);
 		});
 
-		it('sends buffer that matches encoding function output', () => {
-			service.getStatus();
+		it('encodes LAN_X_SET_STOP command structure correctly', () => {
+			service.setStop();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBe(7);
-			expect(buffer.readUInt16LE(0)).toBe(7);
-			expect(buffer.readUInt16LE(2)).toBe(0x0040);
+			expect(buffer[0]).toBe(0x06);
+			expect(buffer[1]).toBe(0x00);
+			expect(buffer[2]).toBe(0x40);
+			expect(buffer[3]).toBe(0x00);
+			expect(buffer[4]).toBe(0x80);
+			expect(buffer[5]).toBe(0x80);
 		});
 
-		it('uses correct XBus header for STATUS group', () => {
-			service.getStatus();
+		it('sends complete SET_STOP frame matching expected hex', () => {
+			service.setStop();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer[4]).toBe(0x21);
+			const hex = buffer.toString('hex');
+			expect(hex).toBe('060040008080');
 		});
 
-		it('uses correct XBus command byte for GET_STATUS', () => {
-			service.getStatus();
+		it('sends buffer with non-zero length', () => {
+			service.setStop();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer[5]).toBe(0x24);
-		});
-
-		it('does not include extra data bytes after checksum', () => {
-			service.getStatus();
-
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBe(7);
+			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces buffer that can be sent directly over UDP', () => {
-			service.getStatus();
+			service.setStop();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
-			expect(buffer.length).toBeGreaterThan(0);
 			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+
+		it('sends different buffer than getVersion', () => {
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getVersion();
+			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(stopBuffer).not.toEqual(versionBuffer);
+		});
+
+		it('sends different buffer than getStatus', () => {
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getStatus();
+			const statusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(stopBuffer).not.toEqual(statusBuffer);
+		});
+
+		it('sends different buffer than track power commands', () => {
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.sendTrackPower(false);
+			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(stopBuffer).not.toEqual(powerBuffer);
+		});
+
+		it('can be called multiple times without error', () => {
+			expect(() => {
+				service.setStop();
+				service.setStop();
+				service.setStop();
+			}).not.toThrow();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+
+		it('includes valid XOR checksum in buffer', () => {
+			service.setStop();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const checksumByte = buffer[buffer.length - 1];
+			expect(checksumByte).toBe(0x80);
 		});
 	});
 });

@@ -519,7 +519,7 @@ describe('server e2e', () => {
 
 			// Verify first client got version
 			const versionMsg1 = await waitFor(() => ws1.messages.find((m) => m?.type === 'system.message.z21.version'), {
-				label: 'ws1 system.version',
+				label: 'ws1 system.message.z21.version',
 				timeoutMs: 3000,
 				dump: () => `\nWS1:\n${ws1.messages.map((m) => JSON.stringify(m)).join('\n')}`
 			});

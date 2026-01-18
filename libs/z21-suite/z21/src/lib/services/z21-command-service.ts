@@ -11,6 +11,7 @@ import {
 	encodeLanXGetVersion,
 	encodeLanXSetLocoEStop,
 	encodeLanXSetLocoFunction,
+	encodeLanXSetStop,
 	encodeLanXSetTrackPowerOff,
 	encodeLanXSetTrackPowerOn,
 	encodeLanXSetTurnout,
@@ -166,6 +167,15 @@ export class Z21CommandService {
 	public getStatus(): void {
 		const buf = encodeLanXSystemStatus();
 		this.logger.debug('[z21] tx GET_STATUS', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Sends a global emergency stop command to the Z21 device.
+	 */
+	public setStop(): void {
+		const buf = encodeLanXSetStop();
+		this.logger.debug('[z21] tx SET_STOP', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }

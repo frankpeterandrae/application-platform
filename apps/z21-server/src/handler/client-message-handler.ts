@@ -52,39 +52,62 @@ export class ClientMessageHandler {
 	 */
 	public handle(msg: ClientToServer): void {
 		switch (msg.type) {
-			case 'server.command.session.hello':
+			case 'server.command.session.hello': {
 				// ignore for now
-				return;
+				break;
+			}
 
-			case 'system.command.trackpower.set':
+			case 'system.command.trackpower.set': {
 				// Ping the Z21 gateway (demo behavior), then broadcast new power state
 				this.z21Service.sendTrackPower(msg.on);
 				this.broadcast({ type: 'system.message.trackpower', on: msg.on, short: false });
-				return;
+				break;
+			}
 
 			case 'loco.command.drive': {
 				// Update locomotive speed/direction and inform clients of the new state
 				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
 				this.pendingDrives.set(msg.addr, { speed: msg.speed, dir: msg.dir });
 				this.scheduleDrive(msg.addr);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
-				return;
+				this.broadcast({
+					type: 'loco.message.state',
+					addr: msg.addr,
+					speed: st.speed,
+					dir: st.dir,
+					fns: st.fns,
+					estop: st.estop
+				});
+				break;
 			}
 
 			case 'loco.command.function.set': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, msg.on);
 				this.z21Service.setLocoFunction(msg.addr, msg.fn, msg.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
-				return;
+				this.broadcast({
+					type: 'loco.message.state',
+					addr: msg.addr,
+					speed: st.speed,
+					dir: st.dir,
+					fns: st.fns,
+					estop: st.estop
+				});
+				break;
 			}
 
 			case 'loco.command.function.toggle': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
 				const st = this.locoManager.setFunction(msg.addr, msg.fn, !(this.locoManager.getState(msg.addr)?.fns[msg.fn] ?? false));
 				this.z21Service.setLocoFunction(msg.addr, msg.fn, LocoFunctionSwitchType.Toggle);
-				this.broadcast({ type: 'loco.message.state', addr: msg.addr, speed: st.speed, dir: st.dir, fns: st.fns, estop: st.estop });
-				return;
+				this.broadcast({
+					type: 'loco.message.state',
+					addr: msg.addr,
+					speed: st.speed,
+					dir: st.dir,
+					fns: st.fns,
+					estop: st.estop
+				});
+				break;
 			}
 
 			case 'loco.command.eStop': {
@@ -96,9 +119,10 @@ export class ClientMessageHandler {
 
 				this.driveTimers.delete(msg.addr);
 				this.pendingDrives.delete(msg.addr);
+
 				this.z21Service.setLocoEStop(msg.addr);
 				this.z21Service.getLocoInfo(msg.addr);
-				return;
+				break;
 			}
 
 			case 'switching.command.turnout.set': {
@@ -106,7 +130,12 @@ export class ClientMessageHandler {
 				const port: 0 | 1 = msg.state === TurnoutState.DIVERGING ? 1 : 0;
 				this.z21Service.setTurnout(msg.addr, port, { queue: true, pulseMs: msg.pulseMs ?? 100 });
 				this.z21Service.getTurnoutInfo(msg.addr);
-				return;
+				break;
+			}
+
+			case 'loco.command.stop.all': {
+				this.z21Service.setStop();
+				break;
 			}
 		}
 	}

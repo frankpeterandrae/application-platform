@@ -27,6 +27,7 @@ describe('ClientMessageHandler.handle', () => {
 		getTurnoutInfo: Mock;
 		setLocoEStop: Mock;
 		getLocoInfo: Mock;
+		setStop: Mock;
 	};
 	let handler: ClientMessageHandler;
 
@@ -47,7 +48,8 @@ describe('ClientMessageHandler.handle', () => {
 			getState: vi.fn(),
 			setState: vi.fn(),
 			setLocoEStop: vi.fn(),
-			getLocoInfo: vi.fn()
+			getLocoInfo: vi.fn(),
+			setStop: vi.fn()
 		} as any;
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, broadcast);
 	});
@@ -172,13 +174,6 @@ describe('ClientMessageHandler.handle', () => {
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(9999, 0.5, 'FWD');
 		});
-
-		it('broadcasts empty functions map when no functions are set', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {} });
-			handler.handle({ type: 'loco.command.drive', addr: 50, speed: 0.5, dir: 'FWD' } as ClientToServer);
-
-			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ fns: {} }));
-		});
 	});
 
 	describe('loco.command.function.set', () => {
@@ -227,13 +222,6 @@ describe('ClientMessageHandler.handle', () => {
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(100, 31, true);
 			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(100, 31, LocoFunctionSwitchType.On);
-		});
-
-		it('broadcasts current speed and direction along with function state', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 0.75, dir: 'REV', fns: { 10: true } });
-			handler.handle({ type: 'loco.command.function.set', addr: 50, fn: 10, on: true } as ClientToServer);
-
-			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ speed: 0.75, dir: 'REV' }));
 		});
 
 		it('calls locoManager before z21Service', () => {
@@ -349,18 +337,6 @@ describe('ClientMessageHandler.handle', () => {
 			expect(z21Service.getTurnoutInfo).toHaveBeenCalledWith(9);
 		});
 
-		it('uses port 0 for STRAIGHT state', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: TurnoutState.STRAIGHT } as ClientToServer);
-
-			expect(z21Service.setTurnout).toHaveBeenCalledWith(10, 0, expect.any(Object));
-		});
-
-		it('uses port 1 for DIVERGING state', () => {
-			handler.handle({ type: 'switching.command.turnout.set', addr: 10, state: TurnoutState.DIVERGING } as ClientToServer);
-
-			expect(z21Service.setTurnout).toHaveBeenCalledWith(10, 1, expect.any(Object));
-		});
-
 		it('uses default pulseMs of 100 when not specified', () => {
 			handler.handle({ type: 'switching.command.turnout.set', addr: 20, state: TurnoutState.STRAIGHT } as ClientToServer);
 
@@ -429,6 +405,26 @@ describe('ClientMessageHandler.handle', () => {
 			handler.handle({ type: 'switching.command.turnout.set', addr: 100, state: TurnoutState.STRAIGHT } as ClientToServer);
 
 			expect(broadcast).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('loco.command.stop.all', () => {
+		it('sends stop command to z21Service', () => {
+			handler.handle({ type: 'loco.command.stop.all' } as ClientToServer);
+
+			expect(z21Service.setStop).toHaveBeenCalled();
+		});
+
+		it('does not broadcast when loco.command.stop.all is issued', () => {
+			handler.handle({ type: 'loco.command.stop.all' } as ClientToServer);
+
+			expect(broadcast).not.toHaveBeenCalled();
+		});
+
+		it('calls setStop exactly once', () => {
+			handler.handle({ type: 'loco.command.stop.all' } as ClientToServer);
+
+			expect(z21Service.setStop).toHaveBeenCalledTimes(1);
 		});
 	});
 

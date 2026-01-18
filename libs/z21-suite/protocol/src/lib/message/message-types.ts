@@ -4,7 +4,7 @@
  */
 
 // Import individual types for union definitions
-import type { LocoDrive, LocoEStop, LocoFunctionSet, LocoFunctionToggle, SessionHello, TrackpowerSet, TurnoutSet } from './client';
+import type { LocoDrive, LocoEStop, LocoFunctionSet, LocoFunctionToggle, SessionHello, StopAll, TrackpowerSet, TurnoutSet } from './client';
 import type {
 	FeedbackChanged,
 	LocoEStopEvent,
@@ -15,6 +15,7 @@ import type {
 	TurnoutState_Message,
 	Z21Rx
 } from './server';
+import { SystemStop } from './server';
 /**
  * Union of all messages a client may send to the server.
  *
@@ -22,7 +23,15 @@ import type {
  * 1. Import the type
  * 2. Add it to this union
  */
-export type ClientToServer = SessionHello | TrackpowerSet | LocoDrive | LocoEStop | LocoFunctionSet | LocoFunctionToggle | TurnoutSet;
+export type ClientToServer =
+	| LocoDrive
+	| LocoEStop
+	| LocoFunctionSet
+	| LocoFunctionToggle
+	| SessionHello
+	| StopAll
+	| TrackpowerSet
+	| TurnoutSet;
 
 type ClientToServerType = ClientToServer['type'];
 
@@ -38,6 +47,7 @@ export const CLIENT_TO_SERVER_TYPES = {
 	'loco.command.eStop': true,
 	'loco.command.function.set': true,
 	'loco.command.function.toggle': true,
+	'loco.command.stop.all': true,
 	'server.command.session.hello': true,
 	'switching.command.turnout.set': true,
 	'system.command.trackpower.set': true
@@ -55,6 +65,7 @@ export type ServerToClient =
 	| LocoEStopEvent
 	| LocoState
 	| SessionReady
+	| SystemStop
 	| SystemTrackPower
 	| SystemVersion
 	| TurnoutState_Message
@@ -74,6 +85,7 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'loco.message.state': true,
 	'server.replay.session.ready': true,
 	'switching.message.turnout.state': true,
+	'system.message.stop': true,
 	'system.message.trackpower': true,
 	'system.message.z21.rx': true,
 	'system.message.z21.version': true

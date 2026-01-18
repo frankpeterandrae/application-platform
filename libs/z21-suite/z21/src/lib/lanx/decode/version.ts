@@ -3,8 +3,7 @@
  * All rights reserved.
  */
 
-import type { Z21VersionEvent } from '@application-platform/z21-shared';
-
+import { type Z21Event } from '../../event/event-types';
 /**
  * Convert XBus Version to standard version number
  * e.g 0x30 = V3.0, 0x36 = V3.6, 0x40 = V4.0
@@ -24,7 +23,7 @@ function xbusVersionToVersion(xbusVersion: number): number {
  * Byte 0: XBus Version
  * Byte 1: CMDs ID
  */
-export function decodeLanXVersionPayload(payload: Uint8Array): Z21VersionEvent[] {
+export function decodeLanXVersionPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.z21.version' }>[] {
 	const raw = Array.from(payload);
 	const xbusVersion = payload[0];
 	const cmdsId = payload[1];

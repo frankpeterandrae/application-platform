@@ -25,8 +25,8 @@ export class Z21EventHandler {
 		private readonly trackStatusManager: TrackStatusManager,
 		private readonly broadcast: BroadcastFn,
 		private readonly locoManager: LocoManager,
-		private logger: Logger,
-		private commandStationInfo: CommandStationInfo
+		private readonly logger: Logger,
+		private readonly commandStationInfo: CommandStationInfo
 	) {}
 
 	/**
@@ -42,9 +42,6 @@ export class Z21EventHandler {
 		const header = raw.readUInt16LE(2);
 		// Envelope (for Serial etc.)
 		if (raw.length >= 4) {
-			const len = raw.readUInt16LE(0);
-			const header = raw.readUInt16LE(2);
-
 			// Serial-Reply (as previously handled in UDP-Layer)
 			if (len === 0x0008 && header === Z21LanHeader.LAN_GET_SERIAL_NUMBER && raw.length >= 8) {
 				const serial = raw.readUInt32LE(4);
@@ -64,25 +61,20 @@ export class Z21EventHandler {
 
 		for (const ds of datasets) {
 			if (ds.kind === 'ds.unknown') {
-				this.logUnknown('frame', ds.kind, {
-					from: dg.from,
-					hex: dg.rawHex,
-					reason: ds.reason,
+				this.logUnknown('frame', 'unknown', {
+					from,
 					header: ds.header,
-					frameLen: len
+					reason: ds.reason,
+					payload: Array.from(ds.payload),
+					hex: rawHex
 				});
 			}
 
 			if (ds.kind === 'ds.bad_xor') {
-				this.logUnknown('frame', ds.kind, {
-					from: dg.from,
-					hex: dg.rawHex,
-					calc: ds.calc,
-					recv: ds.recv
-				});
+				this.logUnknown('frame', 'bad_xor', { from, calc: ds.calc, recv: ds.recv, hex: rawHex });
 			}
 
-			// SystemState-Snapshot (if you want to keep this "special" broadcast form)
+			// SystemStateEvent-Snapshot (if you want to keep this "special" broadcast form)
 			// (in case parseZ21Datagram delivers system.state as Dataset)
 			const sys = datasets.find((d) => d.kind === 'ds.system.state');
 			if (sys?.kind === 'ds.system.state') {
@@ -110,7 +102,8 @@ export class Z21EventHandler {
 			}
 
 			// Default: datasets -> events
-			const events = datasets.flatMap(datasetsToEvents);
+			const usableDatasets = datasets.filter((d) => d.kind === 'ds.x.bus' || d.kind === 'ds.system.state');
+			const events = usableDatasets.flatMap(datasetsToEvents);
 
 			for (const event of events) {
 				switch (event.type) {
@@ -160,6 +153,12 @@ export class Z21EventHandler {
 						this.logger.info('event.z21.version', event);
 						this.commandStationInfo.setVersion(event);
 						this.broadcast({ type: 'system.message.z21.version', version: event.versionString, cmdsId: event.cmdsId });
+						break;
+					}
+					case 'event.z21.stopped': {
+						this.logger.info('event.z21.stopped', event);
+						this.trackStatusManager.setEmergencyStop(true, 'ds.lan.x');
+						this.broadcast({ type: 'system.message.stop' });
 						break;
 					}
 					default: {
@@ -217,8 +216,8 @@ export class Z21EventHandler {
 		});
 	}
 
-	private updateTrackStatusFromLanX(csStatusEvent: Z21StatusEvent): void {
-		const status = this.trackStatusManager.updateFromLanX(csStatusEvent);
+	private updateTrackStatusFromLanX(z21StatusEvent: Z21StatusEvent): void {
+		const status = this.trackStatusManager.updateFromLanX(z21StatusEvent);
 		this.broadcast({
 			type: 'system.message.trackpower',
 			on: status.powerOn ?? false,

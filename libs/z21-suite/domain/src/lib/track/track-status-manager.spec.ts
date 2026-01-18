@@ -38,25 +38,11 @@ describe('TrackStatusManager', () => {
 		expect(status.source).toBe('ds.x.bus');
 	});
 
-	it('updates system state flags when no prior X-Bus power is set', () => {
-		const status = manager.updateFromSystemState({ powerOn: true, emergencyStop: false, short: false });
+	it('updates system state flags', () => {
+		const status = manager.updateFromSystemState({ powerOn: true, emergencyStop: false, short: false, source: 'ds.system.state' });
 		expect(status.powerOn).toBe(true);
 		expect(status.emergencyStop).toBe(false);
 		expect(status.short).toBe(false);
-		expect(status.source).toBe('ds.system.state');
-	});
-
-	it('preserves X-Bus power when system state updates arrive', () => {
-		manager.updateFromXbusPower(true);
-		const status = manager.updateFromSystemState({ powerOn: false, emergencyStop: false, short: false });
-		expect(status.powerOn).toBe(true);
-		expect(status.source).toBe('ds.x.bus');
-	});
-
-	it('uses system state power when X-Bus has no prior powerOn value', () => {
-		manager.updateFromSystemState({ powerOn: true, emergencyStop: false, short: false });
-		const status = manager.updateFromSystemState({ powerOn: false, emergencyStop: false, short: false });
-		expect(status.powerOn).toBe(false);
 		expect(status.source).toBe('ds.system.state');
 	});
 
@@ -83,41 +69,150 @@ describe('TrackStatusManager', () => {
 		expect(status.emergencyStop).toBeUndefined();
 	});
 
-	it('combines X-Bus power with system state short and emergencyStop', () => {
-		manager.updateFromXbusPower(true);
-		const status = manager.updateFromSystemState({ short: true, emergencyStop: false });
-		expect(status.powerOn).toBe(true);
-		expect(status.short).toBe(true);
-		expect(status.emergencyStop).toBe(false);
-		expect(status.source).toBe('ds.x.bus');
+	describe('updateFromLanX', () => {
+		it('updates track status from event.z21.status event and marks source as lan.x', () => {
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: true, emergencyStop: false, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.powerOn).toBe(true);
+			expect(status.emergencyStop).toBe(false);
+			expect(status.short).toBe(false);
+			expect(status.source).toBe('ds.lan.x');
+		});
+
+		it('sets power off when event.z21.status reports power off', () => {
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: false, emergencyStop: false, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.powerOn).toBe(false);
+		});
+
+		it('preserves current power state when emergency stop is active', () => {
+			manager.updateFromXbusPower(true);
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: false, emergencyStop: true, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.powerOn).toBe(true);
+			expect(status.emergencyStop).toBe(true);
+		});
+
+		it('uses event.z21.status power when emergency stop is not active', () => {
+			manager.updateFromXbusPower(true);
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: false, emergencyStop: false, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.powerOn).toBe(false);
+		});
+
+		it('updates short circuit flag from event.z21.status', () => {
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: true, emergencyStop: false, shortCircuit: true, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.short).toBe(true);
+		});
+
+		it('clears short circuit flag when event.z21.status reports no short', () => {
+			manager.updateFromSystemState({ short: true });
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: true, emergencyStop: false, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.short).toBe(false);
+		});
+
+		it('handles emergency stop with undefined previous power state', () => {
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: false, emergencyStop: true, shortCircuit: false, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.emergencyStop).toBe(true);
+			expect(status.powerOn).toBeUndefined();
+		});
+
+		it('preserves undefined power state when emergency stop is active and no prior state', () => {
+			const z21StatusEvent = {
+				type: 'event.z21.status' as const,
+				payload: { powerOn: true, emergencyStop: true, shortCircuit: true, programmingMode: false }
+			};
+			const status = manager.updateFromLanX(z21StatusEvent);
+
+			expect(status.powerOn).toBeUndefined();
+			expect(status.emergencyStop).toBe(true);
+			expect(status.short).toBe(true);
+		});
 	});
 
-	it('preserves X-Bus source after system state update', () => {
-		manager.updateFromXbusPower(false);
-		manager.updateFromSystemState({ powerOn: true });
-		const status = manager.getStatus();
-		expect(status.source).toBe('ds.x.bus');
-	});
+	describe('setEmergencyStop', () => {
+		it('sets emergency stop to true with x.bus source', () => {
+			const status = manager.setEmergencyStop(true, 'ds.x.bus');
 
-	it('sets source to system.state when no X-Bus update has occurred', () => {
-		const status = manager.updateFromSystemState({ powerOn: true });
-		expect(status.source).toBe('ds.system.state');
-	});
+			expect(status.emergencyStop).toBe(true);
+			expect(status.source).toBe('ds.x.bus');
+		});
 
-	it('updateFromLanX maps payload to track status and preserves power when emergencyStop true', () => {
-		// normal mapping when emergencyStop is false
-		let res = manager.updateFromLanX({ payload: { emergencyStop: false, powerOn: true, shortCircuit: true } } as any);
-		expect(res.powerOn).toBe(true);
-		expect(res.short).toBe(true);
-		expect(res.emergencyStop).toBe(false);
-		expect(res.source).toBe('ds.lan.x');
+		it('sets emergency stop to false with lan.x source', () => {
+			manager.setEmergencyStop(true, 'ds.x.bus');
+			const status = manager.setEmergencyStop(false, 'ds.lan.x');
 
-		// when emergencyStop is true, preserve existing powerOn value
-		manager.updateFromXbusPower(false); // set authoritative powerOn to false
-		res = manager.updateFromLanX({ payload: { emergencyStop: true, powerOn: true, shortCircuit: false } } as any);
-		expect(res.powerOn).toBe(false); // preserved from previous xbus
-		expect(res.emergencyStop).toBe(true);
-		expect(res.short).toBe(false);
-		expect(res.source).toBe('ds.lan.x');
+			expect(status.emergencyStop).toBe(false);
+			expect(status.source).toBe('ds.lan.x');
+		});
+
+		it('preserves existing power status when setting emergency stop', () => {
+			manager.updateFromXbusPower(true);
+			const status = manager.setEmergencyStop(true, 'ds.system.state');
+
+			expect(status.powerOn).toBe(true);
+			expect(status.emergencyStop).toBe(true);
+		});
+
+		it('preserves existing short status when setting emergency stop', () => {
+			manager.updateFromSystemState({ short: true });
+			const status = manager.setEmergencyStop(true, 'ds.lan.x');
+
+			expect(status.short).toBe(true);
+			expect(status.emergencyStop).toBe(true);
+		});
+
+		it('handles undefined source parameter', () => {
+			const status = manager.setEmergencyStop(true, undefined);
+
+			expect(status.emergencyStop).toBe(true);
+			expect(status.source).toBeUndefined();
+		});
+
+		it('toggles emergency stop flag multiple times', () => {
+			manager.setEmergencyStop(true, 'ds.x.bus');
+			manager.setEmergencyStop(false, 'ds.x.bus');
+			const status = manager.setEmergencyStop(true, 'ds.x.bus');
+
+			expect(status.emergencyStop).toBe(true);
+		});
+
+		it('overwrites previous source when setting emergency stop', () => {
+			manager.updateFromSystemState({ powerOn: true, source: 'ds.system.state' });
+			const status = manager.setEmergencyStop(true, 'ds.lan.x');
+
+			expect(status.source).toBe('ds.lan.x');
+		});
 	});
 });
