@@ -24,7 +24,6 @@ export const LAN_X_COMMANDS = {
 
 	/**
 	 * Get status of the Z21 central.
-	 * TODO: add handling
 	 */
 	LAN_X_GET_STATUS: {
 		xHeader: XHeader.STATUS,
@@ -127,7 +126,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: track power off.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_TRACK_POWER_OFF: {
 		xHeader: XHeader.BROADCAST,
@@ -135,7 +133,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: track power on.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_TRACK_POWER_ON: {
 		xHeader: XHeader.BROADCAST,

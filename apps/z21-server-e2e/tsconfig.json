@@ -11,7 +11,8 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"types": ["node"],
-		"moduleResolution": "nodenext"
+		"moduleResolution": "nodenext",
+		"allowImportingTsExtensions": true
 	},
 	"include": [
 		"**/*.ts",
@@ -24,6 +25,7 @@
 		"src/**/*.test.js",
 		"src/**/*.d.ts",
 		"eslint.config.mjs",
-		"vitest.config.cts"
+		"vitest.config.cts",
+		"vitest.config.mts"
 	]
 }

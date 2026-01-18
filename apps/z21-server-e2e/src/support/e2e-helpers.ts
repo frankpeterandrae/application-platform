@@ -78,81 +78,55 @@ export async function startServerAndConnectWs(): Promise<E2eCtx> {
 			LOG_LEVEL: process.env['LOG_LEVEL'] ?? 'silent',
 			LOG_PRETTY: process.env['LOG_PRETTY'] ?? '0'
 		},
-		// use 'pipe' for stdin so the ChildProcess type has non-null stdin (ChildProcessWithoutNullStreams)
 		stdio: ['pipe', 'pipe', 'pipe']
 	});
 
-	proc.stdout.on('data', (d) => {
-		const s = d.toString();
-		logs.push(s);
-		console.log('[server]', s.trimEnd());
-	});
-	proc.stderr.on('data', (d) => {
-		const s = d.toString();
-		logs.push(s);
-		console.error('[server]', s.trimEnd());
-	});
+	proc.stdout.on('data', (d) => logs.push(d.toString()));
+	proc.stderr.on('data', (d) => logs.push(d.toString()));
 
-	await waitFor(
-		() => {
+	await waitFor(() => (logs.join('').includes('server.started') ? true : undefined), { label: 'server.started', timeoutMs: 12000 });
+
+	const messages: WsMessage[] = [];
+
+	// Retry loop für WS connect
+	const ws = await (async () => {
+		const start = Date.now();
+		while (Date.now() - start < 12000) {
 			const candidate = new WebSocket(`ws://127.0.0.1:${httpPort}`);
+
 			candidate.on('message', (data) => {
 				try {
 					messages.push(JSON.parse(data.toString()));
 				} catch {
-					/* ignore */
+					// ignore
 				}
 			});
-			return new Promise<WebSocket | undefined>((resolve) => {
-				candidate.once('open', () => resolve(candidate));
-				candidate.once('error', () => {
-					try {
-						candidate.close();
-					} catch {
-						// ignore
-					}
-					resolve(undefined);
+
+			try {
+				await new Promise<void>((resolve, reject) => {
+					candidate.once('open', resolve);
+					candidate.once('error', reject);
 				});
-			});
-		},
-		{ label: 'ws connect', timeoutMs: 12000 }
-	);
-
-	// 2) connect ws
-	const ws = await connectWsWithRetry(`ws://127.0.0.1:${httpPort}`, 12000);
-	const messages: WsMessage[] = [];
-
-	ws.on('message', (data) => {
-		const s = data.toString();
-		try {
-			messages.push(JSON.parse(s));
-		} catch {
-			// ignore
+				return candidate;
+			} catch {
+				try {
+					candidate.close();
+				} catch {
+					// ignore
+				}
+				await delay(50);
+			}
 		}
-	});
+		throw new Error(`timeout (ws connect) ws://127.0.0.1:${httpPort}`);
+	})();
+
 	await waitFor(() => messages.find((m) => m?.type === 'server.replay.session.ready'), {
 		label: 'server.replay.session.ready',
-		timeoutMs: 4000
+		timeoutMs: 12000,
+		dump: () => `\nWS:\n${messages.map((m) => JSON.stringify(m)).join('\n')}\n\nLOGS:\n${logs.join('')}`
 	});
 
 	return { proc, logs, ws, messages, httpPort, fakeZ21Port };
-}
-
-async function connectWsWithRetry(url: string, timeoutMs = 12000): Promise<WebSocket> {
-	const start = Date.now();
-	while (Date.now() - start < timeoutMs) {
-		try {
-			const ws = new WebSocket(url);
-			await new Promise<void>((resolve, reject) => {
-				ws.once('open', resolve);
-				ws.once('error', reject);
-			});
-			return ws;
-		} catch {
-			await new Promise((r) => setTimeout(r, 50));
-		}
-	}
-	throw new Error(`timeout (ws connect) ${url}`);
 }
 
 export async function stopCtx(ctx: E2eCtx): Promise<void> {

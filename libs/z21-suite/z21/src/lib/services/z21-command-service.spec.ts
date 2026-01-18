@@ -756,4 +756,127 @@ describe('Z21CommandService', () => {
 			expect(buffer.length).toBeLessThanOrEqual(1472); // Max UDP payload size
 		});
 	});
+
+	describe('getStatus', () => {
+		it('sends status request command to UDP', () => {
+			service.getStatus();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('sends buffer with positive length', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			service.getStatus();
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getStatus();
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_X formatted message', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
+		});
+
+		it('sends buffer with correct length encoding', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(7);
+			expect(len).toBe(buffer.length);
+		});
+
+		it('encodes LAN_X_GET_STATUS command structure correctly', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer[0]).toBe(0x07);
+			expect(buffer[1]).toBe(0x00);
+			expect(buffer[2]).toBe(0x40);
+			expect(buffer[3]).toBe(0x00);
+			expect(buffer[4]).toBe(0x21);
+			expect(buffer[5]).toBe(0x24);
+		});
+
+		it('includes valid XOR checksum in buffer', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const checksumByte = buffer[buffer.length - 1];
+			const expectedChecksum = 0x21 ^ 0x24;
+			expect(checksumByte).toBe(expectedChecksum);
+		});
+
+		it('sends complete GET_STATUS frame matching expected hex', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const hex = buffer.toString('hex');
+			expect(hex).toBe('07004000212405');
+		});
+
+		it('creates a valid LAN_X formatted message with proper structure', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
+			expect(buffer.length).toBeGreaterThan(4);
+		});
+
+		it('sends buffer that matches encoding function output', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBe(7);
+			expect(buffer.readUInt16LE(0)).toBe(7);
+			expect(buffer.readUInt16LE(2)).toBe(0x0040);
+		});
+
+		it('uses correct XBus header for STATUS group', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer[4]).toBe(0x21);
+		});
+
+		it('uses correct XBus command byte for GET_STATUS', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer[5]).toBe(0x24);
+		});
+
+		it('does not include extra data bytes after checksum', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBe(7);
+		});
+
+		it('produces buffer that can be sent directly over UDP', () => {
+			service.getStatus();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expect(buffer.length).toBeGreaterThan(0);
+			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+	});
 });
