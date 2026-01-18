@@ -47,7 +47,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Read DCC CV register.
-	 * TODO: add handling
 	 */
 	LAN_X_DCC_READ_REGISTER: {
 		xHeader: XHeader.DCC_READ_REGISTER,
@@ -207,7 +206,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Clear emergency stop for all locomotives.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_STOPPED: {
 		xHeader: XHeader.BC_STOP

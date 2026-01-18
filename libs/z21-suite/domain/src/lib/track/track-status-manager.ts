@@ -38,13 +38,11 @@ export class TrackStatusManager {
 	 * @returns Updated track status.
 	 */
 	public updateFromSystemState(flags: TrackStatus): TrackStatus {
-		const powerOn = this.status.source === 'ds.x.bus' && this.status.powerOn !== undefined ? this.status.powerOn : flags.powerOn;
-
 		this.status = {
-			powerOn,
+			powerOn: flags.powerOn,
 			emergencyStop: flags.emergencyStop,
 			short: flags.short,
-			source: this.status.source ?? 'ds.system.state'
+			source: flags.source
 		};
 
 		return this.getStatus();
@@ -68,6 +66,21 @@ export class TrackStatusManager {
 			emergencyStop: z21StatusEvent.payload.emergencyStop,
 			short: z21StatusEvent.payload.shortCircuit,
 			source: 'ds.lan.x'
+		};
+		return this.getStatus();
+	}
+
+	/**
+	 * Sets the emergency stop state.
+	 * @param isEmergency - Whether emergency stop is active
+	 * @param source - Source of the emergency stop signal
+	 * @returns The updated track status
+	 */
+	public setEmergencyStop(isEmergency: boolean, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x' | undefined): TrackStatus {
+		this.status = {
+			...this.status,
+			emergencyStop: isEmergency,
+			source
 		};
 		return this.getStatus();
 	}

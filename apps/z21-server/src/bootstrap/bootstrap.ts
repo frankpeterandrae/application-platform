@@ -92,6 +92,7 @@ export class Bootstrap {
 	 * - Performs demo ping via Z21 UDP where relevant
 	 */
 	private readonly clientMessageHandler: ClientMessageHandler;
+
 	/**
 	 * Count of connected WebSocket clients.
 	 */
@@ -121,7 +122,7 @@ export class Bootstrap {
 	/**
 	 * Information about the connected command station.
 	 */
-	private readonly commandStationInfo = new CommandStationInfo();
+	private readonly commandStationInfo: CommandStationInfo;
 
 	/**
 	 * Timer for sending periodic Z21 heartbeat messages.
@@ -137,6 +138,7 @@ export class Bootstrap {
 
 	constructor(cfg?: ServerConfig) {
 		this.cfg = cfg ?? loadConfig();
+		this.commandStationInfo = new CommandStationInfo();
 		this.logger = createConsoleLogger({
 			level: this.cfg.dev?.logLevel ?? 'info',
 			pretty: true,
@@ -167,7 +169,7 @@ export class Bootstrap {
 	 * - Enable broadcast flags (basic + systemState)
 	 * - Pull current system state immediately
 	 */
-	public start(): Bootstrap {
+	public start(): this {
 		this.wireUdp();
 		this.wireWs();
 		this.startZ21();
@@ -298,13 +300,14 @@ export class Bootstrap {
 			reason: 'first client connected',
 			wsClientCount: this.wsClientCount
 		});
-
 		if (this.commandStationInfo.hasVersion()) {
 			const version = this.commandStationInfo.getVersion();
+			const versionString = version?.versionString ?? 'Unknown';
+			const cmdsId = version && 'cmdsId' in version ? ((version as { cmdsId?: number }).cmdsId ?? 0) : 0;
 			this.wsServer.broadcast({
 				type: 'system.message.z21.version',
-				version: version?.versionString,
-				cmdsId: version?.cmdsId
+				version: versionString,
+				cmdsId: cmdsId
 			});
 		} else {
 			this.z21CommandService.getVersion();

@@ -25,6 +25,14 @@ describe('isClientToServerMessage', () => {
 		expect(isClientToServerMessage({ type: 'loco.command.function.toggle', addr: 5, fn: 0 })).toBe(true);
 	});
 
+	it('accepts loco.eStop message', () => {
+		expect(isClientToServerMessage({ type: 'loco.command.eStop', addr: 42 })).toBe(true);
+	});
+
+	it('accepts stop.all message', () => {
+		expect(isClientToServerMessage({ type: 'loco.command.stop.all' })).toBe(true);
+	});
+
 	it('accepts switching.command.turnout.set message', () => {
 		expect(isClientToServerMessage({ type: 'switching.command.turnout.set', addr: 1, state: 'closed' })).toBe(true);
 	});

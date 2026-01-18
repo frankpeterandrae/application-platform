@@ -3,11 +3,11 @@
  * All rights reserved.
  */
 
-import type { Z21VersionEvent } from '@application-platform/z21-shared';
+import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXVersionPayload } from './version';
 
-type VersionEvent = Extract<Z21VersionEvent, { type: 'event.z21.version' }>;
+type VersionEvent = Extract<Z21Event, { type: 'event.z21.version' }>;
 
 describe('decodeLanXVersionPayload', () => {
 	it('decodes version 3.0 correctly', () => {

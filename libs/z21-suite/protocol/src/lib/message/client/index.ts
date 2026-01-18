@@ -8,5 +8,6 @@ export * from './loco-estop';
 export * from './loco-function-set';
 export * from './loco-function-toggle';
 export * from './session-hello';
+export * from './stop-all';
 export * from './trackpower-set';
 export * from './turnout-set';

@@ -10,6 +10,7 @@ import {
 	UnknownLanXEvent,
 	UnknownXBusEvent,
 	Z21StatusEvent,
+	Z21StoppedEvent,
 	Z21VersionEvent
 } from '@application-platform/z21-shared';
 
@@ -31,6 +32,7 @@ export type Z21Event =
 	| UnknownLanXEvent
 	| UnknownXBusEvent
 	| Z21StatusEvent
+	| Z21StoppedEvent
 	| Z21VersionEvent;
 
 /**
