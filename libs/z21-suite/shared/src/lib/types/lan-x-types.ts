@@ -140,7 +140,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: programming mode.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_PROGRAMMING_MODE: {
 		xHeader: XHeader.BROADCAST,
@@ -148,7 +147,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Broadcast: track short circuit.
-	 * TODO: add handling
 	 */
 	LAN_X_BC_TRACK_SHORT_CIRCUIT: {
 		xHeader: XHeader.BROADCAST,

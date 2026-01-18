@@ -72,6 +72,9 @@ const decoders = {
 } as DecodersMock;
 
 describe('decodeLanXCommand', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 	it('returns loco info events for LAN_X_LOCO_INFO', () => {
 		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
 
@@ -130,5 +133,93 @@ describe('decodeLanXCommand', () => {
 				cmdsId: 2
 			}
 		] as any);
+	});
+
+	it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
+		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_BC_PROGRAMMING_MODE]));
+
+		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_PROGRAMMING_MODE');
+		expect(events.length).toBeGreaterThan(0);
+		expect(events[0].type).toBe('event.track.power');
+	});
+
+	it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
+		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_SHORT_CIRCUIT]));
+
+		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_TRACK_SHORT_CIRCUIT');
+		expect(events.length).toBeGreaterThan(0);
+		expect(events[0].type).toBe('event.track.power');
+	});
+
+	it('passes correct data to loco info decoder', () => {
+		const testData = new Uint8Array([0x04, 0x7a, 0x00, 0x42, 0x01]);
+		decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, testData);
+
+		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(testData);
+	});
+
+	it('passes correct data to turnout info decoder', () => {
+		const testData = new Uint8Array([0x02, 0x03]);
+		decodeLanXPayload(XHeader.TURNOUT_INFO, testData);
+
+		expect(decoders.decodeLanXTurnoutInfoPayload).toHaveBeenCalledWith(testData);
+	});
+
+	it('passes correct data to status changed decoder', () => {
+		const testData = new Uint8Array([XBusCmd.STATUS_CHANGED, 0x56]);
+		decodeLanXPayload(XHeader.STATUS_CHANGED, testData);
+
+		expect(decoders.decodeLanXStatusChangedPayload).toHaveBeenCalledWith(testData);
+	});
+
+	it('returns array when decoder returns events', () => {
+		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
+
+		expect(Array.isArray(events)).toBe(true);
+		expect(events.length).toBeGreaterThan(0);
+	});
+
+	it('returns empty array when no decoder handles command', () => {
+		const events = decodeLanXPayload(99 as XHeader, new Uint8Array([0xff]));
+
+		expect(Array.isArray(events)).toBe(true);
+		expect(events.length).toBe(0);
+	});
+
+	it('handles empty payload data', () => {
+		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([]));
+
+		expect(Array.isArray(events)).toBe(true);
+	});
+
+	it('handles large payload data', () => {
+		const largeData = new Uint8Array(255);
+		for (let i = 0; i < largeData.length; i++) {
+			largeData[i] = i % 256;
+		}
+		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, largeData);
+
+		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(largeData);
+		expect(Array.isArray(events)).toBe(true);
+	});
+
+	it('preserves event properties from decoder', () => {
+		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([XBusCmd.STATUS_CHANGED, 0xaa]));
+
+		expect(events[0]).toHaveProperty('type', 'event.z21.status');
+		expect(events[0]).toHaveProperty('payload');
+	});
+
+	it('handles all broadcast track power commands', () => {
+		const offEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_OFF]));
+		const onEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_ON]));
+		const progEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_BC_PROGRAMMING_MODE]));
+		const shortEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_SHORT_CIRCUIT]));
+
+		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledTimes(4);
+		expect(Array.isArray(offEvents)).toBe(true);
+		expect(Array.isArray(onEvents)).toBe(true);
+		expect(Array.isArray(progEvents)).toBe(true);
+		expect(Array.isArray(shortEvents)).toBe(true);
 	});
 });
