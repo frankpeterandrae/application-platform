@@ -6,8 +6,8 @@
 /**
  * Reports track power state and optional fault flags.
  */
-export type SystemVersion = {
-	type: 'system.message.x.bus.version';
-	version?: string;
-	cmdsId?: number;
+export type SystemFirmwareVersion = {
+	type: 'system.message.firmware.version';
+	major?: number;
+	minor?: number;
 };

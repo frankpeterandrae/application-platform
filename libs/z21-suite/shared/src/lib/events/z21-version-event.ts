@@ -4,9 +4,9 @@
  */
 
 export type Z21VersionEvent = {
-	type: 'event.z21.version';
+	type: 'event.x.bus.version';
 	raw: number[];
 	xbusVersion: number;
-	versionString: string;
+	xBusVersionString: string;
 	cmdsId: number;
 };

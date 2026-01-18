@@ -597,9 +597,9 @@ describe('Z21CommandService', () => {
 		});
 	});
 
-	describe('getVersion', () => {
+	describe('getXBusVersion', () => {
 		it('sends version request command to UDP', () => {
-			service.getVersion();
+			service.getXBusVersion();
 
 			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
@@ -607,17 +607,17 @@ describe('Z21CommandService', () => {
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getVersion();
+			service.getXBusVersion();
 			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
 
-			service.getVersion();
+			service.getXBusVersion();
 			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_X formatted message with correct structure', () => {
-			service.getVersion();
+			service.getXBusVersion();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
@@ -628,7 +628,7 @@ describe('Z21CommandService', () => {
 		});
 
 		it('encodes LAN_X_GET_VERSION command structure correctly', () => {
-			service.getVersion();
+			service.getXBusVersion();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			expect(buffer[0]).toBe(0x07);
@@ -640,7 +640,7 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends complete GET_VERSION frame matching expected hex', () => {
-			service.getVersion();
+			service.getXBusVersion();
 
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const hex = buffer.toString('hex');
@@ -764,11 +764,11 @@ describe('Z21CommandService', () => {
 			expect(buffer.length).toBeLessThanOrEqual(1472);
 		});
 
-		it('sends different buffer than getVersion', () => {
+		it('sends different buffer than getXBusVersion', () => {
 			service.setStop();
 			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
 
-			service.getVersion();
+			service.getXBusVersion();
 			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
 
 			expect(stopBuffer).not.toEqual(versionBuffer);
@@ -810,6 +810,154 @@ describe('Z21CommandService', () => {
 			const buffer = mockUdp.sendRaw.mock.calls[0][0];
 			const checksumByte = buffer[buffer.length - 1];
 			expect(checksumByte).toBe(0x80);
+		});
+	});
+	describe('getFirmwareVersion', () => {
+		it('sends firmware version request command to UDP', () => {
+			service.getFirmwareVersion();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			service.getFirmwareVersion();
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getFirmwareVersion();
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_X formatted message with correct structure', () => {
+			service.getFirmwareVersion();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0040);
+		});
+
+		it('sends different buffer than getXBusVersion method', () => {
+			service.getFirmwareVersion();
+			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getXBusVersion();
+			const xbusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(firmwareBuffer).not.toEqual(xbusBuffer);
+		});
+
+		it('sends buffer with non-zero length', () => {
+			service.getFirmwareVersion();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('produces buffer that can be sent directly over UDP', () => {
+			service.getFirmwareVersion();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+
+		it('sends different buffer than track power commands', () => {
+			service.getFirmwareVersion();
+			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.sendTrackPower(true);
+			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(firmwareBuffer).not.toEqual(powerBuffer);
+		});
+
+		it('sends different buffer than setStop command', () => {
+			service.getFirmwareVersion();
+			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(firmwareBuffer).not.toEqual(stopBuffer);
+		});
+
+		it('can be called multiple times without error', () => {
+			expect(() => {
+				service.getFirmwareVersion();
+				service.getFirmwareVersion();
+				service.getFirmwareVersion();
+			}).not.toThrow();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+	});
+
+	describe('edge cases across all methods', () => {
+		it('handles rapid successive calls to different methods', () => {
+			expect(() => {
+				service.sendTrackPower(true);
+				service.getStatus();
+				service.setStop();
+				service.getXBusVersion();
+				service.getFirmwareVersion();
+			}).not.toThrow();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(5);
+		});
+
+		it('all status query methods produce different buffers', () => {
+			service.getXBusVersion();
+			const versionBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getStatus();
+			const statusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[2][0];
+
+			expect(versionBuffer).not.toEqual(statusBuffer);
+			expect(statusBuffer).not.toEqual(stopBuffer);
+			expect(versionBuffer).not.toEqual(stopBuffer);
+		});
+
+		it('track power and stop commands produce different buffers', () => {
+			service.sendTrackPower(true);
+			const trackPowerBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.setStop();
+			const stopBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(trackPowerBuffer).not.toEqual(stopBuffer);
+		});
+
+		it('all methods send valid buffer structures', () => {
+			const methods = [
+				() => service.sendTrackPower(true),
+				() => service.setLocoDrive(100, 0.5, 'FWD'),
+				() => service.setLocoFunction(100, 0, 0b01),
+				() => service.getLocoInfo(100),
+				() => service.getTurnoutInfo(100),
+				() => service.setTurnout(100, 0),
+				() => service.setLocoEStop(100),
+				() => service.getXBusVersion(),
+				() => service.getStatus(),
+				() => service.setStop(),
+				() => service.getFirmwareVersion()
+			];
+
+			methods.forEach((method) => {
+				vi.clearAllMocks();
+				method();
+				const buffer = mockUdp.sendRaw.mock.calls[0][0];
+				expect(Buffer.isBuffer(buffer)).toBe(true);
+				expect(buffer.length).toBeGreaterThan(0);
+				expect(buffer.length).toBeLessThanOrEqual(1472);
+			});
 		});
 	});
 });

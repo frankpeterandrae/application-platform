@@ -104,6 +104,14 @@ describe('isServerToClientMessage', () => {
 		expect(isServerToClientMessage({ type: 'system.message.z21.rx', datasets: [], events: [], rawHex: 'ABCD' })).toBe(true);
 	});
 
+	it('accepts system.xBusVersion message', () => {
+		expect(isServerToClientMessage({ type: 'system.message.x.bus.version', version: 'V1.2', cmdsId: 1 })).toBe(true);
+	});
+
+	it('accepts system.message.firmware.version message', () => {
+		expect(isServerToClientMessage({ type: 'system.message.firmware.version', major: 0x01, minor: 0x12 })).toBe(true);
+	});
+
 	it('rejects null', () => {
 		expect(isServerToClientMessage(null)).toBe(false);
 	});

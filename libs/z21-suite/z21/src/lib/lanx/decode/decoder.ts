@@ -8,6 +8,7 @@ import type { LanXCommandKey, XHeader } from '@application-platform/z21-shared';
 import type { Z21Event } from '../../event/event-types';
 import { resolveLanXCommand } from '../dispatch';
 
+import { decodeLanXFirmwareVersionPayload } from './firmware-version';
 import { decodeLanXLocoInfoPayload } from './loco-info';
 import { decodeLanXStatusChangedPayload } from './status-changed';
 import { decodeLanXStoppedPayload } from './stopped';
@@ -24,9 +25,10 @@ const DECODERS: Partial<Record<LanXCommandKey, LanXPayloadDecoder>> = {
 	LAN_X_BC_TRACK_POWER_OFF: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_POWER_ON: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_SHORT_CIRCUIT: (cmd) => decodeLanXTrackPowerPayload(cmd),
+	LAN_X_GET_FIRMWARE_VERSION_ANSWER: (_, payload) => decodeLanXFirmwareVersionPayload(payload),
 	LAN_X_GET_VERSION_ANSWER: (_, payload) => decodeLanXVersionPayload(payload),
 	LAN_X_LOCO_INFO: (_, payload) => decodeLanXLocoInfoPayload(payload),
-	LAN_X_STATUS_CHANGED: (_, xBusBytes) => decodeLanXStatusChangedPayload(xBusBytes),
+	LAN_X_STATUS_CHANGED: (_, payload) => decodeLanXStatusChangedPayload(payload),
 	LAN_X_TURNOUT_INFO: (_, payload) => decodeLanXTurnoutInfoPayload(payload)
 };
 

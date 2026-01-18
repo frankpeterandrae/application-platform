@@ -7,6 +7,7 @@ export * from './loco/drive';
 export * from './loco/estop';
 export * from './loco/function';
 export * from './loco/info';
+export * from './system/firmware-version';
 export * from './system/status';
 export * from './system/stop';
 export * from './system/track-power';

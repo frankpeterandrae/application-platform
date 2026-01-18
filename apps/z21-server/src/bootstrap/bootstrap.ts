@@ -300,17 +300,28 @@ export class Bootstrap {
 			reason: 'first client connected',
 			wsClientCount: this.wsClientCount
 		});
-		if (this.commandStationInfo.hasVersion()) {
-			const version = this.commandStationInfo.getVersion();
-			const versionString = version?.versionString ?? 'Unknown';
+		if (this.commandStationInfo.hasXBusVersion()) {
+			const version = this.commandStationInfo.getXBusVersion();
+			const xBusVersionString = version?.xBusVersionString ?? 'Unknown';
 			const cmdsId = version && 'cmdsId' in version ? ((version as { cmdsId?: number }).cmdsId ?? 0) : 0;
 			this.wsServer.broadcast({
-				type: 'system.message.z21.version',
-				version: versionString,
+				type: 'system.message.x.bus.version',
+				version: xBusVersionString,
 				cmdsId: cmdsId
 			});
 		} else {
-			this.z21CommandService.getVersion();
+			this.z21CommandService.getXBusVersion();
+		}
+
+		if (this.commandStationInfo.hasFirmwareVersion()) {
+			const fwVersion = this.commandStationInfo.getFirmwareVersion();
+			this.wsServer.broadcast({
+				type: 'system.message.firmware.version',
+				major: fwVersion?.major,
+				minor: fwVersion?.minor
+			});
+		} else {
+			this.z21CommandService.getFirmwareVersion();
 		}
 
 		this.udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);

@@ -149,10 +149,16 @@ export class Z21EventHandler {
 						});
 						break;
 					}
-					case 'event.z21.version': {
-						this.logger.info('event.z21.version', event);
-						this.commandStationInfo.setVersion(event);
-						this.broadcast({ type: 'system.message.z21.version', version: event.versionString, cmdsId: event.cmdsId });
+					case 'event.x.bus.version': {
+						this.logger.info('event.x.bus.version', event);
+						this.commandStationInfo.setXBusVersion(event);
+						this.broadcast({ type: 'system.message.x.bus.version', version: event.xBusVersionString, cmdsId: event.cmdsId });
+						break;
+					}
+					case 'event.firmware.version': {
+						this.logger.info('event.firmware.version', event);
+						this.commandStationInfo.setFirmwareVersion(event);
+						this.broadcast({ type: 'system.message.firmware.version', major: event.major, minor: event.minor });
 						break;
 					}
 					case 'event.z21.stopped': {

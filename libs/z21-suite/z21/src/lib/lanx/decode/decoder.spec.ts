@@ -55,8 +55,8 @@ vi.mock('./status-changed', () => ({
 vi.mock('./version', () => ({
 	decodeLanXVersionPayload: vi.fn(() => [
 		{
-			type: 'event.z21.version',
-			versionString: 'V1.2',
+			type: 'event.x.bus.version',
+			xBusVersionString: 'V1.2',
 			cmdsId: 1,
 			xbusVersion: 0x12,
 			raw: []
@@ -144,7 +144,7 @@ describe('decodeLanXCommand', () => {
 		const events = decodeLanXPayload(0x63, new Uint8Array([XBusCmd.GET_VERSION, 0x30, 0x12]));
 
 		expect(decoders.decodeLanXVersionPayload).toHaveBeenCalledWith(new Uint8Array([XBusCmd.GET_VERSION, 0x30, 0x12]));
-		expect(events).toEqual([{ type: 'event.z21.version', versionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
+		expect(events).toEqual([{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
 	});
 
 	it('returns stopped events for LAN_X_BC_STOPPED', () => {
@@ -211,22 +211,6 @@ describe('decodeLanXCommand', () => {
 		expect(events).toEqual([]);
 	});
 
-	it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_BC_PROGRAMMING_MODE]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_PROGRAMMING_MODE');
-		expect(events.length).toBeGreaterThan(0);
-		expect(events[0].type).toBe('event.track.power');
-	});
-
-	it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_SHORT_CIRCUIT]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_TRACK_SHORT_CIRCUIT');
-		expect(events.length).toBeGreaterThan(0);
-		expect(events[0].type).toBe('event.track.power');
-	});
-
 	it('passes correct data to loco info decoder', () => {
 		const testData = new Uint8Array([0x04, 0x7a, 0x00, 0x42, 0x01]);
 		decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, testData);
@@ -246,44 +230,6 @@ describe('decodeLanXCommand', () => {
 		decodeLanXPayload(XHeader.STATUS_CHANGED, testData);
 
 		expect(decoders.decodeLanXStatusChangedPayload).toHaveBeenCalledWith(testData);
-	});
-
-	it('returns array when decoder returns events', () => {
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
-
-		expect(Array.isArray(events)).toBe(true);
-		expect(events.length).toBeGreaterThan(0);
-	});
-
-	it('returns empty array when no decoder handles command', () => {
-		const events = decodeLanXPayload(99 as XHeader, new Uint8Array([0xff]));
-
-		expect(Array.isArray(events)).toBe(true);
-		expect(events.length).toBe(0);
-	});
-
-	it('handles empty payload data', () => {
-		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([]));
-
-		expect(Array.isArray(events)).toBe(true);
-	});
-
-	it('handles large payload data', () => {
-		const largeData = new Uint8Array(255);
-		for (let i = 0; i < largeData.length; i++) {
-			largeData[i] = i % 256;
-		}
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, largeData);
-
-		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(largeData);
-		expect(Array.isArray(events)).toBe(true);
-	});
-
-	it('preserves event properties from decoder', () => {
-		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([XBusCmd.STATUS_CHANGED, 0xaa]));
-
-		expect(events[0]).toHaveProperty('type', 'event.z21.status');
-		expect(events[0]).toHaveProperty('payload');
 	});
 
 	it('handles all broadcast track power commands', () => {

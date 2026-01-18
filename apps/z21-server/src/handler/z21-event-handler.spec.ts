@@ -54,7 +54,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		locoInfoSubscribed: Mock;
 		clamp01: Mock;
 	};
-	let commandStationInfo: { setVersion: Mock };
+	let commandStationInfo: { setXBusVersion: Mock; setFirmwareVersion: Mock };
 
 	beforeEach(() => {
 		broadcast = vi.fn();
@@ -78,7 +78,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			locoInfoSubscribed: vi.fn(),
 			clamp01: vi.fn()
 		};
-		commandStationInfo = { setVersion: vi.fn() };
+		commandStationInfo = { setXBusVersion: vi.fn(), setFirmwareVersion: vi.fn() };
 		const mockLogger = {
 			debug: vi.fn(),
 			info: vi.fn(),
@@ -348,11 +348,11 @@ describe('Z21EventHandler.handleDatagram', () => {
 		});
 	});
 
-	describe('event.z21.version events', () => {
-		it('broadcasts system.message.z21.version with version string and cmdsId', () => {
+	describe('event.x.bus.version events', () => {
+		it('broadcasts system.message.x.bus.version with version string and cmdsId', () => {
 			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			vi.mocked(datasetsToEvents).mockReturnValue([
-				{ type: 'event.z21.version', versionString: 'V1.2', cmdsId: 0x01, xbusVersion: 0x12, raw: [] }
+				{ type: 'event.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x01, xbusVersion: 0x30, raw: [] }
 			] as any);
 
 			const payload = {
@@ -364,15 +364,15 @@ describe('Z21EventHandler.handleDatagram', () => {
 			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith({
-				type: 'system.message.z21.version',
-				version: 'V1.2',
+				type: 'system.message.x.bus.version',
+				version: 'V3.0',
 				cmdsId: 0x01
 			});
 		});
 
 		it('stores version in command station info', () => {
 			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
-			const versionEvent = { type: 'event.z21.version', versionString: 'V3.0', cmdsId: 0x02, xbusVersion: 0x30, raw: [] };
+			const versionEvent = { type: 'event.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x02, xbusVersion: 0x30, raw: [] };
 			vi.mocked(datasetsToEvents).mockReturnValue([versionEvent] as any);
 
 			const payload = {
@@ -383,13 +383,55 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			handler.handleDatagram(payload);
 
-			expect(commandStationInfo.setVersion).toHaveBeenCalledWith(versionEvent);
+			expect(commandStationInfo.setXBusVersion).toHaveBeenCalledWith(versionEvent);
+		});
+
+		it('broadcasts with minimum cmdsId value', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([
+				{ type: 'event.x.bus.version', xBusVersionString: 'V1.0', cmdsId: 0x00, xbusVersion: 0x10, raw: [] }
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xd4',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.x.bus.version',
+				version: 'V1.0',
+				cmdsId: 0x00
+			});
+		});
+
+		it('broadcasts with maximum cmdsId value', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([
+				{ type: 'event.x.bus.version', xBusVersionString: 'V4.0', cmdsId: 0xff, xbusVersion: 0x40, raw: [] }
+			] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xd5',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.x.bus.version',
+				version: 'V4.0',
+				cmdsId: 0xff
+			});
 		});
 
 		it('handles Unknown version string', () => {
 			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			vi.mocked(datasetsToEvents).mockReturnValue([
-				{ type: 'event.z21.version', versionString: 'Unknown', cmdsId: 0xff, xbusVersion: 0x00, raw: [] }
+				{ type: 'event.x.bus.version', xBusVersionString: 'Unknown', cmdsId: 0xff, xbusVersion: 0x00, raw: [] }
 			] as any);
 
 			const payload = {
@@ -401,9 +443,103 @@ describe('Z21EventHandler.handleDatagram', () => {
 			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith({
-				type: 'system.message.z21.version',
+				type: 'system.message.x.bus.version',
 				version: 'Unknown',
 				cmdsId: 0xff
+			});
+		});
+	});
+
+	describe('firmware.version events', () => {
+		it('broadcasts system.message.firmware.version with major and minor versions', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.firmware.version', major: 0x12, minor: 0x34, raw: [] }] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xe3',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.firmware.version',
+				major: 0x12,
+				minor: 0x34
+			});
+		});
+
+		it('stores firmware version in command station info', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			const versionEvent = { type: 'event.firmware.version', major: 0x25, minor: 0x99, raw: [] };
+			vi.mocked(datasetsToEvents).mockReturnValue([versionEvent] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xe4',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(commandStationInfo.setFirmwareVersion).toHaveBeenCalledWith(versionEvent);
+		});
+
+		it('broadcasts firmware version with minimum values', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.firmware.version', major: 0x00, minor: 0x00, raw: [] }] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xe5',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.firmware.version',
+				major: 0x00,
+				minor: 0x00
+			});
+		});
+
+		it('broadcasts firmware version with maximum values', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.firmware.version', major: 0xff, minor: 0xff, raw: [] }] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xe6',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.firmware.version',
+				major: 0xff,
+				minor: 0xff
+			});
+		});
+
+		it('broadcasts firmware version with different major and minor values', () => {
+			vi.mocked(parseZ21Datagram).mockReturnValue([{ kind: 'ds.x.bus' }] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([{ type: 'event.firmware.version', major: 0x30, minor: 0x06, raw: [] }] as any);
+
+			const payload = {
+				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
+				rawHex: '0xe7',
+				from: { address: '127.0.0.1', port: 21105 }
+			} as any;
+
+			handler.handleDatagram(payload);
+
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.firmware.version',
+				major: 0x30,
+				minor: 0x06
 			});
 		});
 	});

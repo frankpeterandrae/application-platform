@@ -492,7 +492,7 @@ describe('server e2e', () => {
 		}, 20000);
 	});
 
-	describe('getversion', () => {
+	describe('getXBusVersion', () => {
 		it('requests GET_VERSION on session activation and caches result for new clients', async () => {
 			const base = await startServer();
 			const z21 = await startFakeZ21(base.fakeZ21Port);
@@ -518,14 +518,14 @@ describe('server e2e', () => {
 			await sendUdpHex(ANSWER);
 
 			// Verify first client got version
-			const versionMsg1 = await waitFor(() => ws1.messages.find((m) => m?.type === 'system.message.z21.version'), {
-				label: 'ws1 system.message.z21.version',
+			const versionMsg1 = await waitFor(() => ws1.messages.find((m) => m?.type === 'system.message.x.bus.version'), {
+				label: 'ws1 system.message.x.bus.version',
 				timeoutMs: 3000,
 				dump: () => `\nWS1:\n${ws1.messages.map((m) => JSON.stringify(m)).join('\n')}`
 			});
 
 			expect(versionMsg1).toBeDefined();
-			expect(versionMsg1.version).toMatch(/^V\d+\.\d+$/);
+			expect(versionMsg1['version']).toMatch(/^V\d+\.\d+$/);
 
 			// Record initial GET_VERSION count
 			const initialCount = countGetVersion();

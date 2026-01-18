@@ -26,7 +26,8 @@ vi.mock('@application-platform/z21', () => {
 				demoPing: vi.fn(),
 				setLocoDrive: vi.fn(),
 				getLocoInfo: vi.fn(),
-				getVersion: vi.fn()
+				getXBusVersion: vi.fn(),
+				getFirmwareVersion: vi.fn()
 			};
 		}),
 		Z21BroadcastFlag: {
@@ -90,9 +91,12 @@ vi.mock('@application-platform/domain', () => {
 		}),
 		CommandStationInfo: vi.fn().mockImplementation(function () {
 			return {
-				getVersion: vi.fn().mockReturnValue(undefined),
-				hasVersion: vi.fn().mockReturnValue(false),
-				setVersion: vi.fn()
+				getXBusVersion: vi.fn().mockReturnValue(undefined),
+				hasXBusVersion: vi.fn().mockReturnValue(false),
+				setXBusVersion: vi.fn(),
+				hasFirmwareVersion: vi.fn().mockReturnValue(false),
+				getFirmwareVersion: vi.fn().mockReturnValue(undefined),
+				setFirmwareVersion: vi.fn()
 			};
 		})
 	};
@@ -312,8 +316,8 @@ describe('Bootstrap', () => {
 
 		onConnect();
 
-		expect(z21ServiceInstance.getVersion).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.z21.version' }));
+		expect(z21ServiceInstance.getXBusVersion).toHaveBeenCalled();
+		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.x.bus.version' }));
 	});
 
 	it('broadcasts cached version when first client connects and version exists', () => {
@@ -333,8 +337,8 @@ describe('Bootstrap', () => {
 
 		// Configure CommandStationInfo mock to simulate cached version
 		const cmdInstance = (CommandStationInfo as Mock).mock.results[0].value;
-		(cmdInstance.hasVersion as Mock).mockReturnValue(true);
-		(cmdInstance.getVersion as Mock).mockReturnValue({ versionString: 'V2.3', cmdsId: 5 });
+		(cmdInstance.hasXBusVersion as Mock).mockReturnValue(true);
+		(cmdInstance.getXBusVersion as Mock).mockReturnValue({ xBusVersionString: 'V2.3', cmdsId: 5 });
 
 		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
 		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
@@ -344,9 +348,9 @@ describe('Bootstrap', () => {
 
 		onConnect();
 
-		expect(z21ServiceInstance.getVersion).not.toHaveBeenCalled();
+		expect(z21ServiceInstance.getXBusVersion).not.toHaveBeenCalled();
 		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
-			type: 'system.message.z21.version',
+			type: 'system.message.x.bus.version',
 			version: 'V2.3',
 			cmdsId: 5
 		});
@@ -368,8 +372,8 @@ describe('Bootstrap', () => {
 
 		// Configure CommandStationInfo mock to indicate version exists but fields missing
 		const cmdInstance2 = (CommandStationInfo as Mock).mock.results[0].value;
-		(cmdInstance2.hasVersion as Mock).mockReturnValue(true);
-		(cmdInstance2.getVersion as Mock).mockReturnValue({});
+		(cmdInstance2.hasXBusVersion as Mock).mockReturnValue(true);
+		(cmdInstance2.getXBusVersion as Mock).mockReturnValue({});
 
 		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
 
@@ -379,9 +383,70 @@ describe('Bootstrap', () => {
 		onConnect();
 
 		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
-			type: 'system.message.z21.version',
+			type: 'system.message.x.bus.version',
 			version: 'Unknown',
 			cmdsId: 0
+		});
+	});
+
+	it('requests firmware version from Z21 when first client connects and firmware version not cached', () => {
+		vi.clearAllMocks();
+
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		bootstrap.start();
+
+		const { AppWsServer } = appWsMock;
+		const { Z21CommandService } = z21;
+
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onConnect = onConnectionCalls[2];
+
+		onConnect();
+
+		expect(z21ServiceInstance.getFirmwareVersion).toHaveBeenCalled();
+		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.firmware.version' }));
+	});
+
+	it('broadcasts cached firmware version when first client connects and firmware version exists', () => {
+		vi.clearAllMocks();
+
+		const bootstrap = new Bootstrap({
+			httpPort: 5050,
+			z21: { host: '1.2.3.4', udpPort: 21105 },
+			safety: { stopAllOnClientDisconnect: true }
+		});
+
+		bootstrap.start();
+
+		const { AppWsServer } = appWsMock;
+		const { Z21CommandService } = z21;
+		const { CommandStationInfo } = domainMock;
+
+		// Configure CommandStationInfo mock to simulate cached version
+		const cmdInstance = (CommandStationInfo as Mock).mock.results[0].value;
+		(cmdInstance.hasFirmwareVersion as Mock).mockReturnValue(true);
+		(cmdInstance.getFirmwareVersion as Mock).mockReturnValue({ major: 0x25, minor: 0x42 });
+		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
+
+		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
+		const onConnect = onConnectionCalls[2];
+
+		onConnect();
+
+		expect(z21ServiceInstance.getFirmwareVersion).not.toHaveBeenCalled();
+		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+			type: 'system.message.firmware.version',
+			major: 0x25,
+			minor: 0x42
 		});
 	});
 

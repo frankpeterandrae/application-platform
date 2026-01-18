@@ -9,6 +9,7 @@ import {
 	TurnoutInfoEvent,
 	UnknownLanXEvent,
 	UnknownXBusEvent,
+	Z21FirmwareVersionEvent,
 	Z21StatusEvent,
 	Z21StoppedEvent,
 	Z21VersionEvent
@@ -31,6 +32,7 @@ export type Z21Event =
 	| TurnoutInfoEvent
 	| UnknownLanXEvent
 	| UnknownXBusEvent
+	| Z21FirmwareVersionEvent
 	| Z21StatusEvent
 	| Z21StoppedEvent
 	| Z21VersionEvent;

@@ -7,7 +7,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXVersionPayload } from './version';
 
-type VersionEvent = Extract<Z21Event, { type: 'event.z21.version' }>;
+type VersionEvent = Extract<Z21Event, { type: 'event.x.bus.version' }>;
 
 describe('decodeLanXVersionPayload', () => {
 	it('decodes version 3.0 correctly', () => {
@@ -17,10 +17,10 @@ describe('decodeLanXVersionPayload', () => {
 
 		expect(events).toHaveLength(1);
 		expect(events[0]).toEqual({
-			type: 'event.z21.version',
+			type: 'event.x.bus.version',
 			raw: [0x30, 0x12],
 			xbusVersion: 0x30,
-			versionString: 'V3.0',
+			xBusVersionString: 'V3.0',
 			cmdsId: 0x12
 		});
 	});
@@ -32,10 +32,10 @@ describe('decodeLanXVersionPayload', () => {
 
 		expect(events).toHaveLength(1);
 		expect(events[0]).toEqual({
-			type: 'event.z21.version',
+			type: 'event.x.bus.version',
 			raw: [0x36, 0x10],
 			xbusVersion: 0x36,
-			versionString: 'V3.6',
+			xBusVersionString: 'V3.6',
 			cmdsId: 0x10
 		});
 	});
@@ -45,7 +45,7 @@ describe('decodeLanXVersionPayload', () => {
 
 		const events = decodeLanXVersionPayload(payload) as VersionEvent[];
 
-		expect(events[0].versionString).toBe('V4.0');
+		expect(events[0].xBusVersionString).toBe('V4.0');
 		expect(events[0].xbusVersion).toBe(0x40);
 	});
 
@@ -54,7 +54,7 @@ describe('decodeLanXVersionPayload', () => {
 
 		const events = decodeLanXVersionPayload(payload) as VersionEvent[];
 
-		expect(events[0].versionString).toBe('V1.1');
+		expect(events[0].xBusVersionString).toBe('V1.1');
 	});
 
 	it('returns Unknown version when xbusVersion is 0x00', () => {
@@ -62,7 +62,7 @@ describe('decodeLanXVersionPayload', () => {
 
 		const events = decodeLanXVersionPayload(payload) as VersionEvent[];
 
-		expect(events[0].versionString).toBe('Unknown');
+		expect(events[0].xBusVersionString).toBe('Unknown');
 		expect(events[0].xbusVersion).toBe(0x00);
 	});
 
@@ -89,7 +89,7 @@ describe('decodeLanXVersionPayload', () => {
 
 		const events = decodeLanXVersionPayload(payload) as VersionEvent[];
 
-		expect(events[0].versionString).toBe('V8.9');
+		expect(events[0].xBusVersionString).toBe('V8.9');
 	});
 
 	it('decodes version 2.5 correctly', () => {
@@ -97,7 +97,7 @@ describe('decodeLanXVersionPayload', () => {
 
 		const events = decodeLanXVersionPayload(payload) as VersionEvent[];
 
-		expect(events[0].versionString).toBe('V2.5');
+		expect(events[0].xBusVersionString).toBe('V2.5');
 	});
 
 	it('always returns array with single event', () => {
@@ -109,11 +109,11 @@ describe('decodeLanXVersionPayload', () => {
 		expect(events.length).toBe(1);
 	});
 
-	it('event always has type event.z21.version', () => {
+	it('event always has type event.x.bus.version', () => {
 		const payload = new Uint8Array([0x40, 0xff]);
 
 		const events = decodeLanXVersionPayload(payload);
 
-		expect(events[0].type).toBe('event.z21.version');
+		expect(events[0].type).toBe('event.x.bus.version');
 	});
 });
