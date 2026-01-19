@@ -39,10 +39,10 @@ export function xbusXor(bytes: ByteLike): number {
  */
 export function encodeLanX(xLanCommand: LanXCommandKey, xbus: readonly number[] = []): Buffer {
 	const command = LAN_X_COMMANDS[xLanCommand];
-	const xbusHeader = command.xHeader;
+	const xHeader = command.xHeader;
 
 	// Build full X-BUS payload: header, optional cmd, and additional data
-	const fullXbus = hasXbusCmd(command) ? [xbusHeader, command.xBusCmd, ...xbus] : [xbusHeader, ...xbus];
+	const fullXbus = hasXbusCmd(command) ? [xHeader, command.xBusCmd, ...xbus] : [xHeader, ...xbus];
 
 	const xor = xbusXor(fullXbus);
 	const len = 2 + 2 + fullXbus.length + 1; // DataLen includes itself

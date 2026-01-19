@@ -3,19 +3,13 @@
  * All rights reserved.
  */
 
-import http from 'node:http';
-import path from 'node:path';
-
-import { CommandStationInfo, LocoManager, TrackStatusManager } from '@application-platform/domain';
 import { type ServerToClient } from '@application-platform/protocol';
-import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
-import { Z21BroadcastFlag, Z21CommandService, Z21Udp } from '@application-platform/z21';
-import { createConsoleLogger, Logger } from '@application-platform/z21-shared';
+import { Z21BroadcastFlag } from '@application-platform/z21';
 
 import { ClientMessageHandler } from '../handler/client-message-handler';
-import { Z21EventHandler } from '../handler/z21-event-handler';
-import { loadConfig, type ServerConfig } from '../infra/config/config';
-import { AppWsServer } from '../infra/ws/app-websocket-server';
+import { type ServerConfig } from '../infra/config/config';
+
+import { createProviders, Providers } from './providers';
 
 /**
  * Bootstrap class to initialize and start the Z21 server application.
@@ -30,61 +24,6 @@ import { AppWsServer } from '../infra/ws/app-websocket-server';
  * @remarks Call `start()` to launch the server.
  */
 export class Bootstrap {
-	/**
-	 * Loads server configuration (HTTP port, Z21 connection details, safety flags).
-	 */
-	private readonly cfg: ServerConfig;
-
-	/**
-	 * Application logger.
-	 */
-	private readonly logger: Logger;
-
-	/**
-	 * Directory for serving static frontend assets.
-	 */
-	private readonly publicDir = path.resolve(process.cwd(), 'public');
-
-	/**
-	 * HTTP server that serves static files from `publicDir`.
-	 */
-	private readonly httpServer = http.createServer(createStaticFileServer(this.publicDir));
-
-	/**
-	 * Application WebSocket server wrapper that handles session handshake,
-	 * validation, and message routing.
-	 */
-	private readonly wsServer: AppWsServer;
-
-	/**
-	 * Z21 UDP gateway used to communicate with the digital command station.
-	 * @remarks Initialized with host and UDP port from configuration.
-	 */
-	private readonly udp: Z21Udp;
-
-	/**
-	 * Z21 service wrapper around the UDP gateway for higher-level operations.
-	 * @remarks Used by the client message handler to send commands.
-	 */
-	private readonly z21CommandService: Z21CommandService;
-
-	/**
-	 * Manages locomotive states (speed, direction, functions).
-	 */
-	private readonly locoManager = new LocoManager();
-
-	/**
-	 * Tracks power state, shorts, and emergency stop across the system.
-	 */
-	private readonly trackStatusManager = new TrackStatusManager();
-
-	/**
-	 * Z21 inbound event handler:
-	 * - Updates track status (power/short/e-stop)
-	 * - Broadcasts datasets and derived events to connected clients
-	 */
-	private readonly z21Handler: Z21EventHandler;
-
 	/**
 	 * Validated client message handler:
 	 * - Applies loco and turnout changes
@@ -120,11 +59,6 @@ export class Bootstrap {
 	private _z21HeartbeatTimer: NodeJS.Timeout | null = null;
 
 	/**
-	 * Information about the connected command station.
-	 */
-	private readonly commandStationInfo: CommandStationInfo;
-
-	/**
 	 * Timer for sending periodic Z21 heartbeat messages.
 	 * @deprecated Use `z21HeartbeatTimer` instead.
 	 */
@@ -136,30 +70,12 @@ export class Bootstrap {
 		this._z21HeartbeatTimer = value;
 	}
 
-	constructor(cfg?: ServerConfig) {
-		this.cfg = cfg ?? loadConfig();
-		this.commandStationInfo = new CommandStationInfo();
-		this.logger = createConsoleLogger({
-			level: this.cfg.dev?.logLevel ?? 'info',
-			pretty: true,
-			context: { app: 'server' }
-		});
-		this.wsServer = new AppWsServer(new WsServer(this.httpServer), this.logger.child({ component: 'ws.server' }));
+	private readonly providers: Providers;
 
-		this.udp = new Z21Udp(this.cfg.z21.host, this.cfg.z21.udpPort, this.logger.child({ component: 'z21.udp' }));
-		this.z21CommandService = new Z21CommandService(this.udp, this.logger.child({ component: 'z21.service' }));
-
-		const broadcast = (msg: ServerToClient): void => this.wsServer.broadcast(msg);
-
-		this.z21Handler = new Z21EventHandler(
-			this.trackStatusManager,
-			broadcast,
-			this.locoManager,
-			this.logger.child({ component: 'z21.handler' }),
-			this.commandStationInfo
-		);
-
-		this.clientMessageHandler = new ClientMessageHandler(this.locoManager, this.z21CommandService, broadcast);
+	constructor(providersOrConfig: Providers | ServerConfig) {
+		this.providers = 'cfg' in providersOrConfig ? providersOrConfig : createProviders(providersOrConfig);
+		const broadcast = (msg: ServerToClient): void => this.providers.wsServer.broadcast(msg);
+		this.clientMessageHandler = new ClientMessageHandler(this.providers.locoManager, this.providers.z21CommandService, broadcast);
 	}
 
 	/**
@@ -188,36 +104,36 @@ export class Bootstrap {
 		}
 
 		try {
-			this.udp.stop();
+			this.providers.udp.stop();
 		} catch {
 			// Intentionally ignore errors during shutdown
 		}
 
 		try {
-			this.wsServer.close();
+			this.providers.wsServer.close();
 		} catch {
 			// Intentionally ignore errors during shutdown
 		}
 
 		try {
-			this.httpServer.close();
+			this.providers.httpServer.close();
 		} catch {
 			// Intentionally ignore errors during shutdown
 		}
 	}
 
 	private wireUdp(): void {
-		this.udp.on('datagram', (dg) => {
+		this.providers.udp.on('datagram', (dg) => {
 			/**
 			 * Dispatch inbound Z21 payloads to the handler,
 			 * which may update track status and broadcast events.
 			 */
-			this.z21Handler.handleDatagram(dg);
+			this.providers.z21EventHandler.handleDatagram(dg);
 		});
 	}
 
 	private wireWs(): void {
-		this.wsServer.onConnection(
+		this.providers.wsServer.onConnection(
 			/**
 			 * For each accepted client message, route to the client message handler.
 			 */
@@ -231,7 +147,7 @@ export class Bootstrap {
 		const id = ws && typeof ws === 'object' ? this.getWsClientId(ws) : undefined;
 		this.wsClientCount = Math.max(0, this.wsClientCount - 1);
 
-		this.logger.info('ws.client.disconnected', {
+		this.providers.logger.info('ws.client.disconnected', {
 			clientId: id,
 			totalClients: this.wsClientCount
 		});
@@ -240,11 +156,11 @@ export class Bootstrap {
 			this.deactivateZ21Session();
 		}
 
-		if (!this.cfg.safety.stopAllOnClientDisconnect) return;
+		if (!this.providers.cfg.safety.stopAllOnClientDisconnect) return;
 
-		const stopped = this.locoManager.stopAll();
+		const stopped = this.providers.locoManager.stopAll();
 		for (const { addr, state } of stopped) {
-			this.wsServer.broadcast({
+			this.providers.wsServer.broadcast({
 				type: 'loco.message.state',
 				addr,
 				speed: 0,
@@ -260,7 +176,7 @@ export class Bootstrap {
 
 		const id = ws && typeof ws === 'object' ? this.getWsClientId(ws) : undefined;
 
-		this.logger.info('ws.client.connected', {
+		this.providers.logger.info('ws.client.connected', {
 			clientId: id,
 			totalClients: this.wsClientCount
 		});
@@ -269,25 +185,25 @@ export class Bootstrap {
 			this.activateZ21Session();
 		}
 
-		const addr = this.cfg.dev?.subscribeLocoAddr;
+		const addr = this.providers.cfg.dev?.subscribeLocoAddr;
 		if (!addr) return;
 
-		if (this.locoManager.subscribeLocoInfoOnce(addr)) {
-			this.z21CommandService.getLocoInfo(addr);
+		if (this.providers.locoManager.subscribeLocoInfoOnce(addr)) {
+			this.providers.z21CommandService.getLocoInfo(addr);
 		}
 	}
 
 	private startZ21(): void {
-		this.udp.start(this.cfg.z21.listenPort ?? 21105);
+		this.providers.udp.start(this.providers.cfg.z21.listenPort ?? 21105);
 	}
 
 	private startHttpServer(): void {
-		this.httpServer.listen(this.cfg.httpPort, () => {
-			this.logger.info('server.started', {
-				httpPort: this.cfg.httpPort,
-				z21Host: this.cfg.z21.host,
-				z21UdpPort: this.cfg.z21.udpPort,
-				z21ListenPort: this.cfg.z21.listenPort
+		this.providers.httpServer.listen(this.providers.cfg.httpPort, () => {
+			this.providers.logger.info('server.started', {
+				httpPort: this.providers.cfg.httpPort,
+				z21Host: this.providers.cfg.z21.host,
+				z21UdpPort: this.providers.cfg.z21.udpPort,
+				z21ListenPort: this.providers.cfg.z21.listenPort
 			});
 		});
 	}
@@ -296,36 +212,16 @@ export class Bootstrap {
 		if (this.z21SessionActive) return;
 
 		this.z21SessionActive = true;
-		this.logger.info('z21.session.activate', {
+		this.providers.logger.info('z21.session.activate', {
 			reason: 'first client connected',
 			wsClientCount: this.wsClientCount
 		});
-		if (this.commandStationInfo.hasXBusVersion()) {
-			const version = this.commandStationInfo.getXBusVersion();
-			const xBusVersionString = version?.xBusVersionString ?? 'Unknown';
-			const cmdsId = version && 'cmdsId' in version ? ((version as { cmdsId?: number }).cmdsId ?? 0) : 0;
-			this.wsServer.broadcast({
-				type: 'system.message.x.bus.version',
-				version: xBusVersionString,
-				cmdsId: cmdsId
-			});
-		} else {
-			this.z21CommandService.getXBusVersion();
-		}
 
-		if (this.commandStationInfo.hasFirmwareVersion()) {
-			const fwVersion = this.commandStationInfo.getFirmwareVersion();
-			this.wsServer.broadcast({
-				type: 'system.message.firmware.version',
-				major: fwVersion?.major,
-				minor: fwVersion?.minor
-			});
-		} else {
-			this.z21CommandService.getFirmwareVersion();
-		}
+		this.providers.csInfoOrchestrator.reset();
+		this.providers.csInfoOrchestrator.poke();
 
-		this.udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
-		this.udp.sendSystemStateGetData();
+		this.providers.udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
+		this.providers.udp.sendSystemStateGetData();
 		this.startZ21Heartbeat();
 	}
 
@@ -333,13 +229,14 @@ export class Bootstrap {
 		if (!this.z21SessionActive) return;
 
 		this.z21SessionActive = false;
-		this.logger.info('z21.session.deactivate', {
+		this.providers.logger.info('z21.session.deactivate', {
 			reason: 'last client disconnected',
 			wsClientCount: this.wsClientCount
 		});
 
+		this.providers.csInfoOrchestrator.reset();
 		this.stopZ21Heartbeat();
-		this.udp.sendLogOff();
+		this.providers.udp.sendLogOff();
 	}
 
 	private startZ21Heartbeat(): void {
@@ -347,7 +244,7 @@ export class Bootstrap {
 
 		this.stopZ21Heartbeat();
 		this.z21HaertbeatTimer = setInterval(() => {
-			this.udp.sendSystemStateGetData();
+			this.providers.udp.sendSystemStateGetData();
 		}, intervalMs);
 
 		// Don't keep the Node process alive just because of the heartbeat.

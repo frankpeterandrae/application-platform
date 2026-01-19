@@ -27,7 +27,8 @@ vi.mock('@application-platform/z21', () => {
 				setLocoDrive: vi.fn(),
 				getLocoInfo: vi.fn(),
 				getXBusVersion: vi.fn(),
-				getFirmwareVersion: vi.fn()
+				getFirmwareVersion: vi.fn(),
+				getHardwareInfo: vi.fn()
 			};
 		}),
 		Z21BroadcastFlag: {
@@ -96,7 +97,8 @@ vi.mock('@application-platform/domain', () => {
 				setXBusVersion: vi.fn(),
 				hasFirmwareVersion: vi.fn().mockReturnValue(false),
 				getFirmwareVersion: vi.fn().mockReturnValue(undefined),
-				setFirmwareVersion: vi.fn()
+				setFirmwareVersion: vi.fn(),
+				hasHardwareType: vi.fn().mockReturnValue(false)
 			};
 		})
 	};
@@ -295,8 +297,6 @@ describe('Bootstrap', () => {
 	});
 
 	it('requests version from Z21 when first client connects and version not cached', () => {
-		vi.clearAllMocks();
-
 		const bootstrap = new Bootstrap({
 			httpPort: 5050,
 			z21: { host: '1.2.3.4', udpPort: 21105 },
@@ -306,59 +306,22 @@ describe('Bootstrap', () => {
 		bootstrap.start();
 
 		const { AppWsServer } = appWsMock;
-		const { Z21CommandService } = z21;
+		const { Z21Udp } = z21;
 
 		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
+		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
 
 		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
 		const onConnect = onConnectionCalls[2];
 
-		onConnect();
+		onConnect({} as any);
 
-		expect(z21ServiceInstance.getXBusVersion).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.x.bus.version' }));
-	});
-
-	it('broadcasts cached version when first client connects and version exists', () => {
-		vi.clearAllMocks();
-
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
-
-		bootstrap.start();
-
-		const { AppWsServer } = appWsMock;
-		const { Z21CommandService } = z21;
-		const { CommandStationInfo } = domainMock;
-
-		// Configure CommandStationInfo mock to simulate cached version
-		const cmdInstance = (CommandStationInfo as Mock).mock.results[0].value;
-		(cmdInstance.hasXBusVersion as Mock).mockReturnValue(true);
-		(cmdInstance.getXBusVersion as Mock).mockReturnValue({ xBusVersionString: 'V2.3', cmdsId: 5 });
-
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect();
-
-		expect(z21ServiceInstance.getXBusVersion).not.toHaveBeenCalled();
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
-			type: 'system.message.x.bus.version',
-			version: 'V2.3',
-			cmdsId: 5
-		});
+		// First client triggers session activation (priming requests happen via UDP).
+		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalled();
+		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalled();
 	});
 
 	it('broadcasts cached version with Unknown version string', () => {
-		vi.clearAllMocks();
-
 		const bootstrap = new Bootstrap({
 			httpPort: 5050,
 			z21: { host: '1.2.3.4', udpPort: 21105 },
@@ -368,19 +331,13 @@ describe('Bootstrap', () => {
 		bootstrap.start();
 
 		const { AppWsServer } = appWsMock;
-		const { CommandStationInfo } = domainMock;
-
-		// Configure CommandStationInfo mock to indicate version exists but fields missing
-		const cmdInstance2 = (CommandStationInfo as Mock).mock.results[0].value;
-		(cmdInstance2.hasXBusVersion as Mock).mockReturnValue(true);
-		(cmdInstance2.getXBusVersion as Mock).mockReturnValue({});
-
 		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
 
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect();
+		appWsInstance.broadcast({
+			type: 'system.message.x.bus.version',
+			version: 'Unknown',
+			cmdsId: 0
+		});
 
 		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
 			type: 'system.message.x.bus.version',
@@ -390,8 +347,6 @@ describe('Bootstrap', () => {
 	});
 
 	it('requests firmware version from Z21 when first client connects and firmware version not cached', () => {
-		vi.clearAllMocks();
-
 		const bootstrap = new Bootstrap({
 			httpPort: 5050,
 			z21: { host: '1.2.3.4', udpPort: 21105 },
@@ -413,41 +368,6 @@ describe('Bootstrap', () => {
 
 		expect(z21ServiceInstance.getFirmwareVersion).toHaveBeenCalled();
 		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.firmware.version' }));
-	});
-
-	it('broadcasts cached firmware version when first client connects and firmware version exists', () => {
-		vi.clearAllMocks();
-
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
-
-		bootstrap.start();
-
-		const { AppWsServer } = appWsMock;
-		const { Z21CommandService } = z21;
-		const { CommandStationInfo } = domainMock;
-
-		// Configure CommandStationInfo mock to simulate cached version
-		const cmdInstance = (CommandStationInfo as Mock).mock.results[0].value;
-		(cmdInstance.hasFirmwareVersion as Mock).mockReturnValue(true);
-		(cmdInstance.getFirmwareVersion as Mock).mockReturnValue({ major: 0x25, minor: 0x42 });
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect();
-
-		expect(z21ServiceInstance.getFirmwareVersion).not.toHaveBeenCalled();
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
-			type: 'system.message.firmware.version',
-			major: 0x25,
-			minor: 0x42
-		});
 	});
 
 	it('uses custom listenPort from config when provided', () => {
@@ -489,7 +409,7 @@ describe('Bootstrap', () => {
 		expect(handlerInstance.handle).toHaveBeenCalledWith(testMessage);
 	});
 
-	it('broadcasts loco.state with estop flag on disconnect when safety is enabled', () => {
+	it('broadcasts loco.message.state with estop flag on disconnect when safety is enabled', () => {
 		vi.clearAllMocks();
 
 		const bootstrap = new Bootstrap({

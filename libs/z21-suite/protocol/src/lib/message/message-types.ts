@@ -10,13 +10,15 @@ import type {
 	LocoEStopEvent,
 	LocoState,
 	SessionReady,
+	SystemCode,
 	SystemFirmwareVersion,
+	SystemHardwareInfo,
+	SystemStop,
 	SystemTrackPower,
 	SystemVersion,
 	TurnoutState_Message,
 	Z21Rx
 } from './server';
-import { SystemStop } from './server';
 /**
  * Union of all messages a client may send to the server.
  *
@@ -66,7 +68,9 @@ export type ServerToClient =
 	| LocoEStopEvent
 	| LocoState
 	| SessionReady
+	| SystemCode
 	| SystemFirmwareVersion
+	| SystemHardwareInfo
 	| SystemStop
 	| SystemTrackPower
 	| SystemVersion
@@ -88,8 +92,10 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'server.replay.session.ready': true,
 	'switching.message.turnout.state': true,
 	'system.message.firmware.version': true,
+	'system.message.hardware.info': true,
 	'system.message.stop': true,
 	'system.message.trackpower': true,
 	'system.message.x.bus.version': true,
+	'system.message.z21.code': true,
 	'system.message.z21.rx': true
 } as const satisfies Record<ServerToClientType, true>;

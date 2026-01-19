@@ -3,4 +3,4 @@
  * All rights reserved.
  */
 
-export type UnknownLanXEvent = { type: 'event.unknown.lan_x'; xBusHeader: number; bytes: number[] };
+export type UnknownLanXEvent = { type: 'event.unknown.lan_x'; xHeader: number; bytes: number[] };

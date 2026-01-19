@@ -947,7 +947,9 @@ describe('Z21CommandService', () => {
 				() => service.getXBusVersion(),
 				() => service.getStatus(),
 				() => service.setStop(),
-				() => service.getFirmwareVersion()
+				() => service.getFirmwareVersion(),
+				() => service.getHardwareInfo(),
+				() => service.getCode()
 			];
 
 			methods.forEach((method) => {
@@ -958,6 +960,186 @@ describe('Z21CommandService', () => {
 				expect(buffer.length).toBeGreaterThan(0);
 				expect(buffer.length).toBeLessThanOrEqual(1472);
 			});
+		});
+	});
+
+	describe('getHardwareInfo', () => {
+		it('sends hardware info request command to UDP', () => {
+			service.getHardwareInfo();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			service.getHardwareInfo();
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getHardwareInfo();
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_GET_HWINFO formatted message with correct structure', () => {
+			service.getHardwareInfo();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x001a);
+		});
+
+		it('sends buffer with non-zero length', () => {
+			service.getHardwareInfo();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('produces buffer that can be sent directly over UDP', () => {
+			service.getHardwareInfo();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+
+		it('sends different buffer than firmware version command', () => {
+			service.getHardwareInfo();
+			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getFirmwareVersion();
+			const firmwareBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(hwinfoBuffer).not.toEqual(firmwareBuffer);
+		});
+
+		it('sends different buffer than xBusVersion command', () => {
+			service.getHardwareInfo();
+			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getXBusVersion();
+			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(hwinfoBuffer).not.toEqual(versionBuffer);
+		});
+
+		it('sends different buffer than track power commands', () => {
+			service.getHardwareInfo();
+			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.sendTrackPower(true);
+			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(hwinfoBuffer).not.toEqual(powerBuffer);
+		});
+
+		it('can be called multiple times without error', () => {
+			expect(() => {
+				service.getHardwareInfo();
+				service.getHardwareInfo();
+				service.getHardwareInfo();
+			}).not.toThrow();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+	});
+
+	describe('getCode', () => {
+		it('sends code request command to UDP', () => {
+			service.getCode();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			service.getCode();
+			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getCode();
+			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_GET_CODE formatted message with correct structure', () => {
+			service.getCode();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0018);
+		});
+
+		it('sends buffer with non-zero length', () => {
+			service.getCode();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(buffer.length).toBeGreaterThan(0);
+		});
+
+		it('produces buffer that can be sent directly over UDP', () => {
+			service.getCode();
+
+			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+
+		it('sends different buffer than hardware info command', () => {
+			service.getCode();
+			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getHardwareInfo();
+			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(codeBuffer).not.toEqual(hwinfoBuffer);
+		});
+
+		it('sends different buffer than firmware version command', () => {
+			service.getCode();
+			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getFirmwareVersion();
+			const firmwareBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(codeBuffer).not.toEqual(firmwareBuffer);
+		});
+
+		it('sends different buffer than xBusVersion command', () => {
+			service.getCode();
+			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.getXBusVersion();
+			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(codeBuffer).not.toEqual(versionBuffer);
+		});
+
+		it('sends different buffer than track power commands', () => {
+			service.getCode();
+			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+
+			service.sendTrackPower(true);
+			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+
+			expect(codeBuffer).not.toEqual(powerBuffer);
+		});
+
+		it('can be called multiple times without error', () => {
+			expect(() => {
+				service.getCode();
+				service.getCode();
+				service.getCode();
+			}).not.toThrow();
+
+			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 	});
 });

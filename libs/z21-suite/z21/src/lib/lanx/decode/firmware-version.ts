@@ -5,19 +5,31 @@
 
 import type { Z21Event } from '../../event/event-types';
 
-/** Decode LAN X Version Payload
- * Payload structure:
- * Byte 0: XBus Version
- * Byte 1: CMDs ID
+/**
+ * Decodes the LAN X Firmware Version payload.
+ * @param payload - The raw payload bytes.
+ *    - DB1: Major version
+ *    - DB2: Minor version
+ *      e.g., [0x01, 0x23] represents version 1.23
+ * @returns Array of Z21Event entries with firmware version information.
  */
 export function decodeLanXFirmwareVersionPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.firmware.version' }>[] {
+	const bcdToNumber = (value: number | undefined): number => {
+		if (value === undefined) return 0;
+		const high = (value >> 4) & 0x0f;
+		const low = value & 0x0f;
+		return high * 10 + low;
+	};
+
+	const major = bcdToNumber(payload[1]);
+	const minor = bcdToNumber(payload[2]);
 	const raw = Array.from(payload);
 	return [
 		{
 			type: 'event.firmware.version',
 			raw,
-			major: payload[0],
-			minor: payload[1]
+			major,
+			minor
 		}
 	];
 }
