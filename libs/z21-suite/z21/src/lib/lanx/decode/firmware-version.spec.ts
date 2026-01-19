@@ -10,82 +10,142 @@ import { decodeLanXFirmwareVersionPayload } from './firmware-version';
 type FirmwareVersionEvent = Extract<Z21Event, { type: 'event.firmware.version' }>;
 
 describe('decodeLanXFirmwareVersionPayload', () => {
-	it('decodes the documented example payload as firmware version 1.23', () => {
-		const payload = new Uint8Array([0x0a, 0x01, 0x23, 0xdb]);
+	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
+	function makePayload(...bytes: number[]): Uint8Array {
+		return new Uint8Array(bytes);
+	}
 
+	// Helper function to extract first firmware version event from result
+	function extractFirmwareVersion(payload: Uint8Array): FirmwareVersionEvent {
 		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
+		return events[0];
+	}
 
-		expect(events[0].major).toBe(1);
-		expect(events[0].minor).toBe(23);
-		expect(events[0].raw).toEqual([0x0a, 0x01, 0x23, 0xdb]);
+	// Helper function to verify firmware version values
+	function expectFirmwareVersion(event: FirmwareVersionEvent, major: number, minor: number): void {
+		expect(event.major).toBe(major);
+		expect(event.minor).toBe(minor);
+		expect(event.type).toBe('event.firmware.version');
+	}
+
+	// Helper function to verify raw payload preservation
+	function expectRawPayload(event: FirmwareVersionEvent, expectedBytes: number[]): void {
+		expect(event.raw).toEqual(expectedBytes);
+	}
+
+	describe('BCD decoding', () => {
+		it('decodes the documented example payload as firmware version 1.23', () => {
+			const event = extractFirmwareVersion(makePayload(0x0a, 0x01, 0x23, 0xdb));
+
+			expectFirmwareVersion(event, 1, 23);
+			expectRawPayload(event, [0x0a, 0x01, 0x23, 0xdb]);
+		});
+
+		it('decodes BCD major and minor bytes', () => {
+			const event = extractFirmwareVersion(makePayload(0x00, 0x25, 0x42));
+
+			expectFirmwareVersion(event, 25, 42);
+		});
+
+		it('decodes major version from DB1 (index 1)', () => {
+			const event = extractFirmwareVersion(makePayload(0xff, 0x99, 0x00));
+
+			expect(event.major).toBe(99);
+		});
+
+		it('decodes minor version from DB2 (index 2)', () => {
+			const event = extractFirmwareVersion(makePayload(0xff, 0x00, 0x88));
+
+			expect(event.minor).toBe(88);
+		});
 	});
 
-	it('decodes BCD major and minor bytes', () => {
-		const payload = new Uint8Array([0x00, 0x25, 0x42]);
+	describe('edge cases and missing data', () => {
+		it('returns zero for missing minor byte', () => {
+			const event = extractFirmwareVersion(makePayload(0x00, 0x07));
 
-		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
+			expectFirmwareVersion(event, 7, 0);
+		});
 
-		expect(events[0].major).toBe(25);
-		expect(events[0].minor).toBe(42);
-		expect(events[0].type).toBe('event.firmware.version');
+		it('handles empty payload gracefully', () => {
+			const events = decodeLanXFirmwareVersionPayload(makePayload()) as FirmwareVersionEvent[];
+
+			expect(events).toHaveLength(1);
+			expectFirmwareVersion(events[0], 0, 0);
+		});
+
+		it('handles single byte payload', () => {
+			const event = extractFirmwareVersion(makePayload(0x00));
+
+			expectFirmwareVersion(event, 0, 0);
+		});
+
+		it('handles payload with additional bytes after DB2', () => {
+			const event = extractFirmwareVersion(makePayload(0x12, 0x34, 0x56, 0x78));
+
+			expectFirmwareVersion(event, 34, 56);
+			expect(event.raw.length).toBe(4);
+		});
 	});
 
-	it('returns zero for missing minor byte', () => {
-		const payload = new Uint8Array([0x00, 0x07]);
+	describe('payload preservation', () => {
+		it('preserves payload bytes in raw field exactly as provided', () => {
+			const payload = makePayload(0xab, 0xcd);
+			const event = extractFirmwareVersion(payload);
 
-		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
+			expectRawPayload(event, [0xab, 0xcd]);
 
-		expect(events[0].major).toBe(7);
-		expect(events[0].minor).toBe(0);
+			// Verify immutability - modifying original should not affect event
+			payload[0] = 0x00;
+			expect(event.raw[0]).toBe(0xab);
+		});
+
+		it('preserves all payload bytes including header', () => {
+			const event = extractFirmwareVersion(makePayload(0x0a, 0x01, 0x23, 0xdb, 0xff));
+
+			expectRawPayload(event, [0x0a, 0x01, 0x23, 0xdb, 0xff]);
+		});
+
+		it('does not modify input payload', () => {
+			const payload = makePayload(0x12, 0x34, 0x56);
+			const originalBytes = [payload[0], payload[1], payload[2]];
+
+			decodeLanXFirmwareVersionPayload(payload);
+
+			expect(payload[0]).toBe(originalBytes[0]);
+			expect(payload[1]).toBe(originalBytes[1]);
+			expect(payload[2]).toBe(originalBytes[2]);
+		});
 	});
 
-	it('handles empty payload gracefully', () => {
-		const payload = new Uint8Array([]);
+	describe('consistency', () => {
+		it('produces consistent output for same payload', () => {
+			const payload = makePayload(0x34, 0x78, 0x90);
 
-		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
+			const events1 = decodeLanXFirmwareVersionPayload(payload);
+			const events2 = decodeLanXFirmwareVersionPayload(payload);
 
-		expect(events).toHaveLength(1);
-		expect(events[0].major).toBe(0);
-		expect(events[0].minor).toBe(0);
+			expect(events1[0]).toEqual(events2[0]);
+		});
+
+		it('produces single event in array', () => {
+			const events = decodeLanXFirmwareVersionPayload(makePayload(0x00, 0x12, 0x34)) as FirmwareVersionEvent[];
+
+			expect(events).toHaveLength(1);
+		});
 	});
 
-	it('preserves payload bytes in raw field exactly as provided', () => {
-		const payload = new Uint8Array([0xab, 0xcd]);
+	describe('version boundaries', () => {
+		it('handles version 0.0', () => {
+			const event = extractFirmwareVersion(makePayload(0x00, 0x00, 0x00));
 
-		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
+			expectFirmwareVersion(event, 0, 0);
+		});
 
-		expect(events[0].raw).toEqual([0xab, 0xcd]);
-		payload[0] = 0x00;
-		expect(events[0].raw[0]).toBe(0xab);
-	});
+		it('handles maximum BCD values (99.99)', () => {
+			const event = extractFirmwareVersion(makePayload(0x00, 0x99, 0x99));
 
-	it('handles payload with additional bytes after DB2', () => {
-		const payload = new Uint8Array([0x12, 0x34, 0x56, 0x78]);
-
-		const events = decodeLanXFirmwareVersionPayload(payload) as FirmwareVersionEvent[];
-
-		expect(events[0].major).toBe(34);
-		expect(events[0].minor).toBe(56);
-		expect(events[0].raw.length).toBe(4);
-	});
-
-	it('produces consistent output for same payload', () => {
-		const payload = new Uint8Array([0x34, 0x78, 0x90]);
-
-		const events1 = decodeLanXFirmwareVersionPayload(payload);
-		const events2 = decodeLanXFirmwareVersionPayload(payload);
-
-		expect(events1[0]).toEqual(events2[0]);
-	});
-
-	it('does not modify input payload', () => {
-		const payload = new Uint8Array([0x12, 0x34, 0x56]);
-		const originalBytes = [payload[0], payload[1], payload[2]];
-
-		decodeLanXFirmwareVersionPayload(payload);
-
-		expect(payload[0]).toBe(originalBytes[0]);
-		expect(payload[1]).toBe(originalBytes[1]);
-		expect(payload[2]).toBe(originalBytes[2]);
+			expectFirmwareVersion(event, 99, 99);
+		});
 	});
 });

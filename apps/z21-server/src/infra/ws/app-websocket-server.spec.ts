@@ -4,40 +4,39 @@
  */
 
 import { isClientToServerMessage, PROTOCOL_VERSION } from '@application-platform/protocol';
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { WsServer } from '@application-platform/server-utils';
+import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { Logger } from '@application-platform/z21-shared';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppWsServer } from './app-websocket-server';
 
+// Mock the protocol validation function at module level
 vi.mock('@application-platform/protocol', async () => {
-	const actual = await vi.importActual('@application-platform/protocol');
-	return { ...actual, isClientToServerMessage: vi.fn(actual.isClientToServerMessage) };
+	const actual = await vi.importActual<typeof import('@application-platform/protocol')>('@application-platform/protocol');
+	return {
+		...actual,
+		isClientToServerMessage: vi.fn()
+	};
 });
 
 describe('AppWsServer', () => {
-	let wsServer: {
-		onConnection: Mock;
-		send: Mock;
-		broadcast: Mock;
-	};
+	let wsServer: DeepMocked<WsServer>;
+	let logger: DeepMocked<Logger>;
 	let server: AppWsServer;
 
 	beforeEach(() => {
-		wsServer = {
-			onConnection: vi.fn(),
-			send: vi.fn(),
-			broadcast: vi.fn()
-		} as any;
-		const mockLogger = {
-			debug: vi.fn(),
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn()
-		} as any;
-		server = new AppWsServer(wsServer as any, mockLogger);
+		wsServer = Mock<WsServer>();
+		logger = Mock<Logger>();
+
+		vi.clearAllMocks();
+
+		// Mock console.log to keep tests clean
 		vi.spyOn(global.console, 'log').mockImplementation(() => {
 			// do nothing
 		});
-		(isClientToServerMessage as unknown as Mock).mockReset();
+
+		server = new AppWsServer(wsServer as any, logger as any);
 	});
 
 	it('sends session.ready on new connection', () => {
@@ -71,7 +70,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('rejects messages that fail validation', () => {
-		(isClientToServerMessage as unknown as Mock).mockReturnValue(false);
+		vi.mocked(isClientToServerMessage).mockReturnValue(false);
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];
@@ -83,7 +82,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('forwards accepted messages to the provided handler', () => {
-		(isClientToServerMessage as unknown as Mock).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
+		vi.mocked(isClientToServerMessage).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];
@@ -101,7 +100,8 @@ describe('AppWsServer', () => {
 		server.onConnection(onMessage, onDisconnect);
 
 		const disconnect = wsServer.onConnection.mock.calls[0][1];
-		disconnect();
+		const ws: any = { id: 'ws-1' };
+		disconnect(ws);
 
 		expect(onDisconnect).toHaveBeenCalled();
 	});

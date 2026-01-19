@@ -12,24 +12,40 @@ describe('CommandStationInfo', () => {
 		info = new CommandStationInfo();
 	});
 
+	// Helper functions to create test data (similar to makeProviders in bootstrap.spec.ts)
+	function makeXBusVersion(overrides: Partial<XbusVersion> = {}): XbusVersion {
+		return {
+			xbusVersion: 0x30,
+			xBusVersionString: 'V3.0',
+			cmdsId: 0x12,
+			...overrides
+		};
+	}
+
+	function makeFirmwareVersion(overrides: Partial<FirmwareVersion> = {}): FirmwareVersion {
+		return {
+			major: 0x12,
+			minor: 0x34,
+			...overrides
+		};
+	}
+
 	describe('xBus Version Management', () => {
 		it('returns undefined for xBusVersion initially', () => {
-			const version = info.getXBusVersion();
-			expect(version).toBeUndefined();
+			expect(info.getXBusVersion()).toBeUndefined();
 		});
 
 		it('stores and retrieves xBusVersion information', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30, xBusVersionString: 'V3.0', cmdsId: 0x12 };
+			const versionData = makeXBusVersion();
 
 			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
 
-			expect(result).toEqual(versionData);
+			expect(info.getXBusVersion()).toEqual(versionData);
 		});
 
 		it('updates xBusVersion when called multiple times', () => {
-			const version1: XbusVersion = { xbusVersion: 0x30, xBusVersionString: 'V3.0', cmdsId: 0x10 };
-			const version2: XbusVersion = { xbusVersion: 0x36, xBusVersionString: 'V3.6', cmdsId: 0x20 };
+			const version1 = makeXBusVersion({ xbusVersion: 0x30, cmdsId: 0x10 });
+			const version2 = makeXBusVersion({ xbusVersion: 0x36, xBusVersionString: 'V3.6', cmdsId: 0x20 });
 
 			info.setXBusVersion(version1);
 			expect(info.getXBusVersion()).toEqual(version1);
@@ -41,8 +57,7 @@ describe('CommandStationInfo', () => {
 		it('indicates xBusVersion is available after setting', () => {
 			expect(info.hasXBusVersion()).toBe(false);
 
-			const versionData: XbusVersion = { xbusVersion: 0x40, xBusVersionString: 'V4.0', cmdsId: 0x15 };
-			info.setXBusVersion(versionData);
+			info.setXBusVersion(makeXBusVersion({ xbusVersion: 0x40, cmdsId: 0x15 }));
 
 			expect(info.hasXBusVersion()).toBe(true);
 		});
@@ -51,54 +66,45 @@ describe('CommandStationInfo', () => {
 			expect(info.hasXBusVersion()).toBe(false);
 		});
 
-		it('stores xBusVersion with only xbusVersion field', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30 };
+		describe('partial xBusVersion data', () => {
+			it('stores xBusVersion with only xbusVersion field', () => {
+				info.setXBusVersion({ xbusVersion: 0x30 });
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+				const result = info.getXBusVersion();
+				expect(result?.xbusVersion).toBe(0x30);
+				expect(result?.xBusVersionString).toBeUndefined();
+				expect(result?.cmdsId).toBeUndefined();
+			});
 
-			expect(result?.xbusVersion).toBe(0x30);
-			expect(result?.xBusVersionString).toBeUndefined();
-			expect(result?.cmdsId).toBeUndefined();
-		});
+			it('stores xBusVersion with only xBusVersionString field', () => {
+				info.setXBusVersion({ xBusVersionString: 'V3.6' });
 
-		it('stores xBusVersion with only xBusVersionString field', () => {
-			const versionData: XbusVersion = { xBusVersionString: 'V3.6' };
+				const result = info.getXBusVersion();
+				expect(result?.xBusVersionString).toBe('V3.6');
+				expect(result?.xbusVersion).toBeUndefined();
+				expect(result?.cmdsId).toBeUndefined();
+			});
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+			it('stores xBusVersion with only cmdsId field', () => {
+				info.setXBusVersion({ cmdsId: 0x42 });
 
-			expect(result?.xBusVersionString).toBe('V3.6');
-			expect(result?.xbusVersion).toBeUndefined();
-			expect(result?.cmdsId).toBeUndefined();
-		});
+				const result = info.getXBusVersion();
+				expect(result?.cmdsId).toBe(0x42);
+				expect(result?.xbusVersion).toBeUndefined();
+				expect(result?.xBusVersionString).toBeUndefined();
+			});
 
-		it('stores xBusVersion with only cmdsId field', () => {
-			const versionData: XbusVersion = { cmdsId: 0x42 };
+			it('stores complete xBusVersion with all fields', () => {
+				const versionData = makeXBusVersion();
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+				info.setXBusVersion(versionData);
 
-			expect(result?.cmdsId).toBe(0x42);
-			expect(result?.xbusVersion).toBeUndefined();
-			expect(result?.xBusVersionString).toBeUndefined();
-		});
-
-		it('stores complete xBusVersion with all fields', () => {
-			const versionData: XbusVersion = {
-				xbusVersion: 0x30,
-				xBusVersionString: 'V3.0',
-				cmdsId: 0x12
-			};
-
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
-
-			expect(result).toEqual(versionData);
+				expect(info.getXBusVersion()).toEqual(versionData);
+			});
 		});
 
 		it('returns the exact same object reference from getXBusVersion', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x10 };
+			const versionData = makeXBusVersion({ xbusVersion: 0x30, cmdsId: 0x10 });
 
 			info.setXBusVersion(versionData);
 			const result1 = info.getXBusVersion();
@@ -108,8 +114,7 @@ describe('CommandStationInfo', () => {
 		});
 
 		it('allows overwriting xBusVersion with empty object', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x10 };
-			info.setXBusVersion(versionData);
+			info.setXBusVersion(makeXBusVersion());
 			expect(info.hasXBusVersion()).toBe(true);
 
 			info.setXBusVersion({});
@@ -117,117 +122,91 @@ describe('CommandStationInfo', () => {
 			expect(info.getXBusVersion()).toEqual({});
 		});
 
-		it('stores cmdsId value 0x12', () => {
-			const versionData: XbusVersion = { cmdsId: 0x12 };
+		describe('cmdsId handling', () => {
+			it('stores cmdsId value 0x12', () => {
+				info.setXBusVersion({ cmdsId: 0x12 });
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+				expect(info.getXBusVersion()?.cmdsId).toBe(0x12);
+			});
 
-			expect(result?.cmdsId).toBe(0x12);
-		});
+			it('stores cmdsId value 0x13', () => {
+				info.setXBusVersion({ cmdsId: 0x13 });
 
-		it('stores cmdsId value 0x13', () => {
-			const versionData: XbusVersion = { cmdsId: 0x13 };
+				expect(info.getXBusVersion()?.cmdsId).toBe(0x13);
+			});
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+			it('stores cmdsId value 0', () => {
+				info.setXBusVersion({ cmdsId: 0 });
 
-			expect(result?.cmdsId).toBe(0x13);
-		});
+				expect(info.getXBusVersion()?.cmdsId).toBe(0);
+			});
 
-		it('stores cmdsId value 0', () => {
-			const versionData: XbusVersion = { cmdsId: 0 };
+			it('stores cmdsId value 255', () => {
+				info.setXBusVersion({ cmdsId: 0xff });
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+				expect(info.getXBusVersion()?.cmdsId).toBe(0xff);
+			});
 
-			expect(result?.cmdsId).toBe(0);
-		});
+			it('updates cmdsId when xBusVersion is updated', () => {
+				info.setXBusVersion({ cmdsId: 0x12 });
+				expect(info.getXBusVersion()?.cmdsId).toBe(0x12);
 
-		it('stores cmdsId value 255', () => {
-			const versionData: XbusVersion = { cmdsId: 0xff };
+				info.setXBusVersion({ cmdsId: 0x13 });
+				expect(info.getXBusVersion()?.cmdsId).toBe(0x13);
+			});
 
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
+			it('preserves cmdsId when updating with different fields', () => {
+				info.setXBusVersion({ cmdsId: 0x12 });
+				info.setXBusVersion({ xbusVersion: 0x30 });
 
-			expect(result?.cmdsId).toBe(0xff);
-		});
+				expect(info.getXBusVersion()?.cmdsId).toBeUndefined();
+				expect(info.getXBusVersion()?.xbusVersion).toBe(0x30);
+			});
 
-		it('updates cmdsId when xBusVersion is updated', () => {
-			const version1: XbusVersion = { cmdsId: 0x12 };
-			const version2: XbusVersion = { cmdsId: 0x13 };
+			it('stores cmdsId alongside xbusVersion', () => {
+				info.setXBusVersion({ xbusVersion: 0x30, cmdsId: 0x12 });
 
-			info.setXBusVersion(version1);
-			expect(info.getXBusVersion()?.cmdsId).toBe(0x12);
+				const result = info.getXBusVersion();
+				expect(result?.xbusVersion).toBe(0x30);
+				expect(result?.cmdsId).toBe(0x12);
+			});
 
-			info.setXBusVersion(version2);
-			expect(info.getXBusVersion()?.cmdsId).toBe(0x13);
-		});
+			it('stores cmdsId alongside xBusVersionString', () => {
+				info.setXBusVersion({ xBusVersionString: 'V3.0', cmdsId: 0x12 });
 
-		it('preserves cmdsId when updating with different fields', () => {
-			const version1: XbusVersion = { cmdsId: 0x12 };
-			const version2: XbusVersion = { xbusVersion: 0x30 };
+				const result = info.getXBusVersion();
+				expect(result?.xBusVersionString).toBe('V3.0');
+				expect(result?.cmdsId).toBe(0x12);
+			});
 
-			info.setXBusVersion(version1);
-			info.setXBusVersion(version2);
+			it('handles cmdsId in complete version object', () => {
+				const versionData = makeXBusVersion({ xbusVersion: 0x36, xBusVersionString: 'V3.6', cmdsId: 0x13 });
 
-			expect(info.getXBusVersion()?.cmdsId).toBeUndefined();
-			expect(info.getXBusVersion()?.xbusVersion).toBe(0x30);
-		});
+				info.setXBusVersion(versionData);
 
-		it('stores cmdsId alongside xbusVersion', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x12 };
-
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
-
-			expect(result?.xbusVersion).toBe(0x30);
-			expect(result?.cmdsId).toBe(0x12);
-		});
-
-		it('stores cmdsId alongside xBusVersionString', () => {
-			const versionData: XbusVersion = { xBusVersionString: 'V3.0', cmdsId: 0x12 };
-
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
-
-			expect(result?.xBusVersionString).toBe('V3.0');
-			expect(result?.cmdsId).toBe(0x12);
-		});
-
-		it('handles cmdsId in complete version object', () => {
-			const versionData: XbusVersion = {
-				xbusVersion: 0x36,
-				xBusVersionString: 'V3.6',
-				cmdsId: 0x13
-			};
-
-			info.setXBusVersion(versionData);
-			const result = info.getXBusVersion();
-
-			expect(result).toEqual(versionData);
-			expect(result?.cmdsId).toBe(0x13);
+				const result = info.getXBusVersion();
+				expect(result).toEqual(versionData);
+				expect(result?.cmdsId).toBe(0x13);
+			});
 		});
 	});
 
 	describe('Firmware Version Management', () => {
 		it('returns undefined for firmwareVersion initially', () => {
-			const version = info.getFirmwareVersion();
-			expect(version).toBeUndefined();
+			expect(info.getFirmwareVersion()).toBeUndefined();
 		});
 
 		it('stores and retrieves firmware version information', () => {
-			const versionData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const versionData = makeFirmwareVersion();
 
 			info.setFirmwareVersion(versionData);
-			const result = info.getFirmwareVersion();
 
-			expect(result).toEqual(versionData);
+			expect(info.getFirmwareVersion()).toEqual(versionData);
 		});
 
 		it('updates firmware version when called multiple times', () => {
-			const version1: FirmwareVersion = { major: 0x10, minor: 0x01 };
-			const version2: FirmwareVersion = { major: 0x25, minor: 0x42 };
+			const version1 = makeFirmwareVersion({ major: 0x10, minor: 0x01 });
+			const version2 = makeFirmwareVersion({ major: 0x25, minor: 0x42 });
 
 			info.setFirmwareVersion(version1);
 			expect(info.getFirmwareVersion()).toEqual(version1);
@@ -239,8 +218,7 @@ describe('CommandStationInfo', () => {
 		it('indicates firmware version is available after setting', () => {
 			expect(info.hasFirmwareVersion()).toBe(false);
 
-			const versionData: FirmwareVersion = { major: 0x20, minor: 0x15 };
-			info.setFirmwareVersion(versionData);
+			info.setFirmwareVersion(makeFirmwareVersion({ major: 0x20, minor: 0x15 }));
 
 			expect(info.hasFirmwareVersion()).toBe(true);
 		});
@@ -250,27 +228,23 @@ describe('CommandStationInfo', () => {
 		});
 
 		it('stores firmware version with minimum values', () => {
-			const versionData: FirmwareVersion = { major: 0x00, minor: 0x00 };
+			info.setFirmwareVersion({ major: 0x00, minor: 0x00 });
 
-			info.setFirmwareVersion(versionData);
 			const result = info.getFirmwareVersion();
-
 			expect(result?.major).toBe(0x00);
 			expect(result?.minor).toBe(0x00);
 		});
 
 		it('stores firmware version with maximum values', () => {
-			const versionData: FirmwareVersion = { major: 0xff, minor: 0xff };
+			info.setFirmwareVersion({ major: 0xff, minor: 0xff });
 
-			info.setFirmwareVersion(versionData);
 			const result = info.getFirmwareVersion();
-
 			expect(result?.major).toBe(0xff);
 			expect(result?.minor).toBe(0xff);
 		});
 
 		it('returns the exact same object reference from getFirmwareVersion', () => {
-			const versionData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const versionData = makeFirmwareVersion();
 
 			info.setFirmwareVersion(versionData);
 			const result1 = info.getFirmwareVersion();
@@ -282,8 +256,8 @@ describe('CommandStationInfo', () => {
 
 	describe('Independent Version Management', () => {
 		it('manages xBusVersion and firmwareVersion independently', () => {
-			const xbusData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x10 };
-			const firmwareData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const xbusData = makeXBusVersion({ xbusVersion: 0x30, cmdsId: 0x10 });
+			const firmwareData = makeFirmwareVersion();
 
 			info.setXBusVersion(xbusData);
 			info.setFirmwareVersion(firmwareData);
@@ -293,10 +267,9 @@ describe('CommandStationInfo', () => {
 		});
 
 		it('clearing xBusVersion does not affect firmwareVersion', () => {
-			const xbusData: XbusVersion = { xbusVersion: 0x30 };
-			const firmwareData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const firmwareData = makeFirmwareVersion();
 
-			info.setXBusVersion(xbusData);
+			info.setXBusVersion({ xbusVersion: 0x30 });
 			info.setFirmwareVersion(firmwareData);
 			info.setXBusVersion({});
 
@@ -304,11 +277,10 @@ describe('CommandStationInfo', () => {
 		});
 
 		it('clearing firmwareVersion does not affect xBusVersion', () => {
-			const xbusData: XbusVersion = { xbusVersion: 0x30 };
-			const firmwareData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const xbusData = makeXBusVersion({ xbusVersion: 0x30 });
 
 			info.setXBusVersion(xbusData);
-			info.setFirmwareVersion(firmwareData);
+			info.setFirmwareVersion(makeFirmwareVersion());
 
 			info.setFirmwareVersion({ major: 0, minor: 0 });
 			expect(info.getXBusVersion()).toEqual(xbusData);
@@ -316,8 +288,8 @@ describe('CommandStationInfo', () => {
 
 		it('both versions can be set and retrieved after fresh instance', () => {
 			const newInfo = new CommandStationInfo();
-			const xbusData: XbusVersion = { xbusVersion: 0x40 };
-			const firmwareData: FirmwareVersion = { major: 0x25, minor: 0x99 };
+			const xbusData = makeXBusVersion({ xbusVersion: 0x40 });
+			const firmwareData = makeFirmwareVersion({ major: 0x25, minor: 0x99 });
 
 			newInfo.setXBusVersion(xbusData);
 			newInfo.setFirmwareVersion(firmwareData);
@@ -454,8 +426,8 @@ describe('CommandStationInfo', () => {
 
 	describe('Complete Information Management', () => {
 		it('manages all properties independently', () => {
-			const xbusData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x10 };
-			const firmwareData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+			const xbusData = makeXBusVersion({ xbusVersion: 0x30, cmdsId: 0x10 });
+			const firmwareData = makeFirmwareVersion();
 
 			info.setXBusVersion(xbusData);
 			info.setFirmwareVersion(firmwareData);
@@ -507,12 +479,11 @@ describe('CommandStationInfo', () => {
 
 	describe('Edge Cases', () => {
 		it('handles setting xBusVersion to undefined implicitly by checking state', () => {
-			const versionData: XbusVersion = { xbusVersion: 0x30 };
+			const versionData = makeXBusVersion({ xbusVersion: 0x30 });
 			info.setXBusVersion(versionData);
 			expect(info.hasXBusVersion()).toBe(true);
 
-			const emptyVersion: XbusVersion = {};
-			info.setXBusVersion(emptyVersion);
+			info.setXBusVersion({});
 			expect(info.hasXBusVersion()).toBe(true);
 		});
 
@@ -520,8 +491,8 @@ describe('CommandStationInfo', () => {
 			const info1 = new CommandStationInfo();
 			const info2 = new CommandStationInfo();
 
-			const version1: XbusVersion = { xbusVersion: 0x30 };
-			const version2: XbusVersion = { xbusVersion: 0x40 };
+			const version1 = makeXBusVersion({ xbusVersion: 0x30 });
+			const version2 = makeXBusVersion({ xbusVersion: 0x40 });
 
 			info1.setXBusVersion(version1);
 			info2.setXBusVersion(version2);
@@ -534,7 +505,7 @@ describe('CommandStationInfo', () => {
 			const info1 = new CommandStationInfo();
 			const info2 = new CommandStationInfo();
 
-			const version: XbusVersion = { xbusVersion: 0x30 };
+			const version = makeXBusVersion({ xbusVersion: 0x30 });
 			info1.setXBusVersion(version);
 
 			expect(info2.hasXBusVersion()).toBe(false);

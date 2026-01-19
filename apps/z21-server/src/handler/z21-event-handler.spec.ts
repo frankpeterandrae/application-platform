@@ -3,103 +3,45 @@
  * All rights reserved.
  */
 
-import { datasetsToEvents, deriveTrackFlagsFromSystemState, parseZ21Datagram } from '@application-platform/z21';
-import type { MockedFunction } from 'vitest';
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { CommandStationInfo, LocoManager } from '@application-platform/domain';
+import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { datasetsToEvents, parseZ21Datagram } from '@application-platform/z21';
+import { Logger } from '@application-platform/z21-shared';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
 
 import { Z21EventHandler, type BroadcastFn } from './z21-event-handler';
 
+// Mock the Z21 parsing functions at module level
 vi.mock('@application-platform/z21', async () => {
-	const actual = await vi.importActual('@application-platform/z21');
+	const actual = await vi.importActual<typeof import('@application-platform/z21')>('@application-platform/z21');
 	return {
 		...actual,
-		deriveTrackFlagsFromSystemState: vi.fn(),
-		parseZ21Datagram: vi.fn(() => []),
-		datasetsToEvents: vi.fn(() => []),
-		decodeSystemState: vi.fn((state) => ({
-			mainCurrent_mA: state[0] | (state[1] << 8),
-			progCurrent_mA: state[2] | (state[3] << 8),
-			filteredMainCurrent_mA: state[4] | (state[5] << 8),
-			temperature_C: state[6] | (state[7] << 8),
-			supplyVoltage_mV: state[8] | (state[9] << 8),
-			vccVoltage_mV: state[10] | (state[11] << 8),
-			centralState: state[12],
-			centralStateEx: state[13],
-			capabilities: state[14] | (state[15] << 8)
-		}))
+		parseZ21Datagram: vi.fn(),
+		datasetsToEvents: vi.fn()
 	};
 });
 
 describe('Z21EventHandler.handleDatagram', () => {
-	let broadcast: MockedFunction<BroadcastFn>;
-	let trackStatusManager: {
-		updateFromXbusPower: Mock;
-		updateFromSystemState: Mock;
-		getStatus: Mock;
-		updateFromLanX: Mock;
-		setEmergencyStop: Mock;
-	};
-	let csInfoOrchestrator: {
-		poke: Mock;
-		ack: Mock;
-	};
+	let broadcast: vi.MockedFunction<BroadcastFn>;
+	let locoManager: DeepMocked<LocoManager>;
+	let commandStationInfo: DeepMocked<CommandStationInfo>;
+	let csInfoOrchestrator: DeepMocked<CommandStationInfoOrchestrator>;
+	let logger: DeepMocked<Logger>;
 	let handler: Z21EventHandler;
-	let locoManager: {
-		getState: Mock;
-		getAllStates: Mock;
-		setSpeed: Mock;
-		setFunction: Mock;
-		stopAll: Mock;
-		ensureLoco: Mock;
-		subscribeLocoInfoOnce: Mock;
-		updateLocoInfoFromZ21: Mock;
-		locos: Mock;
-		locoInfoSubscribed: Mock;
-		clamp01: Mock;
-	};
-	let commandStationInfo: {
-		setCode: Mock;
-		setXBusVersion: Mock;
-		setFirmwareVersion: Mock;
-		setHardwareType: Mock;
-	};
 
 	beforeEach(() => {
 		broadcast = vi.fn();
-		trackStatusManager = {
-			updateFromXbusPower: vi.fn().mockReturnValue({ short: false }),
-			updateFromSystemState: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined }),
-			getStatus: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined }),
-			updateFromLanX: vi.fn().mockReturnValue({ powerOn: false, short: false, emergencyStop: undefined }),
-			setEmergencyStop: vi.fn()
-		};
-		// Configure mock return value for deriveTrackFlagsFromSystemState
-		vi.mocked(deriveTrackFlagsFromSystemState).mockReturnValue({ powerOn: false, emergencyStop: false, short: false });
-		locoManager = {
-			getState: vi.fn(),
-			getAllStates: vi.fn(),
-			setSpeed: vi.fn(),
-			setFunction: vi.fn(),
-			stopAll: vi.fn(),
-			ensureLoco: vi.fn(),
-			subscribeLocoInfoOnce: vi.fn(),
-			updateLocoInfoFromZ21: vi.fn(),
-			locos: vi.fn(),
-			locoInfoSubscribed: vi.fn(),
-			clamp01: vi.fn()
-		};
-		commandStationInfo = { setXBusVersion: vi.fn(), setFirmwareVersion: vi.fn(), setHardwareType: vi.fn(), setCode: vi.fn() };
-		csInfoOrchestrator = {
-			poke: vi.fn(),
-			ack: vi.fn()
-		};
-		const mockLogger = {
-			debug: vi.fn(),
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn()
-		} as any;
-		handler = new Z21EventHandler(broadcast, locoManager as any, mockLogger, commandStationInfo as any, csInfoOrchestrator as any);
+		locoManager = Mock<LocoManager>();
+		commandStationInfo = Mock<CommandStationInfo>();
+		csInfoOrchestrator = Mock<CommandStationInfoOrchestrator>();
+		logger = Mock<Logger>();
+
+		// Clear mocked functions
+		vi.clearAllMocks();
+
+		handler = new Z21EventHandler(broadcast, locoManager as any, logger as any, commandStationInfo as any, csInfoOrchestrator as any);
 	});
 
 	describe('serial datagrams', () => {
@@ -177,7 +119,12 @@ describe('Z21EventHandler.handleDatagram', () => {
 					state: new Uint8Array([0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x03, 0x04, 0x00, 0x00])
 				}
 			] as any);
-
+			vi.mocked(datasetsToEvents).mockReturnValue([
+				{
+					type: 'event.system.state',
+					payload: { centralState: 0x03, centralStateEx: 0x04 }
+				}
+			] as any);
 			const payload = {
 				raw: Buffer.from([
 					0x14, 0x00, 0x84, 0x00, 0x64, 0x00, 0x32, 0x00, 0x4b, 0x00, 0x19, 0x00, 0x98, 0x3a, 0x88, 0x13, 0x03, 0x04, 0x00, 0x00
@@ -200,6 +147,12 @@ describe('Z21EventHandler.handleDatagram', () => {
 				{
 					kind: 'ds.system.state',
 					state: new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+				}
+			] as any);
+			vi.mocked(datasetsToEvents).mockReturnValue([
+				{
+					type: 'event.system.state',
+					payload: { centralState: 0x00, centralStateEx: 0x00 }
 				}
 			] as any);
 

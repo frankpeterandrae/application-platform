@@ -3,55 +3,117 @@
  * All rights reserved.
  */
 
-import { beforeEach, describe, expect, it, vi, type Mocked } from 'vitest';
+import { Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SpeedByteMask } from '../constants';
 import { type Z21Udp } from '../udp/udp';
 
 import { Z21CommandService } from './z21-command-service';
 
+type Logger = {
+	debug: vi.Mock;
+	info: vi.Mock;
+	warn: vi.Mock;
+	error: vi.Mock;
+};
+
+type Services = {
+	udp: vi.Mocked<Z21Udp>;
+	logger: vi.Mocked<Logger>;
+	service: Z21CommandService;
+};
+
 describe('Z21CommandService', () => {
-	let service: Z21CommandService;
-	let mockUdp: Mocked<Z21Udp>;
+	// Helper function to create mocked services (similar to makeProviders in bootstrap.spec.ts)
+	function makeServices(): Services {
+		const udp = Mock<Z21Udp>() as any;
+		const logger = Mock<Logger>() as any;
+		const service = new Z21CommandService(udp, logger);
+
+		return { udp, logger, service };
+	}
+
+	let services: Services;
 
 	beforeEach(() => {
-		mockUdp = {
-			sendRaw: vi.fn()
-		} as any;
-		const mockLogger = {
-			debug: vi.fn(),
-			info: vi.fn(),
-			warn: vi.fn(),
-			error: vi.fn()
-		} as any;
-		service = new Z21CommandService(mockUdp, mockLogger);
+		services = makeServices();
+		resetMocksBeforeEach(services);
 	});
+
+	// Helper function to extract buffer from UDP call
+	function extractBuffer(callIndex = 0): Buffer {
+		return services.udp.sendRaw.mock.calls[callIndex][0];
+	}
+
+	// Helper function to verify UDP was called
+	function expectUdpCalled(times = 1): void {
+		expect(services.udp.sendRaw).toHaveBeenCalledTimes(times);
+	}
+
+	// Helper function to verify buffer is valid
+	function expectValidBuffer(buffer: Buffer): void {
+		expect(Buffer.isBuffer(buffer)).toBe(true);
+		expect(buffer.length).toBeGreaterThan(0);
+	}
+
+	// Helper function to extract speed byte from buffer
+	function extractSpeedByte(buffer: Buffer): number {
+		return buffer[8];
+	}
+
+	// Helper function to verify speed byte properties
+	// NOTE: These helpers are used in sendTrackPower and setLocoDrive tests.
+	// Other tests can be refactored incrementally to use these helpers for better DRY.
+	function expectSpeedByte(
+		buffer: Buffer,
+		checks: {
+			value?: { greaterThan?: number; lessThan?: number; equals?: number };
+			direction?: 'FWD' | 'REV';
+		}
+	): void {
+		const speedByte = extractSpeedByte(buffer);
+
+		if (checks.value?.greaterThan !== undefined) {
+			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(checks.value.greaterThan);
+		}
+		if (checks.value?.lessThan !== undefined) {
+			expect(speedByte & SpeedByteMask.VALUE).toBeLessThan(checks.value.lessThan);
+		}
+		if (checks.value?.equals !== undefined) {
+			expect(speedByte & SpeedByteMask.VALUE).toBe(checks.value.equals);
+		}
+		if (checks.direction === 'FWD') {
+			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x80);
+		}
+		if (checks.direction === 'REV') {
+			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x00);
+		}
+	}
 
 	describe('sendTrackPower', () => {
 		it('sends track power ON command to UDP when on is true', () => {
-			service.sendTrackPower(true);
+			services.service.sendTrackPower(true);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(Buffer.isBuffer(buffer)).toBe(true);
-			expect(buffer.length).toBeGreaterThan(0);
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
 		});
 
 		it('sends track power OFF command to UDP when on is false', () => {
-			service.sendTrackPower(false);
+			services.service.sendTrackPower(false);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(Buffer.isBuffer(buffer)).toBe(true);
-			expect(buffer.length).toBeGreaterThan(0);
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
 		});
 
 		it('sends different buffers for ON and OFF commands', () => {
-			service.sendTrackPower(true);
-			const onBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.sendTrackPower(true);
+			const onBuffer = extractBuffer(0);
 
-			service.sendTrackPower(false);
-			const offBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.sendTrackPower(false);
+			const offBuffer = extractBuffer(1);
 
 			expect(onBuffer).not.toEqual(offBuffer);
 		});
@@ -59,97 +121,93 @@ describe('Z21CommandService', () => {
 
 	describe('setLocoDrive', () => {
 		it('sends locomotive drive command to UDP', () => {
-			service.setLocoDrive(1845, 0.5, 'FWD');
+			services.service.setLocoDrive(1845, 0.5, 'FWD');
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
 		});
 
 		it('converts fractional speed 0.0 to speed step 0', () => {
-			service.setLocoDrive(100, 0.0, 'FWD');
+			services.service.setLocoDrive(100, 0.0, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const speedByte = buffer[8];
-			expect(speedByte & SpeedByteMask.VALUE).toBe(0);
+			const buffer = extractBuffer(0);
+			expectSpeedByte(buffer, { value: { equals: 0 } });
 		});
 
 		it('converts fractional speed 1.0 to a non-zero speed step', () => {
-			service.setLocoDrive(100, 1.0, 'FWD');
+			services.service.setLocoDrive(100, 1.0, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const speedByte = buffer[8];
-			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
+			const buffer = extractBuffer(0);
+			expectSpeedByte(buffer, { value: { greaterThan: 0 } });
 		});
 
 		it('converts fractional speed 0.5 to a mid-range speed step', () => {
-			service.setLocoDrive(100, 0.5, 'FWD');
+			services.service.setLocoDrive(100, 0.5, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const speedByte = buffer[8];
-			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
-			expect(speedByte & SpeedByteMask.VALUE).toBeLessThan(127);
+			const buffer = extractBuffer(0);
+			expectSpeedByte(buffer, {
+				value: { greaterThan: 0, lessThan: 127 }
+			});
 		});
 
 		it('encodes forward direction with high bit set', () => {
-			service.setLocoDrive(100, 0.5, 'FWD');
+			services.service.setLocoDrive(100, 0.5, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const speedByte = buffer[8];
-			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x80);
+			const buffer = extractBuffer(0);
+			expectSpeedByte(buffer, { direction: 'FWD' });
 		});
 
 		it('encodes reverse direction with high bit clear', () => {
-			service.setLocoDrive(100, 0.5, 'REV');
+			services.service.setLocoDrive(100, 0.5, 'REV');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
-			const speedByte = buffer[8];
-			expect(speedByte & SpeedByteMask.DIRECTION_FORWARD).toBe(0x00);
+			const buffer = extractBuffer(0);
+			expectSpeedByte(buffer, { direction: 'REV' });
 		});
 
 		it('does not reuse the same buffer instance between calls with different speeds', () => {
-			service.setLocoDrive(100, 0.3, 'FWD');
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoDrive(100, 0.3, 'FWD');
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoDrive(100, 0.7, 'FWD');
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoDrive(100, 0.7, 'FWD');
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toBe(buffer2);
 		});
 
 		it('sends different buffers for different directions', () => {
-			service.setLocoDrive(100, 0.5, 'FWD');
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoDrive(100, 0.5, 'FWD');
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoDrive(100, 0.5, 'REV');
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoDrive(100, 0.5, 'REV');
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('sends different buffers for different addresses', () => {
-			service.setLocoDrive(100, 0.5, 'FWD');
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoDrive(100, 0.5, 'FWD');
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoDrive(200, 0.5, 'FWD');
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoDrive(200, 0.5, 'FWD');
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('produces non-zero speed step for rounded fractional speed', () => {
-			service.setLocoDrive(100, 0.357, 'FWD');
+			services.service.setLocoDrive(100, 0.357, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
 			const speedStep = speedByte & SpeedByteMask.VALUE;
 			expect(speedStep).toBeGreaterThan(0);
 		});
 
 		it('handles very small fractional speeds', () => {
-			service.setLocoDrive(100, 0.01, 'FWD');
+			services.service.setLocoDrive(100, 0.01, 'FWD');
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const speedByte = buffer[8];
 			expect(speedByte & SpeedByteMask.VALUE).toBeGreaterThan(0);
 		});
@@ -157,136 +215,136 @@ describe('Z21CommandService', () => {
 
 	describe('setLocoFunction', () => {
 		it('sends locomotive function command to UDP', () => {
-			service.setLocoFunction(100, 0, 0b01);
+			services.service.setLocoFunction(100, 0, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('encodes function OFF type', () => {
-			service.setLocoFunction(100, 5, 0b00);
+			services.service.setLocoFunction(100, 5, 0b00);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('encodes function ON type', () => {
-			service.setLocoFunction(100, 10, 0b01);
+			services.service.setLocoFunction(100, 10, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('encodes function TOGGLE type', () => {
-			service.setLocoFunction(100, 15, 0b10);
+			services.service.setLocoFunction(100, 15, 0b10);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('sends different buffers for different function numbers', () => {
-			service.setLocoFunction(100, 0, 0b01);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoFunction(100, 0, 0b01);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoFunction(100, 1, 0b01);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoFunction(100, 1, 0b01);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('sends different buffers for different switch types', () => {
-			service.setLocoFunction(100, 5, 0b00);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoFunction(100, 5, 0b00);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoFunction(100, 5, 0b01);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoFunction(100, 5, 0b01);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('sends different buffers for different addresses', () => {
-			service.setLocoFunction(100, 5, 0b01);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoFunction(100, 5, 0b01);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoFunction(200, 5, 0b01);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoFunction(200, 5, 0b01);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('handles function number 0', () => {
-			service.setLocoFunction(100, 0, 0b01);
+			services.service.setLocoFunction(100, 0, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles function number 31', () => {
-			service.setLocoFunction(100, 31, 0b01);
+			services.service.setLocoFunction(100, 31, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles minimum locomotive address', () => {
-			service.setLocoFunction(1, 5, 0b01);
+			services.service.setLocoFunction(1, 5, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles maximum locomotive address', () => {
-			service.setLocoFunction(9999, 5, 0b01);
+			services.service.setLocoFunction(9999, 5, 0b01);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe('getLocoInfo', () => {
 		it('sends locomotive info request to UDP', () => {
-			service.getLocoInfo(100);
+			services.service.getLocoInfo(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('sends different buffers for different addresses', () => {
-			service.getLocoInfo(100);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getLocoInfo(100);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getLocoInfo(200);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getLocoInfo(200);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('handles minimum locomotive address', () => {
-			service.getLocoInfo(1);
+			services.service.getLocoInfo(1);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles maximum locomotive address', () => {
-			service.getLocoInfo(9999);
+			services.service.getLocoInfo(9999);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.getLocoInfo(100);
+			services.service.getLocoInfo(100);
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces consistent buffer for same address', () => {
-			service.getLocoInfo(100);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getLocoInfo(100);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getLocoInfo(100);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getLocoInfo(100);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
@@ -294,54 +352,54 @@ describe('Z21CommandService', () => {
 
 	describe('getTurnoutInfo', () => {
 		it('sends turnout info request to UDP', () => {
-			service.getTurnoutInfo(100);
+			services.service.getTurnoutInfo(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('sends different buffers for different addresses', () => {
-			service.getTurnoutInfo(100);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getTurnoutInfo(100);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getTurnoutInfo(200);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getTurnoutInfo(200);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('handles minimum accessory address', () => {
-			service.getTurnoutInfo(0);
+			services.service.getTurnoutInfo(0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles maximum accessory address', () => {
-			service.getTurnoutInfo(16383);
+			services.service.getTurnoutInfo(16383);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles mid-range accessory address', () => {
-			service.getTurnoutInfo(500);
+			services.service.getTurnoutInfo(500);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.getTurnoutInfo(100);
+			services.service.getTurnoutInfo(100);
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces consistent buffer for same address', () => {
-			service.getTurnoutInfo(100);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getTurnoutInfo(100);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getTurnoutInfo(100);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getTurnoutInfo(100);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
@@ -358,238 +416,238 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends turnout activation command immediately', () => {
-			service.setTurnout(100, 0);
+			services.service.setTurnout(100, 0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('sends turnout deactivation command after default pulse time', () => {
-			service.setTurnout(100, 0);
+			services.service.setTurnout(100, 0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
 		it('sends turnout deactivation command after custom pulse time', () => {
-			service.setTurnout(100, 0, { pulseMs: 200 });
+			services.service.setTurnout(100, 0, { pulseMs: 200 });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 
 			vi.advanceTimersByTime(200);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
 		it('does not send deactivation before pulse time', () => {
-			service.setTurnout(100, 0, { pulseMs: 200 });
+			services.service.setTurnout(100, 0, { pulseMs: 200 });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('sends different buffers for activation and deactivation', () => {
-			service.setTurnout(100, 0);
-			const activationBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setTurnout(100, 0);
+			const activationBuffer = services.udp.sendRaw.mock.calls[0][0];
 
 			vi.advanceTimersByTime(100);
-			const deactivationBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			const deactivationBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(activationBuffer).not.toEqual(deactivationBuffer);
 		});
 
 		it('sends different buffers for port 0 and port 1', () => {
-			service.setTurnout(100, 0);
-			const port0Buffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setTurnout(100, 0);
+			const port0Buffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setTurnout(100, 1);
-			const port1Buffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setTurnout(100, 1);
+			const port1Buffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(port0Buffer).not.toEqual(port1Buffer);
 		});
 
 		it('uses default queue flag when not specified', () => {
-			service.setTurnout(100, 0);
+			services.service.setTurnout(100, 0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('respects custom queue flag', () => {
-			service.setTurnout(100, 0, { queue: false });
+			services.service.setTurnout(100, 0, { queue: false });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('cancels previous timer when setting same turnout again', () => {
-			service.setTurnout(100, 0, { pulseMs: 200 });
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			services.service.setTurnout(100, 0, { pulseMs: 200 });
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 
 			vi.advanceTimersByTime(50);
 
-			service.setTurnout(100, 0, { pulseMs: 200 });
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			services.service.setTurnout(100, 0, { pulseMs: 200 });
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 
 			vi.advanceTimersByTime(150);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 
 			vi.advanceTimersByTime(50);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 
 		it('does not cancel timer for different turnout addresses', () => {
-			service.setTurnout(100, 0, { pulseMs: 200 });
-			service.setTurnout(200, 0, { pulseMs: 200 });
+			services.service.setTurnout(100, 0, { pulseMs: 200 });
+			services.service.setTurnout(200, 0, { pulseMs: 200 });
 
 			vi.advanceTimersByTime(200);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(4);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(4);
 		});
 
 		it('handles minimum accessory address', () => {
-			service.setTurnout(0, 0);
+			services.service.setTurnout(0, 0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('handles maximum accessory address', () => {
-			service.setTurnout(16383, 0);
+			services.service.setTurnout(16383, 0);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('sends both activation and deactivation for complete cycle', () => {
-			service.setTurnout(100, 0);
+			services.service.setTurnout(100, 0);
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('sends activation with same queue flag for both commands', () => {
-			service.setTurnout(100, 0, { queue: false });
+			services.service.setTurnout(100, 0, { queue: false });
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
 		it('handles multiple concurrent turnout operations', () => {
-			service.setTurnout(100, 0, { pulseMs: 100 });
-			service.setTurnout(200, 1, { pulseMs: 150 });
-			service.setTurnout(300, 0, { pulseMs: 200 });
+			services.service.setTurnout(100, 0, { pulseMs: 100 });
+			services.service.setTurnout(200, 1, { pulseMs: 150 });
+			services.service.setTurnout(300, 0, { pulseMs: 200 });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 
 			vi.advanceTimersByTime(100);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(4);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(4);
 
 			vi.advanceTimersByTime(50);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(5);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(5);
 
 			vi.advanceTimersByTime(50);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(6);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(6);
 		});
 
 		it('cleans up timer after deactivation completes', () => {
-			service.setTurnout(100, 0);
+			services.service.setTurnout(100, 0);
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
 		it('does not send deactivation if timer was replaced', () => {
-			service.setTurnout(100, 0, { pulseMs: 100 });
+			services.service.setTurnout(100, 0, { pulseMs: 100 });
 
 			vi.advanceTimersByTime(50);
 
-			service.setTurnout(100, 1, { pulseMs: 200 });
+			services.service.setTurnout(100, 1, { pulseMs: 200 });
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 
 			vi.advanceTimersByTime(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 
 		it('sends activation and deactivation immediately when pulseMs is zero', () => {
-			service.setTurnout(50, 1, { pulseMs: 0 });
+			services.service.setTurnout(50, 1, { pulseMs: 0 });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 			vi.runAllTimers();
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
 		it('sends deactivation after a very short pulse duration', () => {
-			service.setTurnout(75, 0, { pulseMs: 1 });
+			services.service.setTurnout(75, 0, { pulseMs: 1 });
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 			vi.advanceTimersByTime(1);
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(2);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 	});
 
 	describe('setLocoEStop', () => {
 		it('sends emergency stop command to UDP', () => {
-			service.setLocoEStop(100);
+			services.service.setLocoEStop(100);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('sends emergency stop with minimum address', () => {
-			service.setLocoEStop(1);
+			services.service.setLocoEStop(1);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('sends emergency stop with maximum address', () => {
-			service.setLocoEStop(9999);
+			services.service.setLocoEStop(9999);
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('sends different buffers for different addresses', () => {
-			service.setLocoEStop(100);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoEStop(100);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoEStop(200);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoEStop(200);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
 		it('sends same buffer for repeated calls with same address', () => {
-			service.setLocoEStop(150);
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setLocoEStop(150);
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setLocoEStop(150);
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setLocoEStop(150);
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('creates a valid LAN_X formatted message', () => {
-			service.setLocoEStop(100);
+			services.service.setLocoEStop(100);
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(buffer.length);
 			const lanHeader = buffer.readUInt16LE(2);
@@ -597,29 +655,29 @@ describe('Z21CommandService', () => {
 		});
 	});
 
-	describe('getXBusVersion', () => {
-		it('sends version request command to UDP', () => {
-			service.getXBusVersion();
+	describe('getXBusVersion()', () => {
+		it('sends xBusVersion request command to UDP', () => {
+			services.service.getXBusVersion();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getXBusVersion();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getXBusVersion();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getXBusVersion();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getXBusVersion();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_X formatted message with correct structure', () => {
-			service.getXBusVersion();
+			services.service.getXBusVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(7);
 			expect(len).toBe(buffer.length);
@@ -628,9 +686,9 @@ describe('Z21CommandService', () => {
 		});
 
 		it('encodes LAN_X_GET_VERSION command structure correctly', () => {
-			service.getXBusVersion();
+			services.service.getXBusVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer[0]).toBe(0x07);
 			expect(buffer[1]).toBe(0x00);
 			expect(buffer[2]).toBe(0x40);
@@ -640,9 +698,9 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends complete GET_VERSION frame matching expected hex', () => {
-			service.getXBusVersion();
+			services.service.getXBusVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const hex = buffer.toString('hex');
 			expect(hex).toBe('07004000212100');
 		});
@@ -650,27 +708,27 @@ describe('Z21CommandService', () => {
 
 	describe('getStatus', () => {
 		it('sends status request command to UDP', () => {
-			service.getStatus();
+			services.service.getStatus();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getStatus();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getStatus();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getStatus();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getStatus();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_X formatted message with correct structure', () => {
-			service.getStatus();
+			services.service.getStatus();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(7);
 			expect(len).toBe(buffer.length);
@@ -679,9 +737,9 @@ describe('Z21CommandService', () => {
 		});
 
 		it('encodes LAN_X_GET_STATUS command structure correctly', () => {
-			service.getStatus();
+			services.service.getStatus();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer[0]).toBe(0x07);
 			expect(buffer[1]).toBe(0x00);
 			expect(buffer[2]).toBe(0x40);
@@ -691,9 +749,9 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends complete GET_STATUS frame matching expected hex', () => {
-			service.getStatus();
+			services.service.getStatus();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const hex = buffer.toString('hex');
 			expect(hex).toBe('07004000212405');
 		});
@@ -701,27 +759,27 @@ describe('Z21CommandService', () => {
 
 	describe('setStop', () => {
 		it('sends global emergency stop command to UDP', () => {
-			service.setStop();
+			services.service.setStop();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.setStop();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setStop();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setStop();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setStop();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_X formatted message with correct structure', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(6);
 			expect(len).toBe(buffer.length);
@@ -730,9 +788,9 @@ describe('Z21CommandService', () => {
 		});
 
 		it('encodes LAN_X_SET_STOP command structure correctly', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer[0]).toBe(0x06);
 			expect(buffer[1]).toBe(0x00);
 			expect(buffer[2]).toBe(0x40);
@@ -742,99 +800,100 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends complete SET_STOP frame matching expected hex', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const hex = buffer.toString('hex');
 			expect(hex).toBe('060040008080');
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces buffer that can be sent directly over UDP', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 			expect(buffer.length).toBeLessThanOrEqual(1472);
 		});
 
 		it('sends different buffer than getXBusVersion', () => {
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getXBusVersion();
-			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getXBusVersion();
+			const versionBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(stopBuffer).not.toEqual(versionBuffer);
 		});
 
 		it('sends different buffer than getStatus', () => {
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getStatus();
-			const statusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getStatus();
+			const statusBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(stopBuffer).not.toEqual(statusBuffer);
 		});
 
 		it('sends different buffer than track power commands', () => {
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.sendTrackPower(false);
-			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.sendTrackPower(false);
+			const powerBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(stopBuffer).not.toEqual(powerBuffer);
 		});
 
 		it('can be called multiple times without error', () => {
 			expect(() => {
-				service.setStop();
-				service.setStop();
-				service.setStop();
+				services.service.setStop();
+				services.service.setStop();
+				services.service.setStop();
 			}).not.toThrow();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 
 		it('includes valid XOR checksum in buffer', () => {
-			service.setStop();
+			services.service.setStop();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const checksumByte = buffer[buffer.length - 1];
 			expect(checksumByte).toBe(0x80);
 		});
 	});
+
 	describe('getFirmwareVersion', () => {
 		it('sends firmware version request command to UDP', () => {
-			service.getFirmwareVersion();
+			services.service.getFirmwareVersion();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getFirmwareVersion();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getFirmwareVersion();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getFirmwareVersion();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getFirmwareVersion();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_X formatted message with correct structure', () => {
-			service.getFirmwareVersion();
+			services.service.getFirmwareVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(buffer.length);
 			const lanHeader = buffer.readUInt16LE(2);
@@ -842,83 +901,83 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends different buffer than getXBusVersion method', () => {
-			service.getFirmwareVersion();
-			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getFirmwareVersion();
+			const firmwareBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getXBusVersion();
-			const xbusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getXBusVersion();
+			const xbusBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(firmwareBuffer).not.toEqual(xbusBuffer);
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.getFirmwareVersion();
+			services.service.getFirmwareVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces buffer that can be sent directly over UDP', () => {
-			service.getFirmwareVersion();
+			services.service.getFirmwareVersion();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 			expect(buffer.length).toBeLessThanOrEqual(1472);
 		});
 
 		it('sends different buffer than track power commands', () => {
-			service.getFirmwareVersion();
-			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getFirmwareVersion();
+			const firmwareBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.sendTrackPower(true);
-			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.sendTrackPower(true);
+			const powerBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(firmwareBuffer).not.toEqual(powerBuffer);
 		});
 
 		it('sends different buffer than setStop command', () => {
-			service.getFirmwareVersion();
-			const firmwareBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getFirmwareVersion();
+			const firmwareBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(firmwareBuffer).not.toEqual(stopBuffer);
 		});
 
 		it('can be called multiple times without error', () => {
 			expect(() => {
-				service.getFirmwareVersion();
-				service.getFirmwareVersion();
-				service.getFirmwareVersion();
+				services.service.getFirmwareVersion();
+				services.service.getFirmwareVersion();
+				services.service.getFirmwareVersion();
 			}).not.toThrow();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 	});
 
 	describe('edge cases across all methods', () => {
 		it('handles rapid successive calls to different methods', () => {
 			expect(() => {
-				service.sendTrackPower(true);
-				service.getStatus();
-				service.setStop();
-				service.getXBusVersion();
-				service.getFirmwareVersion();
+				services.service.sendTrackPower(true);
+				services.service.getStatus();
+				services.service.setStop();
+				services.service.getXBusVersion();
+				services.service.getFirmwareVersion();
 			}).not.toThrow();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(5);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(5);
 		});
 
 		it('all status query methods produce different buffers', () => {
-			service.getXBusVersion();
-			const versionBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getXBusVersion();
+			const versionBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getStatus();
-			const statusBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getStatus();
+			const statusBuffer = services.udp.sendRaw.mock.calls[1][0];
 
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[2][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[2][0];
 
 			expect(versionBuffer).not.toEqual(statusBuffer);
 			expect(statusBuffer).not.toEqual(stopBuffer);
@@ -926,36 +985,36 @@ describe('Z21CommandService', () => {
 		});
 
 		it('track power and stop commands produce different buffers', () => {
-			service.sendTrackPower(true);
-			const trackPowerBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.sendTrackPower(true);
+			const trackPowerBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.setStop();
-			const stopBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.setStop();
+			const stopBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(trackPowerBuffer).not.toEqual(stopBuffer);
 		});
 
 		it('all methods send valid buffer structures', () => {
 			const methods = [
-				() => service.sendTrackPower(true),
-				() => service.setLocoDrive(100, 0.5, 'FWD'),
-				() => service.setLocoFunction(100, 0, 0b01),
-				() => service.getLocoInfo(100),
-				() => service.getTurnoutInfo(100),
-				() => service.setTurnout(100, 0),
-				() => service.setLocoEStop(100),
-				() => service.getXBusVersion(),
-				() => service.getStatus(),
-				() => service.setStop(),
-				() => service.getFirmwareVersion(),
-				() => service.getHardwareInfo(),
-				() => service.getCode()
+				() => services.service.sendTrackPower(true),
+				() => services.service.setLocoDrive(100, 0.5, 'FWD'),
+				() => services.service.setLocoFunction(100, 0, 0b01),
+				() => services.service.getLocoInfo(100),
+				() => services.service.getTurnoutInfo(100),
+				() => services.service.setTurnout(100, 0),
+				() => services.service.setLocoEStop(100),
+				() => services.service.getXBusVersion(),
+				() => services.service.getStatus(),
+				() => services.service.setStop(),
+				() => services.service.getFirmwareVersion(),
+				() => services.service.getHardwareInfo(),
+				() => services.service.getCode()
 			];
 
 			methods.forEach((method) => {
 				vi.clearAllMocks();
 				method();
-				const buffer = mockUdp.sendRaw.mock.calls[0][0];
+				const buffer = services.udp.sendRaw.mock.calls[0][0];
 				expect(Buffer.isBuffer(buffer)).toBe(true);
 				expect(buffer.length).toBeGreaterThan(0);
 				expect(buffer.length).toBeLessThanOrEqual(1472);
@@ -965,27 +1024,27 @@ describe('Z21CommandService', () => {
 
 	describe('getHardwareInfo', () => {
 		it('sends hardware info request command to UDP', () => {
-			service.getHardwareInfo();
+			services.service.getHardwareInfo();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getHardwareInfo();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getHardwareInfo();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getHardwareInfo();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getHardwareInfo();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_GET_HWINFO formatted message with correct structure', () => {
-			service.getHardwareInfo();
+			services.service.getHardwareInfo();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(buffer.length);
 			const lanHeader = buffer.readUInt16LE(2);
@@ -993,84 +1052,84 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.getHardwareInfo();
+			services.service.getHardwareInfo();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces buffer that can be sent directly over UDP', () => {
-			service.getHardwareInfo();
+			services.service.getHardwareInfo();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 			expect(buffer.length).toBeLessThanOrEqual(1472);
 		});
 
 		it('sends different buffer than firmware version command', () => {
-			service.getHardwareInfo();
-			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getHardwareInfo();
+			const hwinfoBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getFirmwareVersion();
-			const firmwareBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getFirmwareVersion();
+			const firmwareBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(hwinfoBuffer).not.toEqual(firmwareBuffer);
 		});
 
 		it('sends different buffer than xBusVersion command', () => {
-			service.getHardwareInfo();
-			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getHardwareInfo();
+			const hwinfoBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getXBusVersion();
-			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getXBusVersion();
+			const versionBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(hwinfoBuffer).not.toEqual(versionBuffer);
 		});
 
 		it('sends different buffer than track power commands', () => {
-			service.getHardwareInfo();
-			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getHardwareInfo();
+			const hwinfoBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.sendTrackPower(true);
-			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.sendTrackPower(true);
+			const powerBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(hwinfoBuffer).not.toEqual(powerBuffer);
 		});
 
 		it('can be called multiple times without error', () => {
 			expect(() => {
-				service.getHardwareInfo();
-				service.getHardwareInfo();
-				service.getHardwareInfo();
+				services.service.getHardwareInfo();
+				services.service.getHardwareInfo();
+				services.service.getHardwareInfo();
 			}).not.toThrow();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 	});
 
 	describe('getCode', () => {
 		it('sends code request command to UDP', () => {
-			service.getCode();
+			services.service.getCode();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
 		it('always produces same buffer for repeated calls', () => {
-			service.getCode();
-			const buffer1 = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getCode();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getCode();
-			const buffer2 = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getCode();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(buffer1).toEqual(buffer2);
 		});
 
 		it('sends LAN_GET_CODE formatted message with correct structure', () => {
-			service.getCode();
+			services.service.getCode();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			const len = buffer.readUInt16LE(0);
 			expect(len).toBe(buffer.length);
 			const lanHeader = buffer.readUInt16LE(2);
@@ -1078,68 +1137,68 @@ describe('Z21CommandService', () => {
 		});
 
 		it('sends buffer with non-zero length', () => {
-			service.getCode();
+			services.service.getCode();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(buffer.length).toBeGreaterThan(0);
 		});
 
 		it('produces buffer that can be sent directly over UDP', () => {
-			service.getCode();
+			services.service.getCode();
 
-			const buffer = mockUdp.sendRaw.mock.calls[0][0];
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 			expect(buffer.length).toBeLessThanOrEqual(1472);
 		});
 
 		it('sends different buffer than hardware info command', () => {
-			service.getCode();
-			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getCode();
+			const codeBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getHardwareInfo();
-			const hwinfoBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getHardwareInfo();
+			const hwinfoBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(codeBuffer).not.toEqual(hwinfoBuffer);
 		});
 
 		it('sends different buffer than firmware version command', () => {
-			service.getCode();
-			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getCode();
+			const codeBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getFirmwareVersion();
-			const firmwareBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getFirmwareVersion();
+			const firmwareBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(codeBuffer).not.toEqual(firmwareBuffer);
 		});
 
 		it('sends different buffer than xBusVersion command', () => {
-			service.getCode();
-			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getCode();
+			const codeBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.getXBusVersion();
-			const versionBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.getXBusVersion();
+			const versionBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(codeBuffer).not.toEqual(versionBuffer);
 		});
 
 		it('sends different buffer than track power commands', () => {
-			service.getCode();
-			const codeBuffer = mockUdp.sendRaw.mock.calls[0][0];
+			services.service.getCode();
+			const codeBuffer = services.udp.sendRaw.mock.calls[0][0];
 
-			service.sendTrackPower(true);
-			const powerBuffer = mockUdp.sendRaw.mock.calls[1][0];
+			services.service.sendTrackPower(true);
+			const powerBuffer = services.udp.sendRaw.mock.calls[1][0];
 
 			expect(codeBuffer).not.toEqual(powerBuffer);
 		});
 
 		it('can be called multiple times without error', () => {
 			expect(() => {
-				service.getCode();
-				service.getCode();
-				service.getCode();
+				services.service.getCode();
+				services.service.getCode();
+				services.service.getCode();
 			}).not.toThrow();
 
-			expect(mockUdp.sendRaw).toHaveBeenCalledTimes(3);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
 		});
 	});
 });

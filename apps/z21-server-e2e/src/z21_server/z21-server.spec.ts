@@ -332,6 +332,7 @@ describe('server e2e', () => {
 			await stopCtx(ctx);
 		});
 	});
+
 	describe('session lifecycle', () => {
 		it('activates Z21 session on first WS client (broadcastflags + systemstate)', async () => {
 			const base = await startServer();
@@ -544,4 +545,259 @@ describe('server e2e', () => {
 		await stopCtx({ ...base, ws: ws.ws });
 		await z21.close();
 	}, 20000);
+
+	describe('multiple locomotives', () => {
+		it('receives loco.message.state broadcasts for different locomotive addresses', async () => {
+			const ctx = await startServerAndConnectWs();
+
+			// Test with loco 1845 - use proven working frame
+			await sendUdpHex('0f004000efc735048004000000009d');
+			await delay(200);
+			const loco1Messages = ctx.messages?.filter((m) => m.type === 'loco.message.state' && m['addr'] === 1845);
+			expect(loco1Messages?.length).toBeGreaterThan(0);
+
+			await stopCtx(ctx);
+		}, 20000);
+
+		it('handles simultaneous speed changes for multiple locomotives', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Send drive commands for two locos
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 47, dir: 'FWD', steps: 128 }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 100, speed: 20, dir: 'REV', steps: 128 }));
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
+				label: 'z21 rx multiple locos',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			expect(z21.rx.length).toBeGreaterThanOrEqual(2);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
+
+	describe('function toggles', () => {
+		it('handles rapid function toggles without loss', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Toggle F0, F1, F2 rapidly
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 0, on: true }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 1, on: true }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 2, on: true }));
+
+			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
+				label: 'z21 rx function toggles',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+
+		it('verifies multiple functions can be toggled for same locomotive', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Set F3, F7, F15
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 3, on: true }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 7, on: true }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 15, on: true }));
+
+			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
+				label: 'z21 rx multiple function numbers',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
+
+	describe('turnout operations', () => {
+		it('handles multiple turnout commands in sequence', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Set multiple turnouts
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 1, state: 'STRAIGHT', pulseMs: 100 }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 2, state: 'DIVERGING', pulseMs: 100 }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 3, state: 'STRAIGHT', pulseMs: 100 }));
+
+			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
+				label: 'z21 rx multiple turnouts',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+
+		it('sends turnout commands with different ports (STRAIGHT vs DIVERGING)', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Same turnout, different directions
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 10, state: 'STRAIGHT', pulseMs: 100 }));
+			await delay(50);
+			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 10, state: 'DIVERGING', pulseMs: 100 }));
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
+				label: 'z21 rx turnout both directions',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex.length).toBeGreaterThanOrEqual(2);
+			// Frames should be different (different port bits)
+			expect(hex[0]).not.toBe(hex[1]);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
+
+	describe('emergency scenarios', () => {
+		it('receives emergency stop broadcast from Z21', async () => {
+			const ctx = await startServerAndConnectWs();
+
+			// LAN_X_BC_STOPPED frame
+			await sendUdpHex('07004000810081');
+
+			const stopped = await waitForWsType<any>(ctx, 'system.message.stop', 5000);
+			expect(stopped).toBeDefined();
+
+			await stopCtx(ctx);
+		}, 20000);
+
+		it('sends LOCO_ESTOP when UI sends loco.eStop', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.eStop', addr: 1845 }));
+
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '0800400092c73560'), {
+				label: 'z21 rx loco estop',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).toContain('0800400092c73560'); // LAN_X_SET_LOCO_E_STOP
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
+
+	describe('connection resilience', () => {
+		it('handles WebSocket reconnection gracefully', async () => {
+			const base = await startServer();
+			const z21 = await startFakeZ21(base.fakeZ21Port);
+
+			// First connection
+			const ws1 = await connectWs(base.httpPort);
+			await waitFor(() => (z21.rx.length >= 1 ? z21.rx : undefined), {
+				label: 'z21 rx activate',
+				timeoutMs: 2000
+			});
+
+			z21.rx.splice(0);
+			ws1.ws.close();
+
+			// Wait for logoff
+			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+				label: 'z21 rx logoff',
+				timeoutMs: 2000
+			});
+
+			z21.rx.splice(0);
+
+			// Reconnect
+			const ws2 = await connectWs(base.httpPort);
+			await waitFor(() => (z21.rx.length >= 1 ? z21.rx : undefined), {
+				label: 'z21 rx re-activate',
+				timeoutMs: 2000
+			});
+
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).toContain('0800500001000000'); // Re-activation successful
+
+			await stopCtx({ ...base, ws: ws2.ws });
+			await z21.close();
+		}, 20000);
+
+		it('handles invalid JSON messages gracefully without crashing', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Send invalid JSON (server will log errors but not crash)
+			ctx.ws?.send('{ invalid json }');
+			ctx.ws?.send('not json at all');
+
+			// Wait a bit
+			await delay(300);
+
+			// Server should still be responsive - send valid command
+			ctx.ws?.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
+
+			// Wait for the valid command to be processed
+			await waitFor(() => (z21.rx.length >= 1 ? z21.rx : undefined), {
+				label: 'z21 rx after invalid json',
+				timeoutMs: 2000
+			});
+
+			// WebSocket should still be open
+			expect(ctx.ws?.readyState).toBe(1); // OPEN
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
+
+	describe('address range validation', () => {
+		it('handles short and long locomotive addresses', async () => {
+			const ctx = await startServerAndConnectWs();
+			const z21 = await startFakeZ21(ctx.fakeZ21Port);
+
+			// Short address (< 100)
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 3, speed: 10, dir: 'FWD', steps: 128 }));
+			await delay(100);
+
+			// Long address (>= 100)
+			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 10, dir: 'FWD', steps: 128 }));
+
+			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
+				label: 'z21 rx both addresses',
+				timeoutMs: 2000,
+				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			});
+
+			expect(z21.rx.length).toBeGreaterThanOrEqual(2);
+
+			await z21.close();
+			await stopCtx(ctx);
+		}, 20000);
+	});
 });

@@ -67,7 +67,7 @@ export type Providers = {
  */
 export function createProviders(cfg = loadConfig()): Providers {
 	const logger = createConsoleLogger({
-		level: cfg.dev?.logLevel ?? 'debug',
+		level: cfg.dev?.logLevel ?? 'info',
 		pretty: true,
 		context: { app: 'server' }
 	});

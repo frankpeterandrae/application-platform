@@ -1,0 +1,19 @@
+{
+	"name": "shared-node-test",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/shared/shared-node-test/src",
+	"projectType": "library",
+	"tags": ["platform:node", "scope:shared", "type:testing"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/shared/shared-node-test/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/shared-node-test/vitest.config.mts",
+				"reportsDirectory": "../../../coverage/libs/shared/shared-node-test",
+				"passWithNoTests": true
+			}
+		}
+	}
+}
