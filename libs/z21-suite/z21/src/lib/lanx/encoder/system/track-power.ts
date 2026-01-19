@@ -11,7 +11,7 @@ import { encodeLanX } from '../../../codec/frames';
  * @returns Buffer containing the track power OFF command (7 bytes: 07 00 40 00 21 80 A1)
  */
 export function encodeLanXSetTrackPowerOff(): Buffer {
-	return encodeLanX('LAN_X_SET_TRACK_POWER_OFF', []); // XOR becomes 0xA1
+	return encodeLanX('LAN_X_SET_TRACK_POWER_OFF', []);
 }
 
 /**
@@ -20,5 +20,5 @@ export function encodeLanXSetTrackPowerOff(): Buffer {
  * @returns Buffer containing the track power ON command (7 bytes: 07 00 40 00 21 81 A0)
  */
 export function encodeLanXSetTrackPowerOn(): Buffer {
-	return encodeLanX('LAN_X_SET_TRACK_POWER_ON', []); // XOR becomes 0xA0
+	return encodeLanX('LAN_X_SET_TRACK_POWER_ON', []);
 }

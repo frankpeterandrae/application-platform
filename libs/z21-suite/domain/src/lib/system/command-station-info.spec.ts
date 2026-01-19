@@ -116,6 +116,98 @@ describe('CommandStationInfo', () => {
 			expect(info.hasXBusVersion()).toBe(true);
 			expect(info.getXBusVersion()).toEqual({});
 		});
+
+		it('stores cmdsId value 0x12', () => {
+			const versionData: XbusVersion = { cmdsId: 0x12 };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.cmdsId).toBe(0x12);
+		});
+
+		it('stores cmdsId value 0x13', () => {
+			const versionData: XbusVersion = { cmdsId: 0x13 };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.cmdsId).toBe(0x13);
+		});
+
+		it('stores cmdsId value 0', () => {
+			const versionData: XbusVersion = { cmdsId: 0 };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.cmdsId).toBe(0);
+		});
+
+		it('stores cmdsId value 255', () => {
+			const versionData: XbusVersion = { cmdsId: 0xff };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.cmdsId).toBe(0xff);
+		});
+
+		it('updates cmdsId when xBusVersion is updated', () => {
+			const version1: XbusVersion = { cmdsId: 0x12 };
+			const version2: XbusVersion = { cmdsId: 0x13 };
+
+			info.setXBusVersion(version1);
+			expect(info.getXBusVersion()?.cmdsId).toBe(0x12);
+
+			info.setXBusVersion(version2);
+			expect(info.getXBusVersion()?.cmdsId).toBe(0x13);
+		});
+
+		it('preserves cmdsId when updating with different fields', () => {
+			const version1: XbusVersion = { cmdsId: 0x12 };
+			const version2: XbusVersion = { xbusVersion: 0x30 };
+
+			info.setXBusVersion(version1);
+			info.setXBusVersion(version2);
+
+			expect(info.getXBusVersion()?.cmdsId).toBeUndefined();
+			expect(info.getXBusVersion()?.xbusVersion).toBe(0x30);
+		});
+
+		it('stores cmdsId alongside xbusVersion', () => {
+			const versionData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x12 };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.xbusVersion).toBe(0x30);
+			expect(result?.cmdsId).toBe(0x12);
+		});
+
+		it('stores cmdsId alongside xBusVersionString', () => {
+			const versionData: XbusVersion = { xBusVersionString: 'V3.0', cmdsId: 0x12 };
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result?.xBusVersionString).toBe('V3.0');
+			expect(result?.cmdsId).toBe(0x12);
+		});
+
+		it('handles cmdsId in complete version object', () => {
+			const versionData: XbusVersion = {
+				xbusVersion: 0x36,
+				xBusVersionString: 'V3.6',
+				cmdsId: 0x13
+			};
+
+			info.setXBusVersion(versionData);
+			const result = info.getXBusVersion();
+
+			expect(result).toEqual(versionData);
+			expect(result?.cmdsId).toBe(0x13);
+		});
 	});
 
 	describe('Firmware Version Management', () => {
@@ -237,6 +329,182 @@ describe('CommandStationInfo', () => {
 		});
 	});
 
+	describe('Hardware Type Management', () => {
+		it('returns undefined for hardware type initially', () => {
+			const hwType = info.getHardwareType();
+			expect(hwType).toBeUndefined();
+		});
+
+		it('stores and retrieves Z21_OLD hardware type', () => {
+			info.setHardwareType('Z21_OLD');
+			const result = info.getHardwareType();
+
+			expect(result).toBe('Z21_OLD');
+		});
+
+		it('stores and retrieves Z21_NEW hardware type', () => {
+			info.setHardwareType('Z21_NEW');
+
+			expect(info.getHardwareType()).toBe('Z21_NEW');
+		});
+
+		it('stores and retrieves Z21_XL hardware type', () => {
+			info.setHardwareType('Z21_XL');
+
+			expect(info.getHardwareType()).toBe('Z21_XL');
+		});
+
+		it('stores and retrieves z21_SMALL hardware type', () => {
+			info.setHardwareType('z21_SMALL');
+
+			expect(info.getHardwareType()).toBe('z21_SMALL');
+		});
+
+		it('stores and retrieves z21_START hardware type', () => {
+			info.setHardwareType('z21_START');
+
+			expect(info.getHardwareType()).toBe('z21_START');
+		});
+
+		it('stores and retrieves UNKNOWN hardware type', () => {
+			info.setHardwareType('UNKNOWN');
+
+			expect(info.getHardwareType()).toBe('UNKNOWN');
+		});
+
+		it('updates hardware type when called multiple times', () => {
+			info.setHardwareType('Z21_OLD');
+			expect(info.getHardwareType()).toBe('Z21_OLD');
+
+			info.setHardwareType('Z21_NEW');
+			expect(info.getHardwareType()).toBe('Z21_NEW');
+		});
+
+		it('indicates hardware type is available after setting', () => {
+			expect(info.hasHardwareType()).toBe(false);
+
+			info.setHardwareType('Z21_XL');
+
+			expect(info.hasHardwareType()).toBe(true);
+		});
+
+		it('indicates hardware type is not available when undefined', () => {
+			expect(info.hasHardwareType()).toBe(false);
+		});
+
+		it('indicates hardware type is available even for UNKNOWN', () => {
+			info.setHardwareType('UNKNOWN');
+
+			expect(info.hasHardwareType()).toBe(true);
+		});
+	});
+
+	describe('Code Management', () => {
+		it('returns undefined for code initially', () => {
+			const code = info.getCode();
+			expect(code).toBeUndefined();
+		});
+
+		it('stores and retrieves code value 0', () => {
+			info.setCode(0);
+			const result = info.getCode();
+
+			expect(result).toBe(0);
+		});
+
+		it('stores and retrieves code value 255', () => {
+			info.setCode(255);
+
+			expect(info.getCode()).toBe(255);
+		});
+
+		it('stores and retrieves arbitrary code value', () => {
+			info.setCode(42);
+
+			expect(info.getCode()).toBe(42);
+		});
+
+		it('updates code when called multiple times', () => {
+			info.setCode(10);
+			expect(info.getCode()).toBe(10);
+
+			info.setCode(20);
+			expect(info.getCode()).toBe(20);
+		});
+
+		it('indicates code is available after setting', () => {
+			expect(info.hasCode()).toBe(false);
+
+			info.setCode(100);
+
+			expect(info.hasCode()).toBe(true);
+		});
+
+		it('indicates code is not available when undefined', () => {
+			expect(info.hasCode()).toBe(false);
+		});
+
+		it('indicates code is available even when set to 0', () => {
+			info.setCode(0);
+
+			expect(info.hasCode()).toBe(true);
+			expect(info.getCode()).toBe(0);
+		});
+	});
+
+	describe('Complete Information Management', () => {
+		it('manages all properties independently', () => {
+			const xbusData: XbusVersion = { xbusVersion: 0x30, cmdsId: 0x10 };
+			const firmwareData: FirmwareVersion = { major: 0x12, minor: 0x34 };
+
+			info.setXBusVersion(xbusData);
+			info.setFirmwareVersion(firmwareData);
+			info.setHardwareType('Z21_XL');
+			info.setCode(42);
+
+			expect(info.getXBusVersion()).toEqual(xbusData);
+			expect(info.getFirmwareVersion()).toEqual(firmwareData);
+			expect(info.getHardwareType()).toBe('Z21_XL');
+			expect(info.getCode()).toBe(42);
+		});
+
+		it('indicates all properties are available when all are set', () => {
+			info.setXBusVersion({ xbusVersion: 0x30 });
+			info.setFirmwareVersion({ major: 1, minor: 20 });
+			info.setHardwareType('Z21_NEW');
+			info.setCode(10);
+
+			expect(info.hasXBusVersion()).toBe(true);
+			expect(info.hasFirmwareVersion()).toBe(true);
+			expect(info.hasHardwareType()).toBe(true);
+			expect(info.hasCode()).toBe(true);
+		});
+
+		it('setting hardware type does not affect other properties', () => {
+			info.setXBusVersion({ xbusVersion: 0x30 });
+			info.setFirmwareVersion({ major: 1, minor: 20 });
+			info.setCode(5);
+
+			info.setHardwareType('Z21_XL');
+
+			expect(info.hasXBusVersion()).toBe(true);
+			expect(info.hasFirmwareVersion()).toBe(true);
+			expect(info.hasCode()).toBe(true);
+		});
+
+		it('setting code does not affect other properties', () => {
+			info.setXBusVersion({ xbusVersion: 0x30 });
+			info.setFirmwareVersion({ major: 1, minor: 20 });
+			info.setHardwareType('Z21_NEW');
+
+			info.setCode(100);
+
+			expect(info.hasXBusVersion()).toBe(true);
+			expect(info.hasFirmwareVersion()).toBe(true);
+			expect(info.hasHardwareType()).toBe(true);
+		});
+	});
+
 	describe('Edge Cases', () => {
 		it('handles setting xBusVersion to undefined implicitly by checking state', () => {
 			const versionData: XbusVersion = { xbusVersion: 0x30 };
@@ -280,6 +548,26 @@ describe('CommandStationInfo', () => {
 
 		it('returns falsy value for hasFirmwareVersion when never set', () => {
 			expect(info.hasFirmwareVersion()).toBe(false);
+		});
+
+		it('does not share hardware type between instances', () => {
+			const info1 = new CommandStationInfo();
+			const info2 = new CommandStationInfo();
+
+			info1.setHardwareType('Z21_OLD');
+
+			expect(info2.hasHardwareType()).toBe(false);
+			expect(info2.getHardwareType()).toBeUndefined();
+		});
+
+		it('does not share code between instances', () => {
+			const info1 = new CommandStationInfo();
+			const info2 = new CommandStationInfo();
+
+			info1.setCode(42);
+
+			expect(info2.hasCode()).toBe(false);
+			expect(info2.getCode()).toBeUndefined();
 		});
 	});
 });

@@ -2,9 +2,10 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import type { Direction, Logger } from '@application-platform/z21-shared';
+import { Direction, Logger, Z21LanHeader } from '@application-platform/z21-shared';
 
 import { type LocoFunctionSwitchType } from '../constants';
+import { encodeXBusLanFrame } from '../helper/x-bus-encoder';
 import {
 	encodeLanXGetFirmwareVersion,
 	encodeLanXGetLocoInfo,
@@ -186,6 +187,24 @@ export class Z21CommandService {
 	public getFirmwareVersion(): void {
 		const buf = encodeLanXGetFirmwareVersion();
 		this.logger.debug('[z21] tx GET_FIRMWARE_VERSION', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Requests the Z21 hardware information.
+	 */
+	public getHardwareInfo(): void {
+		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_HWINFO);
+		this.logger.debug('[z21] tx GET_HARDWARE_INFO', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Requests the Z21 command station code information.
+	 */
+	public getCode(): void {
+		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_CODE);
+		this.logger.debug('[z21] tx LAN_GET_CODE', { hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }

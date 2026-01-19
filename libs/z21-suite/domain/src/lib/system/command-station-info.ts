@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { HardwareType } from '@application-platform/z21-shared';
+
 export type XbusVersion = {
 	xbusVersion?: number;
 	xBusVersionString?: string;
@@ -23,6 +25,8 @@ export type FirmwareVersion = {
 export class CommandStationInfo {
 	private xBusVersion?: XbusVersion;
 	private firmwareVersion?: FirmwareVersion;
+	private hardwareType?: HardwareType | 'UNKNOWN';
+	private code?: number;
 
 	/**
 	 *  Get Command Station x-Bus Version Information
@@ -66,5 +70,49 @@ export class CommandStationInfo {
 	 */
 	public hasFirmwareVersion(): boolean {
 		return !!this.firmwareVersion;
+	}
+
+	/**
+	 * Get Hardware Information
+	 */
+	public getHardwareType(): HardwareType | 'UNKNOWN' | undefined {
+		return this.hardwareType;
+	}
+
+	/**
+	 * Set Hardware Information
+	 * @param hardwareType - Hardware type information
+	 */
+	public setHardwareType(hardwareType: HardwareType | 'UNKNOWN'): void {
+		this.hardwareType = hardwareType;
+	}
+
+	/**
+	 * Check if Hardware Information is available
+	 */
+	public hasHardwareType(): boolean {
+		return !!this.hardwareType;
+	}
+
+	/**
+	 * Get CS Code
+	 */
+	public getCode(): number | undefined {
+		return this.code;
+	}
+
+	/**
+	 * Set CS Code
+	 * @param code - CS code information
+	 */
+	public setCode(code: number): void {
+		this.code = code;
+	}
+
+	/**
+	 * Check if CS Code is available
+	 */
+	public hasCode(): boolean {
+		return this.code !== undefined;
 	}
 }

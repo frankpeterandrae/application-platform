@@ -5,6 +5,7 @@
 
 import type { Z21Dataset } from '../codec/codec-types';
 import { decodeLanXPayload } from '../lanx/decode/decoder';
+import { decodeHwInfo } from '../system/decode-hw-info';
 import { decodeSystemState } from '../system/decode-system-state';
 
 import { type Z21Event } from './event-types';
@@ -27,6 +28,14 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 	if (ds.kind === 'ds.x.bus') {
 		const lanXBytes = ds.data;
 		return decodeLanXPayload(ds.xHeader, lanXBytes);
+	}
+
+	if (ds.kind === 'ds.hwinfo') {
+		return [decodeHwInfo(ds.hwtype, ds.fwVersionBcd)];
+	}
+
+	if (ds.kind === 'ds.code') {
+		return [{ type: 'event.z21.code', code: ds.code, raw: [ds.code] }];
 	}
 
 	return [];

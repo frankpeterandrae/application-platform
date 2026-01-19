@@ -333,7 +333,7 @@ describe('LAN_X_COMMANDS Map', () => {
 		it('should have correct structure for GET_FIRMWARE_VERSION_ANSWER', () => {
 			const cmd = LAN_X_COMMANDS.LAN_X_GET_FIRMWARE_VERSION_ANSWER;
 
-			expect(cmd.xHeader).toBe(0xf2);
+			expect(cmd.xHeader).toBe(0xf3);
 			expect(cmd.xBusCmd).toBe(0x0a);
 		});
 	});
@@ -613,7 +613,7 @@ describe('LAN_X_COMMANDS Map', () => {
 			const commands = Object.values(LAN_X_COMMANDS);
 			const validHeaders = new Set([
 				0x21, 0x22, 0x23, 0x24, 0x43, 0x44, 0x53, 0x54, 0x61, 0x62, 0x63, 0x64, 0x80, 0x81, 0x92, 0xe3, 0xe4, 0xe5, 0xe6, 0xef,
-				0xf1, 0xf2
+				0xf1, 0xf3
 			]);
 
 			commands.forEach((cmd) => {

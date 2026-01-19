@@ -4,9 +4,8 @@
  */
 import { Z21LanHeader } from '@application-platform/z21-shared';
 
-import { FULL_BYTE_MASK } from '../constants';
-
 import type { Z21Dataset } from './codec-types';
+import { xbusXor } from './frames';
 
 /**
  * Parse a Buffer of one or more concatenated Z21 frames into structured datasets.
@@ -53,19 +52,26 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 				const xorByte = payload[payload.length - 1];
 				const db = bodyNoXor.subarray(1);
 
-				const calc = xor8(bodyNoXor);
+				const calc = xbusXor(bodyNoXor);
 				// XOR check: if false, deliver anyway (you want to see UDP drops/bugs)
 				if (calc !== xorByte) {
 					out.push({ kind: 'ds.bad_xor', calc: calc.toString(16), recv: xorByte.toString(16) });
 				}
 
-				// Ensure we expose a plain Uint8Array (not a Buffer) for the x.bus data
+				// Ensure we return a plain Uint8Array for test equality
 				out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
 			} else {
 				out.push({ kind: 'ds.unknown', header, payload, reason: 'x-bus too short' });
 			}
 		} else if (header === Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED && payload.length === 16) {
 			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
+		} else if (header === Z21LanHeader.LAN_GET_HWINFO && payload.length === 8) {
+			const hwtype = payload.readUint32LE(0);
+			const fwVersionBcd = payload.readUint32LE(4);
+			out.push({ kind: 'ds.hwinfo', hwtype, fwVersionBcd });
+		} else if (header === Z21LanHeader.LAN_GET_CODE && payload.length === 1) {
+			const code = payload[0];
+			out.push({ kind: 'ds.code', code });
 		} else {
 			out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });
 		}
@@ -74,21 +80,4 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 	}
 
 	return out;
-}
-
-/**
- * Compute 8-bit XOR checksum over the given bytes.
- *
- * Typical use: Verify X-BUS payload integrity where the trailing XOR byte
- * should equal the XOR over all preceding payload bytes.
- *
- * @param data Byte array to checksum.
- * @returns 8-bit XOR of all bytes in `data` (0..255).
- */
-function xor8(data: Uint8Array): number {
-	let x = 0;
-	for (const b of data) {
-		x ^= b;
-	}
-	return x & FULL_BYTE_MASK;
 }

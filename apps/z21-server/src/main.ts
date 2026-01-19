@@ -4,7 +4,9 @@
  */
 
 import { Bootstrap } from './bootstrap/bootstrap';
+import { createProviders } from './bootstrap/providers';
 
-const app = new Bootstrap().start();
+const providers = createProviders();
+const app = new Bootstrap(providers).start();
 process.on('SIGINT', () => app.stop());
 process.on('SIGTERM', () => app.stop());

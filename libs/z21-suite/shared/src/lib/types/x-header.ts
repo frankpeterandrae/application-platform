@@ -58,5 +58,5 @@ export const enum XHeader {
 	/** Event/Response: Z21 firmware version */
 	FIRMWARE_VERSION = 0xf1,
 	/** Event/Response: Z21 firmware version answer */
-	FIRMWARE_VERSION_ANSWER = 0xf2
+	FIRMWARE_VERSION_ANSWER = 0xf3
 }

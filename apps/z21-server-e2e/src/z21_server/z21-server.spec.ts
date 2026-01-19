@@ -492,57 +492,56 @@ describe('server e2e', () => {
 		}, 20000);
 	});
 
-	describe('getXBusVersion', () => {
-		it('requests GET_VERSION on session activation and caches result for new clients', async () => {
-			const base = await startServer();
-			const z21 = await startFakeZ21(base.fakeZ21Port);
+	it('probes command station info (firmware -> hwinfo -> code) and broadcasts to WS', async () => {
+		const base = await startServer();
+		const z21 = await startFakeZ21(base.fakeZ21Port);
 
-			// 1) first WS client connects -> should trigger GET_VERSION
-			const ws1 = await connectWs(base.httpPort);
+		const ws = await connectWs(base.httpPort);
+		const ctx = { ...base, ws: ws.ws, messages: ws.messages };
 
-			const GET_VERSION_REQ = '07004000212100'; // LEN=7, LAN_X, [0x21,0x21,XOR=0x00]
+		// 1) Server must request firmware version (LAN_X_GET_FIRMWARE_VERSION)
+		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '07004000f10afb'), {
+			label: 'z21 rx firmware request',
+			timeoutMs: 2000,
+			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+		});
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === GET_VERSION_REQ), {
-				label: 'z21 rx GET_VERSION request',
-				timeoutMs: 3000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
-			});
+		// send firmware reply = 1.23 (BCD): 0x09 0x00 0x40 0x00 0xf3 0x0a 0x01 0x23 0xdb
+		await sendUdpHex('09004000f30a0123db'); // to server listen port (default in helper)
 
-			const countGetVersion = (): number => z21.rx.filter((b) => b.toString('hex') === GET_VERSION_REQ).length;
+		// Expect WS broadcast with firmware version
+		const fw = await waitForWsType<any>(ctx, 'system.message.firmware.version');
+		expect(fw.major).toBe(1);
+		expect(fw.minor).toBe(23);
 
-			// Send a fake Z21 response
-			const major = 2;
-			const minor = 1;
-			const xor = (0x63 ^ 0x21 ^ major ^ minor) & 0xff;
-			const ANSWER = Buffer.from([0x09, 0x00, 0x40, 0x00, 0x63, 0x21, major, minor, xor]).toString('hex');
-			await sendUdpHex(ANSWER);
+		// 2) With FW >= 1.20, server should request LAN_GET_HWINFO
+		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001a00'), {
+			label: 'z21 rx hwinfo request',
+			timeoutMs: 2000,
+			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+		});
 
-			// Verify first client got version
-			const versionMsg1 = await waitFor(() => ws1.messages.find((m) => m?.type === 'system.message.x.bus.version'), {
-				label: 'ws1 system.message.x.bus.version',
-				timeoutMs: 3000,
-				dump: () => `\nWS1:\n${ws1.messages.map((m) => JSON.stringify(m)).join('\n')}`
-			});
+		// send hwinfo reply: hwType = z21_START (0x00000204), fw = 1.23 (0x23 0x01 0x00 0x00)
+		await sendUdpHex('0c001a000402000001230000');
 
-			expect(versionMsg1).toBeDefined();
-			expect(versionMsg1['version']).toMatch(/^V\d+\.\d+$/);
+		// Expect WS broadcast with hardware info
+		const hw = await waitForWsType<any>(ctx, 'system.message.hardware.info');
+		expect(hw.hardwareType).toBe('z21_START');
 
-			// Record initial GET_VERSION count
-			const initialCount = countGetVersion();
-			expect(initialCount).toBe(1);
+		// 3) For z21_START, server should request LAN_GET_CODE
+		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001800'), {
+			label: 'z21 rx code request',
+			timeoutMs: 2000,
+			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+		});
 
-			// 2) second WS client connects quickly
-			const ws2 = await connectWs(base.httpPort);
+		// send code reply: unlocked (0x02)
+		await sendUdpHex('0500180002');
 
-			// Give a bit of time for any pending version broadcasts
-			await delay(300);
+		const code = await waitForWsType<any>(ctx, 'system.message.z21.code');
+		expect(code.code).toBe(2);
 
-			// 3) Verify no second GET_VERSION was triggered by second client
-			const finalCount = countGetVersion();
-			expect(finalCount).toBe(initialCount); // Still only 1, no second request
-
-			await stopCtx({ ...base, ws: ws2.ws });
-			await z21.close();
-		}, 25000);
-	});
+		await stopCtx({ ...base, ws: ws.ws });
+		await z21.close();
+	}, 20000);
 });
