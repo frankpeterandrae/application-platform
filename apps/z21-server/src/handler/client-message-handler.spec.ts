@@ -3,58 +3,44 @@
  * All rights reserved.
  */
 
+import { LocoManager } from '@application-platform/domain';
 import type { ClientToServer } from '@application-platform/protocol';
-import { LocoFunctionSwitchType } from '@application-platform/z21';
+import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { LocoFunctionSwitchType, Z21CommandService } from '@application-platform/z21';
 import { TurnoutState } from '@application-platform/z21-shared';
-import type { MockedFunction } from 'vitest';
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ClientMessageHandler, type BroadcastFn } from './client-message-handler';
 
 describe('ClientMessageHandler.handle', () => {
-	let broadcast: MockedFunction<BroadcastFn>;
-	let locoManager: {
-		setSpeed: Mock;
-		setFunction: Mock;
-		getState: Mock;
-	};
-	let z21Service: {
-		sendTrackPower: Mock;
-		demoPing: Mock;
-		setLocoDrive: Mock;
-		setLocoFunction: Mock;
-		setTurnout: Mock;
-		getTurnoutInfo: Mock;
-		setLocoEStop: Mock;
-		getLocoInfo: Mock;
-		setStop: Mock;
-	};
+	let broadcast: vi.MockedFunction<BroadcastFn>;
+	let locoManager: DeepMocked<LocoManager>;
+	let z21Service: DeepMocked<Z21CommandService>;
 	let handler: ClientMessageHandler;
 
 	beforeEach(() => {
 		broadcast = vi.fn();
-		locoManager = {
-			setSpeed: vi.fn().mockReturnValue({ speed: 0, dir: 'FWD', fns: {} }),
-			setFunction: vi.fn().mockReturnValue({ speed: 10, dir: 'REV', fns: { 0: true } }),
-			getState: vi.fn().mockReturnValue({ fns: { 1: true } })
-		} as any;
-		z21Service = {
-			sendTrackPower: vi.fn(),
-			demoPing: vi.fn(),
-			setLocoDrive: vi.fn(),
-			setLocoFunction: vi.fn(),
-			setTurnout: vi.fn(),
-			getTurnoutInfo: vi.fn(),
-			getState: vi.fn(),
-			setState: vi.fn(),
-			setLocoEStop: vi.fn(),
-			getLocoInfo: vi.fn(),
-			setStop: vi.fn()
-		} as any;
+		locoManager = Mock<LocoManager>();
+		z21Service = Mock<Z21CommandService>();
+
+		// Configure default mock return values
+		locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
+		locoManager.setFunction.mockReturnValue({ speed: 10, dir: 'REV', fns: { 0: true }, estop: false });
+		locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
+
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, broadcast);
 	});
 
-	describe('system.command.trackpower.set', () => {
+	it('ignores server.command.session.hello messages', () => {
+		// Initialize mocks before checking them
+		(z21Service.sendTrackPower as vi.Mock).mockClear();
+
+		handler.handle({ type: 'server.command.session.hello' } as ClientToServer);
+		expect(broadcast).not.toHaveBeenCalled();
+		expect(z21Service.sendTrackPower).not.toHaveBeenCalled();
+	});
+
+	describe('trackpower.set', () => {
 		it('sends power ON command and broadcasts power state when on is true', () => {
 			handler.handle({ type: 'system.command.trackpower.set', on: true } as ClientToServer);
 			expect(z21Service.sendTrackPower).toHaveBeenCalledWith(true);

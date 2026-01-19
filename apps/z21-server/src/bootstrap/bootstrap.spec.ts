@@ -5,529 +5,356 @@
 
 import http from 'node:http';
 
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
-
-vi.mock('@application-platform/z21', () => {
-	return {
-		Z21Udp: vi.fn().mockImplementation(function () {
-			return {
-				start: vi.fn(),
-				stop: vi.fn(),
-				sendGetSerial: vi.fn(),
-				sendSetBroadcastFlags: vi.fn(),
-				sendSystemStateGetData: vi.fn(),
-				sendLogOff: vi.fn(),
-				on: vi.fn()
-			};
-		}),
-		Z21CommandService: vi.fn().mockImplementation(function (_udp: any) {
-			return {
-				sendTrackPower: vi.fn(),
-				demoPing: vi.fn(),
-				setLocoDrive: vi.fn(),
-				getLocoInfo: vi.fn(),
-				getXBusVersion: vi.fn(),
-				getFirmwareVersion: vi.fn(),
-				getHardwareInfo: vi.fn()
-			};
-		}),
-		Z21BroadcastFlag: {
-			None: 0x00000000,
-			Basic: 0x00000001,
-			SystemState: 0x00000100
-		}
-	};
-});
-
-vi.mock('@application-platform/server-utils', () => {
-	return {
-		createStaticFileServer: vi.fn(function () {
-			return vi.fn();
-		}),
-		WsServer: vi.fn().mockImplementation(function () {
-			return {
-				onConnection: vi.fn(),
-				send: vi.fn(),
-				broadcast: vi.fn(),
-				close: vi.fn()
-			};
-		})
-	};
-});
-
-vi.mock('../infra/ws/app-websocket-server', () => {
-	return {
-		AppWsServer: vi.fn().mockImplementation(function () {
-			return {
-				onConnection: vi.fn(),
-				broadcast: vi.fn(),
-				sendToClient: vi.fn(),
-				close: vi.fn()
-			};
-		})
-	};
-});
-
-vi.mock('../handler/client-message-handler', () => {
-	return {
-		ClientMessageHandler: vi.fn().mockImplementation(function (_locoManager: any, _udp: any, _broadcast: any) {
-			return { handle: vi.fn() };
-		})
-	};
-});
-
-vi.mock('@application-platform/domain', () => {
-	return {
-		LocoManager: vi.fn().mockImplementation(function () {
-			return {
-				stopAll: vi.fn().mockReturnValue([
-					{ addr: 3, state: { dir: 'fwd', fns: { 0: true }, estop: false } },
-					{ addr: 7, state: { dir: 'rev', fns: { 2: false }, estop: false } }
-				]),
-				subscribeLocoInfoOnce: vi.fn().mockReturnValue(true)
-			};
-		}),
-		TrackStatusManager: vi.fn().mockImplementation(function () {
-			return { getStatus: vi.fn() };
-		}),
-		CommandStationInfo: vi.fn().mockImplementation(function () {
-			return {
-				getXBusVersion: vi.fn().mockReturnValue(undefined),
-				hasXBusVersion: vi.fn().mockReturnValue(false),
-				setXBusVersion: vi.fn(),
-				hasFirmwareVersion: vi.fn().mockReturnValue(false),
-				getFirmwareVersion: vi.fn().mockReturnValue(undefined),
-				setFirmwareVersion: vi.fn(),
-				hasHardwareType: vi.fn().mockReturnValue(false)
-			};
-		})
-	};
-});
-
-vi.mock('../handler/z21-event-handler', () => {
-	return {
-		Z21EventHandler: vi.fn().mockImplementation(function (_trackStatusManager: any, _broadcast: any) {
-			return { handleDatagram: vi.fn() };
-		})
-	};
-});
-
-vi.mock('@application-platform/z21-shared', () => ({
-	createConsoleLogger: vi.fn(() => ({
-		info: vi.fn(),
-		debug: vi.fn(),
-		warn: vi.fn(),
-		error: vi.fn(),
-		child: vi.fn(function (this: any) {
-			return this;
-		})
-	}))
-}));
-
 // import module under test after mocks so they get applied
-import * as domainMock from '@application-platform/domain';
-import * as z21 from '@application-platform/z21';
 
-import * as clientMsgMock from '../handler/client-message-handler';
-import * as z21EventMock from '../handler/z21-event-handler';
-import * as appWsMock from '../infra/ws/app-websocket-server';
+import { CommandStationInfo, LocoManager } from '@application-platform/domain';
+import { Mock, type DeepMocked } from '@application-platform/shared-node-test';
+import { Z21CommandService, Z21Udp } from '@application-platform/z21';
+import { Logger } from '@application-platform/z21-shared';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LocoManager } from '@application-platform/domain';
+import { Z21EventHandler } from '../handler/z21-event-handler';
+import { AppWsServer } from '../infra/ws/app-websocket-server';
+import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
 
 import { Bootstrap } from './bootstrap';
+import { Providers } from './providers';
 
 describe('Bootstrap', () => {
-	let createServerSpy: any;
-	let listenSpy: Mock;
-	let closeSpy: Mock;
+	let providers: DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock };
+
+	function makeProviders(): DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock } {
+		const wsOnConnection = vi.fn();
+		const broadcast = vi.fn();
+		const wsServerClose = vi.fn((cb?: () => void) => {
+			cb?.();
+			return {} as any;
+		});
+		const mockUdp = Mock<Z21Udp>();
+		const mockWsServer = Mock<AppWsServer>();
+		const mockZ21CommandService = Mock<Z21CommandService>();
+		const mockZ21EventHandler = Mock<Z21EventHandler>();
+		const mockLocoManager = Mock<LocoManager>();
+		const mockCsInfoOrchestrator = Mock<CommandStationInfoOrchestrator>();
+		const mockLogger = Mock<Logger>();
+		const mockHttpServer = Mock<http.Server>();
+
+		mockLocoManager.subscribeLocoInfoOnce.mockReturnValue(true);
+		mockLocoManager.stopAll.mockReturnValue([
+			{ addr: 3, state: { speed: 0, dir: 'FWD', fns: { 0: true }, estop: false } },
+			{ addr: 7, state: { speed: 0, dir: 'REV', fns: { 2: false }, estop: false } }
+		]);
+		mockLogger.child.mockReturnThis();
+		mockHttpServer.listen.mockImplementation((_p: number, cb?: () => void) => {
+			cb?.();
+			return mockHttpServer as unknown as http.Server;
+		});
+		mockHttpServer.close.mockImplementation((cb?: () => void) => {
+			cb?.();
+			return mockHttpServer as unknown as http.Server;
+		});
+
+		const providers: DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock } = {
+			cfg: { httpPort: 5050, z21: { host: '1.2.3.4', udpPort: 21105 }, safety: { stopAllOnClientDisconnect: true } } as any,
+			logger: mockLogger as any,
+			httpServer: mockHttpServer as any,
+			udp: mockUdp as any,
+			wsServer: {
+				...mockWsServer,
+				onConnection: wsOnConnection,
+				broadcast,
+				close: wsServerClose
+			} as any,
+			z21CommandService: mockZ21CommandService as any,
+			z21EventHandler: mockZ21EventHandler as any,
+			locoManager: mockLocoManager as any,
+			csInfoOrchestrator: mockCsInfoOrchestrator as any,
+			commandStationInfo: Mock<CommandStationInfo>() as any,
+			wsOnConnection,
+			broadcast
+		};
+
+		return providers;
+	}
 
 	beforeEach(() => {
-		vi.clearAllMocks();
-		listenSpy = vi.fn((port: number, cb?: () => void) => cb && cb());
-		closeSpy = vi.fn();
-		createServerSpy = vi.spyOn(http, 'createServer').mockReturnValue({ listen: listenSpy, close: closeSpy, on: vi.fn() } as any);
+		providers = makeProviders();
 	});
 
-	afterEach(() => {
-		createServerSpy.mockRestore();
-	});
+	// Helper function to setup mocked CommandStationInfo and real orchestrator for testing
+	function setupMockedOrchestrator(hasXBusVersion: boolean, hasFirmwareVersion: boolean): void {
+		const mockCommandStationInfo = Mock<CommandStationInfo>();
+		mockCommandStationInfo.hasXBusVersion.mockReturnValue(hasXBusVersion);
+		mockCommandStationInfo.hasFirmwareVersion.mockReturnValue(hasFirmwareVersion);
+
+		if (hasFirmwareVersion) {
+			mockCommandStationInfo.getFirmwareVersion.mockReturnValue({ major: 0x01, minor: 0x12 } as any);
+		}
+
+		// Create real orchestrator with mocked dependencies to test actual poke() behavior
+		const realOrchestrator = new CommandStationInfoOrchestrator(mockCommandStationInfo as any, providers.z21CommandService as any);
+
+		providers.commandStationInfo = mockCommandStationInfo as any;
+		providers.csInfoOrchestrator = realOrchestrator as any;
+	}
 
 	it('starts UDP and performs initial priming requests', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { Z21Udp } = z21;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-
-		expect(udpInstance.start).toHaveBeenCalledWith(21105);
+		expect(providers.udp.start).toHaveBeenCalledWith(21105);
 	});
 
 	it('listens on configured HTTP port', () => {
-		const cfg = {
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		};
+		const bootstrap = new Bootstrap(providers);
 
-		const bootstrap = new Bootstrap(cfg);
 		bootstrap.start();
 
-		expect(http.createServer).toHaveBeenCalled();
-		expect(listenSpy).toHaveBeenCalledWith(cfg.httpPort, expect.any(Function));
+		expect(providers.httpServer.listen).toHaveBeenCalledWith(providers.cfg.httpPort, expect.any(Function));
 	});
 
 	it('wires Z21 datagram handler to dispatch payloads to Z21EventHandler', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { Z21Udp } = z21;
-		const { Z21EventHandler } = z21EventMock;
-
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-		const datagramHandler = (udpInstance.on as Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
+		const datagramHandler = (providers.udp.on as vi.Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
 		expect(datagramHandler).toBeDefined();
 
-		const handlerInstance = (Z21EventHandler as Mock).mock.results[0].value;
 		const testDatagram = { raw: Buffer.from([0x04, 0x00]), rawHex: '0x01', from: { address: '127.0.0.1', port: 21105 } };
 		datagramHandler(testDatagram);
 
-		expect(handlerInstance.handleDatagram).toHaveBeenCalledWith(testDatagram);
+		expect(providers.z21EventHandler.handleDatagram).toHaveBeenCalledWith(testDatagram);
 	});
 
 	it('broadcasts loco.message.state for all stopped locos on disconnect when safety flag is enabled', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { LocoManager } = domainMock;
-
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onDisconnect = onConnectionCalls[1];
+		const [, onDisconnect] = providers.wsOnConnection!.mock.calls[0];
 
 		onDisconnect();
 
-		expect(locoManagerInstance.stopAll).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+		expect(providers.locoManager.stopAll).toHaveBeenCalled();
+		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
 			addr: 3,
 			speed: 0,
-			dir: 'fwd',
+			dir: 'FWD',
 			fns: { 0: true },
 			estop: false
 		});
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
 			addr: 7,
 			speed: 0,
-			dir: 'rev',
+			dir: 'REV',
 			fns: { 2: false },
 			estop: false
 		});
 	});
 
 	it('does not broadcast on disconnect when safety flag is disabled', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: false }
-		});
+		// Create providers with safety flag disabled
+		const disabledSafetyProviders = makeProviders();
+		disabledSafetyProviders.cfg.safety.stopAllOnClientDisconnect = false;
+
+		const bootstrap = new Bootstrap(disabledSafetyProviders);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { LocoManager } = domainMock;
-
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onDisconnect = onConnectionCalls[1];
+		const [, onDisconnect] = disabledSafetyProviders.wsOnConnection!.mock.calls[0];
 
 		onDisconnect();
 
-		expect(locoManagerInstance.stopAll).not.toHaveBeenCalled();
-		expect(appWsInstance.broadcast).not.toHaveBeenCalled();
+		expect(disabledSafetyProviders.locoManager.stopAll).not.toHaveBeenCalled();
+		expect(disabledSafetyProviders.broadcast).not.toHaveBeenCalled();
 	});
 
 	it('requests loco info on connection when subscribeLocoInfoOnce returns true and dev config present', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true },
-			dev: { subscribeLocoAddr: 1845 }
-		});
+		providers.locoManager.subscribeLocoInfoOnce.mockReturnValue(true);
+		providers.cfg.dev = { subscribeLocoAddr: 1845 };
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21CommandService } = z21;
-		const { LocoManager } = domainMock;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
-		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
+		onConnect({});
 
-		(locoManagerInstance.subscribeLocoInfoOnce as Mock).mockReturnValue(true);
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect();
-
-		expect(locoManagerInstance.subscribeLocoInfoOnce).toHaveBeenCalledWith(1845);
-		expect(z21ServiceInstance.getLocoInfo).toHaveBeenCalledWith(1845);
+		expect(providers.locoManager.subscribeLocoInfoOnce).toHaveBeenCalledWith(1845);
+		expect(providers.z21CommandService.getLocoInfo).toHaveBeenCalledWith(1845);
 	});
 
-	it('requests version from Z21 when first client connects and version not cached', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+	it('does not request loco info on connection when subscribeLocoInfoOnce returns false', () => {
+		providers.locoManager.subscribeLocoInfoOnce.mockReturnValue(false);
+		providers.cfg.dev = { subscribeLocoAddr: 1845 };
+		(providers.z21CommandService.getLocoInfo as vi.Mock).mockClear();
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21Udp } = z21;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		onConnect({});
 
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect({} as any);
-
-		// First client triggers session activation (priming requests happen via UDP).
-		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalled();
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalled();
+		expect(providers.locoManager.subscribeLocoInfoOnce).toHaveBeenCalledWith(1845);
+		expect(providers.z21CommandService.getLocoInfo).not.toHaveBeenCalled();
 	});
 
-	it('broadcasts cached version with Unknown version string', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+	it('does not request loco info on connection when dev config is missing', () => {
+		(providers.locoManager.subscribeLocoInfoOnce as vi.Mock).mockClear();
+		(providers.z21CommandService.getLocoInfo as vi.Mock).mockClear();
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		appWsInstance.broadcast({
-			type: 'system.message.x.bus.version',
-			version: 'Unknown',
-			cmdsId: 0
-		});
+		onConnect({});
 
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
-			type: 'system.message.x.bus.version',
-			version: 'Unknown',
-			cmdsId: 0
-		});
+		expect(providers.locoManager.subscribeLocoInfoOnce).not.toHaveBeenCalled();
+		expect(providers.z21CommandService.getLocoInfo).not.toHaveBeenCalled();
+	});
+
+	it('requests xBusVersion from Z21 when first client connects and xBusVersion not cached', () => {
+		setupMockedOrchestrator(false, true);
+
+		const bootstrap = new Bootstrap(providers);
+
+		bootstrap.start();
+
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
+
+		// Clear mocks from start() to focus on onConnect behavior
+		(providers.z21CommandService.getXBusVersion as vi.Mock).mockClear();
+
+		onConnect({});
+
+		expect(providers.z21CommandService.getXBusVersion).toHaveBeenCalled();
+		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.x.bus.version' }));
 	});
 
 	it('requests firmware version from Z21 when first client connects and firmware version not cached', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		setupMockedOrchestrator(false, false);
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21CommandService } = z21;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const z21ServiceInstance = (Z21CommandService as Mock).mock.results[0].value;
+		// Clear mocks from start() to focus on onConnect behavior
+		(providers.z21CommandService.getFirmwareVersion as vi.Mock).mockClear();
 
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
+		onConnect({});
 
-		onConnect();
-
-		expect(z21ServiceInstance.getFirmwareVersion).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.firmware.version' }));
+		expect(providers.z21CommandService.getFirmwareVersion).toHaveBeenCalled();
+		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.firmware.version' }));
 	});
 
 	it('uses custom listenPort from config when provided', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105, listenPort: 8080 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		providers.cfg.z21.listenPort = 8080;
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { Z21Udp } = z21;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-
-		expect(udpInstance.start).toHaveBeenCalledWith(8080);
+		expect(providers.udp.start).toHaveBeenCalledWith(8080);
 	});
 
 	it('wires client message handler to process incoming WS messages', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		// Mock locoManager.setSpeed to return a valid state
+		providers.locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {}, estop: false });
+
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { ClientMessageHandler } = clientMsgMock;
+		const [onMessage] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const handlerInstance = (ClientMessageHandler as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onMessage = onConnectionCalls[0];
-
-		const testMessage = { type: 'loco.drive', addr: 5, speed: 0.5, dir: 'fwd' };
+		const testMessage = { type: 'loco.command.drive', addr: 5, speed: 0.5, dir: 'FWD' } as any;
 		onMessage(testMessage);
 
-		expect(handlerInstance.handle).toHaveBeenCalledWith(testMessage);
+		// The handler should process the message through the locoManager
+		expect(providers.locoManager.setSpeed).toHaveBeenCalledWith(5, 0.5, 'FWD');
 	});
 
 	it('broadcasts loco.message.state with estop flag on disconnect when safety is enabled', () => {
-		vi.clearAllMocks();
+		providers.locoManager.stopAll.mockReturnValue([{ addr: 10, state: { speed: 0, dir: 'FWD', fns: {}, estop: true } }]);
 
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
-
-		// Return a single loco with estop=true for this test
-		(locoManagerInstance.stopAll as Mock).mockReturnValue([{ addr: 10, state: { dir: 'fwd', fns: {}, estop: true }, speed: 0 }]);
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onDisconnect = onConnectionCalls[1];
+		const [, onDisconnect] = providers.wsOnConnection!.mock.calls[0];
+		providers.broadcast.mockClear();
 
 		onDisconnect();
 
-		expect(locoManagerInstance.stopAll).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).toHaveBeenCalledWith({
+		expect(providers.locoManager.stopAll).toHaveBeenCalled();
+		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
 			addr: 10,
 			speed: 0,
-			dir: 'fwd',
+			dir: 'FWD',
 			fns: {},
 			estop: true
 		});
 	});
 
 	it('does not broadcast when no locos are stopped on disconnect', () => {
-		vi.clearAllMocks();
+		providers.locoManager.stopAll.mockReturnValue([]);
 
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const locoManagerInstance = (LocoManager as Mock).mock.results[0].value;
-
-		// Return no stopped locos for this test
-		(locoManagerInstance.stopAll as Mock).mockReturnValue([]);
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onDisconnect = onConnectionCalls[1];
+		const [, onDisconnect] = providers.wsOnConnection!.mock.calls[0];
 
 		onDisconnect();
 
-		expect(locoManagerInstance.stopAll).toHaveBeenCalled();
-		expect(appWsInstance.broadcast).not.toHaveBeenCalled();
+		expect(providers.locoManager.stopAll).toHaveBeenCalled();
+		expect(providers.broadcast).not.toHaveBeenCalled();
 	});
 
 	it('stops UDP, WebSocket, and HTTP servers on stop', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
-
-		const { Z21Udp } = z21;
-		const { AppWsServer } = appWsMock;
-
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
 
 		bootstrap.stop();
 
-		expect(udpInstance.stop).toHaveBeenCalled();
-		expect(appWsInstance.close).toHaveBeenCalled();
-		expect(closeSpy).toHaveBeenCalled();
+		expect(providers.udp.stop).toHaveBeenCalled();
+		expect(providers.wsServer.close).toHaveBeenCalled();
+		expect(providers.httpServer.close).toHaveBeenCalled();
 	});
 
 	it('handles errors gracefully when stopping servers', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
-
-		bootstrap.start();
-
-		const { Z21Udp } = z21;
-		const { AppWsServer } = appWsMock;
-
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-
-		(udpInstance.stop as Mock).mockImplementation(() => {
+		providers.udp.stop.mockImplementation(() => {
 			throw new Error('UDP stop error');
 		});
-		(appWsInstance.close as Mock).mockImplementation(() => {
+		(providers.wsServer.close as vi.Mock).mockImplementation(() => {
 			throw new Error('WS close error');
 		});
-		closeSpy.mockImplementation(() => {
+		providers.httpServer.close.mockImplementation(() => {
 			throw new Error('HTTP close error');
 		});
+
+		const bootstrap = new Bootstrap(providers);
+
+		bootstrap.start();
 
 		expect(() => bootstrap.stop()).not.toThrow();
 	});
 
 	it('returns bootstrap instance from start for chaining', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		const result = bootstrap.start();
 
@@ -537,96 +364,61 @@ describe('Bootstrap', () => {
 	it('activates Z21 session on first client and starts heartbeat', () => {
 		vi.useFakeTimers();
 
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21Udp } = z21;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		const initialCalls = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
 
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
+		onConnect({});
 
-		const initialCalls = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
-
-		onConnect();
-
-		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000001);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 1);
+		expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(0x00000001);
+		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 1);
 
 		vi.advanceTimersByTime(60_000);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 2);
+		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(initialCalls + 2);
 
 		vi.useRealTimers();
 	});
 
 	it('does not reactivate Z21 session on subsequent connections', () => {
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21Udp } = z21;
+		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
+		onConnect({});
+		onConnect({});
 
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-
-		onConnect();
-		onConnect();
-
-		expect(udpInstance.sendSetBroadcastFlags).toHaveBeenCalledTimes(1);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(1);
+		expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledTimes(1);
+		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(1);
 	});
 
 	it('deactivates Z21 session and heartbeat when last client disconnects', () => {
 		vi.useFakeTimers();
 
-		const bootstrap = new Bootstrap({
-			httpPort: 5050,
-			z21: { host: '1.2.3.4', udpPort: 21105 },
-			safety: { stopAllOnClientDisconnect: true }
-		});
+		const bootstrap = new Bootstrap(providers);
 
 		bootstrap.start();
 
-		const { AppWsServer } = appWsMock;
-		const { Z21Udp } = z21;
+		const [, onDisconnect, onConnect] = providers.wsOnConnection!.mock.calls[0];
+		onConnect({});
 
-		const appWsInstance = (AppWsServer as Mock).mock.results[0].value;
-		const udpInstance = (Z21Udp as unknown as Mock).mock.results[0].value;
-
-		const onConnectionCalls = (appWsInstance.onConnection as Mock).mock.calls[0];
-		const onConnect = onConnectionCalls[2];
-		const onDisconnect = onConnectionCalls[1];
-
-		onConnect();
-
-		const callsBeforeAdvance = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+		const callsBeforeAdvance = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
 
 		vi.advanceTimersByTime(60_000);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(callsBeforeAdvance + 1);
+		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(callsBeforeAdvance + 1);
 
-		onDisconnect();
+		onDisconnect({});
 
-		expect(udpInstance.sendLogOff).toHaveBeenCalledTimes(1);
+		expect(providers.udp.sendLogOff).toHaveBeenCalledTimes(1);
 
-		const callsAfterDisconnect = (udpInstance.sendSystemStateGetData as Mock).mock.calls.length;
+		const callsAfterDisconnect = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
 		vi.advanceTimersByTime(120_000);
-		expect(udpInstance.sendSystemStateGetData).toHaveBeenCalledTimes(callsAfterDisconnect);
+		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(callsAfterDisconnect);
 
 		vi.useRealTimers();
 	});

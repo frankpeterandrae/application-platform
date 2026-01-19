@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+
+export default defineConfig({
+	root: __dirname,
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/shared-node-test'),
+	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+	test: {
+		outputFile: resolve(process.cwd(), 'test-result/libs/shared/shared-node-test/index.html'),
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./src/test-setup.ts'],
+		reporters: ['html', 'default', 'verbose'],
+		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+		coverage: {
+			provider: 'v8' as const,
+			reporter: ['html', 'text', 'lcov']
+		}
+	}
+});

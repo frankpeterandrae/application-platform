@@ -3,124 +3,175 @@
  * All rights reserved.
  */
 
+import { expectValidXor } from '@application-platform/shared-node-test';
 import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
-
-import { xbusXor } from '../../../codec/frames';
 
 import { encodeLanXSetTrackPowerOff, encodeLanXSetTrackPowerOn } from './track-power';
 
-describe('encodeLanXSetTrackPowerOff', () => {
-	it('returns a buffer', () => {
-		const result = encodeLanXSetTrackPowerOff();
-		expect(Buffer.isBuffer(result)).toBe(true);
+describe('track-power encoding', () => {
+	// Helper function to verify frame structure (similar to helper functions in bootstrap.spec.ts)
+	function expectValidLanXFrame(
+		buffer: Buffer,
+		command: typeof LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF | typeof LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON
+	): void {
+		expect(Buffer.isBuffer(buffer)).toBe(true);
+		expect(buffer.readUInt16LE(2)).toBe(Z21LanHeader.LAN_X);
+		expect(buffer[4]).toBe(command.xHeader);
+		expect(buffer[5]).toBe(command.xBusCmd);
+	}
+
+	// Helper function to verify frame length
+	function expectFrameLength(buffer: Buffer, expectedLength: number): void {
+		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
+		expect(buffer.length).toBe(expectedLength);
+	}
+
+	describe('encodeLanXSetTrackPowerOff', () => {
+		describe('frame structure', () => {
+			it('returns a buffer', () => {
+				const result = encodeLanXSetTrackPowerOff();
+
+				expect(Buffer.isBuffer(result)).toBe(true);
+			});
+
+			it('includes correct LAN_X header and TRACK_POWER_OFF command', () => {
+				const result = encodeLanXSetTrackPowerOff();
+
+				expectValidLanXFrame(result, LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF);
+			});
+
+			it('includes valid xor checksum', () => {
+				const result = encodeLanXSetTrackPowerOff();
+
+				expectValidXor(result);
+			});
+
+			it('encodes correct message length', () => {
+				const result = encodeLanXSetTrackPowerOff();
+
+				expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+			});
+		});
+
+		describe('consistency', () => {
+			it('produces consistent output for multiple calls', () => {
+				const result1 = encodeLanXSetTrackPowerOff();
+				const result2 = encodeLanXSetTrackPowerOff();
+
+				expect(result1).toEqual(result2);
+			});
+
+			it('produces independent buffers', () => {
+				const result1 = encodeLanXSetTrackPowerOff();
+				const result2 = encodeLanXSetTrackPowerOff();
+
+				expect(result1).not.toBe(result2); // Different buffer instances
+				expect(result1.equals(result2)).toBe(true); // But same content
+			});
+		});
+
+		describe('command differentiation', () => {
+			it('returns different result than power on command', () => {
+				const off = encodeLanXSetTrackPowerOff();
+				const on = encodeLanXSetTrackPowerOn();
+
+				expect(off).not.toEqual(on);
+			});
+
+			it('encodes different xBusCmd than power on', () => {
+				const off = encodeLanXSetTrackPowerOff();
+				const on = encodeLanXSetTrackPowerOn();
+
+				expect(off[5]).not.toBe(on[5]);
+			});
+		});
 	});
 
-	it('encodes correct message length', () => {
-		const result = encodeLanXSetTrackPowerOff();
-		const len = result.readUInt16LE(0);
+	describe('encodeLanXSetTrackPowerOn', () => {
+		describe('frame structure', () => {
+			it('returns a buffer', () => {
+				const result = encodeLanXSetTrackPowerOn();
 
-		expect(len).toBe(7);
+				expect(Buffer.isBuffer(result)).toBe(true);
+			});
+
+			it('includes correct LAN_X header and TRACK_POWER_ON command', () => {
+				const result = encodeLanXSetTrackPowerOn();
+
+				expectValidLanXFrame(result, LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON);
+			});
+
+			it('includes valid xor checksum', () => {
+				const result = encodeLanXSetTrackPowerOn();
+
+				expectValidXor(result);
+			});
+
+			it('encodes correct message length', () => {
+				const result = encodeLanXSetTrackPowerOn();
+
+				expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+			});
+		});
+
+		describe('consistency', () => {
+			it('produces consistent output for multiple calls', () => {
+				const result1 = encodeLanXSetTrackPowerOn();
+				const result2 = encodeLanXSetTrackPowerOn();
+
+				expect(result1).toEqual(result2);
+			});
+
+			it('produces independent buffers', () => {
+				const result1 = encodeLanXSetTrackPowerOn();
+				const result2 = encodeLanXSetTrackPowerOn();
+
+				expect(result1).not.toBe(result2); // Different buffer instances
+				expect(result1.equals(result2)).toBe(true); // But same content
+			});
+		});
+
+		describe('command differentiation', () => {
+			it('returns different result than power off command', () => {
+				const on = encodeLanXSetTrackPowerOn();
+				const off = encodeLanXSetTrackPowerOff();
+
+				expect(on).not.toEqual(off);
+			});
+
+			it('encodes different xBusCmd than power off', () => {
+				const on = encodeLanXSetTrackPowerOn();
+				const off = encodeLanXSetTrackPowerOff();
+
+				expect(on[5]).not.toBe(off[5]);
+			});
+		});
 	});
 
-	it('includes LAN_X header', () => {
-		const result = encodeLanXSetTrackPowerOff();
-		const header = result.readUInt16LE(2);
+	describe('UDP transmission readiness', () => {
+		it('power off command is suitable for sending over UDP', () => {
+			const result = encodeLanXSetTrackPowerOff();
 
-		expect(header).toBe(Z21LanHeader.LAN_X);
-	});
+			expect(result.length).toBeLessThanOrEqual(255); // UDP max payload
+			expect(Buffer.isBuffer(result)).toBe(true);
+		});
 
-	it('includes STATUS xbus header', () => {
-		const result = encodeLanXSetTrackPowerOff();
+		it('power on command is suitable for sending over UDP', () => {
+			const result = encodeLanXSetTrackPowerOn();
 
-		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
-		expect(result[4]).toBe(trackPowerOff.xHeader);
-	});
+			expect(result.length).toBeLessThanOrEqual(255); // UDP max payload
+			expect(Buffer.isBuffer(result)).toBe(true);
+		});
 
-	it('includes Off track power value', () => {
-		const result = encodeLanXSetTrackPowerOff();
+		it('both commands create valid LAN_X formatted messages', () => {
+			const off = encodeLanXSetTrackPowerOff();
+			const on = encodeLanXSetTrackPowerOn();
 
-		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
-		expect(result[5]).toBe(trackPowerOff.xBusCmd);
-	});
+			expect(off.readUInt16LE(0)).toBe(off.length);
+			expect(on.readUInt16LE(0)).toBe(on.length);
 
-	it('includes valid xor checksum', () => {
-		const result = encodeLanXSetTrackPowerOff();
-		const trackPowerOff = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_OFF;
-		const payload = [trackPowerOff.xHeader, trackPowerOff.xBusCmd];
-		const expectedXor = xbusXor(payload);
-
-		expect(result[6]).toBe(expectedXor);
-	});
-
-	it('returns different result than power on command', () => {
-		const off = encodeLanXSetTrackPowerOff();
-		const on = encodeLanXSetTrackPowerOn();
-
-		expect(off).not.toEqual(on);
-	});
-
-	it('produces consistent output on multiple calls', () => {
-		const result1 = encodeLanXSetTrackPowerOff();
-		const result2 = encodeLanXSetTrackPowerOff();
-
-		expect(result1).toEqual(result2);
-	});
-});
-
-describe('encodeLanXSetTrackPowerOn', () => {
-	it('returns a buffer', () => {
-		const result = encodeLanXSetTrackPowerOn();
-		expect(Buffer.isBuffer(result)).toBe(true);
-	});
-
-	it('encodes correct message length', () => {
-		const result = encodeLanXSetTrackPowerOn();
-		const len = result.readUInt16LE(0);
-
-		expect(len).toBe(7);
-	});
-
-	it('includes LAN_X header', () => {
-		const result = encodeLanXSetTrackPowerOn();
-		const header = result.readUInt16LE(2);
-
-		expect(header).toBe(Z21LanHeader.LAN_X);
-	});
-
-	it('includes STATUS xbus header', () => {
-		const result = encodeLanXSetTrackPowerOn();
-
-		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
-		expect(result[4]).toBe(trackPowerOn.xHeader);
-	});
-
-	it('includes On track power value', () => {
-		const result = encodeLanXSetTrackPowerOn();
-
-		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
-		expect(result[5]).toBe(trackPowerOn.xBusCmd);
-	});
-
-	it('includes valid xor checksum', () => {
-		const result = encodeLanXSetTrackPowerOn();
-		const trackPowerOn = LAN_X_COMMANDS.LAN_X_SET_TRACK_POWER_ON;
-		const payload = [trackPowerOn.xHeader, trackPowerOn.xBusCmd];
-		const expectedXor = xbusXor(payload);
-
-		expect(result[6]).toBe(expectedXor);
-	});
-
-	it('returns different result than power off command', () => {
-		const on = encodeLanXSetTrackPowerOn();
-		const off = encodeLanXSetTrackPowerOff();
-
-		expect(on).not.toEqual(off);
-	});
-
-	it('produces consistent output on multiple calls', () => {
-		const result1 = encodeLanXSetTrackPowerOn();
-		const result2 = encodeLanXSetTrackPowerOn();
-
-		expect(result1).toEqual(result2);
+			expect(off.readUInt16LE(2)).toBe(Z21LanHeader.LAN_X);
+			expect(on.readUInt16LE(2)).toBe(Z21LanHeader.LAN_X);
+		});
 	});
 });

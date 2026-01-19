@@ -3,8 +3,9 @@
  * All rights reserved.
  */
 
+import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { XBusCmd, XHeader } from '@application-platform/z21-shared';
-import { describe, expect, it, vi, type Mock } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { type Z21Event } from '../../event/event-types';
 
@@ -17,24 +18,26 @@ import * as turnoutInfo from './turnout-info';
 import * as version from './version';
 
 type TrackPowerEvent = Extract<Z21Event, { type: 'event.track.power' }>;
+type CsStatusEvent = Extract<Z21Event, { type: 'event.z21.status' }>;
 
-type LocoInfoEvent = { type: 'envet.loco.info.mock' };
-type TurnoutInfoEvent = { type: 'envet.turnout.info.mock' };
+type LocoInfoEvent = { type: 'event.loco.info.mock' };
+type TurnoutInfoEvent = { type: 'event.turnout.info.mock' };
+
 type DecodersMock = {
-	decodeLanXLocoInfoPayload: Mock;
-	decodeLanXTurnoutInfoPayload: Mock;
-	decodeLanXTrackPowerPayload: Mock;
-	decodeLanXStatusChangedPayload: Mock;
-	decodeLanXVersionPayload: Mock;
-	decodeLanXStoppedPayload: Mock;
+	decodeLanXLocoInfoPayload: vi.Mock;
+	decodeLanXTurnoutInfoPayload: vi.Mock;
+	decodeLanXTrackPowerPayload: vi.Mock;
+	decodeLanXStatusChangedPayload: vi.Mock;
+	decodeLanXVersionPayload: vi.Mock;
+	decodeLanXStoppedPayload: vi.Mock;
 };
 
 vi.mock('./loco-info', () => ({
-	decodeLanXLocoInfoPayload: vi.fn(() => [{ type: 'envet.loco.info.mock' } as LocoInfoEvent])
+	decodeLanXLocoInfoPayload: vi.fn(() => [{ type: 'event.loco.info.mock' } as LocoInfoEvent])
 }));
 
 vi.mock('./turnout-info', () => ({
-	decodeLanXTurnoutInfoPayload: vi.fn(() => [{ type: 'envet.turnout.info.mock' } as TurnoutInfoEvent])
+	decodeLanXTurnoutInfoPayload: vi.fn(() => [{ type: 'event.turnout.info.mock' } as TurnoutInfoEvent])
 }));
 
 vi.mock('./track-power', () => ({
@@ -48,19 +51,13 @@ vi.mock('./status-changed', () => ({
 		{
 			type: 'event.z21.status',
 			payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
-		}
+		} as CsStatusEvent
 	])
 }));
 
 vi.mock('./version', () => ({
 	decodeLanXVersionPayload: vi.fn(() => [
-		{
-			type: 'event.x.bus.version',
-			xBusVersionString: 'V1.2',
-			cmdsId: 1,
-			xbusVersion: 0x12,
-			raw: []
-		}
+		{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }
 	])
 }));
 
@@ -68,180 +65,197 @@ vi.mock('./stopped', () => ({
 	decodeLanXStoppedPayload: vi.fn(() => [{ type: 'event.z21.stopped' }])
 }));
 
-const decoders = {
-	...locoInfo,
-	...turnoutInfo,
-	...statusChanged,
-	...trackPower,
-	...version,
-	...stopped
-} as DecodersMock;
+describe('decodeLanXPayload', () => {
+	// Helper function to create mocked decoders (similar to makeProviders in bootstrap.spec.ts)
+	function makeDecoders(): DecodersMock {
+		return {
+			...locoInfo,
+			...turnoutInfo,
+			...statusChanged,
+			...trackPower,
+			...version,
+			...stopped
+		} as DecodersMock;
+	}
 
-describe('decodeLanXCommand', () => {
+	let decoders: DecodersMock;
+
 	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-	it('returns loco info events for LAN_X_LOCO_INFO', () => {
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
-
-		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(new Uint8Array([0x01]));
-		expect(events).toEqual([{ type: 'envet.loco.info.mock' }]);
+		decoders = makeDecoders();
+		resetMocksBeforeEach(decoders);
 	});
 
-	it('returns turnout info events for LAN_X_TURNOUT_INFO', () => {
-		const events = decodeLanXPayload(XHeader.TURNOUT_INFO, new Uint8Array([0x02, 0x02]));
+	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
+	function makePayload(...bytes: number[]): Uint8Array {
+		return new Uint8Array(bytes);
+	}
 
-		expect(decoders.decodeLanXTurnoutInfoPayload).toHaveBeenCalledWith(new Uint8Array([0x02, 0x02]));
-		expect(events).toEqual([{ type: 'envet.turnout.info.mock' }]);
-	});
+	// Helper function to verify decoder was called with payload
+	function expectDecoderCalled(decoder: vi.Mock, payload: Uint8Array): void {
+		expect(decoder).toHaveBeenCalledWith(payload);
+	}
 
-	it('returns event.z21.status for LAN_X_STATUS_CHANGED', () => {
-		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([XBusCmd.STATUS_CHANGED, 0xaa]));
+	// Helper function to verify decoder was called with command name
+	function expectDecoderCalledWithCommand(decoder: vi.Mock, commandName: string): void {
+		expect(decoder).toHaveBeenCalledWith(commandName);
+	}
 
-		expect(decoders.decodeLanXStatusChangedPayload).toHaveBeenCalledWith(new Uint8Array([XBusCmd.STATUS_CHANGED, 0xaa]));
-		expect(events).toEqual([
-			{ type: 'event.z21.status', payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false } }
-		]);
-	});
-
-	it('returns track power off for LAN_X_BC_TRACK_POWER_OFF', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_OFF]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_TRACK_POWER_OFF');
-		expect(events).toEqual([{ type: 'event.track.power', on: false }]);
-	});
-
-	it('returns track power on for LAN_X_BC_TRACK_POWER_ON', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_ON]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_TRACK_POWER_ON');
-		expect(events).toEqual([{ type: 'event.track.power', on: true }]);
-	});
-
-	it('returns empty array for unknown commands', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.UNKNOWN_COMMAND]));
-
-		expect(events).toEqual([]);
-	});
-
-	it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_BC_PROGRAMMING_MODE]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_PROGRAMMING_MODE');
-		expect(events.length).toBeGreaterThan(0);
-		expect(events[0].type).toBe('event.track.power');
-	});
-
-	it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
-		const events = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_SHORT_CIRCUIT]));
-
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledWith('LAN_X_BC_TRACK_SHORT_CIRCUIT');
-		expect(events.length).toBeGreaterThan(0);
-		expect(events[0].type).toBe('event.track.power');
-	});
-
-	it('returns version events for LAN_X_GET_VERSION_ANSWER', () => {
-		const events = decodeLanXPayload(0x63, new Uint8Array([XBusCmd.GET_VERSION, 0x30, 0x12]));
-
-		expect(decoders.decodeLanXVersionPayload).toHaveBeenCalledWith(new Uint8Array([XBusCmd.GET_VERSION, 0x30, 0x12]));
-		expect(events).toEqual([{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
-	});
-
-	it('returns stopped events for LAN_X_BC_STOPPED', () => {
-		const events = decodeLanXPayload(0x81, new Uint8Array([0x81]));
-
-		expect(decoders.decodeLanXStoppedPayload).toHaveBeenCalled();
-		expect(events).toEqual([{ type: 'event.z21.stopped' }]);
-	});
-
-	it('returns array when decoder returns events', () => {
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
-
+	// Helper function to verify event array properties
+	function expectEventArray(events: Z21Event[], expectedLength?: number): void {
 		expect(Array.isArray(events)).toBe(true);
-		expect(events.length).toBeGreaterThan(0);
-	});
-
-	it('returns empty array when no decoder handles command', () => {
-		const events = decodeLanXPayload(99 as XHeader, new Uint8Array([0xff]));
-
-		expect(Array.isArray(events)).toBe(true);
-		expect(events.length).toBe(0);
-	});
-
-	it('handles empty payload data', () => {
-		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([]));
-
-		expect(Array.isArray(events)).toBe(true);
-	});
-
-	it('handles large payload data', () => {
-		const largeData = new Uint8Array(255);
-		for (let i = 0; i < largeData.length; i++) {
-			largeData[i] = i % 256;
+		if (expectedLength !== undefined) {
+			expect(events).toHaveLength(expectedLength);
 		}
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, largeData);
+	}
 
-		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(largeData);
-		expect(Array.isArray(events)).toBe(true);
+	// Helper function to verify event type
+	function expectEventType(event: Z21Event, expectedType: string): void {
+		expect(event.type).toBe(expectedType);
+	}
+
+	describe('loco info decoding', () => {
+		it('returns loco info events for LAN_X_LOCO_INFO', () => {
+			const payload = makePayload(0x01);
+			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, payload);
+
+			expectDecoderCalled(decoders.decodeLanXLocoInfoPayload, payload);
+			expect(events).toEqual([{ type: 'event.loco.info.mock' }]);
+		});
+
+		it('handles large payload data', () => {
+			const largeData = makePayload(...Array.from({ length: 255 }, (_, i) => i % 256));
+			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, largeData);
+
+			expectDecoderCalled(decoders.decodeLanXLocoInfoPayload, largeData);
+			expectEventArray(events);
+		});
+
+		it('returns multiple events when decoder produces multiple events', () => {
+			vi.mocked(decoders.decodeLanXLocoInfoPayload).mockReturnValueOnce([
+				{ type: 'event.loco.info.mock' },
+				{ type: 'event.loco.info.mock' }
+			] as any);
+
+			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, makePayload(0x01));
+
+			expectEventArray(events, 2);
+		});
+
+		it('handles zero-length result from decoder', () => {
+			vi.mocked(decoders.decodeLanXLocoInfoPayload).mockReturnValueOnce([]);
+
+			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, makePayload(0x01));
+
+			expect(events).toEqual([]);
+		});
 	});
 
-	it('preserves event properties from decoder', () => {
-		const events = decodeLanXPayload(XHeader.STATUS_CHANGED, new Uint8Array([XBusCmd.STATUS_CHANGED, 0xaa]));
+	describe('turnout info decoding', () => {
+		it('returns turnout info events for LAN_X_TURNOUT_INFO', () => {
+			const payload = makePayload(0x02, 0x02);
+			const events = decodeLanXPayload(XHeader.TURNOUT_INFO, payload);
 
-		expect(events[0]).toHaveProperty('type', 'event.z21.status');
-		expect(events[0]).toHaveProperty('payload');
+			expectDecoderCalled(decoders.decodeLanXTurnoutInfoPayload, payload);
+			expect(events).toEqual([{ type: 'event.turnout.info.mock' }]);
+		});
 	});
 
-	it('returns multiple events when decoder produces multiple events', () => {
-		vi.mocked(decoders.decodeLanXLocoInfoPayload).mockReturnValueOnce([
-			{ type: 'envet.loco.info.mock' },
-			{ type: 'envet.loco.info.mock' }
-		] as any);
+	describe('status changed decoding', () => {
+		it('returns cs.status for LAN_X_STATUS_CHANGED', () => {
+			const payload = makePayload(XBusCmd.STATUS_CHANGED, 0xaa);
+			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, payload);
 
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
+			expectDecoderCalled(decoders.decodeLanXStatusChangedPayload, payload);
+			expect(events).toEqual([
+				{ type: 'event.z21.status', payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false } }
+			]);
+		});
 
-		expect(events.length).toBe(2);
+		it('preserves event properties from decoder', () => {
+			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, makePayload(XBusCmd.STATUS_CHANGED, 0xaa));
+
+			expect(events[0]).toHaveProperty('type', 'event.z21.status');
+			expect(events[0]).toHaveProperty('payload');
+		});
+
+		it('handles empty payload data', () => {
+			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, makePayload());
+
+			expectEventArray(events);
+		});
 	});
 
-	it('handles zero-length result from decoder', () => {
-		vi.mocked(decoders.decodeLanXLocoInfoPayload).mockReturnValueOnce([]);
+	describe('track power decoding', () => {
+		it('returns track power off for LAN_X_BC_TRACK_POWER_OFF', () => {
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_OFF));
 
-		const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, new Uint8Array([0x01]));
+			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_POWER_OFF');
+			expect(events).toEqual([{ type: 'event.track.power', on: false }]);
+		});
 
-		expect(events).toEqual([]);
+		it('returns track power on for LAN_X_BC_TRACK_POWER_ON', () => {
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_ON));
+
+			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_POWER_ON');
+			expect(events).toEqual([{ type: 'event.track.power', on: true }]);
+		});
+
+		it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_BC_PROGRAMMING_MODE));
+
+			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_PROGRAMMING_MODE');
+			expectEventArray(events);
+			expectEventType(events[0], 'event.track.power');
+		});
+
+		it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_SHORT_CIRCUIT));
+
+			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_SHORT_CIRCUIT');
+			expectEventArray(events);
+			expectEventType(events[0], 'event.track.power');
+		});
 	});
 
-	it('passes correct data to loco info decoder', () => {
-		const testData = new Uint8Array([0x04, 0x7a, 0x00, 0x42, 0x01]);
-		decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, testData);
+	describe('version decoding', () => {
+		it('returns xBusVersion events for LAN_X_GET_VERSION_ANSWER', () => {
+			const payload = makePayload(XBusCmd.GET_VERSION, 0x30, 0x12);
+			const events = decodeLanXPayload(0x63, payload);
 
-		expect(decoders.decodeLanXLocoInfoPayload).toHaveBeenCalledWith(testData);
+			expectDecoderCalled(decoders.decodeLanXVersionPayload, payload);
+			expect(events).toEqual([{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
+		});
 	});
 
-	it('passes correct data to turnout info decoder', () => {
-		const testData = new Uint8Array([0x02, 0x03]);
-		decodeLanXPayload(XHeader.TURNOUT_INFO, testData);
+	describe('stopped decoding', () => {
+		it('returns stopped events for LAN_X_BC_STOPPED', () => {
+			const events = decodeLanXPayload(0x81, makePayload(0x81));
 
-		expect(decoders.decodeLanXTurnoutInfoPayload).toHaveBeenCalledWith(testData);
+			expect(decoders.decodeLanXStoppedPayload).toHaveBeenCalled();
+			expect(events).toEqual([{ type: 'event.z21.stopped' }]);
+		});
 	});
 
-	it('passes correct data to status changed decoder', () => {
-		const testData = new Uint8Array([XBusCmd.STATUS_CHANGED, 0x56]);
-		decodeLanXPayload(XHeader.STATUS_CHANGED, testData);
+	describe('unknown commands and edge cases', () => {
+		it('returns empty array for unknown commands', () => {
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.UNKNOWN_COMMAND));
 
-		expect(decoders.decodeLanXStatusChangedPayload).toHaveBeenCalledWith(testData);
+			expect(events).toEqual([]);
+		});
+
+		it('returns empty array when no decoder handles command', () => {
+			const events = decodeLanXPayload(99 as XHeader, makePayload(0xff));
+
+			expectEventArray(events, 0);
+		});
 	});
 
-	it('handles all broadcast track power commands', () => {
-		const offEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_OFF]));
-		const onEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_POWER_ON]));
-		const progEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_BC_PROGRAMMING_MODE]));
-		const shortEvents = decodeLanXPayload(XHeader.BROADCAST, new Uint8Array([XBusCmd.BC_TRACK_SHORT_CIRCUIT]));
+	describe('result validation', () => {
+		it('returns array when decoder returns events', () => {
+			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, makePayload(0x01));
 
-		expect(decoders.decodeLanXTrackPowerPayload).toHaveBeenCalledTimes(4);
-		expect(Array.isArray(offEvents)).toBe(true);
-		expect(Array.isArray(onEvents)).toBe(true);
-		expect(Array.isArray(progEvents)).toBe(true);
-		expect(Array.isArray(shortEvents)).toBe(true);
+			expectEventArray(events);
+			expect(events.length).toBeGreaterThan(0);
+		});
 	});
 });
