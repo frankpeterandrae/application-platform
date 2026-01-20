@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
+import type { Message } from '../../message-types';
+
 /**
  * Message sent by the server to indicate that the system has stopped.
  */
-export type SystemStop = {
-	type: 'system.message.stop';
-};
+export type SystemStop = Message<'system', 'stop'>;

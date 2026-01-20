@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-// Import individual types for union definitions
 import type {
 	CvRead,
 	CvWrite,
@@ -34,6 +33,7 @@ import type {
 	TurnoutState_Message,
 	Z21Rx
 } from './server';
+
 /**
  * Union of all messages a client may send to the server.
  *
@@ -72,8 +72,8 @@ export const CLIENT_TO_SERVER_TYPES = {
 	'loco.command.stop.all': true,
 	'programming.command.cv.read': true,
 	'programming.command.cv.write': true,
-	'programming.command.pom.read': true,
-	'programming.command.pom.write': true,
+	'programming.command.pom.cv.read': true,
+	'programming.command.pom.cv.write': true,
 	'server.command.session.hello': true,
 	'switching.command.turnout.set': true,
 	'system.command.trackpower.set': true
@@ -114,9 +114,9 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'feedback.message.changed': true,
 	'loco.message.eStop': true,
 	'loco.message.state': true,
-	'server.replay.session.ready': true,
 	'programming.replay.cv.nack': true,
 	'programming.replay.cv.result': true,
+	'server.replay.session.ready': true,
 	'switching.message.turnout.state': true,
 	'system.message.firmware.version': true,
 	'system.message.hardware.info': true,
@@ -126,3 +126,79 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'system.message.z21.code': true,
 	'system.message.z21.rx': true
 } as const satisfies Record<ServerToClientType, true>;
+
+/**
+ * Role names used when composing typed message strings via `MessageType`.
+ *
+ * 'command' — request from UI/client that triggers an action.
+ * 'replay'  — responses/results produced by the server (replays of commands).
+ * 'message' — informational messages (not necessarily request/response).
+ */
+type RoleType = 'command' | 'replay' | 'message';
+
+/**
+ * Template type for message type strings.
+ *
+ * Produces strings of the form: `${Domain}.${Role}.${Action}`
+ * Example: `programming.command.cv.read`
+ */
+type MessageType<Domain extends string, Role extends RoleType, Action extends string> = `${Domain}.${Role}.${Action}`;
+
+/**
+ * CommandMessage helper type.
+ *
+ * Use when building a command message type whose `type` is `${Domain}.command.${Action}`.
+ * The `payload` is normalized via `Payload<TPayload>` so `requestId` is enforced.
+ *
+ * Example:
+ *   type CvReadMsg = CommandMessage<'programming', 'cv.read', { cvAddress: number }>;
+ *   // -> { type: 'programming.command.cv.read', payload: { requestId: string, cvAddress: number } }
+ */
+export type CommandMessage<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
+	type: MessageType<Domain, 'command', Action>;
+	payload: Payload<TPayload>;
+};
+
+/**
+ * ReplayMessage helper type.
+ *
+ * Use when the server publishes a replay/result message with type `${Domain}.replay.${Action}`.
+ * The `payload` is normalized via `Payload<TPayload>` so `requestId` is enforced.
+ */
+export type ReplayMessage<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
+	type: MessageType<Domain, 'replay', Action>;
+	payload: Payload<TPayload>;
+};
+
+/**
+ * Generic informational Message type.
+ *
+ * Produces `${Domain}.message.${Action}` as the type string. This variant intentionally
+ * leaves `payload` as `TPayload` (no automatic `requestId` injection) because not all
+ * informational messages are request-like.
+ *
+ * For messages that should include `requestId`, prefer `CommandMessage` or `ReplayMessage`.
+ */
+export type Message<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
+	type: MessageType<Domain, 'message', Action>;
+	payload: TPayload;
+};
+
+/**
+ * Payload<TPayload>
+ *
+ * Ensures that any request-like payload always includes a `requestId: string`.
+ *
+ * Implementation detail:
+ * - `Omit<TPayload, 'requestId'>` removes any `requestId` declaration from `TPayload`
+ *   (prevents conflicts such as `number & string`).
+ * - `& { requestId: string }` then enforces the canonical `requestId: string` type.
+ *
+ * Result:
+ * - If `TPayload` does not include `requestId`, payload becomes `{ requestId: string } & TPayload`.
+ * - If `TPayload` included `requestId` with a different type, that field is replaced
+ *   with `requestId: string`, avoiding incompatible intersections.
+ */
+type Payload<TPayload> = Omit<TPayload, 'requestId'> & {
+	requestId: string;
+};

@@ -53,7 +53,11 @@ export class WsClientService {
 
 		this.ws.onopen = (): void => {
 			this.status.set('connected');
-			this.send({ type: 'server.command.session.hello', protocolVersion: PROTOCOL_VERSION, clientName: 'ui' });
+			const requestId = crypto.randomUUID();
+			this.send({
+				type: 'server.command.session.hello',
+				payload: { protocolVersion: PROTOCOL_VERSION, clientName: 'ui', requestId }
+			});
 		};
 
 		this.ws.onclose = (): void => this.status.set('disconnected');

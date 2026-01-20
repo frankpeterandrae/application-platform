@@ -27,7 +27,7 @@ describe('Z21 Event Types', () => {
 	describe('Z21FirmwareVersionEvent', () => {
 		it('accepts firmware version event', () => {
 			const event: Z21FirmwareVersionEvent = {
-				type: 'event.firmware.version',
+				type: 'event.z21.firmware.version',
 				major: 1,
 				minor: 43,
 				raw: []
@@ -91,13 +91,13 @@ describe('Z21 Event Types', () => {
 	describe('Z21VersionEvent', () => {
 		it('accepts X-Bus version event', () => {
 			const event: Z21VersionEvent = {
-				type: 'event.x.bus.version',
-				xbusVersion: 1.9,
+				type: 'event.z21.x.bus.version',
+				xBusVersion: 1.9,
 				xBusVersionString: '1.9',
 				cmdsId: 0x12,
 				raw: []
 			};
-			expect(event.xbusVersion).toBe(1.9);
+			expect(event.xBusVersion).toBe(1.9);
 			expect(event.cmdsId).toBe(0x12);
 		});
 	});

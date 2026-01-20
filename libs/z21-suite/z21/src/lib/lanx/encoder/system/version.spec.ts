@@ -47,7 +47,7 @@ describe('encodeLanXGetVersion', () => {
 		it('encodes correct message length', () => {
 			const result = encodeLanXGetVersion();
 
-			expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+			expectFrameLength(result, 7); // len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1)
 		});
 	});
 
@@ -80,7 +80,7 @@ describe('encodeLanXGetVersion', () => {
 		it('does not include any additional payload bytes', () => {
 			const result = encodeLanXGetVersion();
 
-			// Frame should be: len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1) = 7 bytes
+			// Frame should be: len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1) = 7 bytes
 			expect(result.length).toBe(7);
 		});
 	});

@@ -209,10 +209,8 @@ describe('isServerToClientMessage', () => {
 			);
 		});
 
-		it('accepts system.xBusVersion message', () => {
-			expect(isServerToClientMessage({ type: 'system.message.x.bus.version', payload: { xBusVersion: 'V1.2', cmdsId: 1 } })).toBe(
-				true
-			);
+		it('accepts system.version message', () => {
+			expect(isServerToClientMessage({ type: 'system.message.x.bus.version', payload: { version: 'V1.2', cmdsId: 1 } })).toBe(true);
 		});
 
 		it('accepts system.message.stop message', () => {
@@ -246,6 +244,8 @@ describe('isServerToClientMessage', () => {
 				'loco.message.eStop',
 				'loco.message.state',
 				'server.replay.session.ready',
+				'programming.replay.cv.nack',
+				'programming.replay.cv.result',
 				'system.message.z21.code',
 				'system.message.firmware.version',
 				'system.message.hardware.info',

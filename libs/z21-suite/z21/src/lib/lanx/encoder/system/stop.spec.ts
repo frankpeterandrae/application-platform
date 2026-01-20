@@ -52,7 +52,7 @@ describe('encodeLanXSetStop', () => {
 		it('encodes correct message length', () => {
 			const result = encodeLanXSetStop();
 
-			expectFrameLength(result, 6); // len(2) + header(2) + xBusHeader(1) + xor(1)
+			expectFrameLength(result, 6); // len(2) + header(2) + xHeader(1) + xor(1)
 		});
 	});
 
@@ -90,7 +90,7 @@ describe('encodeLanXSetStop', () => {
 		it('does not include any additional payload bytes', () => {
 			const result = encodeLanXSetStop();
 
-			// Frame should be: len(2) + header(2) + xBusHeader(1) + xor(1) = 6 bytes
+			// Frame should be: len(2) + header(2) + xHeader(1) + xor(1) = 6 bytes
 			expect(result.length).toBe(6);
 		});
 	});

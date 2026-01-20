@@ -4,7 +4,7 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { PROTOCOL_VERSION } from '@application-platform/protocol';
+import { CvNack, CvRead, CvResult, PROTOCOL_VERSION, type ClientToServer } from '@application-platform/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { WsClientService } from './ws-client.service';
@@ -55,10 +55,10 @@ describe('WsClientService', () => {
 		lastCreatedWs.onopen?.();
 
 		expect(lastCreatedWs.send).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
-		expect(sent.type).toBe('server.command.session.hello');
-		expect(sent.protocolVersion).toBe(PROTOCOL_VERSION);
-		expect(sent.clientName).toBe('ui');
+		const send = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+		expect(send.type).toBe('server.command.session.hello');
+		expect(send.payload.protocolVersion).toBe(PROTOCOL_VERSION);
+		expect(send.payload.clientName).toBe('ui');
 	});
 
 	it('does not call underlying WebSocket.send when socket is not open', () => {
@@ -80,7 +80,7 @@ describe('WsClientService', () => {
 
 		const service = TestBed.inject(WsClientService);
 
-		service.send({ type: 'some.message' } as any);
+		service.send({ type: 'some.message' } as unknown as ClientToServer);
 
 		expect(lastCreatedWs.send).not.toHaveBeenCalled();
 	});
@@ -123,13 +123,13 @@ describe('WsClientService', () => {
 		const service = TestBed.inject(WsClientService);
 
 		// Prepare request and capture sent message
-		const promise = service.request((requestId) => ({ type: 'req', payload: { requestId } }) as any);
+		const promise = service.request((requestId) => ({ type: 'programming.command.cv.read', payload: { requestId } }) as CvRead);
 
 		// Simulate server response with matching requestId
-		const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
-		const requestId = sent.payload.requestId;
+		const send = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+		const requestId = send.payload.requestId;
 
-		const response = { type: 'programming.replay.cv.result', payload: { requestId, value: 42 } } as any;
+		const response = { type: 'programming.replay.cv.result', payload: { requestId, cvAdress: 42 } } as CvResult;
 		lastCreatedWs.onmessage?.({ data: JSON.stringify(response) });
 
 		await expect(promise).resolves.toEqual(response);
@@ -138,12 +138,12 @@ describe('WsClientService', () => {
 	it('request rejects when a matching programming.replay.cv.nack is received', async () => {
 		const service = TestBed.inject(WsClientService);
 
-		const promise = service.request((requestId) => ({ type: 'req', payload: { requestId } }) as any);
+		const promise = service.request((requestId) => ({ type: 'programming.command.cv.read', payload: { requestId } }) as CvRead);
 
-		const sent = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
-		const requestId = sent.payload.requestId;
+		const send = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
+		const requestId = send.payload.requestId;
 
-		const nack = { type: 'programming.replay.cv.nack', payload: { requestId, error: 'boom' } } as any;
+		const nack = { type: 'programming.replay.cv.nack', payload: { requestId, error: 'boom' } } as CvNack;
 		lastCreatedWs.onmessage?.({ data: JSON.stringify(nack) });
 
 		await expect(promise).rejects.toThrow('boom');
@@ -153,7 +153,9 @@ describe('WsClientService', () => {
 		vi.useFakeTimers();
 		const service = TestBed.inject(WsClientService);
 
-		const promise = service.request((requestId) => ({ type: 'req', payload: { requestId } }) as any, { timeoutMs: 10 });
+		const promise = service.request((requestId) => ({ type: 'programming.command.cv.read', payload: { requestId } }) as CvRead, {
+			timeoutMs: 10
+		});
 
 		// Advance timers to trigger timeout
 		vi.advanceTimersByTime(20);

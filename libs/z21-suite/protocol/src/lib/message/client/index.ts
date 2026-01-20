@@ -3,15 +3,15 @@
  * All rights reserved.
  */
 
-export * from './loco-drive';
-export * from './loco-estop';
-export * from './loco-function-set';
-export * from './loco-function-toggle';
+export * from './loco/loco-drive';
+export * from './loco/loco-estop';
+export * from './loco/loco-function-set';
+export * from './loco/loco-function-toggle';
+export * from './loco/stop-all';
 export * from './programming/cv-read';
 export * from './programming/cv-write';
 export * from './programming/pom-cv-read';
 export * from './programming/pom-cv-write';
-export * from './session-hello';
-export * from './stop-all';
-export * from './trackpower-set';
-export * from './turnout-set';
+export * from './server/session-hello';
+export * from './switching/turnout-set';
+export * from './system/trackpower-set';

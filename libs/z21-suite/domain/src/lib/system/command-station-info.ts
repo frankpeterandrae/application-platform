@@ -6,7 +6,7 @@
 import { HardwareType } from '@application-platform/z21-shared';
 
 export type XBusVersion = {
-	xbusVersion?: number;
+	xBusVersion?: number;
 	xBusVersionString?: string;
 	cmdsId?: number;
 	raw?: number[];
@@ -37,14 +37,14 @@ export class CommandStationInfo {
 
 	/**
 	 * Set Command Station x-Bus Version Information
-	 * @param value - xBusVersion information
+	 * @param value - version information
 	 */
 	public setXBusVersion(value: XBusVersion): void {
 		this.xBusVersion = value;
 	}
 
 	/**
-	 * Check if xBusVersion information is available
+	 * Check if version information is available
 	 */
 	public hasXBusVersion(): boolean {
 		return !!this.xBusVersion;

@@ -7,7 +7,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXFirmwareVersionPayload } from './firmware-version';
 
-type FirmwareVersionEvent = Extract<Z21Event, { type: 'event.firmware.version' }>;
+type FirmwareVersionEvent = Extract<Z21Event, { type: 'event.z21.firmware.version' }>;
 
 describe('decodeLanXFirmwareVersionPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -25,7 +25,7 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 	function expectFirmwareVersion(event: FirmwareVersionEvent, major: number, minor: number): void {
 		expect(event.major).toBe(major);
 		expect(event.minor).toBe(minor);
-		expect(event.type).toBe('event.firmware.version');
+		expect(event.type).toBe('event.z21.firmware.version');
 	}
 
 	// Helper function to verify raw payload preservation

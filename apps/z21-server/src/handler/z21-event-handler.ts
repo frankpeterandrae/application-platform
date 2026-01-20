@@ -3,17 +3,17 @@
  * All rights reserved.
  */
 
-import { CommandStationInfo, LocoManager, TrackStatusManager } from '@application-platform/domain';
+import { TrackStatusManager, type CommandStationInfo, type LocoManager } from '@application-platform/domain';
 import type { ServerToClient } from '@application-platform/protocol';
+import type { Z21UdpDatagram } from '@application-platform/z21';
 import {
 	datasetsToEvents,
 	decodeSystemState,
 	deriveTrackFlagsFromSystemState,
 	parseZ21Datagram,
-	Z21UdpDatagram,
 	type DerivedTrackFlags
 } from '@application-platform/z21';
-import { HardwareType, LocoInfoEvent, Logger, Z21LanHeader, Z21StatusEvent } from '@application-platform/z21-shared';
+import { Z21LanHeader, type HardwareType, type LocoInfoEvent, type Logger, type Z21StatusEvent } from '@application-platform/z21-shared';
 
 import type { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
 import type { CvProgrammingService } from '../services/cv-programming-service';
@@ -24,8 +24,7 @@ export type BroadcastFn = (msg: ServerToClient) => void;
  * Handles inbound Z21 payloads, updates track status, and emits server-to-client events.
  */
 export class Z21EventHandler {
-	private readonly trackStatusManager: TrackStatusManager;
-
+	private trackStatusManager: TrackStatusManager;
 	/**
 	 * Creates a new Z21EventHandler.
 	 * @param broadcast - Function to broadcast messages to all WebSocket clients
@@ -45,6 +44,7 @@ export class Z21EventHandler {
 	) {
 		this.trackStatusManager = new TrackStatusManager();
 	}
+
 	/**
 	 * Dispatches incoming Z21 messages:
 	 * - serial: forwards raw serial events
@@ -64,9 +64,11 @@ export class Z21EventHandler {
 
 				this.broadcast({
 					type: 'system.message.z21.rx',
-					rawHex,
-					datasets: [{ kind: 'ds.serial', serial, from }],
-					events: [{ type: 'event.serial', serial }]
+					payload: {
+						rawHex,
+						datasets: [{ kind: 'ds.serial', serial, from }],
+						events: [{ type: 'event.serial', serial }]
+					}
 				});
 				return;
 			}
@@ -102,9 +104,11 @@ export class Z21EventHandler {
 
 				this.broadcast({
 					type: 'system.message.z21.rx',
-					rawHex,
-					datasets: [{ kind: 'system.state', from, payload: state }],
-					events: [{ type: 'system.state', state }]
+					payload: {
+						rawHex,
+						datasets: [{ kind: 'ds.system.state', from, payload: state }],
+						events: [{ type: 'event.system.state', state }]
+					}
 				});
 
 				// Derive track status as before
@@ -129,6 +133,7 @@ export class Z21EventHandler {
 				if (event.type === 'event.cv.result' || event.type === 'event.cv.nack') {
 					this.cvProgrammingService.onEvent(event);
 				}
+
 				switch (event.type) {
 					case 'event.system.state': {
 						const flags = deriveTrackFlagsFromSystemState({
@@ -143,7 +148,7 @@ export class Z21EventHandler {
 						break;
 					}
 					case 'event.turnout.info': {
-						this.broadcast({ type: 'switching.message.turnout.state', addr: event.addr, state: event.state });
+						this.broadcast({ type: 'switching.message.turnout.state', payload: { addr: event.addr, state: event.state } });
 						break;
 					}
 					case 'event.track.power': {
@@ -172,23 +177,27 @@ export class Z21EventHandler {
 						});
 						break;
 					}
-					case 'event.x.bus.version': {
+					case 'event.z21.x.bus.version': {
 						this.logger.info('z21.x.bus.version', event);
+
 						this.commandStationInfo.setXBusVersion(event);
 						if (event.cmdsId === 0x12 || event.cmdsId === 0x13) {
 							const hardwareType: HardwareType = event.cmdsId === 0x12 ? 'Z21_OLD' : 'z21_START';
 							this.commandStationInfo.setHardwareType(hardwareType);
-							this.broadcast({ type: 'system.message.hardware.info', hardwareType });
+							this.broadcast({ type: 'system.message.hardware.info', payload: { hardwareType } });
 						}
-						this.broadcast({ type: 'system.message.x.bus.version', version: event.xBusVersionString, cmdsId: event.cmdsId });
+						this.broadcast({
+							type: 'system.message.x.bus.version',
+							payload: { version: event.xBusVersionString, cmdsId: event.cmdsId }
+						});
 						this.csInfoOrchestrator.poke();
-						this.csInfoOrchestrator.ack('xbusVersion');
+						this.csInfoOrchestrator.ack('xBusVersion');
 						break;
 					}
-					case 'event.firmware.version': {
+					case 'event.z21.firmware.version': {
 						this.logger.info('z21.firmware.version', event);
 						this.commandStationInfo.setFirmwareVersion(event);
-						this.broadcast({ type: 'system.message.firmware.version', major: event.major, minor: event.minor });
+						this.broadcast({ type: 'system.message.firmware.version', payload: { major: event.major, minor: event.minor } });
 						this.csInfoOrchestrator.poke();
 						this.csInfoOrchestrator.ack('firmware');
 						break;
@@ -196,7 +205,7 @@ export class Z21EventHandler {
 					case 'event.z21.stopped': {
 						this.logger.info('z21.stopped', event);
 						this.trackStatusManager.setEmergencyStop(true, 'ds.lan.x');
-						this.broadcast({ type: 'system.message.stop' });
+						this.broadcast({ type: 'system.message.stop', payload: {} });
 						break;
 					}
 					case 'event.z21.hwinfo': {
@@ -208,10 +217,12 @@ export class Z21EventHandler {
 						this.commandStationInfo.setHardwareType(event.payload.hardwareType);
 						this.broadcast({
 							type: 'system.message.firmware.version',
-							major: event.payload.majorVersion,
-							minor: event.payload.minorVersion
+							payload: {
+								major: event.payload.majorVersion,
+								minor: event.payload.minorVersion
+							}
 						});
-						this.broadcast({ type: 'system.message.hardware.info', hardwareType: event.payload.hardwareType });
+						this.broadcast({ type: 'system.message.hardware.info', payload: { hardwareType: event.payload.hardwareType } });
 						this.csInfoOrchestrator.poke();
 						this.csInfoOrchestrator.ack('hwinfo');
 						break;
@@ -219,7 +230,7 @@ export class Z21EventHandler {
 					case 'event.z21.code': {
 						this.logger.info('z21.code', event);
 						this.commandStationInfo.setCode(event.code);
-						this.broadcast({ type: 'system.message.z21.code', code: event.code });
+						this.broadcast({ type: 'system.message.z21.code', payload: { code: event.code } });
 						this.csInfoOrchestrator.ack('code');
 						break;
 					}
@@ -237,7 +248,7 @@ export class Z21EventHandler {
 				}
 			}
 
-			this.logger.info('z21.rx', {
+			this.logger.info('system.message.z21.rx', {
 				from: dg.from,
 				len: dg.raw.length,
 				header,
@@ -249,6 +260,12 @@ export class Z21EventHandler {
 		}
 	}
 
+	/**
+	 * Logs unknown Z21 frames, LAN_X, or X-Bus messages.
+	 * @param scope - The scope of the unknown message
+	 * @param unknownKind - The type of unknown message
+	 * @param meta - Additional metadata including source address and hex data
+	 */
 	private logUnknown(
 		scope: 'frame' | 'lan_x' | 'x_bus',
 		unknownKind: string,
@@ -264,8 +281,10 @@ export class Z21EventHandler {
 		const status = this.trackStatusManager.updateFromXbusPower(on);
 		this.broadcast({
 			type: 'system.message.trackpower',
-			on,
-			short: status.short ?? false
+			payload: {
+				on,
+				short: status.short ?? false
+			}
 		});
 	}
 
@@ -276,34 +295,45 @@ export class Z21EventHandler {
 		const status = this.trackStatusManager.updateFromSystemState(flags);
 		this.broadcast({
 			type: 'system.message.trackpower',
-			on: status.powerOn ?? false,
-			short: status.short ?? false,
-			emergencyStop: status.emergencyStop
-		});
-	}
-
-	private updateTrackStatusFromLanX(z21StatusEvent: Z21StatusEvent): void {
-		const status = this.trackStatusManager.updateFromLanX(z21StatusEvent);
-		this.broadcast({
-			type: 'system.message.trackpower',
-			on: status.powerOn ?? false,
-			short: status.short ?? false,
-			emergencyStop: status.emergencyStop
+			payload: {
+				on: status.powerOn ?? false,
+				short: status.short ?? false,
+				emergencyStop: status.emergencyStop
+			}
 		});
 	}
 
 	/**
-	 * Updates locomotive information from Z21 event and notifies clients.
+	 * Updates track status from LAN_X command station status event.
+	 * @param csStatusEvent - Command station status event
+	 */
+	private updateTrackStatusFromLanX(csStatusEvent: Z21StatusEvent): void {
+		const status = this.trackStatusManager.updateFromLanX(csStatusEvent);
+		this.broadcast({
+			type: 'system.message.trackpower',
+			payload: {
+				on: status.powerOn ?? false,
+				short: status.short ?? false,
+				emergencyStop: status.emergencyStop
+			}
+		});
+	}
+
+	/**
+	 * Updates locomotive info from Z21 and broadcasts to clients.
+	 * @param locoInfo - Locomotive info event from Z21
 	 */
 	private updateLocoInfoFromZ21(locoInfo: LocoInfoEvent): void {
 		const locoState = this.locoManager.updateLocoInfoFromZ21(locoInfo);
 		this.broadcast({
 			type: 'loco.message.state',
-			addr: locoState.addr,
-			speed: locoState.state.speed,
-			dir: locoState.state.dir,
-			fns: locoState.state.fns,
-			estop: locoState.state.estop
+			payload: {
+				addr: locoState.addr,
+				speed: locoState.state.speed,
+				dir: locoState.state.dir,
+				fns: locoState.state.fns,
+				estop: locoState.state.estop
+			}
 		});
 	}
 }

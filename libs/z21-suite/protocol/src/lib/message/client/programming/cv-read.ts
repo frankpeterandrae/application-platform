@@ -3,10 +3,12 @@
  * All rights reserved.
  */
 
-export type CvRead = {
-	type: 'programming.command.cv.read';
-	payload: {
+import type { CommandMessage } from '../../message-types';
+
+export type CvRead = CommandMessage<
+	'programming',
+	'cv.read',
+	{
 		cvAdress: number;
-		requestId: string;
-	};
-};
+	}
+>;

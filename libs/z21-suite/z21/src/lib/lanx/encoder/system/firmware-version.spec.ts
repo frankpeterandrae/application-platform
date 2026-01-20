@@ -47,7 +47,7 @@ describe('encodeLanXGetFirmwareVersion', () => {
 		it('encodes correct message length', () => {
 			const result = encodeLanXGetFirmwareVersion();
 
-			expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+			expectFrameLength(result, 7); // len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1)
 		});
 	});
 
@@ -80,7 +80,7 @@ describe('encodeLanXGetFirmwareVersion', () => {
 		it('does not include any additional payload bytes', () => {
 			const result = encodeLanXGetFirmwareVersion();
 
-			// Frame should be: len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1) = 7 bytes
+			// Frame should be: len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1) = 7 bytes
 			expect(result.length).toBe(7);
 		});
 	});

@@ -14,14 +14,14 @@ describe('resolveLanXCommand', () => {
 	}
 
 	// Helper function to verify command resolution
-	function expectCommandResolution(xBusHeader: XHeader, data: Uint8Array, expectedCommand: LanXCommandKey): void {
-		const result = resolveLanXCommand(xBusHeader, data);
+	function expectCommandResolution(xHeader: XHeader, data: Uint8Array, expectedCommand: LanXCommandKey): void {
+		const result = resolveLanXCommand(xHeader, data);
 		expect(result).toBe(expectedCommand);
 	}
 
 	// Helper function to verify unknown command
-	function expectUnknownCommand(xBusHeader: XHeader, data: Uint8Array): void {
-		expectCommandResolution(xBusHeader, data, 'LAN_X_UNKNOWN_COMMAND');
+	function expectUnknownCommand(xHeader: XHeader, data: Uint8Array): void {
+		expectCommandResolution(xHeader, data, 'LAN_X_UNKNOWN_COMMAND');
 	}
 
 	describe('turnout info commands', () => {

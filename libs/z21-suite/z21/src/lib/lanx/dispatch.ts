@@ -16,8 +16,6 @@ export function resolveLanXCommand(xHeader: number, data: Uint8Array): LanXComma
 	const xBusCmd = data.length > 0 ? data[0] : undefined;
 	const len = data.length;
 
-	// eslint-disable-next-line no-console
-	console.log('Resolving LAN X command for header:', xHeader, 'cmd:', xBusCmd, 'length:', len);
 	// Special handling for TURNOUT_INFO which has two variants based on length
 	if (xHeader === XHeader.TURNOUT_INFO) {
 		// TURNOUT_INFO requires at least 3 bytes (xHeader + 2 address bytes)

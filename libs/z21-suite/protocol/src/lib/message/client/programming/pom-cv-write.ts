@@ -3,11 +3,14 @@
  * All rights reserved.
  */
 
-export type PomCvWrite = {
-	type: 'programming.command.pom.write';
-	payload: {
+import type { CommandMessage } from '../../message-types';
+
+export type PomCvWrite = CommandMessage<
+	'programming',
+	'pom.cv.write',
+	{
 		adress: number;
 		cvAddress: number;
 		cvValue: number;
-	};
-};
+	}
+>;

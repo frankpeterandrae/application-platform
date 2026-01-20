@@ -6,6 +6,7 @@
 import type http from 'node:http';
 
 import type { CommandStationInfo, LocoManager } from '@application-platform/domain';
+import { LocoState } from '@application-platform/protocol';
 import { clearAllMocks, Mock, type DeepMocked } from '@application-platform/shared-node-test';
 import { Z21BroadcastFlag, type Z21CommandService, type Z21Udp } from '@application-platform/z21';
 import type { Logger } from '@application-platform/z21-shared';
@@ -39,7 +40,12 @@ describe('Bootstrap session lifecycle', () => {
 		const mockHttpServer = Mock<http.Server>();
 
 		mockLocoManager.subscribeLocoInfoOnce.mockReturnValue(false);
-		mockLocoManager.stopAll.mockReturnValue([{ addr: 1, state: { speed: 0, dir: 'FWD', fns: [], estop: false } } as any]);
+		mockLocoManager.stopAll.mockReturnValue([
+			{
+				addr: 1,
+				state: { type: 'loco.message.state', payload: { addr: 1, speed: 0, dir: 'FWD', fns: [], estop: false } }
+			} as { addr: number; state: LocoState }
+		]);
 		mockLogger.child.mockReturnThis();
 		mockHttpServer.listen.mockImplementation((_p: number, cb?: () => void) => {
 			cb?.();

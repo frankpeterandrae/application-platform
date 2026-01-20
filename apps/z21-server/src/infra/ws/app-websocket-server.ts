@@ -22,14 +22,14 @@ export type DisconnectHandler = (ws: WsWebSocket) => void;
 
 /**
  * AppWsServer is a thin wrapper around the underlying WsServer.
- * It handles connection lifecycle events, sends a session.ready handshake,
+ * It handles connection lifecycle events, sends a server.replay.session.ready handshake,
  * validates inbound messages against the protocol, and delegates send/broadcast.
  */
 export class AppWsServer {
 	/**
 	 * Creates a new AppWsServer.
 	 * @param wsServer - The underlying WebSocket server adapter
-	 * @param logger - Logger instance for logging events
+	 * @param logger - Logger instance for logging
 	 */
 	constructor(
 		private readonly wsServer: WsServer,
@@ -38,7 +38,7 @@ export class AppWsServer {
 
 	/**
 	 * Registers connection handlers.
-	 * - On connect: sends a session.ready handshake and sets up message processing.
+	 * - On connect: sends a server.replay.session.ready handshake and sets up message processing.
 	 * - On message: parses JSON, validates via isClientToServerMessage, and forwards valid messages.
 	 * - On disconnect: invokes the optional onDisconnect callback.
 	 *
@@ -54,7 +54,8 @@ export class AppWsServer {
 				let msg: unknown;
 				try {
 					msg = JSON.parse(data as string);
-				} catch {
+				} catch (err) {
+					this.logger.debug('[ws] rejected', { reason: 'invalid json', err });
 					return;
 				}
 				if (!isClientToServerMessage(msg)) {
@@ -73,8 +74,11 @@ export class AppWsServer {
 			(ws) => {
 				this.sendToClient(ws, {
 					type: 'server.replay.session.ready',
-					protocolVersion: PROTOCOL_VERSION,
-					serverTime: new Date().toISOString()
+					payload: {
+						protocolVersion: PROTOCOL_VERSION,
+						serverTime: new Date().toISOString(),
+						requestId: '' // TODO: generate a requestId if needed
+					}
 				});
 
 				if (onConnect) {

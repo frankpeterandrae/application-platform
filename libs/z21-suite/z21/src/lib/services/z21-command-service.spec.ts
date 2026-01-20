@@ -656,7 +656,7 @@ describe('Z21CommandService', () => {
 	});
 
 	describe('getXBusVersion()', () => {
-		it('sends xBusVersion request command to UDP', () => {
+		it('sends version request command to UDP', () => {
 			services.service.getXBusVersion();
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
@@ -1076,7 +1076,7 @@ describe('Z21CommandService', () => {
 			expect(hwinfoBuffer).not.toEqual(firmwareBuffer);
 		});
 
-		it('sends different buffer than xBusVersion command', () => {
+		it('sends different buffer than version command', () => {
 			services.service.getHardwareInfo();
 			const hwinfoBuffer = services.udp.sendRaw.mock.calls[0][0];
 
@@ -1171,7 +1171,7 @@ describe('Z21CommandService', () => {
 			expect(codeBuffer).not.toEqual(firmwareBuffer);
 		});
 
-		it('sends different buffer than xBusVersion command', () => {
+		it('sends different buffer than version command', () => {
 			services.service.getCode();
 			const codeBuffer = services.udp.sendRaw.mock.calls[0][0];
 

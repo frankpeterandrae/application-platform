@@ -3,35 +3,35 @@
  * All rights reserved.
  */
 
-import type {
-	CvNack,
-	CvResult,
-	FeedbackChanged,
-	LocoEStopEvent,
-	LocoState,
-	SessionReady,
-	SystemCode,
-	SystemFirmwareVersion,
-	SystemHardwareInfo,
-	SystemStop,
-	SystemTrackPower,
-	SystemVersion,
-	TurnoutState_Message,
-	Z21Rx
-} from './index';
+import type { FeedbackChanged } from './feedback/feedback-changed';
+import type { LocoEStopEvent } from './loco/loco-estop-event';
+import type { LocoState } from './loco/loco-state';
+import type { SessionReady } from './server/session-ready';
+import type { TurnoutState_Message } from './switching/turnout-state';
+import type { SystemCode } from './system/system-code';
+import type { SystemFirmwareVersion } from './system/system-firmware-version';
+import type { SystemHardwareInfo } from './system/system-hardware-info';
+import type { SystemStop } from './system/system-stop';
+import type { SystemTrackPower } from './system/system-trackpower';
+import type { SystemVersion } from './system/system-version';
+import type { Z21Rx } from './system/z21-rx';
+
+import type { CvNack, CvResult } from './index';
 
 describe('Server Message Types', () => {
 	describe('SessionReady', () => {
 		it('accepts valid server.replay.session.ready message', () => {
 			const msg: SessionReady = {
 				type: 'server.replay.session.ready',
-
-				protocolVersion: '1.0.0',
-				serverTime: '2026-01-08T10:00:00Z'
+				payload: {
+					protocolVersion: '1.0.0',
+					serverTime: '2026-01-08T10:00:00Z',
+					requestId: 'abc-123'
+				}
 			};
 			expect(msg.type).toBe('server.replay.session.ready');
-			expect(msg.protocolVersion).toBe('1.0.0');
-			expect(msg.serverTime).toBe('2026-01-08T10:00:00Z');
+			expect(msg.payload.protocolVersion).toBe('1.0.0');
+			expect(msg.payload.serverTime).toBe('2026-01-08T10:00:00Z');
 		});
 	});
 
@@ -39,34 +39,37 @@ describe('Server Message Types', () => {
 		it('accepts track power on without short', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
-
-				on: true,
-				short: false
+				payload: {
+					on: true,
+					short: false
+				}
 			};
-			expect(msg.on).toBe(true);
-			expect(msg.short).toBe(false);
+			expect(msg.payload.on).toBe(true);
+			expect(msg.payload.short).toBe(false);
 		});
 
 		it('accepts track power off with short', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
-
-				on: false,
-				short: true
+				payload: {
+					on: false,
+					short: true
+				}
 			};
-			expect(msg.on).toBe(false);
-			expect(msg.short).toBe(true);
+			expect(msg.payload.on).toBe(false);
+			expect(msg.payload.short).toBe(true);
 		});
 
 		it('accepts track power with emergency stop', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
-
-				on: false,
-				short: false,
-				emergencyStop: true
+				payload: {
+					on: false,
+					short: false,
+					emergencyStop: true
+				}
 			};
-			expect(msg.emergencyStop).toBe(true);
+			expect(msg.payload.emergencyStop).toBe(true);
 		});
 	});
 
@@ -74,43 +77,46 @@ describe('Server Message Types', () => {
 		it('accepts loco state with speed and direction', () => {
 			const msg: LocoState = {
 				type: 'loco.message.state',
-
-				addr: 3,
-				speed: 50,
-				dir: 'FWD',
-				fns: { 0: true, 1: false },
-				estop: false
+				payload: {
+					addr: 3,
+					speed: 50,
+					dir: 'FWD',
+					fns: { 0: true, 1: false },
+					estop: false
+				}
 			};
-			expect(msg.addr).toBe(3);
-			expect(msg.speed).toBe(50);
-			expect(msg.dir).toBe('FWD');
-			expect(msg.fns[0]).toBe(true);
+			expect(msg.payload.addr).toBe(3);
+			expect(msg.payload.speed).toBe(50);
+			expect(msg.payload.dir).toBe('FWD');
+			expect(msg.payload.fns[0]).toBe(true);
 		});
 
 		it('accepts loco state with emergency stop', () => {
 			const msg: LocoState = {
 				type: 'loco.message.state',
-
-				addr: 1845,
-				speed: 0,
-				dir: 'FWD',
-				fns: {},
-				estop: true
+				payload: {
+					addr: 1845,
+					speed: 0,
+					dir: 'FWD',
+					fns: {},
+					estop: true
+				}
 			};
-			expect(msg.estop).toBe(true);
+			expect(msg.payload.estop).toBe(true);
 		});
 
 		it('accepts loco state with multiple functions', () => {
 			const msg: LocoState = {
 				type: 'loco.message.state',
-
-				addr: 3,
-				speed: 0,
-				dir: 'REV',
-				fns: { 0: true, 1: true, 7: false, 28: true },
-				estop: false
+				payload: {
+					addr: 3,
+					speed: 0,
+					dir: 'REV',
+					fns: { 0: true, 1: true, 7: false, 28: true },
+					estop: false
+				}
 			};
-			expect(Object.keys(msg.fns).length).toBe(4);
+			expect(Object.keys(msg.payload.fns).length).toBe(4);
 		});
 	});
 
@@ -118,9 +124,9 @@ describe('Server Message Types', () => {
 		it('accepts loco emergency stop event', () => {
 			const msg: LocoEStopEvent = {
 				type: 'loco.message.eStop',
-				addr: 1845
+				payload: { addr: 1845 }
 			};
-			expect(msg.addr).toBe(1845);
+			expect(msg.payload.addr).toBe(1845);
 		});
 	});
 
@@ -128,31 +134,34 @@ describe('Server Message Types', () => {
 		it('accepts turnout state straight', () => {
 			const msg: TurnoutState_Message = {
 				type: 'switching.message.turnout.state',
-
-				addr: 12,
-				state: 'STRAIGHT'
+				payload: {
+					addr: 12,
+					state: 'STRAIGHT'
+				}
 			};
-			expect(msg.state).toBe('STRAIGHT');
+			expect(msg.payload.state).toBe('STRAIGHT');
 		});
 
 		it('accepts turnout state diverging', () => {
 			const msg: TurnoutState_Message = {
 				type: 'switching.message.turnout.state',
-
-				addr: 12,
-				state: 'DIVERGING'
+				payload: {
+					addr: 12,
+					state: 'DIVERGING'
+				}
 			};
-			expect(msg.state).toBe('DIVERGING');
+			expect(msg.payload.state).toBe('DIVERGING');
 		});
 
 		it('accepts turnout state unknown', () => {
 			const msg: TurnoutState_Message = {
 				type: 'switching.message.turnout.state',
-
-				addr: 12,
-				state: 'UNKNOWN'
+				payload: {
+					addr: 12,
+					state: 'UNKNOWN'
+				}
 			};
-			expect(msg.state).toBe('UNKNOWN');
+			expect(msg.payload.state).toBe('UNKNOWN');
 		});
 	});
 
@@ -160,35 +169,37 @@ describe('Server Message Types', () => {
 		it('accepts feedback changed message with source, address and value', () => {
 			const msg: FeedbackChanged = {
 				type: 'feedback.message.changed',
-
-				source: 'RBUS',
-				addr: 1,
-				value: 1
+				payload: {
+					source: 'RBUS',
+					addr: 1,
+					value: 1
+				}
 			};
-			expect(msg.source).toBe('RBUS');
-			expect(msg.addr).toBe(1);
-			expect(msg.value).toBe(1);
+			expect(msg.payload.source).toBe('RBUS');
+			expect(msg.payload.addr).toBe(1);
+			expect(msg.payload.value).toBe(1);
 		});
 
 		it('accepts feedback changed with value 0', () => {
 			const msg: FeedbackChanged = {
 				type: 'feedback.message.changed',
-
-				source: 'CAN',
-				addr: 5,
-				value: 0
+				payload: {
+					source: 'CAN',
+					addr: 5,
+					value: 0
+				}
 			};
-			expect(msg.value).toBe(0);
+			expect(msg.payload.value).toBe(0);
 		});
 
 		it('accepts different source types', () => {
-			const rbus: FeedbackChanged = { type: 'feedback.message.changed', source: 'RBUS', addr: 1, value: 1 };
-			const can: FeedbackChanged = { type: 'feedback.message.changed', source: 'CAN', addr: 2, value: 0 };
-			const loconet: FeedbackChanged = { type: 'feedback.message.changed', source: 'LOCONET', addr: 3, value: 1 };
+			const rbus: FeedbackChanged = { type: 'feedback.message.changed', payload: { source: 'RBUS', addr: 1, value: 1 } };
+			const can: FeedbackChanged = { type: 'feedback.message.changed', payload: { source: 'CAN', addr: 2, value: 0 } };
+			const loconet: FeedbackChanged = { type: 'feedback.message.changed', payload: { source: 'LOCONET', addr: 3, value: 1 } };
 
-			expect(rbus.source).toBe('RBUS');
-			expect(can.source).toBe('CAN');
-			expect(loconet.source).toBe('LOCONET');
+			expect(rbus.payload.source).toBe('RBUS');
+			expect(can.payload.source).toBe('CAN');
+			expect(loconet.payload.source).toBe('LOCONET');
 		});
 	});
 
@@ -196,14 +207,15 @@ describe('Server Message Types', () => {
 		it('accepts z21 rx message with datasets and events', () => {
 			const msg: Z21Rx = {
 				type: 'system.message.z21.rx',
-
-				rawHex: '0x070040006101',
-				datasets: [{ kind: 'ds.x.bus' }],
-				events: [{ type: 'event.track.power' }]
+				payload: {
+					rawHex: '0x070040006101',
+					datasets: [{ kind: 'ds.x.bus' }],
+					events: [{ type: 'event.track.power' }]
+				}
 			};
-			expect(msg.rawHex).toBe('0x070040006101');
-			expect(msg.datasets.length).toBe(1);
-			expect(msg.events.length).toBe(1);
+			expect(msg.payload.rawHex).toBe('0x070040006101');
+			expect(msg.payload.datasets.length).toBe(1);
+			expect(msg.payload.events.length).toBe(1);
 		});
 	});
 
@@ -211,19 +223,21 @@ describe('Server Message Types', () => {
 		it('accepts x-bus version message', () => {
 			const msg: SystemVersion = {
 				type: 'system.message.x.bus.version',
-
-				version: '1.9',
-				cmdsId: 0x12
+				payload: {
+					version: '1.9',
+					cmdsId: 0x12
+				}
 			};
-			expect(msg.version).toBe('1.9');
-			expect(msg.cmdsId).toBe(0x12);
+			expect(msg.payload.version).toBe('1.9');
+			expect(msg.payload.cmdsId).toBe(0x12);
 		});
 	});
 
 	describe('SystemStop', () => {
 		it('accepts system stop message', () => {
 			const msg: SystemStop = {
-				type: 'system.message.stop'
+				type: 'system.message.stop',
+				payload: {}
 			};
 			expect(msg.type).toBe('system.message.stop');
 		});
@@ -233,12 +247,13 @@ describe('Server Message Types', () => {
 		it('accepts firmware version message', () => {
 			const msg: SystemFirmwareVersion = {
 				type: 'system.message.firmware.version',
-
-				major: 1,
-				minor: 43
+				payload: {
+					major: 1,
+					minor: 43
+				}
 			};
-			expect(msg.major).toBe(1);
-			expect(msg.minor).toBe(43);
+			expect(msg.payload.major).toBe(1);
+			expect(msg.payload.minor).toBe(43);
 		});
 	});
 
@@ -246,19 +261,21 @@ describe('Server Message Types', () => {
 		it('accepts hardware info for Z21', () => {
 			const msg: SystemHardwareInfo = {
 				type: 'system.message.hardware.info',
-
-				hardwareType: 'Z21'
+				payload: {
+					hardwareType: 'Z21'
+				}
 			};
-			expect(msg.hardwareType).toBe('Z21');
+			expect(msg.payload.hardwareType).toBe('Z21');
 		});
 
 		it('accepts hardware info for z21_START', () => {
 			const msg: SystemHardwareInfo = {
 				type: 'system.message.hardware.info',
-
-				hardwareType: 'z21_START'
+				payload: {
+					hardwareType: 'z21_START'
+				}
 			};
-			expect(msg.hardwareType).toBe('z21_START');
+			expect(msg.payload.hardwareType).toBe('z21_START');
 		});
 	});
 
@@ -266,10 +283,11 @@ describe('Server Message Types', () => {
 		it('accepts system code message', () => {
 			const msg: SystemCode = {
 				type: 'system.message.z21.code',
-
-				code: 2
+				payload: {
+					code: 2
+				}
 			};
-			expect(msg.code).toBe(2);
+			expect(msg.payload.code).toBe(2);
 		});
 	});
 

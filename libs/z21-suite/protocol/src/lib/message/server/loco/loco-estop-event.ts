@@ -3,10 +3,15 @@
  * All rights reserved.
  */
 
+import type { Message } from '../../message-types';
+
 /**
  * Notifies that a locomotive has entered emergency stop state.
  */
-export type LocoEStopEvent = {
-	type: 'loco.message.eStop';
-	addr: number;
-};
+export type LocoEStopEvent = Message<
+	'loco',
+	'eStop',
+	{
+		addr: number;
+	}
+>;

@@ -15,7 +15,7 @@ import { XHeader } from './x-header';
  */
 export const LAN_X_COMMANDS = {
 	/**
-	 * Get xBusVersion of the Z21 central.
+	 * Get version of the Z21 central.
 	 *
 	 */
 	LAN_X_GET_VERSION: {
@@ -408,14 +408,14 @@ export const LAN_X_COMMANDS = {
 		xHeader: XHeader.LOCO_INFO_ANSWER
 	} as const satisfies LanXCommand,
 	/**
-	 * Get firmware xBusVersion of the Z21 central
+	 * Get firmware version of the Z21 central
 	 */
 	LAN_X_GET_FIRMWARE_VERSION: {
 		xHeader: XHeader.FIRMWARE_VERSION,
 		xBusCmd: XBusCmd.FIRMWARE_VERSION
 	} as const satisfies LanXCommand,
 	/**
-	 * Firmware xBusVersion response
+	 * Firmware version response
 	 */
 	LAN_X_GET_FIRMWARE_VERSION_ANSWER: {
 		xHeader: XHeader.FIRMWARE_VERSION_ANSWER,
