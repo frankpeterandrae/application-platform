@@ -15,7 +15,8 @@ import { XHeader } from './x-header';
  */
 export const LAN_X_COMMANDS = {
 	/**
-	 * Get version of the Z21 central.
+	 * Get xBusVersion of the Z21 central.
+	 *
 	 */
 	LAN_X_GET_VERSION: {
 		xHeader: XHeader.STATUS,
@@ -54,7 +55,7 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Read CV register.
-	 * TODO: add handling
+	 * Format: 23 11 <CV_MSB> <CV_LSB> <XOR>
 	 */
 	LAN_X_CV_READ: {
 		xHeader: XHeader.CV_READ,
@@ -70,7 +71,7 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Write CV register.
-	 * TODO: add handling
+	 * Format: 24 12 <CV_MSB> <CV_LSB> <VALUE> <XOR>
 	 */
 	LAN_X_CV_WRITE: {
 		xHeader: XHeader.CV_WRITE,
@@ -153,7 +154,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * CV read NACK with short circuit.
-	 * TODO: add handling
 	 */
 	LAN_X_CV_NACK_SC: {
 		xHeader: XHeader.BROADCAST,
@@ -161,7 +161,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * CV read NACK.
-	 * TODO: add handling
 	 */
 	LAN_X_CV_NACK: {
 		xHeader: XHeader.BROADCAST,

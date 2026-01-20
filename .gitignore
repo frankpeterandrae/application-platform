@@ -57,3 +57,4 @@ __screenshots__/
 /test-result/
 /playwright-report/
 /test-results/
+**/config.json

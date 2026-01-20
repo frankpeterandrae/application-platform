@@ -123,7 +123,7 @@ describe('datasetsToEvents', () => {
 	});
 
 	describe('x.bus datasets', () => {
-		it('emits cs.status for status changed dataset', () => {
+		it('emits z21.status for status changed dataset', () => {
 			const xlan = LAN_X_COMMANDS.LAN_X_STATUS_CHANGED;
 			const dataset = makeXBusDataset(xlan.xHeader, [xlan.xBusCmd!, 0xaa]);
 
@@ -176,7 +176,7 @@ describe('datasetsToEvents', () => {
 	});
 
 	describe('hwinfo datasets', () => {
-		it('emits cs.hwinfo with decoded hardware type and firmware version', () => {
+		it('emits z21.hwinfo with decoded hardware type and firmware version', () => {
 			const dataset = makeHwInfoDataset(0x00000200, 0x00000120);
 
 			const events = datasetsToEvents(dataset);
@@ -194,7 +194,7 @@ describe('datasetsToEvents', () => {
 			]);
 		});
 
-		it('emits cs.hwinfo for Z21_NEW hardware type', () => {
+		it('emits z21.hwinfo for Z21_NEW hardware type', () => {
 			const dataset = makeHwInfoDataset(0x00000201, 0x00000230);
 
 			const events = datasetsToEvents(dataset);
@@ -207,7 +207,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('emits cs.hwinfo for Z21_XL hardware type', () => {
+		it('emits z21.hwinfo for Z21_XL hardware type', () => {
 			const dataset = makeHwInfoDataset(0x00000211, 0x00000145);
 
 			const events = datasetsToEvents(dataset);
@@ -220,7 +220,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('emits cs.hwinfo with UNKNOWN hardware type for unrecognized type', () => {
+		it('emits z21.hwinfo with UNKNOWN hardware type for unrecognized type', () => {
 			const dataset = makeHwInfoDataset(0x99999999, 0x00000100);
 
 			const events = datasetsToEvents(dataset);
@@ -231,7 +231,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('emits cs.hwinfo with minimum firmware version', () => {
+		it('emits z21.hwinfo with minimum firmware version', () => {
 			const dataset = makeHwInfoDataset(0x00000200, 0x00000000);
 
 			const events = datasetsToEvents(dataset);
@@ -243,7 +243,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('emits cs.hwinfo with maximum firmware version 9.99', () => {
+		it('emits z21.hwinfo with maximum firmware version 9.99', () => {
 			const dataset = makeHwInfoDataset(0x00000200, 0x00000999);
 
 			const events = datasetsToEvents(dataset);
@@ -255,7 +255,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('includes raw data in cs.hwinfo event', () => {
+		it('includes raw data in z21.hwinfo event', () => {
 			const dataset = makeHwInfoDataset(0x00000201, 0x00000120);
 
 			const events = datasetsToEvents(dataset);
@@ -276,7 +276,7 @@ describe('datasetsToEvents', () => {
 	});
 
 	describe('code datasets', () => {
-		it('emits cs.code with code value 0', () => {
+		it('emits z21.code with code value 0', () => {
 			const dataset = makeCodeDataset(0);
 
 			const events = datasetsToEvents(dataset);
@@ -290,7 +290,7 @@ describe('datasetsToEvents', () => {
 			]);
 		});
 
-		it('emits cs.code with code value 255', () => {
+		it('emits z21.code with code value 255', () => {
 			const dataset = makeCodeDataset(255);
 
 			const events = datasetsToEvents(dataset);
@@ -304,7 +304,7 @@ describe('datasetsToEvents', () => {
 			]);
 		});
 
-		it('emits cs.code with arbitrary code value', () => {
+		it('emits z21.code with arbitrary code value', () => {
 			const dataset = makeCodeDataset(42);
 
 			const events = datasetsToEvents(dataset);
@@ -316,7 +316,7 @@ describe('datasetsToEvents', () => {
 			}
 		});
 
-		it('includes raw data in cs.code event', () => {
+		it('includes raw data in z21.code event', () => {
 			const dataset = makeCodeDataset(123);
 
 			const events = datasetsToEvents(dataset);

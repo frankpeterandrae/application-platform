@@ -15,7 +15,7 @@ import { LogLevel } from '@application-platform/z21-shared';
  * - safety: runtime safety features
  */
 export type ServerConfig = {
-	dev?: { subscribeLocoAddr: number; logLevel?: LogLevel };
+	dev?: { subscribeLocoAddr?: number; logLevel?: LogLevel; pretty?: boolean };
 	httpPort: number;
 	z21: { host: string; udpPort: number; listenPort?: number; debug?: boolean };
 	safety: { stopAllOnClientDisconnect: boolean };

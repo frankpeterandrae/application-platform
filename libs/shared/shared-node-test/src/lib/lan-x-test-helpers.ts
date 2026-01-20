@@ -6,7 +6,6 @@
 /**
  * Shared test helper functions for LAN-X encode tests.
  * Eliminates code duplication across multiple test files.
- * These helpers are now in @z21-suite/shared to be reusable across all test suites.
  */
 import { expect } from 'vitest';
 /**

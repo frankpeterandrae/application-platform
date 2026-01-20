@@ -138,7 +138,7 @@ describe('decodeHwInfo', () => {
 	});
 
 	describe('event structure', () => {
-		it('always returns event with type cs.hwinfo', () => {
+		it('always returns event with type z21.hwinfo', () => {
 			const result = decode(0x00000200, 0x00000120);
 
 			expect(result.type).toBe('event.z21.hwinfo');

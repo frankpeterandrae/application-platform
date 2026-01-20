@@ -20,6 +20,8 @@ import {
 	encodeLanXSystemStatus,
 	encodeLocoDrive128
 } from '../lanx/encoder';
+import { encodeLanXCvRead } from '../lanx/encoder/programming/cv-read';
+import { encodeLanXCvWrite } from '../lanx/encoder/programming/cv-write';
 import { type Z21Udp } from '../udp/udp';
 
 /**
@@ -205,6 +207,27 @@ export class Z21CommandService {
 	public getCode(): void {
 		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_CODE);
 		this.logger.debug('[z21] tx LAN_GET_CODE', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Sends a CV read command to the Z21.
+	 * @param cvAddress - CV address to read (1-1024)
+	 */
+	public sendCvRead(cvAddress: number): void {
+		const buf = encodeLanXCvRead(cvAddress);
+		this.logger.debug('[z21] tx CV_READ', { cvAddress, hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
+
+	/**
+	 * Sends a CV write command to the Z21.
+	 * @param cvAddress - CV address to write (1-1024)
+	 * @param cvValue - CV value to write (0-255)
+	 */
+	public sendCvWrite(cvAddress: number, cvValue: number): void {
+		const buf = encodeLanXCvWrite(cvAddress, cvValue);
+		this.logger.debug('[z21] tx CV_WRITE', { cvAddress, cvValue, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 }

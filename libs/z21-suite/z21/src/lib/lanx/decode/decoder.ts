@@ -10,6 +10,8 @@ import { resolveLanXCommand } from '../dispatch';
 
 import { decodeLanXFirmwareVersionPayload } from './firmware-version';
 import { decodeLanXLocoInfoPayload } from './loco-info';
+import { decodeLanXCvNackPayload } from './programming/cv-nack';
+import { decodeLanXCvResultPayload } from './programming/cv-result';
 import { decodeLanXStatusChangedPayload } from './status-changed';
 import { decodeLanXStoppedPayload } from './stopped';
 import { decodeLanXTrackPowerPayload } from './track-power';
@@ -25,6 +27,9 @@ const DECODERS: Partial<Record<LanXCommandKey, LanXPayloadDecoder>> = {
 	LAN_X_BC_TRACK_POWER_OFF: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_POWER_ON: (cmd) => decodeLanXTrackPowerPayload(cmd),
 	LAN_X_BC_TRACK_SHORT_CIRCUIT: (cmd) => decodeLanXTrackPowerPayload(cmd),
+	LAN_X_CV_NACK: (cmd) => decodeLanXCvNackPayload(cmd),
+	LAN_X_CV_NACK_SC: (cmd) => decodeLanXCvNackPayload(cmd),
+	LAN_X_CV_RESULT: (_, payload) => decodeLanXCvResultPayload(payload),
 	LAN_X_GET_FIRMWARE_VERSION_ANSWER: (_, payload) => decodeLanXFirmwareVersionPayload(payload),
 	LAN_X_GET_VERSION_ANSWER: (_, payload) => decodeLanXVersionPayload(payload),
 	LAN_X_LOCO_INFO: (_, payload) => decodeLanXLocoInfoPayload(payload),

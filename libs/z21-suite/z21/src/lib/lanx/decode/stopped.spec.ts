@@ -29,7 +29,7 @@ describe('decodeLanXStoppedPayload', () => {
 	}
 
 	describe('event structure', () => {
-		it('returns cs.stopped event', () => {
+		it('returns z21.stopped event', () => {
 			const events = decodeLanXStoppedPayload() as Z21StoppedEvent[];
 
 			expect(events).toEqual([{ type: 'event.z21.stopped' }]);

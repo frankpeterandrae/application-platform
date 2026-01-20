@@ -11,8 +11,9 @@ import type { WebSocket as WsWebSocket } from 'ws';
 /**
  * Callback signature for handling validated client messages.
  * @param msg - A validated client-to-server message
+ * @param ws - The WebSocket connection that sent the message
  */
-export type MessageHandler = (msg: ClientToServer) => void;
+export type MessageHandler = (msg: ClientToServer, ws: WsWebSocket) => void | Promise<void>;
 
 /**
  * Callback signature for handling client disconnects.
@@ -47,7 +48,7 @@ export class AppWsServer {
 	 */
 	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wsServer.onConnection(
-			(data) => {
+			(data, ws) => {
 				// Parse and validate message
 				this.logger.debug('[ws] raw', { data });
 				let msg: unknown;
@@ -62,7 +63,7 @@ export class AppWsServer {
 				}
 				this.logger.info('[ws] accepted', { type: msg.type });
 
-				onMessage(msg);
+				void onMessage(msg, ws);
 			},
 			(ws) => {
 				if (onDisconnect) {

@@ -7,12 +7,17 @@ import type { LocoManager } from '@application-platform/domain';
 import { type ClientToServer, type ServerToClient } from '@application-platform/protocol';
 import { LocoFunctionSwitchType, type Z21CommandService } from '@application-platform/z21';
 import { Direction, TurnoutState } from '@application-platform/z21-shared';
+import type { WebSocket as WsWebSocket } from 'ws';
+
+import type { CvProgrammingService } from '../services/cv-programming-service';
 
 /**
  * Function signature used to emit server-to-client protocol messages.
  * @param msg - The message to broadcast to connected clients
  */
 export type BroadcastFn = (msg: ServerToClient) => void;
+
+export type ReplyFn = (ws: WsWebSocket, msg: ServerToClient) => void;
 
 /**
  * Handles validated client-to-server messages and coordinates actions
@@ -29,11 +34,15 @@ export class ClientMessageHandler {
 	 * Creates a new ClientMessageHandler.
 	 * @param locoManager - Manages locomotive state (speed, direction, functions)
 	 * @param z21Service - Z21 UDP transport used for signaling/demo pings
+	 * @param cvProgrammingService - Service for CV programming operations
+	 * @param reply - Function to reply to specific WebSocket clients
 	 * @param broadcast - Function to emit server-to-client messages
 	 */
 	constructor(
 		private readonly locoManager: LocoManager,
 		private readonly z21Service: Z21CommandService,
+		private cvProgrammingService: CvProgrammingService,
+		private reply: ReplyFn,
 		private readonly broadcast: BroadcastFn
 	) {}
 
@@ -49,8 +58,9 @@ export class ClientMessageHandler {
 	 * - switching.command.turnout.set: sets turnout state and notifies clients
 	 *
 	 * @param msg - The client-to-server protocol message
+	 * @param ws - The WebSocket connection from which the message originated
 	 */
-	public handle(msg: ClientToServer): void {
+	public async handle(msg: ClientToServer, ws: WsWebSocket): Promise<void> {
 		switch (msg.type) {
 			case 'server.command.session.hello': {
 				// ignore for now
@@ -135,6 +145,64 @@ export class ClientMessageHandler {
 
 			case 'loco.command.stop.all': {
 				this.z21Service.setStop();
+				break;
+			}
+
+			case 'programming.command.cv.read': {
+				const requestId = msg.payload.requestId as string;
+				try {
+					const res = await this.cvProgrammingService.readCv(msg.payload.cvAdress);
+					this.reply(ws, {
+						type: 'programming.replay.cv.result',
+						payload: {
+							requestId,
+							cvAdress: res.cvAdress,
+							cvValue: res.cvValue
+						}
+					});
+				} catch (err) {
+					this.reply(ws, {
+						type: 'programming.replay.cv.nack',
+						payload: {
+							requestId,
+							error: (err as Error).message
+						}
+					});
+				}
+				break;
+			}
+
+			case 'programming.command.cv.write': {
+				const requestId = msg.payload.requestId as string;
+				try {
+					await this.cvProgrammingService.writeCv(msg.payload.cvAdress, msg.payload.cvValue);
+					this.reply(ws, {
+						type: 'programming.replay.cv.result',
+						payload: {
+							requestId,
+							cvAdress: msg.payload.cvAdress,
+							cvValue: msg.payload.cvValue
+						}
+					});
+				} catch (err) {
+					this.reply(ws, {
+						type: 'programming.replay.cv.nack',
+						payload: {
+							requestId,
+							error: (err as Error).message
+						}
+					});
+				}
+				break;
+			}
+
+			case 'programming.command.pom.read': {
+				// Not implemented
+				break;
+			}
+
+			case 'programming.command.pom.write': {
+				// Not implemented
 				break;
 			}
 		}

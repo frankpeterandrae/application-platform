@@ -157,7 +157,7 @@ describe('decodeLanXVersionPayload', () => {
 			expectEventArray(events);
 		});
 
-		it('event always has type cs.x.bus.version', () => {
+		it('event always has type x.bus.version', () => {
 			const event = extractVersionEvent(makePayload(0x40, 0xff));
 
 			expect(event.type).toBe('event.x.bus.version');

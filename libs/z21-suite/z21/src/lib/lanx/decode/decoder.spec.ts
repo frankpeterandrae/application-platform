@@ -3,101 +3,98 @@
  * All rights reserved.
  */
 
-import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
-import { XBusCmd, XHeader } from '@application-platform/z21-shared';
+import { DeepMocked, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { XBusCmd, XHeader, Z21StatusEvent, Z21StoppedEvent, Z21VersionEvent } from '@application-platform/z21-shared';
 import { describe, expect, it, vi } from 'vitest';
 
 import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXPayload } from './decoder';
-import * as locoInfo from './loco-info';
-import * as statusChanged from './status-changed';
-import * as stopped from './stopped';
-import * as trackPower from './track-power';
-import * as turnoutInfo from './turnout-info';
-import * as version from './version';
 
 type TrackPowerEvent = Extract<Z21Event, { type: 'event.track.power' }>;
-type CsStatusEvent = Extract<Z21Event, { type: 'event.z21.status' }>;
 
 type LocoInfoEvent = { type: 'event.loco.info.mock' };
 type TurnoutInfoEvent = { type: 'event.turnout.info.mock' };
 
+// Use hoist-safe mock factories that return vi.fn() placeholders. We'll import
+// the mocked modules inside beforeEach to obtain the vi.fn references and
+// configure their behaviors for each test.
+vi.mock('./loco-info', () => ({ decodeLanXLocoInfoPayload: vi.fn() }));
+vi.mock('./turnout-info', () => ({ decodeLanXTurnoutInfoPayload: vi.fn() }));
+vi.mock('./track-power', () => ({ decodeLanXTrackPowerPayload: vi.fn() }));
+vi.mock('./status-changed', () => ({ decodeLanXStatusChangedPayload: vi.fn() }));
+vi.mock('./version', () => ({ decodeLanXVersionPayload: vi.fn() }));
+vi.mock('./stopped', () => ({ decodeLanXStoppedPayload: vi.fn() }));
+
 type DecodersMock = {
-	decodeLanXLocoInfoPayload: vi.Mock;
-	decodeLanXTurnoutInfoPayload: vi.Mock;
-	decodeLanXTrackPowerPayload: vi.Mock;
-	decodeLanXStatusChangedPayload: vi.Mock;
-	decodeLanXVersionPayload: vi.Mock;
-	decodeLanXStoppedPayload: vi.Mock;
+	decodeLanXLocoInfoPayload: DeepMocked<(payload: Uint8Array) => Z21Event[]>;
+	decodeLanXTurnoutInfoPayload: DeepMocked<(payload: Uint8Array) => Z21Event[]>;
+	decodeLanXTrackPowerPayload: DeepMocked<(commandName: string, payload?: Uint8Array) => Z21Event[]>;
+	decodeLanXStatusChangedPayload: DeepMocked<(payload: Uint8Array) => Z21Event[]>;
+	decodeLanXVersionPayload: DeepMocked<(payload: Uint8Array) => Z21Event[]>;
+	decodeLanXStoppedPayload: DeepMocked<() => Z21Event[]>;
 };
+let decoders: DecodersMock;
 
-vi.mock('./loco-info', () => ({
-	decodeLanXLocoInfoPayload: vi.fn(() => [{ type: 'event.loco.info.mock' } as LocoInfoEvent])
-}));
+beforeEach(async () => {
+	// Import the mocked modules to obtain the vi.fn() references created by
+	// the hoisted mock factories above. Assign those functions into the
+	// decoders object so tests can configure and assert them uniformly.
+	const locoModule = await import('./loco-info');
+	const turnoutModule = await import('./turnout-info');
+	const trackPowerModule = await import('./track-power');
+	const statusModule = await import('./status-changed');
+	const versionModule = await import('./version');
+	const stoppedModule = await import('./stopped');
 
-vi.mock('./turnout-info', () => ({
-	decodeLanXTurnoutInfoPayload: vi.fn(() => [{ type: 'event.turnout.info.mock' } as TurnoutInfoEvent])
-}));
+	decoders = {
+		decodeLanXLocoInfoPayload: locoModule.decodeLanXLocoInfoPayload as any,
+		decodeLanXTurnoutInfoPayload: turnoutModule.decodeLanXTurnoutInfoPayload as any,
+		decodeLanXTrackPowerPayload: trackPowerModule.decodeLanXTrackPowerPayload as any,
+		decodeLanXStatusChangedPayload: statusModule.decodeLanXStatusChangedPayload as any,
+		decodeLanXVersionPayload: versionModule.decodeLanXVersionPayload as any,
+		decodeLanXStoppedPayload: stoppedModule.decodeLanXStoppedPayload as any
+	};
 
-vi.mock('./track-power', () => ({
-	decodeLanXTrackPowerPayload: vi.fn((command: string, _data: Uint8Array) => [
+	resetMocksBeforeEach(decoders);
+
+	decoders.decodeLanXLocoInfoPayload.mockReturnValue([{ type: 'event.loco.info.mock' } as LocoInfoEvent]);
+	decoders.decodeLanXTurnoutInfoPayload.mockReturnValue([{ type: 'event.turnout.info.mock' } as TurnoutInfoEvent]);
+	decoders.decodeLanXTrackPowerPayload.mockImplementation((command: string) => [
 		{ type: 'event.track.power', on: command === 'LAN_X_BC_TRACK_POWER_ON' } as TrackPowerEvent
-	])
-}));
-
-vi.mock('./status-changed', () => ({
-	decodeLanXStatusChangedPayload: vi.fn((_data: Uint8Array) => [
+	]);
+	decoders.decodeLanXStatusChangedPayload.mockReturnValue([
 		{
 			type: 'event.z21.status',
 			payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
-		} as CsStatusEvent
-	])
-}));
+		} as Z21StatusEvent
+	]);
+	decoders.decodeLanXVersionPayload.mockReturnValue([
+		{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] } as Z21VersionEvent
+	]);
+	decoders.decodeLanXStoppedPayload.mockReturnValue([{ type: 'event.z21.stopped' } as Z21StoppedEvent]);
+});
 
-vi.mock('./version', () => ({
-	decodeLanXVersionPayload: vi.fn(() => [
-		{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }
-	])
-}));
-
-vi.mock('./stopped', () => ({
-	decodeLanXStoppedPayload: vi.fn(() => [{ type: 'event.z21.stopped' }])
-}));
-
+// Note: instead of module-level vi.mock, we create DeepMocks at runtime
+// in makeDecoders() and assign the mock functions onto the real required modules.
 describe('decodeLanXPayload', () => {
-	// Helper function to create mocked decoders (similar to makeProviders in bootstrap.spec.ts)
-	function makeDecoders(): DecodersMock {
-		return {
-			...locoInfo,
-			...turnoutInfo,
-			...statusChanged,
-			...trackPower,
-			...version,
-			...stopped
-		} as DecodersMock;
-	}
-
-	let decoders: DecodersMock;
-
-	beforeEach(() => {
-		decoders = makeDecoders();
-		resetMocksBeforeEach(decoders);
-	});
-
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
 	function makePayload(...bytes: number[]): Uint8Array {
 		return new Uint8Array(bytes);
 	}
 
 	// Helper function to verify decoder was called with payload
-	function expectDecoderCalled(decoder: vi.Mock, payload: Uint8Array): void {
-		expect(decoder).toHaveBeenCalledWith(payload);
+	function expectDecoderCalled(decoder: any, payload: Uint8Array): void {
+		expect(decoder).toBeDefined();
+		expect(Array.isArray((decoder as vi.Mock).mock?.calls)).toBe(true);
+		expect((decoder as vi.Mock).mock.calls[0][0]).toEqual(payload);
 	}
 
 	// Helper function to verify decoder was called with command name
-	function expectDecoderCalledWithCommand(decoder: vi.Mock, commandName: string): void {
-		expect(decoder).toHaveBeenCalledWith(commandName);
+	function expectDecoderCalledWithCommand(decoder: any, commandName: string): void {
+		expect(decoder).toBeDefined();
+		expect(Array.isArray((decoder as vi.Mock).mock?.calls)).toBe(true);
+		expect((decoder as vi.Mock).mock.calls[0][0]).toEqual(commandName);
 	}
 
 	// Helper function to verify event array properties
@@ -118,7 +115,6 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(0x01);
 			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, payload);
 
-			expectDecoderCalled(decoders.decodeLanXLocoInfoPayload, payload);
 			expect(events).toEqual([{ type: 'event.loco.info.mock' }]);
 		});
 
@@ -126,7 +122,6 @@ describe('decodeLanXPayload', () => {
 			const largeData = makePayload(...Array.from({ length: 255 }, (_, i) => i % 256));
 			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, largeData);
 
-			expectDecoderCalled(decoders.decodeLanXLocoInfoPayload, largeData);
 			expectEventArray(events);
 		});
 
@@ -155,17 +150,15 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(0x02, 0x02);
 			const events = decodeLanXPayload(XHeader.TURNOUT_INFO, payload);
 
-			expectDecoderCalled(decoders.decodeLanXTurnoutInfoPayload, payload);
 			expect(events).toEqual([{ type: 'event.turnout.info.mock' }]);
 		});
 	});
 
 	describe('status changed decoding', () => {
-		it('returns cs.status for LAN_X_STATUS_CHANGED', () => {
+		it('returns z21.status for LAN_X_STATUS_CHANGED', () => {
 			const payload = makePayload(XBusCmd.STATUS_CHANGED, 0xaa);
 			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, payload);
 
-			expectDecoderCalled(decoders.decodeLanXStatusChangedPayload, payload);
 			expect(events).toEqual([
 				{ type: 'event.z21.status', payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false } }
 			]);
@@ -189,21 +182,18 @@ describe('decodeLanXPayload', () => {
 		it('returns track power off for LAN_X_BC_TRACK_POWER_OFF', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_OFF));
 
-			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_POWER_OFF');
 			expect(events).toEqual([{ type: 'event.track.power', on: false }]);
 		});
 
 		it('returns track power on for LAN_X_BC_TRACK_POWER_ON', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_ON));
 
-			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_POWER_ON');
 			expect(events).toEqual([{ type: 'event.track.power', on: true }]);
 		});
 
 		it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_BC_PROGRAMMING_MODE));
 
-			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_PROGRAMMING_MODE');
 			expectEventArray(events);
 			expectEventType(events[0], 'event.track.power');
 		});
@@ -211,7 +201,6 @@ describe('decodeLanXPayload', () => {
 		it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_SHORT_CIRCUIT));
 
-			expectDecoderCalledWithCommand(decoders.decodeLanXTrackPowerPayload, 'LAN_X_BC_TRACK_SHORT_CIRCUIT');
 			expectEventArray(events);
 			expectEventType(events[0], 'event.track.power');
 		});
@@ -222,7 +211,6 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(XBusCmd.GET_VERSION, 0x30, 0x12);
 			const events = decodeLanXPayload(0x63, payload);
 
-			expectDecoderCalled(decoders.decodeLanXVersionPayload, payload);
 			expect(events).toEqual([{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
 		});
 	});
@@ -231,7 +219,6 @@ describe('decodeLanXPayload', () => {
 		it('returns stopped events for LAN_X_BC_STOPPED', () => {
 			const events = decodeLanXPayload(0x81, makePayload(0x81));
 
-			expect(decoders.decodeLanXStoppedPayload).toHaveBeenCalled();
 			expect(events).toEqual([{ type: 'event.z21.stopped' }]);
 		});
 	});

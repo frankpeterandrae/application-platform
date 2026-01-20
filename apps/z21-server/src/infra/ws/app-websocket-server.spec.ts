@@ -5,7 +5,7 @@
 
 import { isClientToServerMessage, PROTOCOL_VERSION } from '@application-platform/protocol';
 import { WsServer } from '@application-platform/server-utils';
-import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { DeepMocked, Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { Logger } from '@application-platform/z21-shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -29,7 +29,7 @@ describe('AppWsServer', () => {
 		wsServer = Mock<WsServer>();
 		logger = Mock<Logger>();
 
-		vi.clearAllMocks();
+		resetMocksBeforeEach({});
 
 		// Mock console.log to keep tests clean
 		vi.spyOn(global.console, 'log').mockImplementation(() => {
@@ -91,7 +91,8 @@ describe('AppWsServer', () => {
 
 		handler(JSON.stringify(msg), ws);
 
-		expect(onMessage).toHaveBeenCalledWith(msg);
+		// The AppWsServer forwards both the parsed message and the ws instance.
+		expect(onMessage).toHaveBeenCalledWith(msg, ws);
 	});
 
 	it('invokes disconnect handler when connection ends', () => {

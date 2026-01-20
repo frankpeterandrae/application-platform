@@ -11,6 +11,7 @@ import {
 	F21ToF28FunctionsByteMask,
 	F29ToF31FunctionsByteMask,
 	F5ToF12FunctionsByteMask,
+	FULL_BYTE_MASK,
 	InfoByteMask,
 	LowFunctionsByteMask,
 	SpeedByteMask
@@ -45,6 +46,19 @@ export function decodeDccAddress(msbByte: number, lsbByte: number): number {
 	const addr = (adrMsb << 8) + adrLsb;
 
 	return addr;
+}
+
+/**
+ * Decodes a DCC address from the given MSB and LSB bytes.
+ *
+ * @param msbByte - The MSB byte containing the high bits of the address.
+ * @param lsbByte - The LSB byte containing the low bits of the address.
+ *
+ * @returns The decoded DCC address as a number.
+ */
+export function decodeCvAddress(msbByte: number, lsbByte: number): number {
+	const adrMsb = msbByte & FULL_BYTE_MASK;
+	return (adrMsb << 8) + lsbByte + 1;
 }
 
 /**

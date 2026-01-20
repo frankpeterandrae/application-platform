@@ -15,7 +15,7 @@ import {
 	SpeedByteMask
 } from '../../constants';
 
-import { decodeDccAddress, decodeFunctions, decodeSpeed } from './_shared';
+import { decodeCvAddress, decodeDccAddress, decodeFunctions, decodeSpeed } from './_shared';
 
 describe('payload decode helpers', () => {
 	// Helper function to create test function bytes (similar to helper functions in bootstrap.spec.ts)
@@ -389,6 +389,30 @@ describe('payload decode helpers', () => {
 				]);
 				expect(result.functionMap[29]).toBeUndefined();
 			});
+		});
+	});
+
+	describe('decodeCvAddress', () => {
+		it('decodes CV address with +1 offset from MSB and LSB bytes', () => {
+			const addr1 = decodeCvAddress(0x00, 0x00);
+			expect(addr1).toBe(1);
+
+			const addr2 = decodeCvAddress(0x00, 0x01);
+			expect(addr2).toBe(2);
+		});
+
+		it('decodes maximum CV address when MSB and LSB are 0xff', () => {
+			const address = decodeCvAddress(0xff, 0xff);
+			expect(address).toBe(65536);
+		});
+
+		it('applies FULL_BYTE_MASK to MSB (masks out higher bits)', () => {
+			// Provide an MSB with extra high bits set; masking should make it equivalent to 0xff
+			const addressWithOverflowMsb = decodeCvAddress(0x1ff, 0x42);
+			const expected = decodeCvAddress(0xff, 0x42);
+
+			expect(addressWithOverflowMsb).toBe(expected);
+			expect(addressWithOverflowMsb).toBe(65347);
 		});
 	});
 });

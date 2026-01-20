@@ -4,7 +4,7 @@
  */
 
 import { CommandStationInfo } from '@application-platform/domain';
-import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { DeepMocked, Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { Z21CommandService } from '@application-platform/z21';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,11 +16,13 @@ describe('CommandStationInfoOrchestrator', () => {
 	let z21CommandService: DeepMocked<Z21CommandService>;
 
 	beforeEach(() => {
-		vi.clearAllMocks();
 		vi.useFakeTimers();
 
 		commandStationInfo = Mock<CommandStationInfo>();
 		z21CommandService = Mock<Z21CommandService>();
+
+		// Clear mock history
+		resetMocksBeforeEach({ commandStationInfo, z21CommandService });
 
 		// Configure default mock return values
 		commandStationInfo.hasFirmwareVersion.mockReturnValue(false);

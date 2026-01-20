@@ -15,7 +15,7 @@ declare global {
 	function fail(message?: string): void;
 
 	/**
-	 * Allow common mock helpers on functions to match Jest/Vitest mock usage in specs.
+	 * Allow common mock helpers on functions to match Jest/Vitest mock usage in spez21.
 	 * This is intentionally permissive to avoid widespread test-type errors during migration.
 	 */
 	interface Function {

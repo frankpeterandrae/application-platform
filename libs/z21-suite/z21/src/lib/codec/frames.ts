@@ -83,24 +83,6 @@ export function encodeLocoAddress(address: number): { adrMsb: number; adrLsb: nu
 }
 
 /**
- * Encode an accessory (turnout) address into the two address bytes used by X-BUS.
- *
- * @param address - Accessory address (0..16383)
- * @throws Error if address is not in the allowed 0..16383 range.
- * @returns Object with `adrMsb` and `adrLsb` bytes (both 0..255).
- */
-function encodeAccessoryAddress(address: number): { adrMsb: number; adrLsb: number } {
-	if (address < 0 || address > 16383) {
-		throw new Error(`Accessory address (${address}) out of range (0..16383)`);
-	}
-
-	const adrMsb = (address >> 8) & AddessByteMask.MSB;
-	const adrLsb = address & FULL_BYTE_MASK;
-
-	return { adrMsb, adrLsb };
-}
-
-/**
  * Type guard to detect whether a LAN_X command entry includes an explicit xBusCmd.
  * Uses a runtime check that safely handles non-object inputs.
  */
@@ -109,4 +91,40 @@ function hasXbusCmd(command: unknown): command is { xBusCmd: number } {
 	// Use hasOwnProperty to avoid issues with prototype keys
 	const has = Object.hasOwn(command as object, 'xBusCmd');
 	return has && typeof (command as { xBusCmd?: unknown }).xBusCmd === 'number';
+}
+
+/**
+ * Encode an accessory (turnout) address into the two address bytes used by X-BUS.
+ *
+ * @param address - Accessory address (0..16383)
+ * @throws Error if address is not in the allowed 0..16383 range.
+ * @returns Object with `adrMsb` and `adrLsb` bytes (both 0..255).
+ */
+export function encodeAccessoryAddress(address: number): { adrMsb: number; adrLsb: number } {
+	if (address < 0 || address > 16383) {
+		throw new Error(`Accessory address (${address}) out of range (0..16383)`);
+	}
+
+	const adrMsb = (address >> 8) & FULL_BYTE_MASK;
+	const adrLsb = address & FULL_BYTE_MASK;
+
+	return { adrMsb, adrLsb };
+}
+
+/**
+ * Encode an accessory (turnout) address into the two address bytes used by X-BUS.
+ *
+ * @param address - Accessory address (0..16383)
+ * @throws Error if address is not in the allowed 0..16383 range.
+ * @returns Object with `adrMsb` and `adrLsb` bytes (both 0..255).
+ */
+export function encodeCvAddress(address: number): { adrMsb: number; adrLsb: number } {
+	if (address < 1 || address > 16383) {
+		throw new Error(`Accessory address (${address}) out of range (0..16383)`);
+	}
+	const correctedAddress = address - 1; // CV addresses are 1-based, adjust to 0-based
+	const adrMsb = (correctedAddress >> 8) & FULL_BYTE_MASK;
+	const adrLsb = correctedAddress & FULL_BYTE_MASK;
+
+	return { adrMsb, adrLsb };
 }

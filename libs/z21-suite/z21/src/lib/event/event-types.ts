@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 import {
+	CvNackEvent,
+	CvResultEvent,
 	LocoInfoEvent,
 	SystemStateEvent,
 	TrackPowerEvent,
@@ -28,6 +30,8 @@ import {
  * - event.unknown.x.bus: Unrecognized X-Bus message for diagnostics
  */
 export type Z21Event =
+	| CvNackEvent
+	| CvResultEvent
 	| LocoInfoEvent
 	| SystemStateEvent
 	| TrackPowerEvent
