@@ -4,7 +4,7 @@
  */
 
 export type Z21FirmwareVersionEvent = {
-	type: 'event.firmware.version';
+	type: 'event.z21.firmware.version';
 	raw: number[];
 	major: number;
 	minor: number;

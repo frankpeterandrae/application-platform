@@ -3,6 +3,23 @@
  * All rights reserved.
  */
 
+import {
+	CvNack,
+	CvRead,
+	CvResult,
+	CvWrite,
+	LocoDrive,
+	LocoEStop,
+	LocoFunctionSet,
+	LocoState,
+	SystemCode,
+	SystemFirmwareVersion,
+	SystemHardwareInfo,
+	SystemTrackPower,
+	TrackpowerSet,
+	TurnoutSet,
+	TurnoutState_Message
+} from '@application-platform/protocol';
 import { TurnoutState } from '@application-platform/z21-shared';
 import { describe, expect, it } from 'vitest';
 
@@ -24,13 +41,13 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0f004000efc735048004000000009d'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'loco.message.state');
+			const locoState: LocoState = await waitForWsType<any>(ctx, 'loco.message.state');
 
-			expect(locoState.addr).toBe(1845);
-			expect(locoState.speed).toBe(0);
-			expect(locoState.dir).toBe('FWD');
-			expect(locoState.estop).toBe(false);
-			expect(locoState.fns).toEqual({
+			expect(locoState.payload.addr).toBe(1845);
+			expect(locoState.payload.speed).toBe(0);
+			expect(locoState.payload.dir).toBe('FWD');
+			expect(locoState.payload.estop).toBe(false);
+			expect(locoState.payload.fns).toEqual({
 				'0': false,
 				'1': false,
 				'2': false,
@@ -71,13 +88,13 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0f004000efc735044315000000004f'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'loco.message.state');
+			const locoState: LocoState = await waitForWsType<any>(ctx, 'loco.message.state');
 
-			expect(locoState.addr).toBe(1845);
-			expect(locoState.speed).toBe(66);
-			expect(locoState.dir).toBe('REV');
-			expect(locoState.estop).toBe(false);
-			expect(locoState.fns).toEqual({
+			expect(locoState.payload.addr).toBe(1845);
+			expect(locoState.payload.speed).toBe(66);
+			expect(locoState.payload.dir).toBe('REV');
+			expect(locoState.payload.estop).toBe(false);
+			expect(locoState.payload.fns).toEqual({
 				'0': true,
 				'1': true,
 				'2': false,
@@ -119,13 +136,13 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('15004000efc73504813500000000000000000000ad'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'loco.message.state');
+			const locoState: LocoState = await waitForWsType<any>(ctx, 'loco.message.state');
 
-			expect(locoState.addr).toBe(1845);
-			expect(locoState.speed).toBe(0);
-			expect(locoState.dir).toBe('FWD');
-			expect(locoState.estop).toBe(true);
-			expect(locoState.fns).toEqual({
+			expect(locoState.payload.addr).toBe(1845);
+			expect(locoState.payload.speed).toBe(0);
+			expect(locoState.payload.dir).toBe('FWD');
+			expect(locoState.payload.estop).toBe(true);
+			expect(locoState.payload.fns).toEqual({
 				'0': true,
 				'1': true,
 				'2': false,
@@ -169,10 +186,10 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0900400043000c014e'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
+			const locoState: TurnoutState_Message = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
-			expect(locoState.addr).toBe(12);
-			expect(locoState.state).toBe(TurnoutState.STRAIGHT);
+			expect(locoState.payload.addr).toBe(12);
+			expect(locoState.payload.state).toBe(TurnoutState.STRAIGHT);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -181,10 +198,10 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0900400043000c024d'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
+			const locoState: TurnoutState_Message = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
-			expect(locoState.addr).toBe(12);
-			expect(locoState.state).toBe(TurnoutState.DIVERGING);
+			expect(locoState.payload.addr).toBe(12);
+			expect(locoState.payload.state).toBe(TurnoutState.DIVERGING);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -195,10 +212,10 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('07004000610160'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'system.message.trackpower');
+			const locoState: SystemTrackPower = await waitForWsType<any>(ctx, 'system.message.trackpower');
 
-			expect(locoState.on).toBe(true);
-			expect(locoState.short).toBe(false);
+			expect(locoState.payload.on).toBe(true);
+			expect(locoState.payload.short).toBe(false);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -207,22 +224,25 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('07004000610061'); // dein funktionierendes Frame
-			const locoState = await waitForWsType<any>(ctx, 'system.message.trackpower');
+			const locoState: SystemTrackPower = await waitForWsType<any>(ctx, 'system.message.trackpower');
 
-			expect(locoState.on).toBe(false);
-			expect(locoState.short).toBe(false);
+			expect(locoState.payload.on).toBe(false);
+			expect(locoState.payload.short).toBe(false);
 
 			await stopCtx(ctx);
 		}, 20000);
 	});
 
-	describe('send', () => {
-		it('sends LOCO_DRIVE to Z21 when UI sends loco.command.drive', async () => {
+	describe('', () => {
+		it('sendsends LOCO_DRIVE to Z21 when UI sends loco.command.drive', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
-
+			const command: LocoDrive = {
+				type: 'loco.command.drive',
+				payload: { addr: 1845, speed: 47, dir: 'FWD', steps: 128, requestId: 'req-001' }
+			};
 			// WS command wie bei dir im Log:
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 47, dir: 'FWD', steps: 128 }));
+			ctx.ws?.send(JSON.stringify(command));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -243,9 +263,12 @@ describe('server e2e', () => {
 		it('sends TURNOUT_SET to Z21 when UI sends switching.command.turnout.set', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
-
+			const command: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 12, state: TurnoutState.STRAIGHT, pulseMs: 200, requestId: 'req-002' }
+			};
 			// WS command wie bei dir im Log:
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 12, state: TurnoutState.STRAIGHT, pulseMs: 200 }));
+			ctx.ws?.send(JSON.stringify(command));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -266,9 +289,9 @@ describe('server e2e', () => {
 		it('sends TRACK_POWER ON to Z21 when UI sends system.command.trackpower.set on', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
-
+			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-003' } };
 			// WS command wie bei dir im Log:
-			ctx.ws?.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
+			ctx.ws?.send(JSON.stringify(command));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -290,8 +313,9 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
+			const command: LocoEStop = { type: 'loco.command.eStop', payload: { addr: 1845, requestId: 'req-004' } };
 			// WS command wie bei dir im Log:
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.eStop', addr: 1845 }));
+			ctx.ws?.send(JSON.stringify(command));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -313,8 +337,12 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
+			const command: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 7, on: true, requestId: 'req-005' }
+			};
 			// WS command wie bei dir im Log:
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 7, on: true }));
+			ctx.ws?.send(JSON.stringify(command));
 
 			// warte bis UDP rausgeht
 			await waitFor(() => z21.rx[0] ?? undefined, {
@@ -511,9 +539,9 @@ describe('server e2e', () => {
 		await sendUdpHex('09004000f30a0123db'); // to server listen port (default in helper)
 
 		// Expect WS broadcast with firmware version
-		const fw = await waitForWsType<any>(ctx, 'system.message.firmware.version');
-		expect(fw.major).toBe(1);
-		expect(fw.minor).toBe(23);
+		const fw: SystemFirmwareVersion = await waitForWsType<any>(ctx, 'system.message.firmware.version');
+		expect(fw.payload.major).toBe(1);
+		expect(fw.payload.minor).toBe(23);
 
 		// 2) With FW >= 1.20, server should request LAN_GET_HWINFO
 		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001a00'), {
@@ -526,8 +554,8 @@ describe('server e2e', () => {
 		await sendUdpHex('0c001a000402000001230000');
 
 		// Expect WS broadcast with hardware info
-		const hw = await waitForWsType<any>(ctx, 'system.message.hardware.info');
-		expect(hw.hardwareType).toBe('z21_START');
+		const hw: SystemHardwareInfo = await waitForWsType<any>(ctx, 'system.message.hardware.info');
+		expect(hw.payload.hardwareType).toBe('z21_START');
 
 		// 3) For z21_START, server should request LAN_GET_CODE
 		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001800'), {
@@ -539,8 +567,8 @@ describe('server e2e', () => {
 		// send code reply: unlocked (0x02)
 		await sendUdpHex('0500180002');
 
-		const code = await waitForWsType<any>(ctx, 'system.message.z21.code');
-		expect(code.code).toBe(2);
+		const code: SystemCode = await waitForWsType<any>(ctx, 'system.message.z21.code');
+		expect(code.payload.code).toBe(2);
 
 		await stopCtx({ ...base, ws: ws.ws });
 		await z21.close();
@@ -553,7 +581,7 @@ describe('server e2e', () => {
 			// Test with loco 1845 - use proven working frame
 			await sendUdpHex('0f004000efc735048004000000009d');
 			await delay(200);
-			const loco1Messages = ctx.messages?.filter((m) => m.type === 'loco.message.state' && m['addr'] === 1845);
+			const loco1Messages = ctx.messages?.filter((m) => m.type === 'loco.message.state' && m.payload['addr'] === 1845);
 			expect(loco1Messages?.length).toBeGreaterThan(0);
 
 			await stopCtx(ctx);
@@ -564,9 +592,17 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Send drive commands for two locos
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 47, dir: 'FWD', steps: 128 }));
+			const command: LocoDrive = {
+				type: 'loco.command.drive',
+				payload: { addr: 1845, speed: 47, dir: 'FWD', steps: 128, requestId: 'req-006' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 100, speed: 20, dir: 'REV', steps: 128 }));
+			const command2: LocoDrive = {
+				type: 'loco.command.drive',
+				payload: { addr: 100, speed: 20, dir: 'REV', steps: 128, requestId: 'req-007' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx multiple locos',
@@ -587,11 +623,23 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Toggle F0, F1, F2 rapidly
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 0, on: true }));
+			const command: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 0, on: true, requestId: 'req-008' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 1, on: true }));
+			const command2: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 1, on: true, requestId: 'req-009' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 2, on: true }));
+			const command3: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 2, on: true, requestId: 'req-010' }
+			};
+			ctx.ws?.send(JSON.stringify(command3));
 
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx function toggles',
@@ -610,11 +658,23 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Set F3, F7, F15
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 3, on: true }));
+			const command: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 3, on: true, requestId: 'req-011' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 7, on: true }));
+			const command2: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 7, on: true, requestId: 'req-012' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.function.set', addr: 1845, fn: 15, on: true }));
+			const command3: LocoFunctionSet = {
+				type: 'loco.command.function.set',
+				payload: { addr: 1845, fn: 15, on: true, requestId: 'req-013' }
+			};
+			ctx.ws?.send(JSON.stringify(command3));
 
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx multiple function numbers',
@@ -635,11 +695,23 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Set multiple turnouts
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 1, state: 'STRAIGHT', pulseMs: 100 }));
+			const command: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 1, state: 'STRAIGHT', pulseMs: 100, requestId: 'req-014' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 2, state: 'DIVERGING', pulseMs: 100 }));
+			const command2: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 2, state: 'DIVERGING', pulseMs: 100, requestId: 'req-015' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 3, state: 'STRAIGHT', pulseMs: 100 }));
+			const command3: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 3, state: 'STRAIGHT', pulseMs: 100, requestId: 'req-016' }
+			};
+			ctx.ws?.send(JSON.stringify(command3));
 
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx multiple turnouts',
@@ -658,9 +730,17 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Same turnout, different directions
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 10, state: 'STRAIGHT', pulseMs: 100 }));
+			const command: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 10, state: 'STRAIGHT', pulseMs: 100, requestId: 'req-017' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(50);
-			ctx.ws?.send(JSON.stringify({ type: 'switching.command.turnout.set', addr: 10, state: 'DIVERGING', pulseMs: 100 }));
+			const command2: TurnoutSet = {
+				type: 'switching.command.turnout.set',
+				payload: { addr: 10, state: 'DIVERGING', pulseMs: 100, requestId: 'req-018' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx turnout both directions',
@@ -695,7 +775,8 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.eStop', addr: 1845 }));
+			const command: LocoEStop = { type: 'loco.command.eStop', payload: { addr: 1845, requestId: 'req-019' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '0800400092c73560'), {
 				label: 'z21 rx loco estop',
@@ -760,7 +841,8 @@ describe('server e2e', () => {
 			await delay(300);
 
 			// Server should still be responsive - send valid command
-			ctx.ws?.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
+			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-020' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for the valid command to be processed
 			await waitFor(() => (z21.rx.length >= 1 ? z21.rx : undefined), {
@@ -782,11 +864,19 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Short address (< 100)
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 3, speed: 10, dir: 'FWD', steps: 128 }));
+			const command: LocoDrive = {
+				type: 'loco.command.drive',
+				payload: { addr: 3, speed: 10, dir: 'FWD', steps: 128, requestId: 'req-021' }
+			};
+			ctx.ws?.send(JSON.stringify(command));
 			await delay(100);
 
 			// Long address (>= 100)
-			ctx.ws?.send(JSON.stringify({ type: 'loco.command.drive', addr: 1845, speed: 10, dir: 'FWD', steps: 128 }));
+			const command2: LocoDrive = {
+				type: 'loco.command.drive',
+				payload: { addr: 1845, speed: 10, dir: 'FWD', steps: 128, requestId: 'req-022' }
+			};
+			ctx.ws?.send(JSON.stringify(command2));
 
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx both addresses',
@@ -807,7 +897,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request for CV29
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-1' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-1' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for LAN_X_CV_READ command to be sent to Z21
 			// Format: 09 00 40 00 23 11 00 1c <XOR>
@@ -830,7 +921,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-2' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-2' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command with sub-command 0x11 and MSB-first address (00 1c)
 			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('09004000231100')), {
@@ -846,7 +938,7 @@ describe('server e2e', () => {
 			await sendUdpHex('0a0040006414001c2a5a');
 
 			// Wait for WS broadcast with CV result
-			const cvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
+			const cvResult: CvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
 			expect(cvResult.payload.cvAdress).toBe(29);
 			expect(cvResult.payload.cvValue).toBe(42);
 
@@ -859,9 +951,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV write request: set CV29 to 14
-			ctx.ws.send(
-				JSON.stringify({ type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-3' } })
-			);
+			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-3' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for LAN_X_CV_WRITE command to be sent to Z21
 			// Format: 0a 00 40 00 24 12 00 1c 0e <XOR>
@@ -884,9 +975,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV write request
-			ctx.ws.send(
-				JSON.stringify({ type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-4' } })
-			);
+			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-4' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for write command with MSB-first address (00 1c)
 			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('0a004000241200')), {
@@ -900,7 +990,7 @@ describe('server e2e', () => {
 			await sendUdpHex('0a0040006414001c0e62');
 
 			// Wait for WS broadcast with CV result
-			const cvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
+			const cvResult: CvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
 			expect(cvResult.payload.cvAdress).toBe(29);
 			expect(cvResult.payload.cvValue).toBe(14);
 
@@ -913,7 +1003,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-5' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-5' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command
 			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('090040002311')), {
@@ -925,7 +1016,7 @@ describe('server e2e', () => {
 			await sendUdpHex('07004000611312');
 
 			// Wait for WS broadcast with CV NACK
-			const cvNack = await waitForWsType<any>(ctx, 'programming.replay.cv.nack', 4000);
+			const cvNack: CvNack = await waitForWsType<any>(ctx, 'programming.replay.cv.nack', 4000);
 			expect(cvNack.payload.error).toBeDefined();
 			expect(cvNack.payload.error).toContain('NACK');
 
@@ -938,7 +1029,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-6' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-6' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command (CV1 = address 0x0000)
 			await waitFor(() => z21.rx.length >= 1, {
@@ -950,7 +1042,7 @@ describe('server e2e', () => {
 			await sendUdpHex('07004000611212');
 
 			// Wait for WS broadcast with CV NACK Short Circuit
-			const cvNack = await waitForWsType<any>(ctx, 'programming.replay.cv.nack', 4000);
+			const cvNack: CvNack = await waitForWsType<any>(ctx, 'programming.replay.cv.nack', 4000);
 			expect(cvNack.payload.error).toBeDefined();
 			expect(cvNack.payload.error).toContain('short circuit');
 
@@ -963,21 +1055,24 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Read CV1 and respond
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-7' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-7' } };
+			ctx.ws?.send(JSON.stringify(command));
 			await waitFor(() => z21.rx.length >= 1, { label: 'cv1 read', timeoutMs: 2000 });
 			// CV1 = 1: 64 14 00 00 01 => XOR = 0x71
 			await sendUdpHex('0a004000641400000171');
 			await delay(100);
 
 			// Read CV17 and respond
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 17, requestId: 'req-8' } }));
+			const command2: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 17, requestId: 'req-8' } };
+			ctx.ws?.send(JSON.stringify(command2));
 			await waitFor(() => z21.rx.length >= 2, { label: 'cv17 read', timeoutMs: 2000 });
 			// CV17 = 17: 64 14 00 10 11 => XOR = 0x75
 			await sendUdpHex('0a004000641400101175');
 			await delay(100);
 
 			// Read CV29 and respond
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-9' } }));
+			const command3: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-9' } };
+			ctx.ws?.send(JSON.stringify(command3));
 			await waitFor(() => z21.rx.length >= 3, { label: 'cv29 read', timeoutMs: 2000 });
 
 			const cvReads = z21.rx.filter((b) => b.toString('hex').startsWith('090040002311'));
@@ -992,7 +1087,8 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			ctx.ws.send(JSON.stringify({ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-10' } }));
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-10' } };
+			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command
 			await waitFor(() => z21.rx.length >= 1, {
@@ -1007,7 +1103,8 @@ describe('server e2e', () => {
 			await delay(1500);
 
 			// Server should still be responsive
-			ctx.ws.send(JSON.stringify({ type: 'system.command.trackpower.set', on: true }));
+			const command2: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-023' } };
+			ctx.ws?.send(JSON.stringify(command2));
 
 			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '070040002181a0'), {
 				label: 'z21 rx track power after timeout',
@@ -1015,7 +1112,7 @@ describe('server e2e', () => {
 			});
 
 			// WebSocket should still be open
-			expect(ctx.ws.readyState).toBe(1); // OPEN
+			expect(ctx.ws?.readyState).toBe(1); // OPEN
 
 			await z21.close();
 			await stopCtx(ctx);

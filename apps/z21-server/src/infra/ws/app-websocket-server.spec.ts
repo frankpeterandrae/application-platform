@@ -29,7 +29,7 @@ describe('AppWsServer', () => {
 		wsServer = Mock<WsServer>();
 		logger = Mock<Logger>();
 
-		resetMocksBeforeEach({});
+		resetMocksBeforeEach({ wsServer, logger, console });
 
 		// Mock console.log to keep tests clean
 		vi.spyOn(global.console, 'log').mockImplementation(() => {
@@ -39,7 +39,7 @@ describe('AppWsServer', () => {
 		server = new AppWsServer(wsServer as any, logger as any);
 	});
 
-	it('sends session.ready on new connection', () => {
+	it('sends server.replay.session.ready on new connection', () => {
 		const onMessage = vi.fn();
 		const onDisconnect = vi.fn();
 		const onConnect = vi.fn();
@@ -53,8 +53,11 @@ describe('AppWsServer', () => {
 
 		expect(wsServer.send).toHaveBeenCalledWith(ws, {
 			type: 'server.replay.session.ready',
-			protocolVersion: PROTOCOL_VERSION,
-			serverTime: expect.any(String)
+			payload: {
+				protocolVersion: PROTOCOL_VERSION,
+				serverTime: expect.any(String),
+				requestId: ''
+			}
 		});
 	});
 
@@ -70,7 +73,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('rejects messages that fail validation', () => {
-		vi.mocked(isClientToServerMessage).mockReturnValue(false);
+		(isClientToServerMessage as unknown as vi.Mock).mockReturnValue(false);
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];
@@ -82,7 +85,7 @@ describe('AppWsServer', () => {
 	});
 
 	it('forwards accepted messages to the provided handler', () => {
-		vi.mocked(isClientToServerMessage).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
+		(isClientToServerMessage as unknown as vi.Mock).mockImplementation((m: any) => !!m && typeof m === 'object' && m.type === 'ping');
 		const onMessage = vi.fn();
 		server.onConnection(onMessage);
 		const handler = wsServer.onConnection.mock.calls[0][0];
@@ -91,7 +94,6 @@ describe('AppWsServer', () => {
 
 		handler(JSON.stringify(msg), ws);
 
-		// The AppWsServer forwards both the parsed message and the ws instance.
 		expect(onMessage).toHaveBeenCalledWith(msg, ws);
 	});
 
@@ -111,14 +113,20 @@ describe('AppWsServer', () => {
 		const ws: any = { id: 'ws-2' };
 		server.sendToClient(ws, {
 			type: 'server.replay.session.ready',
-			protocolVersion: PROTOCOL_VERSION,
-			serverTime: new Date().toISOString()
+			payload: {
+				protocolVersion: PROTOCOL_VERSION,
+				serverTime: new Date().toISOString(),
+				requestId: 'req-1'
+			}
 		});
 		expect(wsServer.send).toHaveBeenCalledWith(ws, expect.objectContaining({ type: 'server.replay.session.ready' }));
 	});
 
 	it('delegates broadcast to underlying wsServer', () => {
-		server.broadcast({ type: 'server.replay.session.ready', protocolVersion: PROTOCOL_VERSION, serverTime: new Date().toISOString() });
+		server.broadcast({
+			type: 'server.replay.session.ready',
+			payload: { protocolVersion: PROTOCOL_VERSION, serverTime: new Date().toISOString(), requestId: 'req-1' }
+		});
 		expect(wsServer.broadcast).toHaveBeenCalledWith(expect.objectContaining({ type: 'server.replay.session.ready' }));
 	});
 });

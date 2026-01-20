@@ -3,8 +3,12 @@
  * All rights reserved.
  */
 
-import { ClientToServer, CLIENT_TO_SERVER_TYPES, ServerToClient, SERVER_TO_CLIENT_TYPES } from './message-types';
+import { CLIENT_TO_SERVER_TYPES, SERVER_TO_CLIENT_TYPES, type ClientToServer, type ServerToClient } from './message-types';
 
+/**
+ * Current protocol version used for client-server communication.
+ * Sent to clients during session handshake to verify compatibility.
+ */
 export const PROTOCOL_VERSION = '1.0.0' as const;
 
 /**

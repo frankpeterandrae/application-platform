@@ -213,30 +213,30 @@ describe('Z21Udp', () => {
 		it('sendGetSerial builds proper packet', () => {
 			services.udp.sendGetSerial();
 
-			const sent = services.socket.send.mock.calls[0][0] as Buffer;
-			expectBufferHeader(sent, 0x0004, Z21LanHeader.LAN_GET_SERIAL_NUMBER);
+			const send = services.socket.send.mock.calls[0][0] as Buffer;
+			expectBufferHeader(send, 0x0004, Z21LanHeader.LAN_GET_SERIAL_NUMBER);
 		});
 
 		it('sendSetBroadcastFlags builds proper packet', () => {
 			services.udp.sendSetBroadcastFlags(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
 
-			const sent = services.socket.send.mock.calls[0][0] as Buffer;
-			expectBufferHeader(sent, 0x0008, Z21LanHeader.LAN_SET_BROADCASTFLAGS);
-			expect(sent.readUInt32LE(4)).toBe(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
+			const send = services.socket.send.mock.calls[0][0] as Buffer;
+			expectBufferHeader(send, 0x0008, Z21LanHeader.LAN_SET_BROADCASTFLAGS);
+			expect(send.readUInt32LE(4)).toBe(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
 		});
 
 		it('sendSystemStateGetData builds proper packet', () => {
 			services.udp.sendSystemStateGetData();
 
-			const sent = services.socket.send.mock.calls[0][0] as Buffer;
-			expectBufferHeader(sent, 0x0004, Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
+			const send = services.socket.send.mock.calls[0][0] as Buffer;
+			expectBufferHeader(send, 0x0004, Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
 		});
 
 		it('sendLogOff builds proper packet', () => {
 			services.udp.sendLogOff();
 
-			const sent = services.socket.send.mock.calls[0][0] as Buffer;
-			expectBufferHeader(sent, 0x0004, Z21LanHeader.LAN_LOGOFF);
+			const send = services.socket.send.mock.calls[0][0] as Buffer;
+			expectBufferHeader(send, 0x0004, Z21LanHeader.LAN_LOGOFF);
 		});
 	});
 

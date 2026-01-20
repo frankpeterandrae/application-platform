@@ -9,7 +9,7 @@ export type LocoState = {
 	speed: number;
 	dir: Direction;
 	fns: Record<number, boolean>;
-	estop?: boolean;
+	estop: boolean;
 };
 
 /**
@@ -46,7 +46,7 @@ export class LocoManager {
 	 * @returns A copy of the updated locomotive state
 	 */
 	public setSpeed(addr: number, speed: number, dir: Direction): LocoState {
-		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {} };
+		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {}, estop: false };
 		st.speed = this.clamp01(speed);
 		st.dir = dir;
 		this.locos.set(addr, st);
@@ -61,7 +61,7 @@ export class LocoManager {
 	 * @returns A copy of the updated locomotive state
 	 */
 	public setFunction(addr: number, fn: number, on: boolean): LocoState {
-		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {} };
+		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {}, estop: false };
 		st.fns[fn] = on;
 		this.locos.set(addr, st);
 		return { ...st };
@@ -99,7 +99,7 @@ export class LocoManager {
 	 * @returns A copy of the locomotive state
 	 */
 	public ensureLoco(addr: number): LocoState {
-		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {} };
+		const st = this.locos.get(addr) ?? { speed: 0, dir: 'FWD', fns: {}, estop: false };
 		this.locos.set(addr, st);
 		return { ...st };
 	}
@@ -126,7 +126,7 @@ export class LocoManager {
 	 * @returns The address and updated state of the locomotive
 	 */
 	public updateLocoInfoFromZ21(locoInfo: LocoInfoEvent): { addr: number; state: LocoState } {
-		const st = this.locos.get(locoInfo.addr) ?? { speed: 0, dir: 'FWD', fns: {} };
+		const st = this.locos.get(locoInfo.addr) ?? { speed: 0, dir: 'FWD', fns: {}, estop: false };
 		st.speed = locoInfo.speed;
 		st.dir = locoInfo.direction;
 		st.fns = { ...locoInfo.functionMap };

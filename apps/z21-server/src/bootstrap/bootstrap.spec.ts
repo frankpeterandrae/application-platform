@@ -8,6 +8,7 @@ import http from 'node:http';
 // import module under test after mocks so they get applied
 
 import { CommandStationInfo, LocoManager } from '@application-platform/domain';
+import { LocoDrive } from '@application-platform/protocol';
 import { Mock, type DeepMocked } from '@application-platform/shared-node-test';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
 import { Logger } from '@application-platform/z21-shared';
@@ -142,19 +143,23 @@ describe('Bootstrap', () => {
 		expect(providers.locoManager.stopAll).toHaveBeenCalled();
 		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
-			addr: 3,
-			speed: 0,
-			dir: 'FWD',
-			fns: { 0: true },
-			estop: false
+			payload: {
+				addr: 3,
+				speed: 0,
+				dir: 'FWD',
+				fns: { 0: true },
+				estop: false
+			}
 		});
 		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
-			addr: 7,
-			speed: 0,
-			dir: 'REV',
-			fns: { 2: false },
-			estop: false
+			payload: {
+				addr: 7,
+				speed: 0,
+				dir: 'REV',
+				fns: { 2: false },
+				estop: false
+			}
 		});
 	});
 
@@ -224,7 +229,7 @@ describe('Bootstrap', () => {
 		expect(providers.z21CommandService.getLocoInfo).not.toHaveBeenCalled();
 	});
 
-	it('requests xBusVersion from Z21 when first client connects and xBusVersion not cached', () => {
+	it('requests version from Z21 when first client connects and version not cached', () => {
 		setupMockedOrchestrator(false, true);
 
 		const bootstrap = new Bootstrap(providers);
@@ -239,7 +244,7 @@ describe('Bootstrap', () => {
 		onConnect({});
 
 		expect(providers.z21CommandService.getXBusVersion).toHaveBeenCalled();
-		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.x.bus.version' }));
+		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.x.bus.version' }));
 	});
 
 	it('requests firmware version from Z21 when first client connects and firmware version not cached', () => {
@@ -257,7 +262,7 @@ describe('Bootstrap', () => {
 		onConnect({});
 
 		expect(providers.z21CommandService.getFirmwareVersion).toHaveBeenCalled();
-		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.firmware.version' }));
+		expect(providers.broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'system.message.firmware.version' }));
 	});
 
 	it('uses custom listenPort from config when provided', () => {
@@ -280,7 +285,7 @@ describe('Bootstrap', () => {
 
 		const [onMessage] = providers.wsOnConnection!.mock.calls[0];
 
-		const testMessage = { type: 'loco.command.drive', addr: 5, speed: 0.5, dir: 'FWD' } as any;
+		const testMessage = { type: 'loco.command.drive', payload: { addr: 5, speed: 0.5, dir: 'FWD' } } as LocoDrive;
 		onMessage(testMessage);
 
 		// The handler should process the message through the locoManager
@@ -302,11 +307,13 @@ describe('Bootstrap', () => {
 		expect(providers.locoManager.stopAll).toHaveBeenCalled();
 		expect(providers.broadcast).toHaveBeenCalledWith({
 			type: 'loco.message.state',
-			addr: 10,
-			speed: 0,
-			dir: 'FWD',
-			fns: {},
-			estop: true
+			payload: {
+				addr: 10,
+				speed: 0,
+				dir: 'FWD',
+				fns: {},
+				estop: true
+			}
 		});
 	});
 

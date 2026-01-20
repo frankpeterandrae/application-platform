@@ -70,7 +70,7 @@ beforeEach(async () => {
 		} as Z21StatusEvent
 	]);
 	decoders.decodeLanXVersionPayload.mockReturnValue([
-		{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] } as Z21VersionEvent
+		{ type: 'event.z21.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] } as Z21VersionEvent
 	]);
 	decoders.decodeLanXStoppedPayload.mockReturnValue([{ type: 'event.z21.stopped' } as Z21StoppedEvent]);
 });
@@ -207,11 +207,11 @@ describe('decodeLanXPayload', () => {
 	});
 
 	describe('version decoding', () => {
-		it('returns xBusVersion events for LAN_X_GET_VERSION_ANSWER', () => {
+		it('returns version events for LAN_X_GET_VERSION_ANSWER', () => {
 			const payload = makePayload(XBusCmd.GET_VERSION, 0x30, 0x12);
 			const events = decodeLanXPayload(0x63, payload);
 
-			expect(events).toEqual([{ type: 'event.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xbusVersion: 0x12, raw: [] }]);
+			expect(events).toEqual([{ type: 'event.z21.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] }]);
 		});
 	});
 

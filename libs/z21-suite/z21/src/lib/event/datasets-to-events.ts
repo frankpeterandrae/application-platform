@@ -19,8 +19,6 @@ import { type Z21Event } from './event-types';
  * @returns Array of Z21Event entries produced from the dataset.
  */
 export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
-	// eslint-disable-next-line no-console
-	console.log('Converting dataset to events:', ds);
 	if (ds.kind === 'ds.system.state') {
 		return [{ type: 'event.system.state', payload: decodeSystemState(ds.state) }];
 	}
@@ -38,5 +36,6 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 		return [{ type: 'event.z21.code', code: ds.code, raw: [ds.code] }];
 	}
 
+	// bad_xor / unknown -> keine Events, Observability läuft im Handler über Logging
 	return [];
 }

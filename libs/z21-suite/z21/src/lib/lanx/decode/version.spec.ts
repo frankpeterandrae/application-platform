@@ -9,7 +9,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXVersionPayload } from './version';
 
-type VersionEvent = Extract<Z21Event, { type: 'event.x.bus.version' }>;
+type VersionEvent = Extract<Z21Event, { type: 'event.z21.x.bus.version' }>;
 
 describe('decodeLanXVersionPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -27,14 +27,14 @@ describe('decodeLanXVersionPayload', () => {
 	function expectVersionEvent(
 		event: VersionEvent,
 		expectedValues: {
-			xbusVersion: number;
+			xBusVersion: number;
 			xBusVersionString: string;
 			cmdsId: number;
 			raw?: number[];
 		}
 	): void {
-		expect(event.type).toBe('event.x.bus.version');
-		expect(event.xbusVersion).toBe(expectedValues.xbusVersion);
+		expect(event.type).toBe('event.z21.x.bus.version');
+		expect(event.xBusVersion).toBe(expectedValues.xBusVersion);
 		expect(event.xBusVersionString).toBe(expectedValues.xBusVersionString);
 		expect(event.cmdsId).toBe(expectedValues.cmdsId);
 		if (expectedValues.raw !== undefined) {
@@ -49,60 +49,60 @@ describe('decodeLanXVersionPayload', () => {
 	}
 
 	describe('version string formatting', () => {
-		it('decodes xBusVersion 3.0 correctly', () => {
+		it('decodes version 3.0 correctly', () => {
 			const payload = makePayload(0x30, 0x12);
 			const event = extractVersionEvent(payload);
 
 			expectVersionEvent(event, {
-				xbusVersion: 0x30,
+				xBusVersion: 0x30,
 				xBusVersionString: 'V3.0',
 				cmdsId: 0x12,
 				raw: [0x30, 0x12]
 			});
 		});
 
-		it('decodes xBusVersion 3.6 correctly', () => {
+		it('decodes version 3.6 correctly', () => {
 			const payload = makePayload(0x36, 0x10);
 			const event = extractVersionEvent(payload);
 
 			expectVersionEvent(event, {
-				xbusVersion: 0x36,
+				xBusVersion: 0x36,
 				xBusVersionString: 'V3.6',
 				cmdsId: 0x10,
 				raw: [0x36, 0x10]
 			});
 		});
 
-		it('decodes xBusVersion 4.0 correctly', () => {
+		it('decodes version 4.0 correctly', () => {
 			const event = extractVersionEvent(makePayload(0x40, 0xff));
 
 			expect(event.xBusVersionString).toBe('V4.0');
-			expect(event.xbusVersion).toBe(0x40);
+			expect(event.xBusVersion).toBe(0x40);
 		});
 
-		it('decodes xBusVersion 1.1 correctly', () => {
+		it('decodes version 1.1 correctly', () => {
 			const event = extractVersionEvent(makePayload(0x11, 0x05));
 
 			expect(event.xBusVersionString).toBe('V1.1');
 		});
 
-		it('decodes xBusVersion 2.5 correctly', () => {
+		it('decodes version 2.5 correctly', () => {
 			const event = extractVersionEvent(makePayload(0x25, 0x11));
 
 			expect(event.xBusVersionString).toBe('V2.5');
 		});
 
-		it('decodes xBusVersion with all nibble combinations correctly', () => {
+		it('decodes version with all nibble combinations correctly', () => {
 			const event = extractVersionEvent(makePayload(0x89, 0x00));
 
 			expect(event.xBusVersionString).toBe('V8.9');
 		});
 
-		it('returns Unknown xBusVersion when xbusVersion is 0x00', () => {
+		it('returns Unknown version when xBusVersion is 0x00', () => {
 			const event = extractVersionEvent(makePayload(0x00, 0x42));
 
 			expect(event.xBusVersionString).toBe('Unknown');
-			expect(event.xbusVersion).toBe(0x00);
+			expect(event.xBusVersion).toBe(0x00);
 		});
 	});
 
@@ -128,7 +128,7 @@ describe('decodeLanXVersionPayload', () => {
 			const event = extractVersionEvent(makePayload(0x25, 0x99, 0xaa, 0xbb));
 
 			expect(event.raw).toEqual([0x25, 0x99, 0xaa, 0xbb]);
-			expect(event.xbusVersion).toBe(0x25);
+			expect(event.xBusVersion).toBe(0x25);
 			expect(event.cmdsId).toBe(0x99);
 		});
 
@@ -160,7 +160,7 @@ describe('decodeLanXVersionPayload', () => {
 		it('event always has type x.bus.version', () => {
 			const event = extractVersionEvent(makePayload(0x40, 0xff));
 
-			expect(event.type).toBe('event.x.bus.version');
+			expect(event.type).toBe('event.z21.x.bus.version');
 		});
 	});
 
@@ -180,7 +180,7 @@ describe('decodeLanXVersionPayload', () => {
 			const event = extractVersionEvent(makePayload(0x00, 0x00));
 
 			expectVersionEvent(event, {
-				xbusVersion: 0x00,
+				xBusVersion: 0x00,
 				xBusVersionString: 'Unknown',
 				cmdsId: 0x00
 			});

@@ -14,7 +14,7 @@ import type { Z21CommandService } from '@application-platform/z21';
 export class CommandStationInfoOrchestrator {
 	private req = {
 		firmware: { inFlight: false, lastSent: 0 },
-		xbusVersion: { inFlight: false, lastSent: 0 },
+		xBusVersion: { inFlight: false, lastSent: 0 },
 		hwinfo: { inFlight: false, lastSent: 0 },
 		code: { inFlight: false, lastSent: 0 }
 	};
@@ -30,7 +30,7 @@ export class CommandStationInfoOrchestrator {
 	public reset(): void {
 		this.req = {
 			firmware: { inFlight: false, lastSent: 0 },
-			xbusVersion: { inFlight: false, lastSent: 0 },
+			xBusVersion: { inFlight: false, lastSent: 0 },
 			hwinfo: { inFlight: false, lastSent: 0 },
 			code: { inFlight: false, lastSent: 0 }
 		};
@@ -65,9 +65,9 @@ export class CommandStationInfoOrchestrator {
 				return;
 			}
 		} else {
-			if (!this.commandStationInfo.hasXBusVersion() && this.shouldSend(this.req.xbusVersion, now)) {
-				this.req.xbusVersion.inFlight = true;
-				this.req.xbusVersion.lastSent = now;
+			if (!this.commandStationInfo.hasXBusVersion() && this.shouldSend(this.req.xBusVersion, now)) {
+				this.req.xBusVersion.inFlight = true;
+				this.req.xBusVersion.lastSent = now;
 				this.z21CommandService.getXBusVersion();
 				return;
 			}
@@ -88,9 +88,9 @@ export class CommandStationInfoOrchestrator {
 	/**
 	 * Acknowledges the receipt of a specific type of command station information,
 	 * marking the corresponding request as no longer in flight.
-	 * @param type - The type of information acknowledged ('firmware', 'xbusVersion', 'hwinfo', or 'code')
+	 * @param type - The type of information acknowledged ('firmware', 'xBusVersion', 'hwinfo', or 'code')
 	 */
-	public ack(type: 'firmware' | 'xbusVersion' | 'hwinfo' | 'code'): void {
+	public ack(type: 'firmware' | 'xBusVersion' | 'hwinfo' | 'code'): void {
 		this.req[type].inFlight = false;
 	}
 

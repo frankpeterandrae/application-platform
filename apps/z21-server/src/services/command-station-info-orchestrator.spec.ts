@@ -145,13 +145,13 @@ describe('CommandStationInfoOrchestrator', () => {
 		});
 	});
 
-	describe('poke xBusVersion with firmware < 1.20', () => {
+	describe('poke version with firmware < 1.20', () => {
 		beforeEach(() => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(true);
 			commandStationInfo.getFirmwareVersion.mockReturnValue({ major: 1, minor: 19 });
 		});
 
-		it('requests xBusVersion when firmware < 1.20 and not cached', () => {
+		it('requests version when firmware < 1.20 and not cached', () => {
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
 
 			orchestrator.poke();
@@ -159,7 +159,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getXBusVersion).toHaveBeenCalledTimes(1);
 		});
 
-		it('does not request xBusVersion when already cached', () => {
+		it('does not request version when already cached', () => {
 			commandStationInfo.hasXBusVersion.mockReturnValue(true);
 
 			// Initialize mock before checking
@@ -181,7 +181,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getHardwareInfo).not.toHaveBeenCalled();
 		});
 
-		it('requests xBusVersion when firmware version is 1.0', () => {
+		it('requests version when firmware version is 1.0', () => {
 			commandStationInfo.getFirmwareVersion.mockReturnValue({ major: 1, minor: 0 });
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
 
@@ -190,7 +190,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getXBusVersion).toHaveBeenCalledTimes(1);
 		});
 
-		it('does not request xBusVersion again when request is in flight', () => {
+		it('does not request version again when request is in flight', () => {
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
 
 			orchestrator.poke();
@@ -284,7 +284,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getFirmwareVersion).toHaveBeenCalledTimes(2);
 		});
 
-		it('allows xBusVersion request to be sent again after ack', () => {
+		it('allows version request to be sent again after ack', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(true);
 			commandStationInfo.getFirmwareVersion.mockReturnValue({ major: 1, minor: 0 });
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
@@ -293,7 +293,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			orchestrator.poke();
 			expect(z21CommandService.getXBusVersion).toHaveBeenCalledTimes(1);
 
-			orchestrator.ack('xbusVersion');
+			orchestrator.ack('xBusVersion');
 			orchestrator.poke();
 			expect(z21CommandService.getXBusVersion).toHaveBeenCalledTimes(2);
 		});
@@ -340,7 +340,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getFirmwareVersion).toHaveBeenCalledTimes(2);
 		});
 
-		it('resets xBusVersion request state', () => {
+		it('resets version request state', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(true);
 			commandStationInfo.getFirmwareVersion.mockReturnValue({ major: 1, minor: 0 });
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
@@ -398,7 +398,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			expect(z21CommandService.getHardwareInfo).toHaveBeenCalledTimes(1);
 		});
 
-		it('requests firmware first, then xBusVersion for old firmware', () => {
+		it('requests firmware first, then version for old firmware', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(false);
 
 			// Initialize mock before checking

@@ -3,12 +3,10 @@
  * All rights reserved.
  */
 
+import type { CommandMessage } from '../../message-types';
+
 /**
  * Announces protocol version and optional client name.
  * Initial handshake message sent by client to establish connection.
  */
-export type SessionHello = {
-	type: 'server.command.session.hello';
-	protocolVersion: string;
-	clientName?: string;
-};
+export type SessionHello = CommandMessage<'server', 'session.hello', { protocolVersion: string; clientName?: string }>;

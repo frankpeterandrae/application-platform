@@ -69,77 +69,90 @@ export class ClientMessageHandler {
 
 			case 'system.command.trackpower.set': {
 				// Ping the Z21 gateway (demo behavior), then broadcast new power state
-				this.z21Service.sendTrackPower(msg.on);
-				this.broadcast({ type: 'system.message.trackpower', on: msg.on, short: false });
+				this.z21Service.sendTrackPower(msg.payload.on);
+				this.broadcast({ type: 'system.message.trackpower', payload: { on: msg.payload.on, short: false } });
 				break;
 			}
-
 			case 'loco.command.drive': {
 				// Update locomotive speed/direction and inform clients of the new state
-				const st = this.locoManager.setSpeed(msg.addr, msg.speed, msg.dir);
-				this.pendingDrives.set(msg.addr, { speed: msg.speed, dir: msg.dir });
-				this.scheduleDrive(msg.addr);
+				const st = this.locoManager.setSpeed(msg.payload.addr, msg.payload.speed, msg.payload.dir);
+				this.pendingDrives.set(msg.payload.addr, { speed: msg.payload.speed, dir: msg.payload.dir });
+				this.scheduleDrive(msg.payload.addr);
 				this.broadcast({
 					type: 'loco.message.state',
-					addr: msg.addr,
-					speed: st.speed,
-					dir: st.dir,
-					fns: st.fns,
-					estop: st.estop
+					payload: {
+						addr: msg.payload.addr,
+						speed: st.speed,
+						dir: st.dir,
+						fns: st.fns,
+						estop: st.estop
+					}
 				});
 				break;
 			}
 
 			case 'loco.command.function.set': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
-				const st = this.locoManager.setFunction(msg.addr, msg.fn, msg.on);
-				this.z21Service.setLocoFunction(msg.addr, msg.fn, msg.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off);
+				const st = this.locoManager.setFunction(msg.payload.addr, msg.payload.fn, msg.payload.on);
+				this.z21Service.setLocoFunction(
+					msg.payload.addr,
+					msg.payload.fn,
+					msg.payload.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off
+				);
 				this.broadcast({
 					type: 'loco.message.state',
-					addr: msg.addr,
-					speed: st.speed,
-					dir: st.dir,
-					fns: st.fns,
-					estop: st.estop
+					payload: {
+						addr: msg.payload.addr,
+						speed: st.speed,
+						dir: st.dir,
+						fns: st.fns,
+						estop: st.estop
+					}
 				});
 				break;
 			}
 
 			case 'loco.command.function.toggle': {
 				// Toggle a locomotive function and broadcast the updated locomotive state
-				const st = this.locoManager.setFunction(msg.addr, msg.fn, !(this.locoManager.getState(msg.addr)?.fns[msg.fn] ?? false));
-				this.z21Service.setLocoFunction(msg.addr, msg.fn, LocoFunctionSwitchType.Toggle);
+				const st = this.locoManager.setFunction(
+					msg.payload.addr,
+					msg.payload.fn,
+					!(this.locoManager.getState(msg.payload.addr)?.fns[msg.payload.fn] ?? false)
+				);
+				this.z21Service.setLocoFunction(msg.payload.addr, msg.payload.fn, LocoFunctionSwitchType.Toggle);
 				this.broadcast({
 					type: 'loco.message.state',
-					addr: msg.addr,
-					speed: st.speed,
-					dir: st.dir,
-					fns: st.fns,
-					estop: st.estop
+					payload: {
+						addr: msg.payload.addr,
+						speed: st.speed,
+						dir: st.dir,
+						fns: st.fns,
+						estop: st.estop
+					}
 				});
 				break;
 			}
 
 			case 'loco.command.eStop': {
 				// Emergency stop a locomotive and broadcast the updated state
-				const t = this.driveTimers.get(msg.addr);
+				const t = this.driveTimers.get(msg.payload.addr);
 				if (t) {
 					clearTimeout(t);
 				}
 
-				this.driveTimers.delete(msg.addr);
-				this.pendingDrives.delete(msg.addr);
+				this.driveTimers.delete(msg.payload.addr);
+				this.pendingDrives.delete(msg.payload.addr);
 
-				this.z21Service.setLocoEStop(msg.addr);
-				this.z21Service.getLocoInfo(msg.addr);
+				this.z21Service.setLocoEStop(msg.payload.addr);
+				this.z21Service.getLocoInfo(msg.payload.addr);
 				break;
 			}
 
 			case 'switching.command.turnout.set': {
 				// Update turnout state and notify clients
-				const port: 0 | 1 = msg.state === TurnoutState.DIVERGING ? 1 : 0;
-				this.z21Service.setTurnout(msg.addr, port, { queue: true, pulseMs: msg.pulseMs ?? 100 });
-				this.z21Service.getTurnoutInfo(msg.addr);
+				const port: 0 | 1 = msg.payload.state === TurnoutState.DIVERGING ? 1 : 0;
+				this.z21Service.setTurnout(msg.payload.addr, port, { queue: true, pulseMs: msg.payload.pulseMs ?? 100 });
+				this.z21Service.getTurnoutInfo(msg.payload.addr);
 				break;
 			}
 
@@ -149,7 +162,7 @@ export class ClientMessageHandler {
 			}
 
 			case 'programming.command.cv.read': {
-				const requestId = msg.payload.requestId as string;
+				const requestId = msg.payload.requestId;
 				try {
 					const res = await this.cvProgrammingService.readCv(msg.payload.cvAdress);
 					this.reply(ws, {
@@ -173,7 +186,7 @@ export class ClientMessageHandler {
 			}
 
 			case 'programming.command.cv.write': {
-				const requestId = msg.payload.requestId as string;
+				const requestId = msg.payload.requestId;
 				try {
 					await this.cvProgrammingService.writeCv(msg.payload.cvAdress, msg.payload.cvValue);
 					this.reply(ws, {
@@ -196,18 +209,22 @@ export class ClientMessageHandler {
 				break;
 			}
 
-			case 'programming.command.pom.read': {
+			case 'programming.command.pom.cv.read': {
 				// Not implemented
 				break;
 			}
 
-			case 'programming.command.pom.write': {
+			case 'programming.command.pom.cv.write': {
 				// Not implemented
 				break;
 			}
 		}
 	}
 
+	/**
+	 * Schedule a throttled drive command for a locomotive.
+	 * @param addr - Locomotive address
+	 */
 	private scheduleDrive(addr: number): void {
 		if (this.driveTimers.has(addr)) {
 			return;

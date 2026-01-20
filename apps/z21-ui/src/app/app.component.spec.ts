@@ -6,6 +6,7 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { LocoState } from '@application-platform/protocol';
 import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { MockedLanguageToggleComponent } from '@application-platform/testing';
 import { TurnoutState } from '@application-platform/z21-shared';
@@ -98,12 +99,12 @@ describe('AppComponent', () => {
 
 		expect(comp.store.speedUi()).toBeCloseTo(0.55);
 		expect(sendSpy).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
-		expect(sent.type).toBe('loco.command.drive');
-		expect(sent.addr).toBe(comp.store.selectedAddr());
+		const send = JSON.parse(sendSpy.mock.calls[0][0]);
+		expect(send.type).toBe('loco.command.drive');
+		expect(send.payload.addr).toBe(comp.store.selectedAddr());
 		// speed should be 0..126 rounded
-		expect(sent.speed).toBe(Math.round(0.55 * 126));
-		expect(sent.dir).toBe(comp.store.dir());
+		expect(send.payload.speed).toBe(Math.round(0.55 * 126));
+		expect(send.payload.dir).toBe(comp.store.dir());
 	});
 
 	it('should not send messages when websocket is not open', () => {
@@ -134,11 +135,11 @@ describe('AppComponent', () => {
 		comp.sendFn(2, true);
 
 		expect(sendSpy).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
-		expect(sent.type).toBe('loco.command.function.set');
-		expect(sent.fn).toBe(2);
-		expect(sent.on).toBe(true);
-		expect(sent.addr).toBe(comp.store.selectedAddr());
+		const send = JSON.parse(sendSpy.mock.calls[0][0]);
+		expect(send.type).toBe('loco.command.function.set');
+		expect(send.payload.fn).toBe(2);
+		expect(send.payload.on).toBe(true);
+		expect(send.payload.addr).toBe(comp.store.selectedAddr());
 	});
 
 	it('should send turnout command including pulseMs', () => {
@@ -153,11 +154,11 @@ describe('AppComponent', () => {
 		comp.sendTurnout(TurnoutState.DIVERGING);
 
 		expect(sendSpy).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
-		expect(sent.type).toBe('switching.command.turnout.set');
-		expect(sent.state).toBe(TurnoutState.DIVERGING);
-		expect(sent.pulseMs).toBe(200);
-		expect(sent.addr).toBe(comp.store.turnoutAddr());
+		const send = JSON.parse(sendSpy.mock.calls[0][0]);
+		expect(send.type).toBe('switching.command.turnout.set');
+		expect(send.payload.state).toBe(TurnoutState.DIVERGING);
+		expect(send.payload.pulseMs).toBe(200);
+		expect(send.payload.addr).toBe(comp.store.turnoutAddr());
 	});
 
 	it('should register ws onMessage handler and update store when a server message is received', () => {
@@ -172,7 +173,10 @@ describe('AppComponent', () => {
 		comp.store.draggingSpeed.set(false);
 
 		// simulate server message via the registered handler
-		const serverMsg = { type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any;
+		const serverMsg = {
+			type: 'loco.message.state',
+			payload: { addr: 5, speed: 63, dir: 'REV', fns: { 1: true }, estop: false }
+		} as LocoState;
 		mockWs._handler(serverMsg);
 
 		// store should have been updated by the registered handler
@@ -192,14 +196,14 @@ describe('AppComponent', () => {
 		comp.store.powerOn.set(true);
 		comp.togglePower();
 		expect(comp.store.powerOn()).toBe(false);
-		let sent = JSON.parse(sendSpy.mock.calls[0][0]);
-		expect(sent.type).toBe('system.command.trackpower.set');
-		expect(sent.on).toBe(false);
+		let send = JSON.parse(sendSpy.mock.calls[0][0]);
+		expect(send.type).toBe('system.command.trackpower.set');
+		expect(send.payload.on).toBe(false);
 
 		comp.togglePower();
 		expect(comp.store.powerOn()).toBe(true);
-		sent = JSON.parse(sendSpy.mock.calls[1][0]);
-		expect(sent.on).toBe(true);
+		send = JSON.parse(sendSpy.mock.calls[1][0]);
+		expect(send.payload.on).toBe(true);
 	});
 
 	it('updateFromServer handles loco.message.state updating when addr matches and draggingSpeed false', () => {
@@ -209,7 +213,10 @@ describe('AppComponent', () => {
 		comp.store.draggingSpeed.set(false);
 
 		// message matching address
-		comp.store.updateFromServer({ type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any);
+		comp.store.updateFromServer({
+			type: 'loco.message.state',
+			payload: { addr: 5, speed: 63, dir: 'REV', fns: { 1: true }, estop: false }
+		} as LocoState);
 		expect(comp.store.speedUi()).toBeCloseTo(63 / 126);
 		expect(comp.store.dir()).toBe('REV');
 		expect(comp.store.functions()[1]).toBe(true);
@@ -221,7 +228,10 @@ describe('AppComponent', () => {
 		comp.store.draggingSpeed.set(true);
 		comp.store.speedUi.set(0.2);
 
-		comp.store.updateFromServer({ type: 'loco.message.state', addr: 9, speed: 10, dir: 'FWD', fns: {} } as any);
+		comp.store.updateFromServer({
+			type: 'loco.message.state',
+			payload: { addr: 9, speed: 10, dir: 'FWD', fns: {}, estop: false }
+		} as LocoState);
 		expect(comp.store.speedUi()).toBeCloseTo(0.2);
 	});
 });

@@ -3,11 +3,13 @@
  * All rights reserved.
  */
 
-export type CvWrite = {
-	type: 'programming.command.cv.write';
-	payload: {
+import type { CommandMessage } from '../../message-types';
+
+export type CvWrite = CommandMessage<
+	'programming',
+	'cv.write',
+	{
 		cvAdress: number;
 		cvValue: number;
-		requestId: string;
-	};
-};
+	}
+>;

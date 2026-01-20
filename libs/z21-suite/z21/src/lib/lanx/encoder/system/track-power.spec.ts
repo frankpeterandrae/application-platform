@@ -49,7 +49,7 @@ describe('track-power encoding', () => {
 			it('encodes correct message length', () => {
 				const result = encodeLanXSetTrackPowerOff();
 
-				expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+				expectFrameLength(result, 7); // len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1)
 			});
 		});
 
@@ -110,7 +110,7 @@ describe('track-power encoding', () => {
 			it('encodes correct message length', () => {
 				const result = encodeLanXSetTrackPowerOn();
 
-				expectFrameLength(result, 7); // len(2) + header(2) + xBusHeader(1) + xBusCmd(1) + xor(1)
+				expectFrameLength(result, 7); // len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1)
 			});
 		});
 

@@ -27,20 +27,21 @@ export class Z21UiStore {
 	public turnoutAddr = signal(12);
 
 	/**
-	 *
+	 * Update UI state from server-to-client message
+	 * @param msg - The server-to-client protocol message
 	 */
 	public updateFromServer(msg: ServerToClient): void {
 		switch (msg.type) {
 			case 'system.message.trackpower':
-				this.powerOn.set(msg.on);
+				this.powerOn.set(msg.payload.on);
 				break;
 
 			case 'loco.message.state':
-				if (msg.addr === this.selectedAddr()) {
+				if (msg.payload.addr === this.selectedAddr()) {
 					if (this.draggingSpeed()) return;
-					this.speedUi.set(this.step128ToUiSpeed(msg.speed));
-					this.dir.set(msg.dir);
-					this.functions.set(msg.fns);
+					this.speedUi.set(this.step128ToUiSpeed(msg.payload.speed));
+					this.dir.set(msg.payload.dir);
+					this.functions.set(msg.payload.fns);
 				}
 				break;
 
@@ -52,8 +53,6 @@ export class Z21UiStore {
 				break;
 		}
 	}
-
-	// exakt wie vorher (oder wo du’s hattest)
 
 	/**
 	 * Convert UI speed (0..1) to step128 (0..126)

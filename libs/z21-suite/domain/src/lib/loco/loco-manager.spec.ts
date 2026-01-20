@@ -36,21 +36,15 @@ describe('LocoManager', () => {
 
 		it('creates default state and sets speed and direction', () => {
 			const state = manager.setSpeed(3, 0.5, 'REV');
-			expect(state).toEqual({ speed: 0.5, dir: 'REV', fns: {} });
-			expect(manager.getState(3)).toEqual({ speed: 0.5, dir: 'REV', fns: {} });
+			expect(state).toEqual({ speed: 0.5, dir: 'REV', fns: {}, estop: false });
+			expect(manager.getState(3)).toEqual({ speed: 0.5, dir: 'REV', fns: {}, estop: false });
 		});
 
 		it('returns shallow copy from getAllStates', () => {
 			manager.setSpeed(1, 0.5, 'FWD');
 			const states = manager.getAllStates();
-			states.set(1, { speed: 0, dir: 'REV', fns: {} });
-			expect(manager.getState(1)).toEqual({ speed: 0.5, dir: 'FWD', fns: {} });
-		});
-
-		it('ensureLoco creates loco with undefined estop', () => {
-			const state = manager.ensureLoco(300);
-			expect(state.estop).toBeUndefined();
-			expect(manager.getState(300)).toEqual({ speed: 0, dir: 'FWD', fns: {} });
+			states.set(1, { speed: 0, dir: 'REV', fns: {}, estop: false });
+			expect(manager.getState(1)).toEqual({ speed: 0.5, dir: 'FWD', fns: {}, estop: false });
 		});
 	});
 
@@ -77,15 +71,15 @@ describe('LocoManager', () => {
 		it('updates direction and preserves previous functions', () => {
 			manager.setFunction(7, 1, true);
 			const state = manager.setSpeed(7, 0.2, 'REV');
-			expect(state).toEqual({ speed: 0.2, dir: 'REV', fns: { 1: true } });
+			expect(state).toEqual({ speed: 0.2, dir: 'REV', fns: { 1: true }, estop: false });
 		});
 	});
 
 	describe('function state management', () => {
 		it('sets function state and creates default loco if missing', () => {
 			const state = manager.setFunction(9, 3, true);
-			expect(state).toEqual({ speed: 0, dir: 'FWD', fns: { 3: true } });
-			expect(manager.getState(9)).toEqual({ speed: 0, dir: 'FWD', fns: { 3: true } });
+			expect(state).toEqual({ speed: 0, dir: 'FWD', fns: { 3: true }, estop: false });
+			expect(manager.getState(9)).toEqual({ speed: 0, dir: 'FWD', fns: { 3: true }, estop: false });
 		});
 
 		it('overwrites existing function state', () => {
@@ -102,8 +96,8 @@ describe('LocoManager', () => {
 			manager.setSpeed(2, 0.9, 'REV');
 			const stopped = manager.stopAll();
 			expect(stopped).toEqual([
-				{ addr: 1, state: { speed: 0, dir: 'FWD', fns: { 0: true } } },
-				{ addr: 2, state: { speed: 0, dir: 'REV', fns: {} } }
+				{ addr: 1, state: { speed: 0, dir: 'FWD', fns: { 0: true }, estop: false } },
+				{ addr: 2, state: { speed: 0, dir: 'REV', fns: {}, estop: false } }
 			]);
 			expect(manager.getState(1)?.speed).toBe(0);
 			expect(manager.getState(2)?.speed).toBe(0);

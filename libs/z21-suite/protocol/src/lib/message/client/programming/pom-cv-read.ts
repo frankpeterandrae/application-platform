@@ -3,10 +3,13 @@
  * All rights reserved.
  */
 
-export type PomCvRead = {
-	type: 'programming.command.pom.read';
-	payload: {
+import type { CommandMessage } from '../../message-types';
+
+export type PomCvRead = CommandMessage<
+	'programming',
+	'pom.cv.read',
+	{
 		address: number;
 		cvAdress: number;
-	};
-};
+	}
+>;

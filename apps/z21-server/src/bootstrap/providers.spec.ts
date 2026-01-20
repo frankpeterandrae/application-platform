@@ -4,6 +4,7 @@
  */
 
 import { CommandStationInfo, LocoManager } from '@application-platform/domain';
+import { SessionReady, SystemTrackPower } from '@application-platform/protocol';
 import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -71,7 +72,7 @@ describe('createProviders', () => {
 		// Create a spy on the wsServer.broadcast method
 		const broadcastSpy = vi.spyOn(providers.wsServer, 'broadcast');
 
-		const msg = { type: 'session.ready' } as any;
+		const msg = { type: 'server.replay.session.ready' } as SessionReady;
 
 		// Z21EventHandler uses the broadcast function passed to it in the constructor
 		// We need to access it indirectly by triggering an event
@@ -183,7 +184,7 @@ describe('createProviders', () => {
 		const broadcastSpy = vi.spyOn(providers.wsServer, 'broadcast');
 
 		// Simulate a broadcast through the event handler's broadcast function
-		const testMsg = { type: 'system.trackPower', on: true, short: false } as any;
+		const testMsg = { type: 'system.message.trackpower', payload: { on: true, short: false } } as SystemTrackPower;
 		providers.wsServer.broadcast(testMsg);
 
 		expect(broadcastSpy).toHaveBeenCalledWith(testMsg);
