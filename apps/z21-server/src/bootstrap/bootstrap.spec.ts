@@ -16,6 +16,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Z21EventHandler } from '../handler/z21-event-handler';
 import { AppWsServer } from '../infra/ws/app-websocket-server';
 import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
+import type { CvProgrammingService } from '../services/cv-programming-service';
 
 import { Bootstrap } from './bootstrap';
 import { Providers } from './providers';
@@ -71,7 +72,8 @@ describe('Bootstrap', () => {
 			csInfoOrchestrator: mockCsInfoOrchestrator as any,
 			commandStationInfo: Mock<CommandStationInfo>() as any,
 			wsOnConnection,
-			broadcast
+			broadcast,
+			cvProgrammingService: Mock<CvProgrammingService>() as any
 		};
 
 		return providers;

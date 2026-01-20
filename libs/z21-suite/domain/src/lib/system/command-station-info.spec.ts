@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { CommandStationInfo, type FirmwareVersion, type XbusVersion } from './command-station-info';
+import { CommandStationInfo, type FirmwareVersion, type XBusVersion } from './command-station-info';
 
 describe('CommandStationInfo', () => {
 	let info: CommandStationInfo;
@@ -13,7 +13,7 @@ describe('CommandStationInfo', () => {
 	});
 
 	// Helper functions to create test data (similar to makeProviders in bootstrap.spec.ts)
-	function makeXBusVersion(overrides: Partial<XbusVersion> = {}): XbusVersion {
+	function makeXBusVersion(overrides: Partial<XBusVersion> = {}): XBusVersion {
 		return {
 			xbusVersion: 0x30,
 			xBusVersionString: 'V3.0',

@@ -16,6 +16,7 @@ import {
 import { HardwareType, LocoInfoEvent, Logger, Z21LanHeader, Z21StatusEvent } from '@application-platform/z21-shared';
 
 import type { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
+import type { CvProgrammingService } from '../services/cv-programming-service';
 
 export type BroadcastFn = (msg: ServerToClient) => void;
 
@@ -23,14 +24,24 @@ export type BroadcastFn = (msg: ServerToClient) => void;
  * Handles inbound Z21 payloads, updates track status, and emits server-to-client events.
  */
 export class Z21EventHandler {
-	private trackStatusManager: TrackStatusManager;
+	private readonly trackStatusManager: TrackStatusManager;
 
+	/**
+	 * Creates a new Z21EventHandler.
+	 * @param broadcast - Function to broadcast messages to all WebSocket clients
+	 * @param locoManager - Locomotive state manager
+	 * @param logger - Logger instance
+	 * @param commandStationInfo - Command station information storage
+	 * @param csInfoOrchestrator - Command station info orchestrator
+	 * @param cvProgrammingService - CV programming service
+	 */
 	constructor(
 		private readonly broadcast: BroadcastFn,
 		private readonly locoManager: LocoManager,
 		private readonly logger: Logger,
 		private readonly commandStationInfo: CommandStationInfo,
-		private readonly csInfoOrchestrator: CommandStationInfoOrchestrator
+		private readonly csInfoOrchestrator: CommandStationInfoOrchestrator,
+		private readonly cvProgrammingService: CvProgrammingService
 	) {
 		this.trackStatusManager = new TrackStatusManager();
 	}
@@ -113,6 +124,11 @@ export class Z21EventHandler {
 			const events = usableDatasets.flatMap(datasetsToEvents);
 
 			for (const event of events) {
+				// Forward CV events to CvProgrammingService first
+				// This allows the service to resolve promises before we continue processing
+				if (event.type === 'event.cv.result' || event.type === 'event.cv.nack') {
+					this.cvProgrammingService.onEvent(event);
+				}
 				switch (event.type) {
 					case 'event.system.state': {
 						const flags = deriveTrackFlagsFromSystemState({
@@ -207,6 +223,11 @@ export class Z21EventHandler {
 						this.csInfoOrchestrator.ack('code');
 						break;
 					}
+					case 'event.cv.result':
+					case 'event.cv.nack':
+						// Already forwarded to CvProgrammingService before switch-case
+						// Nothing more to do here
+						break;
 					default: {
 						this.logUnknown('x_bus', event, {
 							from: dg.from,

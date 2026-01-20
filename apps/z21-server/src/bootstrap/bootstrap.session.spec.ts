@@ -14,6 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Z21EventHandler } from '../handler/z21-event-handler';
 import type { AppWsServer } from '../infra/ws/app-websocket-server';
 import type { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
+import type { CvProgrammingService } from '../services/cv-programming-service';
 
 import { Bootstrap } from './bootstrap';
 import type { Providers } from './providers';
@@ -66,7 +67,8 @@ describe('Bootstrap session lifecycle', () => {
 			httpServer: mockHttpServer as any,
 			commandStationInfo: Mock<CommandStationInfo>() as any,
 			wsOnConnection,
-			broadcast
+			broadcast,
+			cvProgrammingService: Mock<CvProgrammingService>() as any
 		};
 
 		return providers;

@@ -6,7 +6,7 @@ import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
 
 import { FULL_BYTE_MASK } from '../constants';
 
-import { encodeLanX, xbusXor } from './frames';
+import { encodeAccessoryAddress, encodeCvAddress, encodeLanX, xbusXor } from './frames';
 
 describe('frames', () => {
 	// Helper function to verify buffer structure (similar to helper functions in bootstrap.spec.ts)
@@ -242,6 +242,67 @@ describe('frames', () => {
 
 				expect(xor1).not.toBe(xor2);
 			});
+		});
+	});
+	describe('encodeAccessoryAddress', () => {
+		it('encodes address 0', () => {
+			const result = encodeAccessoryAddress(0);
+			expect(result.adrMsb).toBe(0);
+			expect(result.adrLsb).toBe(0);
+		});
+
+		it('encodes address 255', () => {
+			const result = encodeAccessoryAddress(255);
+			expect(result.adrMsb).toBe(0);
+			expect(result.adrLsb).toBe(255);
+		});
+
+		it('encodes address 16383 (maximum)', () => {
+			const result = encodeAccessoryAddress(16383);
+			expect(result.adrMsb).toBe(63);
+			expect(result.adrLsb).toBe(255);
+		});
+
+		it('throws error for negative address', () => {
+			expect(() => encodeAccessoryAddress(-1)).toThrow('out of range');
+		});
+
+		it('throws error for address above 16383', () => {
+			expect(() => encodeAccessoryAddress(16384)).toThrow('out of range');
+		});
+	});
+
+	describe('encodeCvAddress', () => {
+		it('encodes CV address 1', () => {
+			const result = encodeCvAddress(1);
+			expect(result.adrMsb).toBe(0);
+			expect(result.adrLsb).toBe(0);
+		});
+
+		it('encodes CV address 29', () => {
+			const result = encodeCvAddress(29);
+			expect(result.adrMsb).toBe(0);
+			expect(result.adrLsb).toBe(28);
+		});
+
+		it('encodes CV address 1024', () => {
+			const result = encodeCvAddress(1024);
+			expect(result.adrMsb).toBe(3);
+			expect(result.adrLsb).toBe(255);
+		});
+
+		it('encodes CV address 16383 (maximum)', () => {
+			const result = encodeCvAddress(16383);
+			expect(result.adrMsb).toBe(63);
+			expect(result.adrLsb).toBe(254);
+		});
+
+		it('throws error for CV address 0', () => {
+			expect(() => encodeCvAddress(0)).toThrow('out of range');
+		});
+
+		it('throws error for CV address above 16383', () => {
+			expect(() => encodeCvAddress(16384)).toThrow('out of range');
 		});
 	});
 });

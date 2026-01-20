@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock, type Mocked } from 'vitest';
 
 import type { Bootstrap } from './bootstrap/bootstrap';
@@ -46,12 +47,15 @@ describe('main', () => {
 	beforeEach(async () => {
 		// Reset modules to ensure clean state for each test (necessary for dynamic import)
 		vi.resetModules();
-		// Clear mock call history but keep implementations
+		// Clear mock call histories for module-level mocks created with vi.mock
 		vi.clearAllMocks();
 
 		// Ensure createProviders has a sensible default return value for tests
 		// that don't override it. Individual tests may override this later.
 		const { createProviders } = await import('./bootstrap/providers');
+
+		// Clear mock call history but keep implementations
+		resetMocksBeforeEach({ createProviders, process });
 		(createProviders as Mock).mockReturnValue({
 			cfg: { httpPort: 5050, z21: { host: '127.0.0.1', udpPort: 21105 } },
 			logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() }
@@ -335,7 +339,8 @@ describe('main', () => {
 			sigintHandler();
 			expect(bootstrap.stop).toHaveBeenCalled();
 
-			vi.clearAllMocks();
+			// Clear mock history between signal handler tests
+			bootstrap.stop.mockClear();
 
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
 			sigtermHandler();

@@ -4,6 +4,7 @@
  */
 
 export * from './loco-info-event';
+export * from './programming';
 export * from './system-state-event';
 export * from './track-power-event';
 export * from './turnout-info-event';

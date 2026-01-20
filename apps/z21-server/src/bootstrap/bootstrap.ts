@@ -5,6 +5,7 @@
 
 import { type ServerToClient } from '@application-platform/protocol';
 import { Z21BroadcastFlag } from '@application-platform/z21';
+import { type WebSocket as WsWebSocket } from 'ws';
 
 import { ClientMessageHandler } from '../handler/client-message-handler';
 import { type ServerConfig } from '../infra/config/config';
@@ -75,7 +76,14 @@ export class Bootstrap {
 	constructor(providersOrConfig: Providers | ServerConfig) {
 		this.providers = 'cfg' in providersOrConfig ? providersOrConfig : createProviders(providersOrConfig);
 		const broadcast = (msg: ServerToClient): void => this.providers.wsServer.broadcast(msg);
-		this.clientMessageHandler = new ClientMessageHandler(this.providers.locoManager, this.providers.z21CommandService, broadcast);
+		const replay = (ws: WsWebSocket, msg: ServerToClient): void => this.providers.wsServer.sendToClient(ws, msg);
+		this.clientMessageHandler = new ClientMessageHandler(
+			this.providers.locoManager,
+			this.providers.z21CommandService,
+			this.providers.cvProgrammingService,
+			replay,
+			broadcast
+		);
 	}
 
 	/**
@@ -137,7 +145,7 @@ export class Bootstrap {
 			/**
 			 * For each accepted client message, route to the client message handler.
 			 */
-			(msg) => this.clientMessageHandler.handle(msg),
+			(msg, ws) => this.clientMessageHandler.handle(msg, ws),
 			(ws) => this.handleClientDisconnect(ws),
 			(ws) => this.handleClientConnected(ws)
 		);

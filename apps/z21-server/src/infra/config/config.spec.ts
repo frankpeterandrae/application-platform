@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loadConfig } from './config';
@@ -18,7 +19,7 @@ describe('loadConfig', () => {
 	const ORIGINAL_ENV = process.env;
 
 	beforeEach(() => {
-		vi.clearAllMocks();
+		resetMocksBeforeEach({});
 		process.env = { ...ORIGINAL_ENV };
 
 		// Mock console.log to keep tests clean

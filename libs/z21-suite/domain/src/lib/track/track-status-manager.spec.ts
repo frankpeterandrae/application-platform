@@ -102,7 +102,7 @@ describe('TrackStatusManager', () => {
 	});
 
 	describe('updateFromLanX', () => {
-		it('updates track status from cs.status event and marks source as ds.lan.x', () => {
+		it('updates track status from z21.status event and marks source as ds.lan.x', () => {
 			const csStatusEvent = makeCsStatusEvent();
 			const status = manager.updateFromLanX(csStatusEvent);
 
@@ -112,7 +112,7 @@ describe('TrackStatusManager', () => {
 			expect(status.source).toBe('ds.lan.x');
 		});
 
-		it('sets power off when cs.status reports power off', () => {
+		it('sets power off when z21.status reports power off', () => {
 			const csStatusEvent = makeCsStatusEvent({ powerOn: false });
 			const status = manager.updateFromLanX(csStatusEvent);
 
@@ -128,7 +128,7 @@ describe('TrackStatusManager', () => {
 			expect(status.emergencyStop).toBe(true);
 		});
 
-		it('uses cs.status power when emergency stop is not active', () => {
+		it('uses z21.status power when emergency stop is not active', () => {
 			manager.updateFromXbusPower(true);
 			const csStatusEvent = makeCsStatusEvent({ powerOn: false });
 			const status = manager.updateFromLanX(csStatusEvent);
@@ -136,14 +136,14 @@ describe('TrackStatusManager', () => {
 			expect(status.powerOn).toBe(false);
 		});
 
-		it('updates short circuit flag from cs.status', () => {
+		it('updates short circuit flag from z21.status', () => {
 			const csStatusEvent = makeCsStatusEvent({ shortCircuit: true });
 			const status = manager.updateFromLanX(csStatusEvent);
 
 			expect(status.short).toBe(true);
 		});
 
-		it('clears short circuit flag when cs.status reports no short', () => {
+		it('clears short circuit flag when z21.status reports no short', () => {
 			manager.updateFromSystemState(makeSystemStateUpdate({ short: true }));
 			const csStatusEvent = makeCsStatusEvent({ shortCircuit: false });
 			const status = manager.updateFromLanX(csStatusEvent);
@@ -221,6 +221,72 @@ describe('TrackStatusManager', () => {
 			const status = manager.setEmergencyStop(true, 'ds.lan.x');
 
 			expect(status.source).toBe('ds.lan.x');
+		});
+	});
+
+	describe('setShortCircuit', () => {
+		it('sets short circuit to true with ds.x.bus source', () => {
+			const status = manager.setShortCircuit(true, 'ds.x.bus');
+
+			expect(status.short).toBe(true);
+			expect(status.source).toBe('ds.x.bus');
+		});
+
+		it('sets short circuit to false with ds.lan.x source', () => {
+			manager.setShortCircuit(true, 'ds.x.bus');
+			const status = manager.setShortCircuit(false, 'ds.lan.x');
+
+			expect(status.short).toBe(false);
+			expect(status.source).toBe('ds.lan.x');
+		});
+
+		it('preserves existing power status when setting short circuit', () => {
+			manager.updateFromXbusPower(true);
+			const status = manager.setShortCircuit(true, 'ds.system.state');
+
+			expect(status.powerOn).toBe(true);
+			expect(status.short).toBe(true);
+		});
+
+		it('preserves existing emergency stop status when setting short circuit', () => {
+			manager.setEmergencyStop(true, 'ds.x.bus');
+			const status = manager.setShortCircuit(true, 'ds.lan.x');
+
+			expect(status.emergencyStop).toBe(true);
+			expect(status.short).toBe(true);
+		});
+
+		it('handles undefined source parameter', () => {
+			const status = manager.setShortCircuit(true, undefined);
+
+			expect(status.short).toBe(true);
+			expect(status.source).toBeUndefined();
+		});
+
+		it('toggles short circuit flag multiple times', () => {
+			manager.setShortCircuit(true, 'ds.system.state');
+			manager.setShortCircuit(false, 'ds.system.state');
+			const status = manager.setShortCircuit(true, 'ds.system.state');
+
+			expect(status.short).toBe(true);
+		});
+
+		it('overwrites previous source when setting short circuit', () => {
+			manager.updateFromSystemState(makeSystemStateUpdate({ powerOn: true, source: 'ds.system.state' }));
+			const status = manager.setShortCircuit(true, 'ds.lan.x');
+
+			expect(status.source).toBe('ds.lan.x');
+		});
+
+		it('combines with existing state from different sources', () => {
+			manager.updateFromXbusPower(true); // source: ds.x.bus, powerOn: true
+			manager.setEmergencyStop(true, 'ds.lan.x'); // source: ds.lan.x, emergencyStop: true
+			const status = manager.setShortCircuit(true, 'ds.system.state'); // source: ds.system.state, short: true
+
+			expect(status.powerOn).toBe(true);
+			expect(status.emergencyStop).toBe(true);
+			expect(status.short).toBe(true);
+			expect(status.source).toBe('ds.system.state');
 		});
 	});
 });

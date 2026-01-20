@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+export * from './cv-nack';
+export * from './cv-result';
 export * from './feedback-changed';
 export * from './loco-estop-event';
 export * from './loco-state';

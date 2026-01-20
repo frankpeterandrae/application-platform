@@ -15,12 +15,41 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { setupTestingModule } from '../test-setup';
 
 import { AppComponent } from './app.component';
+import { WsClientService } from './ws-client.service';
+
 describe('AppComponent', () => {
 	let fixture: ComponentFixture<AppComponent>;
+	let mockWs: any;
 
 	beforeEach(async () => {
-		// Removed overrideComponent so the real template and styles are used in tests
+		// create a controllable mock for the WsClientService so tests don't attempt real network
+		const sendWrapper = vi.fn();
+		mockWs = {
+			// simple onMessage registration that captures handler
+			onMessage: (h: any) => {
+				mockWs._handler = h;
+				return () => {
+					mockWs._handler = undefined;
+				};
+			},
+			// send only forwards to wrapper when marked open
+			_isOpen: false,
+			open: () => (mockWs._isOpen = true),
+			close: () => (mockWs._isOpen = false),
+			send: (msg: any) => {
+				if (mockWs._isOpen) sendWrapper(JSON.stringify(msg));
+			},
+			_requestCalls: [] as any[],
+			request: (builder: any, opts?: any) => {
+				// minimal request shim: build a fake requestId and return a promise that can be resolved
+				const reqId = 'test-req';
+				const msg = builder(reqId);
+				mockWs._requestCalls.push({ msg, opts });
+				return Promise.reject(new Error('not implemented in mock'));
+			}
+		};
 
+		// Provide mocked services to the testing module
 		await setupTestingModule({
 			imports: [AppComponent],
 			providers: [
@@ -35,7 +64,8 @@ describe('AppComponent', () => {
 						}
 					}
 				},
-				{ provide: LanguageToggleComponent, useClass: MockedLanguageToggleComponent }
+				{ provide: LanguageToggleComponent, useClass: MockedLanguageToggleComponent },
+				{ provide: WsClientService, useValue: mockWs }
 			]
 		});
 
@@ -50,150 +80,148 @@ describe('AppComponent', () => {
 	it('should set speed signal and send loco.command.drive when websocket is open', () => {
 		const comp = fixture.componentInstance;
 
-		// Ensure WebSocket.OPEN is available in the environment for the component check
-		const originalWebSocket = (global as any).WebSocket;
-		if (!originalWebSocket || originalWebSocket.OPEN === undefined) {
-			(global as any).WebSocket = Object.assign(originalWebSocket ?? {}, { OPEN: 1 });
-		}
+		// mark mock ws as open so its send forwards to the wrapper
+		mockWs.open();
 
-		const mockSend = vi.fn();
-		(comp as any).ws = { readyState: (global as any).WebSocket.OPEN, send: mockSend } as any;
+		// replace internal send wrapper spy reference for assertion
+		const sendSpy = vi.fn();
+		// override internal wrapper (we cannot reach closure created in beforeEach), so recreate mockWs.send
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
 
-		comp.setSpeed(55);
+		// set a sensible selected address in the store
+		comp.store.selectedAddr.set(42);
 
-		expect(comp.speed()).toBe(55);
-		expect(mockSend).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(mockSend.mock.calls[0][0]);
+		// setSpeed now expects a 0..1 UI value
+		comp.setSpeed(0.55);
+
+		expect(comp.store.speedUi()).toBeCloseTo(0.55);
+		expect(sendSpy).toHaveBeenCalledTimes(1);
+		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
 		expect(sent.type).toBe('loco.command.drive');
-		expect(sent.addr).toBe(comp.addr());
-		expect(sent.speed).toBe(126);
-		expect(sent.dir).toBe(comp.dir());
-
-		// restore
-		if (originalWebSocket !== undefined) (global as any).WebSocket = originalWebSocket;
+		expect(sent.addr).toBe(comp.store.selectedAddr());
+		// speed should be 0..126 rounded
+		expect(sent.speed).toBe(Math.round(0.55 * 126));
+		expect(sent.dir).toBe(comp.store.dir());
 	});
 
 	it('should not send messages when websocket is not open', () => {
 		const comp = fixture.componentInstance;
-		const mockSend = vi.fn();
-		(comp as any).ws = { readyState: 0, send: mockSend } as any;
 
-		comp.setSpeed(10);
-		expect(comp.speed()).toBe(10);
-		expect(mockSend).not.toHaveBeenCalled();
+		// ensure mock ws is closed
+		mockWs.close();
+
+		const sendSpy = vi.fn();
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
+
+		comp.setSpeed(0.1);
+		expect(comp.store.speedUi()).toBeCloseTo(0.1);
+		expect(sendSpy).not.toHaveBeenCalled();
 	});
 
 	it('should send function set command with correct payload', () => {
 		const comp = fixture.componentInstance;
-		const mockSend = vi.fn();
-		const WS_OPEN = (global as any).WebSocket?.OPEN ?? 1;
-		(comp as any).ws = { readyState: WS_OPEN, send: mockSend } as any;
+		mockWs.open();
+		const sendSpy = vi.fn();
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
 
+		comp.store.selectedAddr.set(7);
 		comp.sendFn(2, true);
 
-		expect(mockSend).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(mockSend.mock.calls[0][0]);
+		expect(sendSpy).toHaveBeenCalledTimes(1);
+		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
 		expect(sent.type).toBe('loco.command.function.set');
 		expect(sent.fn).toBe(2);
 		expect(sent.on).toBe(true);
-		expect(sent.addr).toBe(comp.addr());
+		expect(sent.addr).toBe(comp.store.selectedAddr());
 	});
 
 	it('should send turnout command including pulseMs', () => {
 		const comp = fixture.componentInstance;
-		const mockSend = vi.fn();
-		const WS_OPEN = (global as any).WebSocket?.OPEN ?? 1;
-		(comp as any).ws = { readyState: WS_OPEN, send: mockSend } as any;
+		mockWs.open();
+		const sendSpy = vi.fn();
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
 
+		comp.store.turnoutAddr.set(123);
 		comp.sendTurnout(TurnoutState.DIVERGING);
 
-		expect(mockSend).toHaveBeenCalledTimes(1);
-		const sent = JSON.parse(mockSend.mock.calls[0][0]);
+		expect(sendSpy).toHaveBeenCalledTimes(1);
+		const sent = JSON.parse(sendSpy.mock.calls[0][0]);
 		expect(sent.type).toBe('switching.command.turnout.set');
 		expect(sent.state).toBe(TurnoutState.DIVERGING);
 		expect(sent.pulseMs).toBe(200);
-		expect(sent.addr).toBe(comp.turnoutAddr());
+		expect(sent.addr).toBe(comp.store.turnoutAddr());
 	});
 
-	it('should update lastMsg when a server message is received via websocket', () => {
+	it('should register ws onMessage handler and update store when a server message is received', () => {
+		// Setup a fresh component that received the mockWs via DI in beforeEach
 		const comp = fixture.componentInstance;
 
-		// Mock WebSocket class that captures the instance
-		class MockWebSocket {
-			public static lastInstance: any;
-			public onopen: (() => void) | null = null;
-			public onclose: (() => void) | null = null;
-			public onmessage: ((ev: any) => void) | null = null;
-			public readyState = 1;
-			constructor() {
-				(MockWebSocket as any).lastInstance = this;
-			}
-			public send(_d: any): void {
-				// noop for test
-			}
-		}
+		// ensure mockWs captured a handler during component construction
+		expect(typeof mockWs._handler === 'function').toBe(true);
 
-		const originalWebSocket = (global as any).WebSocket;
-		(global as any).WebSocket = MockWebSocket as any;
+		// set selected address so updateFromServer will match
+		comp.store.selectedAddr.set(5);
+		comp.store.draggingSpeed.set(false);
 
-		// call private connect to create a MockWebSocket instance and wire handlers
-		(comp as any).connect();
-		const inst = (MockWebSocket as any).lastInstance as MockWebSocket;
-		expect(inst).toBeDefined();
+		// simulate server message via the registered handler
+		const serverMsg = { type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any;
+		mockWs._handler(serverMsg);
 
-		// simulate open -> component should set status to connected
-		if (inst.onopen) inst.onopen();
-		expect(comp.status()).toBe('connected');
-
-		// simulate server message
-		const serverMsg = { type: 'some.server.msg', value: 42 };
-		if (inst.onmessage) inst.onmessage({ data: JSON.stringify(serverMsg) });
-		// lastMsg is pretty-printed JSON
-		expect(comp.lastMsg()).toBe(JSON.stringify(serverMsg, null, 2));
-
-		// restore
-		(global as any).WebSocket = originalWebSocket;
+		// store should have been updated by the registered handler
+		expect(comp.store.speedUi()).toBeCloseTo(63 / 126);
+		expect(comp.store.dir()).toBe('REV');
+		expect(comp.store.functions()[1]).toBe(true);
 	});
 
 	it('should toggle power and send commands when websocket is open', () => {
 		const comp = fixture.componentInstance;
-		const WS_OPEN = (global as any).WebSocket?.OPEN ?? 1;
-		const mockSend = vi.fn();
-		(comp as any).ws = { readyState: WS_OPEN, send: mockSend } as any;
+		mockWs.open();
+		const sendSpy = vi.fn();
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
 
-		comp.powerOn.set(true);
+		comp.store.powerOn.set(true);
 		comp.togglePower();
-		expect(comp.powerOn()).toBe(false);
-		let sent = JSON.parse(mockSend.mock.calls[0][0]);
+		expect(comp.store.powerOn()).toBe(false);
+		let sent = JSON.parse(sendSpy.mock.calls[0][0]);
 		expect(sent.type).toBe('system.command.trackpower.set');
 		expect(sent.on).toBe(false);
 
 		comp.togglePower();
-		expect(comp.powerOn()).toBe(true);
-		sent = JSON.parse(mockSend.mock.calls[1][0]);
+		expect(comp.store.powerOn()).toBe(true);
+		sent = JSON.parse(sendSpy.mock.calls[1][0]);
 		expect(sent.on).toBe(true);
 	});
 
 	it('updateFromServer handles loco.message.state updating when addr matches and draggingSpeed false', () => {
 		const comp = fixture.componentInstance;
 		// prepare state
-		comp.addr.set(5);
-		(comp as any).draggingSpeed.set(false);
+		comp.store.selectedAddr.set(5);
+		comp.store.draggingSpeed.set(false);
 
 		// message matching address
-		(comp as any).updateFromServer({ type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any);
-		expect(comp.speed()).toBeCloseTo(63 / 126);
-		expect(comp.dir()).toBe('REV');
-		expect(comp.functions()[1]).toBe(true);
+		comp.store.updateFromServer({ type: 'loco.message.state', addr: 5, speed: 63, dir: 'REV', fns: { 1: true } } as any);
+		expect(comp.store.speedUi()).toBeCloseTo(63 / 126);
+		expect(comp.store.dir()).toBe('REV');
+		expect(comp.store.functions()[1]).toBe(true);
 	});
 
 	it('updateFromServer does not update speed when draggingSpeed is true', () => {
 		const comp = fixture.componentInstance;
-		comp.addr.set(9);
-		(comp as any).draggingSpeed.set(true);
-		comp.speed.set(0.2);
+		comp.store.selectedAddr.set(9);
+		comp.store.draggingSpeed.set(true);
+		comp.store.speedUi.set(0.2);
 
-		(comp as any).updateFromServer({ type: 'loco.message.state', addr: 9, speed: 10, dir: 'FWD', fns: {} } as any);
-		expect(comp.speed()).toBe(0.2);
+		comp.store.updateFromServer({ type: 'loco.message.state', addr: 9, speed: 10, dir: 'FWD', fns: {} } as any);
+		expect(comp.store.speedUi()).toBeCloseTo(0.2);
 	});
 });

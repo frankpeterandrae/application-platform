@@ -4,11 +4,11 @@
   -->
 
 <h1>Z21 UI</h1>
-<p>WS: {{ status() }}</p>
+<p>WS: {{ ws.status() }}</p>
 
 <div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
 	<label for="loco">Lok</label>
-	<input id="loco" type="number" [value]="addr()" (input)="addr.set(+$any($event.target).value)" />
+	<input id="loco" type="number" [value]="store.selectedAddr()" (input)="setLocoNumber(+$any($event.target).value)" />
 	<label for="speed">Speed</label>
 	<input
 		id="speed"
@@ -16,30 +16,39 @@
 		min="0"
 		max="1"
 		step="0.01"
-		[value]="speed()"
-		(pointerdown)="draggingSpeed.set(true)"
-		(pointerup)="draggingSpeed.set(false)"
-		(pointercancel)="draggingSpeed.set(false)"
+		[value]="store.speedUi()"
+		(pointerdown)="draggingSpeed(true)"
+		(pointerup)="draggingSpeed(false)"
+		(pointercancel)="draggingSpeed(false)"
 		(input)="setSpeed(+$any($event.target).value)"
 	/>
 	<button (click)="sendEStop()">Stop</button>
-	<button (click)="dir.set(dir() === 'FWD' ? 'REV' : 'FWD')">Dir: {{ dir() }}</button>
-	@for (fn of functions() | keyvalue: numericKeySort; track fn.key) {
+	<button (click)="store.dir.set(store.dir() === 'FWD' ? 'REV' : 'FWD')">Dir: {{ store.dir() }}</button>
+	@for (fn of store.functions() | keyvalue: numericKeySort; track fn.key) {
 		<button (click)="sendFn(+fn.key, !fn.value)">F{{ fn.key }}: {{ fn.value }}</button>
 	}
 </div>
 
 <div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
 	<label for="turnout">Weiche</label>
-	<input id="turnout" type="number" [value]="turnoutAddr()" (input)="turnoutAddr.set(+$any($event.target).value)" />
+	<input id="turnout" type="number" [value]="store.turnoutAddr()" (input)="store.turnoutAddr.set(+$any($event.target).value)" />
 	<button (click)="sendTurnout(TurnoutState.STRAIGHT)">Gerade</button>
 	<button (click)="sendTurnout(TurnoutState.DIVERGING)">Abzweig</button>
 </div>
 
 <div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
+	<label for="cv">CV</label>
+	<input id="cv" type="number" [value]="cvAddress()" (input)="cvAddress.set(+$any($event.target).value)" />
+	<label for="cvValue">Wert</label>
+	<input id="cvValue" type="number" [value]="cvValue()" (input)="cvValue.set(+$any($event.target).value)" />
+	<button (click)="readCv()">Lesen</button>
+	<button (click)="writeCv()">Schreiben</button>
+</div>
+
+<div style="display: flex; gap: 12px; align-items: center; margin: 12px 0">
 	<button (click)="togglePower()">
 		Power
-		@if (powerOn()) {
+		@if (store.powerOn()) {
 			ON
 		} @else {
 			OFF
@@ -47,4 +56,4 @@
 	</button>
 </div>
 
-<pre>{{ lastMsg() }}</pre>
+<pre>{{ ws.lastMessage() }}</pre>

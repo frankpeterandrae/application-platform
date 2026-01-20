@@ -1012,7 +1012,7 @@ describe('Z21CommandService', () => {
 			];
 
 			methods.forEach((method) => {
-				vi.clearAllMocks();
+				resetMocksBeforeEach({});
 				method();
 				const buffer = services.udp.sendRaw.mock.calls[0][0];
 				expect(Buffer.isBuffer(buffer)).toBe(true);
@@ -1199,6 +1199,73 @@ describe('Z21CommandService', () => {
 			}).not.toThrow();
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(3);
+		});
+	});
+
+	describe('sendCvRead', () => {
+		it('sends CV read command for CV1', () => {
+			services.service.sendCvRead(1);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+			expect(services.logger.debug).toHaveBeenCalledWith('[z21] tx CV_READ', expect.objectContaining({ cvAddress: 1 }));
+		});
+
+		it('sends CV read command for CV29', () => {
+			services.service.sendCvRead(29);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+			expect(services.logger.debug).toHaveBeenCalledWith('[z21] tx CV_READ', expect.objectContaining({ cvAddress: 29 }));
+		});
+
+		it('sends CV read command for high address CV1024', () => {
+			services.service.sendCvRead(1024);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+		});
+	});
+
+	describe('sendCvWrite', () => {
+		it('sends CV write command for CV1 with value 3', () => {
+			services.service.sendCvWrite(1, 3);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+			expect(services.logger.debug).toHaveBeenCalledWith('[z21] tx CV_WRITE', expect.objectContaining({ cvAddress: 1, cvValue: 3 }));
+		});
+
+		it('sends CV write command for CV29 with value 42', () => {
+			services.service.sendCvWrite(29, 42);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+			expect(services.logger.debug).toHaveBeenCalledWith(
+				'[z21] tx CV_WRITE',
+				expect.objectContaining({ cvAddress: 29, cvValue: 42 })
+			);
+		});
+
+		it('sends CV write with value 0', () => {
+			services.service.sendCvWrite(1, 0);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
+		});
+
+		it('sends CV write with value 255', () => {
+			services.service.sendCvWrite(1, 255);
+
+			expectUdpCalled(1);
+			const buffer = extractBuffer(0);
+			expectValidBuffer(buffer);
 		});
 	});
 });

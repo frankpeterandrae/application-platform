@@ -84,4 +84,20 @@ export class TrackStatusManager {
 		};
 		return this.getStatus();
 	}
+
+	/**
+	 * Sets the short circuit status directly.
+	 *
+	 * @param shortCircuit - The short circuit status to set.
+	 * @param source - The source of the update.
+	 * @returns Updated track status.
+	 */
+	public setShortCircuit(shortCircuit: boolean, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x' | undefined): TrackStatus {
+		this.status = {
+			...this.status,
+			short: shortCircuit,
+			source
+		};
+		return this.getStatus();
+	}
 }

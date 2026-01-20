@@ -88,7 +88,6 @@ describe('Z21Udp', () => {
 	let services: Services;
 
 	beforeEach(() => {
-		vi.clearAllMocks();
 		services = makeServices();
 		resetMocksBeforeEach(services);
 	});

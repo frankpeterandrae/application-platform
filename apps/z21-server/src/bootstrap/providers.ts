@@ -16,12 +16,14 @@ import { Z21EventHandler } from '../handler/z21-event-handler';
 import { loadConfig, type ServerConfig } from '../infra/config/config';
 import { AppWsServer } from '../infra/ws/app-websocket-server';
 import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
+import { CvProgrammingService } from '../services/cv-programming-service';
 
 export type Providers = {
 	/**
 	 * Loads server configuration (HTTP port, Z21 connection details, safety flags).
 	 */
 	cfg: ServerConfig;
+
 	/**
 	 * Application logger.
 	 */
@@ -31,33 +33,46 @@ export type Providers = {
 	 * HTTP server that serves static files from `publicDir`.
 	 */
 	httpServer: http.Server;
+
 	/**
 	 * Application WebSocket server wrapper that handles session handshake,
 	 * validation, and message routing.
 	 */
 	wsServer: AppWsServer;
+
 	/**
 	 * Z21 UDP gateway used to communicate with the digital command station.
 	 */
 	udp: Z21Udp;
 
 	commandStationInfo: CommandStationInfo;
+
 	/**
 	 * Z21 service wrapper around the UDP gateway for higher-level operations.
 	 */
 	z21CommandService: Z21CommandService;
+
+	/**
+	 * Orchestrates command station info updates and synchronization.
+	 */
 	csInfoOrchestrator: CommandStationInfoOrchestrator;
 
 	/**
 	 * Manages locomotive states (speed, direction, functions).
 	 */
 	locoManager: LocoManager;
+
 	/**
 	 * Z21 inbound event handler:
 	 * - Updates track status (power/short/e-stop)
 	 * - Broadcasts datasets and derived events to connected clients
 	 */
 	z21EventHandler: Z21EventHandler;
+
+	/**
+	 * CV programming service for reading/writing decoder CVs.
+	 */
+	cvProgrammingService: CvProgrammingService;
 };
 
 /**
@@ -67,8 +82,8 @@ export type Providers = {
  */
 export function createProviders(cfg = loadConfig()): Providers {
 	const logger = createConsoleLogger({
-		level: cfg.dev?.logLevel ?? 'info',
-		pretty: true,
+		level: cfg.dev?.logLevel ?? 'debug',
+		pretty: cfg.dev?.pretty ?? true,
 		context: { app: 'server' }
 	});
 
@@ -83,6 +98,7 @@ export function createProviders(cfg = loadConfig()): Providers {
 	const z21CommandService = new Z21CommandService(udp, logger.child({ component: 'z21.service' }));
 
 	const csInfoOrchestrator = new CommandStationInfoOrchestrator(commandStationInfo, z21CommandService);
+	const cvProgrammingService = new CvProgrammingService(z21CommandService, 5000);
 	const locoManager = new LocoManager();
 
 	const broadcast = (msg: ServerToClient): void => wsServer.broadcast(msg);
@@ -91,13 +107,15 @@ export function createProviders(cfg = loadConfig()): Providers {
 		locoManager,
 		logger.child({ component: 'z21.handler' }),
 		commandStationInfo,
-		csInfoOrchestrator
+		csInfoOrchestrator,
+		cvProgrammingService
 	);
 
 	return {
 		cfg,
 		commandStationInfo,
 		csInfoOrchestrator,
+		cvProgrammingService,
 		httpServer,
 		locoManager,
 		logger,

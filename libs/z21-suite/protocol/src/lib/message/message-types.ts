@@ -4,8 +4,23 @@
  */
 
 // Import individual types for union definitions
-import type { LocoDrive, LocoEStop, LocoFunctionSet, LocoFunctionToggle, SessionHello, StopAll, TrackpowerSet, TurnoutSet } from './client';
 import type {
+	CvRead,
+	CvWrite,
+	LocoDrive,
+	LocoEStop,
+	LocoFunctionSet,
+	LocoFunctionToggle,
+	PomCvRead,
+	PomCvWrite,
+	SessionHello,
+	StopAll,
+	TrackpowerSet,
+	TurnoutSet
+} from './client';
+import type {
+	CvNack,
+	CvResult,
 	FeedbackChanged,
 	LocoEStopEvent,
 	LocoState,
@@ -27,10 +42,14 @@ import type {
  * 2. Add it to this union
  */
 export type ClientToServer =
+	| CvRead
+	| CvWrite
 	| LocoDrive
 	| LocoEStop
 	| LocoFunctionSet
 	| LocoFunctionToggle
+	| PomCvRead
+	| PomCvWrite
 	| SessionHello
 	| StopAll
 	| TrackpowerSet
@@ -51,6 +70,10 @@ export const CLIENT_TO_SERVER_TYPES = {
 	'loco.command.function.set': true,
 	'loco.command.function.toggle': true,
 	'loco.command.stop.all': true,
+	'programming.command.cv.read': true,
+	'programming.command.cv.write': true,
+	'programming.command.pom.read': true,
+	'programming.command.pom.write': true,
 	'server.command.session.hello': true,
 	'switching.command.turnout.set': true,
 	'system.command.trackpower.set': true
@@ -64,6 +87,8 @@ export const CLIENT_TO_SERVER_TYPES = {
  * 2. Add it to this union
  */
 export type ServerToClient =
+	| CvNack
+	| CvResult
 	| FeedbackChanged
 	| LocoEStopEvent
 	| LocoState
@@ -90,6 +115,8 @@ export const SERVER_TO_CLIENT_TYPES = {
 	'loco.message.eStop': true,
 	'loco.message.state': true,
 	'server.replay.session.ready': true,
+	'programming.replay.cv.nack': true,
+	'programming.replay.cv.result': true,
 	'switching.message.turnout.state': true,
 	'system.message.firmware.version': true,
 	'system.message.hardware.info': true,
