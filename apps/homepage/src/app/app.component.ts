@@ -83,16 +83,16 @@ export class AppComponent implements OnInit {
 				icon: IconDefinition.PALETTE,
 				route: '/paint-rack'
 			},
-			...(!environment.production
-				? [
+			...(environment.production
+				? []
+				: [
 						{
 							label: inDevelopment,
 							icon: IconDefinition.PALETTE,
 							route: '/dev',
 							children: [{ label: test, route: '/dev/test' }]
 						}
-					]
-				: [])
+					])
 		];
 	}
 }

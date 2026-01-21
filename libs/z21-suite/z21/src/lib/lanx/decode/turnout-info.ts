@@ -19,7 +19,14 @@ export function decodeLanXTurnoutInfoPayload(payload: Uint8Array): Extract<Z21Ev
 	const addr = decodeDccAddress(payload[0], payload[1]);
 
 	const zz = payload[2] & 0x03;
-	const state: TurnoutState = zz === 1 ? TurnoutState.STRAIGHT : zz === 2 ? TurnoutState.DIVERGING : TurnoutState.UNKNOWN;
+	let state: TurnoutState;
+	if (zz === 1) {
+		state = TurnoutState.STRAIGHT;
+	} else if (zz === 2) {
+		state = TurnoutState.DIVERGING;
+	} else {
+		state = TurnoutState.UNKNOWN;
+	}
 
 	return [{ type: 'event.turnout.info', addr, state }];
 }

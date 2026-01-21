@@ -361,6 +361,18 @@ describe('server e2e', () => {
 		});
 	});
 
+	async function prepareTest() {
+		const base = await startServer();
+		const z21 = await startFakeZ21(base.fakeZ21Port);
+
+		const ws = await connectWs(base.httpPort);
+
+		// ensure activation traffic happened, then ignore it for this test
+		await waitFor(() => (z21.rx.length >= 1 ? z21.rx.length : undefined), { label: 'z21 rx pre', timeoutMs: 2000 });
+		z21.rx.splice(0);
+		return { base, z21, ws };
+	}
+
 	describe('session lifecycle', () => {
 		it('activates Z21 session on first WS client (broadcastflags + systemstate)', async () => {
 			const base = await startServer();
@@ -387,14 +399,7 @@ describe('server e2e', () => {
 		}, 20000);
 
 		it('deactivates Z21 session on last WS client (LAN_LOGOFF)', async () => {
-			const base = await startServer();
-			const z21 = await startFakeZ21(base.fakeZ21Port);
-
-			const ws = await connectWs(base.httpPort);
-
-			// ensure activation traffic happened, then ignore it for this test
-			await waitFor(() => (z21.rx.length >= 1 ? z21.rx.length : undefined), { label: 'z21 rx pre', timeoutMs: 2000 });
-			z21.rx.splice(0);
+			const { base, z21, ws } = await prepareTest();
 
 			// Closing the last client should trigger LAN_LOGOFF
 			ws.ws.close();
@@ -405,26 +410,20 @@ describe('server e2e', () => {
 				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
 			});
 
+			// Assert that the LAN_LOGOFF frame was actually emitted to the Z21 fake
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).toContain('04003000');
+
 			await stopCtx({ ...base, ws: ws.ws });
 			await z21.close();
 		}, 20000);
 
 		it('kicks a zombie WS client via ping/pong and deactivates Z21 session (LAN_LOGOFF)', async () => {
-			const base = await startServer();
-			const z21 = await startFakeZ21(base.fakeZ21Port);
+			const { base, z21, ws } = await prepareTest();
 
-			const ws1 = await connectWs(base.httpPort);
-
-			// Activation traffic abwarten und dann ignorieren
-			await waitFor(() => (z21.rx.length >= 1 ? z21.rx.length : undefined), { label: 'z21 rx pre', timeoutMs: 2000 });
-			z21.rx.splice(0);
-
-			// "Zombie": Socket halb-offen simulieren, indem wir keine pongs liefern können.
-			// Praktisch: wir beenden einfach den underlying TCP socket ohne Close-Handshake.
-			// ws (node 'ws') exposes _socket; das ist intern, aber für e2e ok.
-
-			const raw: any = ws1.ws as any;
-			raw._socket?.destroy();
+			// "Zombie": Simulate a half-open socket by terminating the WebSocket connection.
+			// This prevents the server from receiving pongs, simulating a "zombie" connection.
+			ws.ws.terminate();
 
 			// Jetzt muss der server per heartbeat feststellen: kein pong => terminate => disconnect => LAN_LOGOFF
 			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
@@ -433,7 +432,11 @@ describe('server e2e', () => {
 				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
 			});
 
-			await stopCtx({ ...base, ws: ws1.ws });
+			// Assert that the LAN_LOGOFF frame was emitted after kicking the zombie
+			const hex = z21.rx.map((b) => b.toString('hex'));
+			expect(hex).toContain('04003000');
+
+			await stopCtx({ ...base, ws: ws.ws });
 			await z21.close();
 		}, 20000);
 

@@ -53,7 +53,7 @@ export function createConsoleLogger(opts: LoggerOptions): Logger {
 			level: lvl,
 			msg,
 			...baseCtx,
-			...(meta ?? {})
+			...meta
 		};
 
 		if (pretty) {

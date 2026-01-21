@@ -54,9 +54,9 @@ export class AppComponent {
 	protected numericKeySort = (a: KeyValue<string, unknown>, b: KeyValue<string, unknown>): number => {
 		const na = Number(a.key);
 		const nb = Number(b.key);
-		if (isNaN(na) && isNaN(nb)) return 0;
-		if (isNaN(na)) return -1;
-		if (isNaN(nb)) return 1;
+		if (Number.isNaN(na) && Number.isNaN(nb)) return 0;
+		if (Number.isNaN(na)) return -1;
+		if (Number.isNaN(nb)) return 1;
 		return na - nb;
 	};
 

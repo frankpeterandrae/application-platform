@@ -26,8 +26,8 @@ export class WsClientService {
 	public lastMessage = signal<string>('');
 
 	private ws?: WebSocket;
-	private pending = new Map<string, Pending>();
-	private handlers = new Set<MsgHandler>();
+	private readonly pending = new Map<string, Pending>();
+	private readonly handlers = new Set<MsgHandler>();
 
 	constructor() {
 		this.connect();
@@ -99,7 +99,7 @@ export class WsClientService {
 		const timeoutMs = opts?.timeoutMs ?? 50000;
 
 		return new Promise<TOk>((resolve, reject) => {
-			const timer = window.setTimeout(() => {
+			const timer = globalThis.setTimeout(() => {
 				this.pending.delete(requestId);
 				reject(new Error('Request timed out'));
 			}, timeoutMs);
@@ -131,7 +131,7 @@ export class WsClientService {
 			return;
 		}
 
-		window.clearTimeout(pending.timer);
+		globalThis.clearTimeout(pending.timer);
 		this.pending.delete(requestId);
 
 		if (msg.type === 'programming.replay.cv.result') {

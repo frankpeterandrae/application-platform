@@ -56,8 +56,8 @@ export function loadConfig(): ServerConfig {
 		return {
 			...DEFAULT,
 			...parsed,
-			z21: { ...DEFAULT.z21, ...(parsed.z21 || {}) },
-			safety: { ...DEFAULT.safety, ...(parsed.safety || {}) }
+			z21: { ...DEFAULT.z21, ...parsed.z21 },
+			safety: { ...DEFAULT.safety, ...parsed.safety }
 		};
 	} catch {
 		return DEFAULT;

@@ -16,8 +16,8 @@ export type ByteLike = ReadonlyArray<number> | Uint8Array;
  */
 export function xbusXor(bytes: ByteLike): number {
 	let acc = 0;
-	for (let i = 0; i < bytes.length; i++) {
-		acc ^= bytes[i] & FULL_BYTE_MASK;
+	for (const b of bytes) {
+		acc ^= b & FULL_BYTE_MASK;
 	}
 
 	return acc & FULL_BYTE_MASK;
@@ -89,7 +89,7 @@ export function encodeLocoAddress(address: number): { adrMsb: number; adrLsb: nu
 function hasXbusCmd(command: unknown): command is { xBusCmd: number } {
 	if (typeof command !== 'object' || command === null) return false;
 	// Use hasOwnProperty to avoid issues with prototype keys
-	const has = Object.hasOwn(command as object, 'xBusCmd');
+	const has = Object.hasOwn(command, 'xBusCmd');
 	return has && typeof (command as { xBusCmd?: unknown }).xBusCmd === 'number';
 }
 

@@ -337,6 +337,10 @@ describe('CvProgrammingService', () => {
 
 			await promise;
 
+			// Assert that we actually sent the CV read command and operation completed
+			expect(z21CommandService.sendCvRead).toHaveBeenCalledWith(29);
+			expect(z21CommandService.sendCvRead).toHaveBeenCalledTimes(1);
+
 			vi.advanceTimersByTime(2000);
 
 			// Should not throw because timeout was cleared
