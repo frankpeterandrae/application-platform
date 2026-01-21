@@ -44,44 +44,16 @@ export class CommandStationInfoOrchestrator {
 	public poke(): void {
 		const now = Date.now();
 
-		if (!this.commandStationInfo.hasFirmwareVersion() && this.shouldSend(this.req.firmware, now)) {
-			this.req.firmware.inFlight = true;
-			this.req.firmware.lastSent = now;
-			this.z21CommandService.getFirmwareVersion();
-			return;
-		}
+		if (this.trySendFirmware(now)) return;
 
+		// firmware must be known from here on
 		if (!this.commandStationInfo.hasFirmwareVersion()) return;
 
-		const fw = this.commandStationInfo.getFirmwareVersion();
+		if (this.trySendHwOrXBus(now)) return;
 
-		const supportsHwInfo = !!fw && (fw.major > 1 || (fw.major === 1 && fw.minor >= 20));
-
-		if (supportsHwInfo) {
-			if (!this.commandStationInfo.hasHardwareType() && this.shouldSend(this.req.hwinfo, now)) {
-				this.req.hwinfo.inFlight = true;
-				this.req.hwinfo.lastSent = now;
-				this.z21CommandService.getHardwareInfo();
-				return;
-			}
-		} else {
-			if (!this.commandStationInfo.hasXBusVersion() && this.shouldSend(this.req.xBusVersion, now)) {
-				this.req.xBusVersion.inFlight = true;
-				this.req.xBusVersion.lastSent = now;
-				this.z21CommandService.getXBusVersion();
-				return;
-			}
-		}
-
-		if (!this.commandStationInfo.hasHardwareType()) return;
-
-		const hw = this.commandStationInfo.getHardwareType();
-		const needsCode = hw === 'z21_START' || hw === 'z21_SMALL';
-
-		if (needsCode && !this.commandStationInfo.hasCode() && this.shouldSend(this.req.code, now)) {
-			this.req.code.inFlight = true;
-			this.req.code.lastSent = now;
-			this.z21CommandService.getCode();
+		// hardware type must be known from here on
+		if (this.commandStationInfo.hasHardwareType()) {
+			this.trySendCode(now);
 		}
 	}
 
@@ -96,5 +68,58 @@ export class CommandStationInfoOrchestrator {
 
 	private shouldSend(r: { inFlight: boolean; lastSent: number }, now: number, retryMs = 1000): boolean {
 		return !r.inFlight || now - r.lastSent > retryMs;
+	}
+
+	// Helper: try to request firmware version. Returns true if a request was sent.
+	private trySendFirmware(now: number): boolean {
+		if (!this.commandStationInfo.hasFirmwareVersion() && this.shouldSend(this.req.firmware, now)) {
+			this.req.firmware.inFlight = true;
+			this.req.firmware.lastSent = now;
+			this.z21CommandService.getFirmwareVersion();
+			return true;
+		}
+		return false;
+	}
+
+	// Helper: try to request either hardware info (when supported) or xBus version.
+	// Returns true if a request was sent.
+	private trySendHwOrXBus(now: number): boolean {
+		const fw = this.commandStationInfo.getFirmwareVersion();
+		const supportsHwInfo = !!fw && (fw.major > 1 || (fw.major === 1 && fw.minor >= 20));
+
+		if (supportsHwInfo) {
+			if (!this.commandStationInfo.hasHardwareType() && this.shouldSend(this.req.hwinfo, now)) {
+				this.req.hwinfo.inFlight = true;
+				this.req.hwinfo.lastSent = now;
+				this.z21CommandService.getHardwareInfo();
+				return true;
+			}
+			return false;
+		}
+
+		// when hwinfo not supported, ask for xBus version
+		if (!this.commandStationInfo.hasXBusVersion() && this.shouldSend(this.req.xBusVersion, now)) {
+			this.req.xBusVersion.inFlight = true;
+			this.req.xBusVersion.lastSent = now;
+			this.z21CommandService.getXBusVersion();
+			return true;
+		}
+
+		return false;
+	}
+
+	// Helper: try to request code when hardware type needs it.
+	private trySendCode(now: number): boolean {
+		const hw = this.commandStationInfo.getHardwareType();
+		const needsCode = hw === 'z21_START' || hw === 'z21_SMALL';
+
+		if (needsCode && !this.commandStationInfo.hasCode() && this.shouldSend(this.req.code, now)) {
+			this.req.code.inFlight = true;
+			this.req.code.lastSent = now;
+			this.z21CommandService.getCode();
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -34,7 +34,7 @@ export function decodeHwInfo(hwtype: number, fwVersionBcd: number): Z21HwinfoEve
 		digits.unshift(value > 9 ? 0 : value);
 	}
 
-	const versionNumber = parseInt(digits.join(''), 10) || 0;
+	const versionNumber = Number.parseInt(digits.join(''), 10) || 0;
 	const majorVersion = Math.floor(versionNumber / 100);
 	const minorVersion = versionNumber % 100;
 

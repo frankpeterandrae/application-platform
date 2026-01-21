@@ -23,11 +23,11 @@ export class EnvGuard implements CanActivate {
 	 * @returns {boolean} True if not in production, otherwise false.
 	 */
 	public canActivate(): boolean {
-		if (!environment.production) {
-			return true;
-		} else {
+		if (environment.production) {
 			void this.router.navigate(['/404']);
 			return false;
+		} else {
+			return true;
 		}
 	}
 }

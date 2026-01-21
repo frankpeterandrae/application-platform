@@ -11,25 +11,23 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { ModuleWithProviders } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-
-// Initialize TestBed environment for dynamic compilation and external resource resolution.
-// Use the dynamic testing platform which supports JIT and resolveComponentResources.
-
-const _tb_env_init = getTestBed() as any;
-if (!_tb_env_init || !_tb_env_init.platform) {
-	getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
-}
-
+import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import type { HashMap, Translation, TranslocoConfig } from '@jsverse/transloco';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 
 import { MockScopedTranslationService } from './lib/mocks/mocked-scoped-translation-service';
 
+// Initialize TestBed environment for testing using non-deprecated APIs.
+// Use BrowserTestingModule instead of deprecated BrowserDynamicTestingModule.
+getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting(), {
+	errorOnUnknownElements: true,
+	errorOnUnknownProperties: true
+});
+
 /**
  * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
+ * @param {TestModuleMetadata} _testModule - The metadata for the test module, including imports, providers, and declarations.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
  * @returns {Promise<void>} A promise that resolves when the test module is compiled and resources resolved.
@@ -41,7 +39,7 @@ export async function sharedSetupTestingModule(
 	config: Partial<TranslocoConfig> = {}
 ): Promise<void> {
 	const { imports = [], declarations } = _testModule ?? {};
-	let providers: any[] = (_testModule && _testModule.providers) || [];
+	let providers: any[] = _testModule?.providers || [];
 
 	// Dynamically import Angular common tokens after the compiler is loaded to avoid
 	// triggering their static initializers during module load. Then provide lightweight

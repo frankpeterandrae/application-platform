@@ -44,40 +44,111 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 		const header = buf.readUint16LE(offset + 2);
 		const payload = buf.subarray(offset + 4, offset + len);
 
-		if (header === Z21LanHeader.LAN_X) {
-			// X-BUS tunneling: payload = [XHeader, DB..., XOR]
-			if (payload.length >= 2) {
-				const xHeader = payload[0];
-				const bodyNoXor = payload.subarray(0, payload.length - 1);
-				const xorByte = payload[payload.length - 1];
-				const db = bodyNoXor.subarray(1);
-
-				const calc = xbusXor(bodyNoXor);
-				// XOR check: if false, deliver anyway (you want to see UDP drops/bugs)
-				if (calc !== xorByte) {
-					out.push({ kind: 'ds.bad_xor', calc: calc.toString(16), recv: xorByte.toString(16) });
-				}
-
-				// Ensure we return a plain Uint8Array for test equality
-				out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
-			} else {
-				out.push({ kind: 'ds.unknown', header, payload, reason: 'x-bus too short' });
-			}
-		} else if (header === Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED && payload.length === 16) {
-			out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
-		} else if (header === Z21LanHeader.LAN_GET_HWINFO && payload.length === 8) {
-			const hwtype = payload.readUint32LE(0);
-			const fwVersionBcd = payload.readUint32LE(4);
-			out.push({ kind: 'ds.hwinfo', hwtype, fwVersionBcd });
-		} else if (header === Z21LanHeader.LAN_GET_CODE && payload.length === 1) {
-			const code = payload[0];
-			out.push({ kind: 'ds.code', code });
-		} else {
-			out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });
+		// Delegate per-header parsing to small helpers to keep this loop simple.
+		switch (header) {
+			case Z21LanHeader.LAN_X:
+				handleXBus(payload, out);
+				break;
+			case Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED:
+				handleSystemState(payload, out);
+				break;
+			case Z21LanHeader.LAN_GET_HWINFO:
+				handleHwInfo(payload, out);
+				break;
+			case Z21LanHeader.LAN_GET_CODE:
+				handleCode(payload, out);
+				break;
+			default:
+				out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });
 		}
 
 		offset += len;
 	}
 
 	return out;
+}
+
+// Helper: parse X-BUS payload (payload = [XHeader, DB..., XOR])
+/**
+ * Parse an X-BUS payload. Payload layout: [XHeader, DB..., XOR].
+ * Pushes either a 'ds.x.bus' dataset or 'ds.unknown' / 'ds.bad_xor' entries into `out`.
+ * @param payload - payload buffer
+ * @param out - collector for decoded datasets
+ */
+function handleXBus(payload: Buffer, out: Z21Dataset[]): void {
+	if (payload.length < 2) {
+		out.push({ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload, reason: 'x-bus too short' });
+		return;
+	}
+
+	const xHeader = payload[0];
+	const bodyNoXor = payload.subarray(0, payload.length - 1);
+	const xorByte = payload[payload.length - 1];
+	const db = bodyNoXor.subarray(1);
+
+	const calc = xbusXor(bodyNoXor);
+	if (calc !== xorByte) {
+		out.push({ kind: 'ds.bad_xor', calc: calc.toString(16), recv: xorByte.toString(16) });
+	}
+
+	out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
+}
+
+// Helper: parse system state payload (expects 16 bytes)
+/**
+ * Parse a system state payload (expects 16 bytes) and push a 'ds.system.state' dataset.
+ * @param payload - payload buffer
+ * @param out - collector for decoded datasets
+ */
+function handleSystemState(payload: Buffer, out: Z21Dataset[]): void {
+	if (payload.length !== 16) {
+		out.push({
+			kind: 'ds.unknown',
+			header: Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED,
+			payload,
+			reason: 'unrecognized header or invalid payload length'
+		});
+		return;
+	}
+	out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
+}
+
+// Helper: parse hwinfo payload (expects 8 bytes)
+/**
+ * Parse hwinfo payload (expects 8 bytes) and push a 'ds.hwinfo' dataset.
+ * @param payload - payload buffer
+ * @param out - collector for decoded datasets
+ */
+function handleHwInfo(payload: Buffer, out: Z21Dataset[]): void {
+	if (payload.length !== 8) {
+		out.push({
+			kind: 'ds.unknown',
+			header: Z21LanHeader.LAN_GET_HWINFO,
+			payload,
+			reason: 'unrecognized header or invalid payload length'
+		});
+		return;
+	}
+	const hwtype = payload.readUint32LE(0);
+	const fwVersionBcd = payload.readUint32LE(4);
+	out.push({ kind: 'ds.hwinfo', hwtype, fwVersionBcd });
+}
+
+// Helper: parse code payload (expects 1 byte)
+/**
+ * Parse code payload (expects 1 byte) and push a 'ds.code' dataset.
+ * @param payload - payload buffer
+ * @param out - collector for decoded datasets
+ */
+function handleCode(payload: Buffer, out: Z21Dataset[]): void {
+	if (payload.length !== 1) {
+		out.push({
+			kind: 'ds.unknown',
+			header: Z21LanHeader.LAN_GET_CODE,
+			payload,
+			reason: 'unrecognized header or invalid payload length'
+		});
+		return;
+	}
+	out.push({ kind: 'ds.code', code: payload[0] });
 }

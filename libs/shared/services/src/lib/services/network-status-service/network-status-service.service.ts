@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -19,8 +19,8 @@ export class NetworkStatusServiceService {
 	 * Emits `true` when the network is online and `false` when offline.
 	 */
 	public readonly status$ = merge(
-		fromEvent(window, 'offline').pipe(map(() => false)),
-		fromEvent(window, 'online').pipe(map(() => true)),
+		fromEvent(globalThis, 'offline').pipe(map(() => false)),
+		fromEvent(globalThis, 'online').pipe(map(() => true)),
 		of(navigator.onLine)
 	);
 }

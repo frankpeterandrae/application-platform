@@ -22,9 +22,11 @@ function xbusXor(payload: number[]): number {
  * @param buffer - The LAN-X frame buffer to verify
  */
 export function expectValidXor(buffer: Buffer): void {
-	const payload = Array.from(buffer.subarray(4, buffer.length - 1));
+	// Use negative end index (-1) instead of buffer.length - 1 for clarity
+	const payload = Array.from(buffer.subarray(4, -1));
 	const expectedXor = xbusXor(payload);
-	expect(buffer[buffer.length - 1]).toBe(expectedXor);
+	// Prefer .at(-1) for last byte access
+	expect(buffer.at(-1)).toBe(expectedXor);
 }
 
 /**

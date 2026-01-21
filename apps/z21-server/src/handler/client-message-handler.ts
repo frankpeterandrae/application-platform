@@ -41,8 +41,8 @@ export class ClientMessageHandler {
 	constructor(
 		private readonly locoManager: LocoManager,
 		private readonly z21Service: Z21CommandService,
-		private cvProgrammingService: CvProgrammingService,
-		private reply: ReplyFn,
+		private readonly cvProgrammingService: CvProgrammingService,
+		private readonly reply: ReplyFn,
 		private readonly broadcast: BroadcastFn
 	) {}
 

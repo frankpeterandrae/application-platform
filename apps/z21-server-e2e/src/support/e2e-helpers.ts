@@ -45,6 +45,29 @@ export function waitFor<T>(
 	});
 }
 
+// Helper: normalize WebSocket message data into a UTF-8 string reliably
+function wsDataToString(data: unknown): string | undefined {
+	if (typeof data === 'string') return data;
+	if (Buffer.isBuffer(data)) {
+		return data.toString('utf8');
+	}
+	if (data instanceof ArrayBuffer) {
+		return Buffer.from(new Uint8Array(data)).toString('utf8');
+	}
+	if (Array.isArray(data)) {
+		const parts: Buffer[] = [];
+		for (const p of data) {
+			if (Buffer.isBuffer(p)) {
+				parts.push(p);
+			} else if (typeof p === 'string') {
+				parts.push(Buffer.from(p));
+			}
+		}
+		if (parts.length) return Buffer.concat(parts).toString('utf8');
+	}
+	return undefined;
+}
+
 export function mkTmpConfig(httpPort: number, fakeZ21Port: number, listenPort?: number): string {
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'z21-e2e-'));
 	const cfgPath = path.join(dir, 'config.json');
@@ -95,8 +118,10 @@ export async function startServerAndConnectWs(): Promise<E2eCtx> {
 			const candidate = new WebSocket(`ws://127.0.0.1:${httpPort}`);
 
 			candidate.on('message', (data) => {
+				const s = wsDataToString(data);
+				if (!s) return;
 				try {
-					messages.push(JSON.parse(data.toString()));
+					messages.push(JSON.parse(s));
 				} catch {
 					// ignore
 				}
@@ -135,9 +160,10 @@ export async function stopCtx(ctx: E2eCtx): Promise<void> {
 	}
 	ctx.proc.kill('SIGTERM');
 	if (ctx.ws && ctx.ws.readyState === WebSocket.OPEN) {
+		const ws = ctx.ws; // ensure stable reference without non-null assertions
 		await new Promise<void>((resolve) => {
-			ctx.ws!.once('close', () => resolve());
-			ctx.ws!.close();
+			ws?.once('close', () => resolve());
+			ws?.close();
 			// fallback, falls close nie kommt
 			setTimeout(resolve, 500).unref?.();
 		});
@@ -260,8 +286,10 @@ export async function connectWs(httpPort: number): Promise<{ ws: WebSocket; mess
 
 	const messages: WsMessage[] = [];
 	ws.on('message', (data) => {
+		const s = wsDataToString(data);
+		if (!s) return;
 		try {
-			messages.push(JSON.parse(data.toString()));
+			messages.push(JSON.parse(s));
 		} catch {
 			// ignore non-json
 		}

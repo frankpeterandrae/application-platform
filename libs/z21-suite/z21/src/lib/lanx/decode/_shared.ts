@@ -72,7 +72,15 @@ export function decodeSpeed(db2: number, db3: number): LocoSpeedDecodeResult {
 	const isMmLoco = (db2 & InfoByteMask.MM_LOCO) !== 0;
 	const isOccupied = (db2 & InfoByteMask.OCCUPIED) !== 0;
 	const speedStepCode = db2 & InfoByteMask.STEP;
-	const speedSteps: 14 | 28 | 128 = speedStepCode === 0 ? 14 : speedStepCode === 2 ? 28 : 128;
+
+	let speedSteps: 14 | 28 | 128;
+	if (speedStepCode === 0) {
+		speedSteps = 14;
+	} else if (speedStepCode === 2) {
+		speedSteps = 28;
+	} else {
+		speedSteps = 128;
+	}
 
 	const direction = (db3 & SpeedByteMask.DIRECTION_FORWARD) !== 0 ? Direction.FWD : Direction.REV;
 	const SPEED_VALUE_MASK = SpeedByteMask.VALUE;

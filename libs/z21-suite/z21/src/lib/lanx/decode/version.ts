@@ -15,7 +15,7 @@ function xBusVersionToVersion(xBusVersion: number): number {
 	if (major === 0 && minor === 0) {
 		return 0; // Unknown version
 	}
-	return parseFloat(`${major}.${minor}`);
+	return Number.parseFloat(`${major}.${minor}`);
 }
 
 /** Decode LAN X Version Payload

@@ -64,7 +64,7 @@ export class AppWsServer {
 				}
 				this.logger.info('[ws] accepted', { type: msg.type });
 
-				void onMessage(msg, ws);
+				onMessage(msg, ws);
 			},
 			(ws) => {
 				if (onDisconnect) {
