@@ -11,7 +11,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { loadConfig } from './config';
 
-// Mock Node.js modules at module level
+// DeepMock Node.js modules at module level
 vi.mock('node:fs');
 vi.mock('node:path');
 
@@ -22,12 +22,12 @@ describe('loadConfig', () => {
 		resetMocksBeforeEach({});
 		process.env = { ...ORIGINAL_ENV };
 
-		// Mock console.log to keep tests clean
+		// DeepMock console.log to keep tests clean
 		vi.spyOn(console, 'log').mockImplementation(() => {
 			// do nothing
 		});
 
-		// Mock path.resolve to return predictable paths
+		// DeepMock path.resolve to return predictable paths
 		vi.mocked(path.resolve).mockImplementation((...args: string[]) => args.join('/'));
 	});
 

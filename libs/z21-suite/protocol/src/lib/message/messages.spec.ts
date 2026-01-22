@@ -180,7 +180,7 @@ describe('isServerToClientMessage', () => {
 		});
 
 		it('accepts system.message.trackpower message', () => {
-			expect(isServerToClientMessage({ type: 'system.message.trackpower', payload: { on: true } })).toBe(true);
+			expect(isServerToClientMessage({ type: 'system.message.trackpower', payload: { powerOn: true } })).toBe(true);
 		});
 
 		it('accepts loco.message.state message', () => {

@@ -5,22 +5,22 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { vi } from 'vitest';
+import { Mocked, MockedFunction, vi } from 'vitest';
 
 export type DeepMocked<T> = T extends (...args: any[]) => any
-	? vi.MockedFunction<T>
+	? MockedFunction<T>
 	: T extends object
-		? { [K in keyof T]: DeepMocked<T[K]> } & vi.Mocked<T>
+		? { [K in keyof T]: DeepMocked<T[K]> } & Mocked<T>
 		: T;
 
 /**
- * Erzeugt ein Deep Mock Objekt für das gegebene Interface/Objekt
+ * Erzeugt ein Deep DeepMock Objekt für das gegebene Interface/Objekt
  * Alle Properties sind automatisch vi.fn() Mocks
  * Rekursiv: mock.foo.bar.baz funktioniert automatisch
- * @returns Das Mock-Objekt
+ * @returns Das DeepMock-Objekt
  * @template T Das zu mockende Interface/Objekt
  */
-export function Mock<T extends object>(): DeepMocked<T> {
+export function DeepMock<T extends object>(): DeepMocked<T> {
 	const cache = new Map<PropertyKey, any>();
 
 	const make = (): any =>
@@ -64,9 +64,9 @@ export function Mock<T extends object>(): DeepMocked<T> {
 }
 
 /**
- * Cleares alle Mock-Call-History in einem Objekt rekursiv
+ * Cleares alle DeepMock-Call-History in einem Objekt rekursiv
  * Wichtig: Zerstört nicht die Mocks selbst, sondern nur deren Call-History
- * @param mocks Das Mock-Objekt (oder Providers mit Mocks)
+ * @param mocks Das DeepMock-Objekt (oder Providers mit Mocks)
  */
 export function clearAllMocks<T extends object>(mocks: T): void {
 	const visited = new WeakSet<object>();
@@ -78,7 +78,7 @@ export function clearAllMocks<T extends object>(mocks: T): void {
 		for (const key in obj) {
 			const value = obj[key];
 			if (typeof value === 'function' && typeof value.mockClear === 'function') {
-				// Nur mockClear verwenden - das löscht die Call-History, zerstört aber nicht die Mock-Function selbst
+				// Nur mockClear verwenden - das löscht die Call-History, zerstört aber nicht die DeepMock-Function selbst
 				value.mockClear();
 			} else if (typeof value === 'object' && value !== null) {
 				clearRecursive(value);
@@ -92,7 +92,7 @@ export function clearAllMocks<T extends object>(mocks: T): void {
 /**
  * Hilfsfunktion für beforeEach: Löscht alle Mocks recursiv und setzt sie zurück
  * Besser als vi.clearAllMocks() da es auch in verschachtelten Objekten funktioniert
- * @param mocks Das Mock-Objekt (z.B. Providers)
+ * @param mocks Das DeepMock-Objekt (z.B. Providers)
  */
 export function resetMocksBeforeEach<T extends object>(mocks: T): void {
 	clearAllMocks(mocks);

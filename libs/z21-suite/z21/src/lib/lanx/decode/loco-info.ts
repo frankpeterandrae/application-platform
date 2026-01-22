@@ -14,27 +14,31 @@ import { decodeDccAddress, decodeFunctions, decodeSpeed } from './_shared';
  *
  * @returns Array of Z21Event entries produced from the dataset.
  */
-export function decodeLanXLocoInfoPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.loco.info' }>[] {
+export function decodeLanXLocoInfoPayload(payload: Uint8Array): Extract<Z21Event, { event: 'loco.event.info' }>[] {
 	if (payload.length < 5) {
 		return [];
 	}
+	const raw = Array.from(payload);
 	const addr = decodeDccAddress(payload[0], payload[1]);
 	const { speedSteps, speed, emergencyStop, direction, isOccupied, isMmLoco } = decodeSpeed(payload[2], payload[3]);
 	const { functionMap, isDoubleTraction, isSmartsearch } = decodeFunctions(payload, 4);
 
 	return [
 		{
-			type: 'event.loco.info',
-			addr,
-			isMmLoco,
-			isOccupied,
-			isDoubleTraction,
-			isSmartsearch,
-			speedSteps,
-			speed,
-			emergencyStop,
-			direction,
-			functionMap
+			event: 'loco.event.info',
+			payload: {
+				addr,
+				isMmLoco,
+				isOccupied,
+				isDoubleTraction,
+				isSmartsearch,
+				speedSteps,
+				speed,
+				emergencyStop,
+				direction,
+				functionMap,
+				raw
+			}
 		}
 	];
 }

@@ -5,9 +5,10 @@
 
 import { LocoManager } from '@application-platform/domain';
 import type { ClientToServer } from '@application-platform/protocol';
-import { DeepMocked, Mock } from '@application-platform/shared-node-test';
+import { DeepMock, DeepMocked } from '@application-platform/shared-node-test';
 import { LocoFunctionSwitchType, Z21CommandService } from '@application-platform/z21';
 import { TurnoutState } from '@application-platform/z21-shared';
+import type { Mock as VitestMock, MockedFunction } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CvProgrammingService } from '../services/cv-programming-service';
@@ -15,7 +16,7 @@ import type { CvProgrammingService } from '../services/cv-programming-service';
 import { ClientMessageHandler, type BroadcastFn, type ReplyFn } from './client-message-handler';
 
 describe('ClientMessageHandler.handle', () => {
-	let broadcast: vi.MockedFunction<BroadcastFn>;
+	let broadcast: MockedFunction<BroadcastFn>;
 	let locoManager: DeepMocked<LocoManager>;
 	let z21Service: DeepMocked<Z21CommandService>;
 	let handler: ClientMessageHandler;
@@ -26,9 +27,9 @@ describe('ClientMessageHandler.handle', () => {
 
 	beforeEach(() => {
 		broadcast = vi.fn();
-		locoManager = Mock<LocoManager>();
-		z21Service = Mock<Z21CommandService>();
-		cvProgrammingService = Mock<CvProgrammingService>();
+		locoManager = DeepMock<LocoManager>();
+		z21Service = DeepMock<Z21CommandService>();
+		cvProgrammingService = DeepMock<CvProgrammingService>();
 		reply = vi.fn();
 
 		// Configure default mock return values
@@ -43,7 +44,7 @@ describe('ClientMessageHandler.handle', () => {
 
 	it('ignores server.command.session.hello messages', () => {
 		// Initialize mocks before checking them
-		(z21Service.sendTrackPower as vi.Mock).mockClear();
+		(z21Service.sendTrackPower as VitestMock).mockClear();
 
 		void handler.handle({ type: 'server.command.session.hello' } as ClientToServer, ws);
 		expect(broadcast).not.toHaveBeenCalled();
@@ -52,15 +53,21 @@ describe('ClientMessageHandler.handle', () => {
 
 	describe('system.command.trackpower.set', () => {
 		it('sends power ON command and broadcasts power state when on is true', () => {
-			void handler.handle({ type: 'system.command.trackpower.set', payload: { on: true } } as ClientToServer, ws);
+			void handler.handle({ type: 'system.command.trackpower.set', payload: { powerOn: true } } as ClientToServer, ws);
 			expect(z21Service.sendTrackPower).toHaveBeenCalledWith(true);
-			expect(broadcast).toHaveBeenCalledWith({ type: 'system.message.trackpower', payload: { on: true, short: false } });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				payload: { powerOn: true, shortCircuit: false, emergencyStop: false, programmingMode: false }
+			});
 		});
 
 		it('sends power OFF command and broadcasts power state when on is false', () => {
-			void handler.handle({ type: 'system.command.trackpower.set', payload: { on: false } } as ClientToServer, ws);
+			void handler.handle({ type: 'system.command.trackpower.set', payload: { powerOn: false } } as ClientToServer, ws);
 			expect(z21Service.sendTrackPower).toHaveBeenCalledWith(false);
-			expect(broadcast).toHaveBeenCalledWith({ type: 'system.message.trackpower', payload: { on: false, short: false } });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'system.message.trackpower',
+				payload: { powerOn: false, shortCircuit: false, emergencyStop: false, programmingMode: false }
+			});
 		});
 
 		it('calls z21Service before broadcast', () => {
@@ -68,14 +75,14 @@ describe('ClientMessageHandler.handle', () => {
 			z21Service.sendTrackPower.mockImplementation(() => callOrder.push('z21'));
 			broadcast.mockImplementation(() => callOrder.push('broadcast'));
 
-			void handler.handle({ type: 'system.command.trackpower.set', payload: { on: true } } as ClientToServer, ws);
+			void handler.handle({ type: 'system.command.trackpower.set', payload: { powerOn: true } } as ClientToServer, ws);
 
 			expect(callOrder).toEqual(['z21', 'broadcast']);
 		});
 
-		it('always sets short flag to false in broadcast', () => {
-			void handler.handle({ type: 'system.command.trackpower.set', payload: { on: true } } as ClientToServer, ws);
-			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ payload: expect.objectContaining({ short: false }) }));
+		it('always sets shortCircuit flag to false in broadcast', () => {
+			void handler.handle({ type: 'system.command.trackpower.set', payload: { powerOn: true } } as ClientToServer, ws);
+			expect(broadcast).toHaveBeenCalledWith(expect.objectContaining({ payload: expect.objectContaining({ shortCircuit: false }) }));
 		});
 	});
 
@@ -90,7 +97,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('sets locomotive speed and direction and broadcasts updated state', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 42, dir: 'REV', fns: { 1: true } });
+			locoManager.setSpeed.mockReturnValue({ speed: 42, dir: 'REV', fns: { 1: true }, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 5, speed: 42, dir: 'REV' } } as ClientToServer, ws);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(5, 42, 'REV');
@@ -98,22 +105,25 @@ describe('ClientMessageHandler.handle', () => {
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(5, 42, 'REV');
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
-				payload: { addr: 5, speed: 42, dir: 'REV', fns: { 1: true } }
+				payload: { addr: 5, speed: 42, dir: 'REV', fns: { 1: true }, estop: false }
 			});
 		});
 
 		it('sets speed to zero when speed is 0', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 10, speed: 0, dir: 'FWD' } } as ClientToServer, ws);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(10, 0, 'FWD');
 			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(10, 0, 'FWD');
-			expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', payload: { addr: 10, dir: 'FWD', fns: {}, speed: 0 } });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'loco.message.state',
+				payload: { addr: 10, dir: 'FWD', fns: {}, speed: 0, estop: false }
+			});
 		});
 
 		it('sets maximum speed when speed is 1', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 1, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 1, dir: 'FWD', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 10, speed: 1, dir: 'FWD' } } as ClientToServer, ws);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(10, 1, 'FWD');
@@ -122,33 +132,36 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles FWD direction', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 100, speed: 0.5, dir: 'FWD' } } as ClientToServer, ws);
 
 			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(100, 0.5, 'FWD');
-			expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', payload: { addr: 100, dir: 'FWD', fns: {}, speed: 0.5 } });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'loco.message.state',
+				payload: { addr: 100, dir: 'FWD', fns: {}, speed: 0.5, estop: false }
+			});
 		});
 
 		it('handles REV direction', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'REV', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'REV', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 100, speed: 0.5, dir: 'REV' } } as ClientToServer, ws);
 
 			vi.advanceTimersByTime(50);
 			expect(z21Service.setLocoDrive).toHaveBeenCalledWith(100, 0.5, 'REV');
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
-				payload: { addr: 100, dir: 'REV', estop: undefined, fns: {}, speed: 0.5 }
+				payload: { addr: 100, dir: 'REV', estop: false, fns: {}, speed: 0.5 }
 			});
 		});
 
 		it('broadcasts all function states from locoManager response', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0.3, dir: 'FWD', fns: { 0: true, 1: false, 5: true } });
+			locoManager.setSpeed.mockReturnValue({ speed: 0.3, dir: 'FWD', fns: { 0: true, 1: false, 5: true }, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 200, speed: 0.3, dir: 'FWD' } } as ClientToServer, ws);
 
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
-				payload: { addr: 200, dir: 'FWD', estop: undefined, fns: { '0': true, '1': false, '5': true }, speed: 0.3 }
+				payload: { addr: 200, dir: 'FWD', estop: false, fns: { '0': true, '1': false, '5': true }, speed: 0.3 }
 			});
 		});
 
@@ -156,7 +169,7 @@ describe('ClientMessageHandler.handle', () => {
 			const callOrder: string[] = [];
 			locoManager.setSpeed.mockImplementation(() => {
 				callOrder.push('locoManager');
-				return { speed: 0, dir: 'FWD', fns: {} };
+				return { speed: 0, dir: 'FWD', fns: {}, estop: false };
 			});
 			z21Service.setLocoDrive.mockImplementation(() => callOrder.push('z21'));
 
@@ -167,14 +180,14 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles minimum locomotive address', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 1, speed: 0.5, dir: 'FWD' } } as ClientToServer, ws);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(1, 0.5, 'FWD');
 		});
 
 		it('handles maximum locomotive address', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 9999, speed: 0.5, dir: 'FWD' } } as ClientToServer, ws);
 
 			expect(locoManager.setSpeed).toHaveBeenCalledWith(9999, 0.5, 'FWD');
@@ -183,7 +196,7 @@ describe('ClientMessageHandler.handle', () => {
 
 	describe('loco.command.function.set', () => {
 		it('sets function to ON and broadcasts updated state', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: false } });
+			locoManager.setFunction.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: false }, estop: false });
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 7, fn: 2, on: false } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(7, 2, false);
@@ -194,13 +207,14 @@ describe('ClientMessageHandler.handle', () => {
 					addr: 7,
 					speed: 13,
 					dir: 'FWD',
-					fns: { 0: true, 2: false }
+					fns: { 0: true, 2: false },
+					estop: false
 				}
 			});
 		});
 
 		it('sets function to OFF when on is false', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false } });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false }, estop: false });
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 10, fn: 5, on: false } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, false);
@@ -208,7 +222,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('sets function to ON when on is true', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true } });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 10, fn: 5, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, true);
@@ -216,7 +230,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles function number 0', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 0: true } });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 0: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 100, fn: 0, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(100, 0, true);
@@ -224,7 +238,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles function number 31', () => {
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 31: true } });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 31: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 100, fn: 31, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(100, 31, true);
@@ -235,7 +249,7 @@ describe('ClientMessageHandler.handle', () => {
 			const callOrder: string[] = [];
 			locoManager.setFunction.mockImplementation(() => {
 				callOrder.push('locoManager');
-				return { speed: 0, dir: 'FWD', fns: {} };
+				return { speed: 0, dir: 'FWD', fns: {}, estop: false };
 			});
 			z21Service.setLocoFunction.mockImplementation(() => callOrder.push('z21'));
 
@@ -247,8 +261,8 @@ describe('ClientMessageHandler.handle', () => {
 
 	describe('loco.command.function.toggle', () => {
 		it('toggles function from ON to OFF and broadcasts updated state', () => {
-			locoManager.getState.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: true } });
-			locoManager.setFunction.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: false } });
+			locoManager.getState.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: true }, estop: false });
+			locoManager.setFunction.mockReturnValue({ speed: 13, dir: 'FWD', fns: { 0: true, 2: false }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 7, fn: 2 } } as ClientToServer, ws);
 
 			expect(locoManager.getState).toHaveBeenCalledWith(7);
@@ -260,14 +274,15 @@ describe('ClientMessageHandler.handle', () => {
 					addr: 7,
 					speed: 13,
 					dir: 'FWD',
-					fns: { 0: true, 2: false }
+					fns: { 0: true, 2: false },
+					estop: false
 				}
 			});
 		});
 
 		it('toggles function from OFF to ON', () => {
-			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false } });
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true } });
+			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false }, estop: false });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 10, fn: 5 } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, true);
@@ -275,16 +290,16 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('treats undefined function state as OFF and toggles to ON', () => {
-			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true } });
+			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 20, fn: 10 } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(20, 10, true);
 		});
 
 		it('treats null locomotive state as OFF and toggles to ON', () => {
-			locoManager.getState.mockReturnValue(null);
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true } });
+			locoManager.getState.mockReturnValue(undefined);
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 30, fn: 10 } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(30, 10, true);
@@ -292,15 +307,15 @@ describe('ClientMessageHandler.handle', () => {
 
 		it('treats undefined locomotive state as OFF and toggles to ON', () => {
 			locoManager.getState.mockReturnValue(undefined);
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true } });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 10: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 40, fn: 10 } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(40, 10, true);
 		});
 
 		it('uses Toggle switch type for z21Service', () => {
-			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false } });
-			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true } });
+			locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: false }, estop: false });
+			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 10, fn: 5 } } as ClientToServer, ws);
 
 			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.Toggle);
@@ -310,11 +325,11 @@ describe('ClientMessageHandler.handle', () => {
 			const callOrder: string[] = [];
 			locoManager.getState.mockImplementation(() => {
 				callOrder.push('getState');
-				return { speed: 0, dir: 'FWD', fns: { 5: true } };
+				return { speed: 0, dir: 'FWD', fns: { 5: true }, estop: false };
 			});
 			locoManager.setFunction.mockImplementation(() => {
 				callOrder.push('setFunction');
-				return { speed: 0, dir: 'FWD', fns: { 5: false } };
+				return { speed: 0, dir: 'FWD', fns: { 5: false }, estop: false };
 			});
 
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 1, fn: 5 } } as ClientToServer, ws);
@@ -323,13 +338,13 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('broadcasts current speed and direction along with toggled function state', () => {
-			locoManager.getState.mockReturnValue({ speed: 0.5, dir: 'REV', fns: { 15: false } });
-			locoManager.setFunction.mockReturnValue({ speed: 0.5, dir: 'REV', fns: { 15: true } });
+			locoManager.getState.mockReturnValue({ speed: 0.5, dir: 'REV', fns: { 15: false }, estop: false });
+			locoManager.setFunction.mockReturnValue({ speed: 0.5, dir: 'REV', fns: { 15: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 100, fn: 15 } } as ClientToServer, ws);
 
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
-				payload: { addr: 100, dir: 'REV', estop: undefined, fns: { '15': true }, speed: 0.5 }
+				payload: { addr: 100, dir: 'REV', estop: false, fns: { '15': true }, speed: 0.5 }
 			});
 		});
 	});
@@ -494,7 +509,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.eStop', payload: { addr: 5 } } as ClientToServer, ws);
 
 			// Initialize mock before checking
-			(z21Service.setLocoDrive as vi.Mock).mockClear();
+			(z21Service.setLocoDrive as VitestMock).mockClear();
 
 			vi.advanceTimersByTime(100);
 
@@ -512,7 +527,7 @@ describe('ClientMessageHandler.handle', () => {
 		it('clears both pending drive data and timer on emergency stop', () => {
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 8, speed: 0.3, dir: 'REV' } } as ClientToServer, ws);
 
-			(z21Service.setLocoDrive as vi.Mock).mockClear();
+			(z21Service.setLocoDrive as VitestMock).mockClear();
 			void handler.handle({ type: 'loco.command.eStop', payload: { addr: 8 } } as ClientToServer, ws);
 
 			vi.advanceTimersByTime(100);
@@ -611,7 +626,7 @@ describe('ClientMessageHandler.handle', () => {
 			expect(broadcast).not.toHaveBeenCalled();
 		});
 
-		it('replies with nack containing error message on short circuit', async () => {
+		it('replies with nack containing error message on shortCircuit circuit', async () => {
 			cvProgrammingService.readCv.mockRejectedValue(new Error('Short circuit detected'));
 
 			await handler.handle(
@@ -838,7 +853,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('throttles multiple drive commands for same locomotive', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 10, speed: 0.1, dir: 'FWD' } } as ClientToServer, ws);
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 10, speed: 0.2, dir: 'FWD' } } as ClientToServer, ws);
@@ -851,7 +866,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('does not throttle drive commands for different locomotives', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 1, speed: 0.5, dir: 'FWD' } } as ClientToServer, ws);
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 2, speed: 0.6, dir: 'REV' } } as ClientToServer, ws);
@@ -863,7 +878,7 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('sends only the last speed/direction after throttle period', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {} });
+			locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 15, speed: 0.1, dir: 'FWD' } } as ClientToServer, ws);
 			vi.advanceTimersByTime(25);
@@ -876,12 +891,15 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('broadcasts immediately but throttles Z21 command', () => {
-			locoManager.setSpeed.mockReturnValue({ speed: 0.7, dir: 'FWD', fns: {} });
-			(z21Service.setLocoDrive as vi.Mock).mockClear();
+			locoManager.setSpeed.mockReturnValue({ speed: 0.7, dir: 'FWD', fns: {}, estop: false });
+			(z21Service.setLocoDrive as VitestMock).mockClear();
 
 			void handler.handle({ type: 'loco.command.drive', payload: { addr: 20, speed: 0.7, dir: 'FWD' } } as ClientToServer, ws);
 
-			expect(broadcast).toHaveBeenCalledWith({ type: 'loco.message.state', payload: { addr: 20, dir: 'FWD', fns: {}, speed: 0.7 } });
+			expect(broadcast).toHaveBeenCalledWith({
+				type: 'loco.message.state',
+				payload: { addr: 20, dir: 'FWD', fns: {}, speed: 0.7, estop: false }
+			});
 			expect(z21Service.setLocoDrive).not.toHaveBeenCalled();
 
 			vi.advanceTimersByTime(50);

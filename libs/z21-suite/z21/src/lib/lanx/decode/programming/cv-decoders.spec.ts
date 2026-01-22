@@ -1,28 +1,35 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { decodeLanXCvNackPayload } from './cv-nack';
 import { decodeLanXCvResultPayload } from './cv-result';
 
 describe('CV Programming Decoders', () => {
 	describe('decodeLanXCvNackPayload', () => {
-		it('decodes CV NACK without short circuit', () => {
+		it('decodes CV NACK without shortCircuit circuit', () => {
 			const events = decodeLanXCvNackPayload('LAN_X_CV_NACK');
 
 			expect(events).toHaveLength(1);
 			expect(events[0]).toEqual({
-				type: 'event.cv.nack',
+				event: 'programming.event.cv.nack',
 				payload: {
-					shortCircuit: false
+					shortCircuit: false,
+					raw: []
 				}
 			});
 		});
 
-		it('decodes CV NACK with short circuit', () => {
+		it('decodes CV NACK with shortCircuit circuit', () => {
 			const events = decodeLanXCvNackPayload('LAN_X_CV_NACK_SC');
 
 			expect(events).toHaveLength(1);
 			expect(events[0]).toEqual({
-				type: 'event.cv.nack',
+				event: 'programming.event.cv.nack',
 				payload: {
-					shortCircuit: true
+					shortCircuit: true,
+					raw: []
 				}
 			});
 		});
@@ -37,9 +44,11 @@ describe('CV Programming Decoders', () => {
 
 			expect(events).toHaveLength(1);
 			expect(events[0]).toMatchObject({
-				type: 'event.cv.result',
-				cv: 1,
-				value: 3
+				event: 'programming.event.cv.result',
+				payload: {
+					cv: 1,
+					value: 3
+				}
 			});
 		});
 
@@ -51,9 +60,11 @@ describe('CV Programming Decoders', () => {
 
 			expect(events).toHaveLength(1);
 			expect(events[0]).toMatchObject({
-				type: 'event.cv.result',
-				cv: 29,
-				value: 42
+				event: 'programming.event.cv.result',
+				payload: {
+					cv: 29,
+					value: 42
+				}
 			});
 		});
 
@@ -62,7 +73,7 @@ describe('CV Programming Decoders', () => {
 
 			const events = decodeLanXCvResultPayload(payload);
 
-			expect(events[0]?.value).toBe(0);
+			expect(events[0]?.payload.value).toBe(0);
 		});
 
 		it('decodes CV result with value 255', () => {
@@ -70,7 +81,7 @@ describe('CV Programming Decoders', () => {
 
 			const events = decodeLanXCvResultPayload(payload);
 
-			expect(events[0]?.value).toBe(255);
+			expect(events[0]?.payload.value).toBe(255);
 		});
 
 		it('decodes CV result for high address (CV1024)', () => {
@@ -79,19 +90,19 @@ describe('CV Programming Decoders', () => {
 
 			const events = decodeLanXCvResultPayload(payload);
 
-			expect(events[0]?.cv).toBe(1024);
-			expect(events[0]?.value).toBe(100);
+			expect(events[0]?.payload.cv).toBe(1024);
+			expect(events[0]?.payload.value).toBe(100);
 		});
 
 		it('handles insufficient data gracefully', () => {
-			// Payload too short - function still returns an event but with undefined/NaN values
+			// Payload too shortCircuit - function still returns an event but with undefined/NaN values
 			const payload = new Uint8Array([0x14]);
 
 			const events = decodeLanXCvResultPayload(payload);
 
 			// Function doesn't validate length, so it returns an event with undefined/NaN
 			expect(events).toHaveLength(1);
-			expect(events[0]?.type).toBe('event.cv.result');
+			expect(events[0]?.event).toBe('programming.event.cv.result');
 		});
 	});
 });

@@ -198,12 +198,12 @@ describe('AppComponent', () => {
 		expect(comp.store.powerOn()).toBe(false);
 		let send = JSON.parse(sendSpy.mock.calls[0][0]);
 		expect(send.type).toBe('system.command.trackpower.set');
-		expect(send.payload.on).toBe(false);
+		expect(send.payload.powerOn).toBe(false);
 
 		comp.togglePower();
 		expect(comp.store.powerOn()).toBe(true);
 		send = JSON.parse(sendSpy.mock.calls[1][0]);
-		expect(send.payload.on).toBe(true);
+		expect(send.payload.powerOn).toBe(true);
 	});
 
 	it('updateFromServer handles loco.message.state updating when addr matches and draggingSpeed false', () => {

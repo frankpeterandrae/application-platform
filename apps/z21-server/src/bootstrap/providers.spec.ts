@@ -184,7 +184,7 @@ describe('createProviders', () => {
 		const broadcastSpy = vi.spyOn(providers.wsServer, 'broadcast');
 
 		// Simulate a broadcast through the event handler's broadcast function
-		const testMsg = { type: 'system.message.trackpower', payload: { on: true, short: false } } as SystemTrackPower;
+		const testMsg = { type: 'system.message.trackpower', payload: { powerOn: true, shortCircuit: false } } as SystemTrackPower;
 		providers.wsServer.broadcast(testMsg);
 
 		expect(broadcastSpy).toHaveBeenCalledWith(testMsg);

@@ -14,7 +14,7 @@
 				"reportsDirectory": "../../coverage/z21-server-e2e",
 				"passWithNoTests": true
 			},
-			"dependsOn": ["z21-server:build"],
+			"dependsOn": ["typecheck-test", "typecheck-e2e", "z21-server:build"],
 			"configurations": {
 				"ci": {
 					"ci": true,
@@ -23,6 +23,18 @@
 						"vitestConfig": "apps/z21-server-e2e/vitest.config.ci.mts"
 					}
 				}
+			}
+		},
+		"typecheck-e2e": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.json --noEmit"
+			}
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
 			}
 		}
 	}

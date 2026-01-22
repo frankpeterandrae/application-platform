@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { DeepMock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SpeedByteMask } from '../constants';
@@ -11,24 +11,27 @@ import { type Z21Udp } from '../udp/udp';
 
 import { Z21CommandService } from './z21-command-service';
 
+// Use vi.fn() type for mock functions instead of namespace types
+type MockFn = ReturnType<typeof vi.fn>;
+
 type Logger = {
-	debug: vi.Mock;
-	info: vi.Mock;
-	warn: vi.Mock;
-	error: vi.Mock;
+	debug: MockFn;
+	info: MockFn;
+	warn: MockFn;
+	error: MockFn;
 };
 
 type Services = {
-	udp: vi.Mocked<Z21Udp>;
-	logger: vi.Mocked<Logger>;
+	udp: any; // mocked Z21Udp
+	logger: any; // mocked Logger
 	service: Z21CommandService;
 };
 
 describe('Z21CommandService', () => {
 	// Helper function to create mocked services (similar to makeProviders in bootstrap.spec.ts)
 	function makeServices(): Services {
-		const udp = Mock<Z21Udp>() as any;
-		const logger = Mock<Logger>() as any;
+		const udp = DeepMock<Z21Udp>() as any;
+		const logger = DeepMock<Logger>() as any;
 		const service = new Z21CommandService(udp, logger);
 
 		return { udp, logger, service };
@@ -590,7 +593,7 @@ describe('Z21CommandService', () => {
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(2);
 		});
 
-		it('sends deactivation after a very short pulse duration', () => {
+		it('sends deactivation after a very shortCircuit pulse duration', () => {
 			services.service.setTurnout(75, 0, { pulseMs: 1 });
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
@@ -866,7 +869,7 @@ describe('Z21CommandService', () => {
 			services.service.setStop();
 
 			const buffer = services.udp.sendRaw.mock.calls[0][0];
-			const checksumByte = buffer[buffer.length - 1];
+			const checksumByte = buffer.at(-1) as number;
 			expect(checksumByte).toBe(0x80);
 		});
 	});

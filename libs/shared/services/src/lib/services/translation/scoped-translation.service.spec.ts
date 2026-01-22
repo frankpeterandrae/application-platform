@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -41,7 +41,7 @@ describe('ScopedTranslationService', () => {
 		const params = {};
 		const translatedValue = 'Hallo';
 
-		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
+		vi.spyOn(translocoService as any, 'selectTranslate').mockReturnValue(of(translatedValue));
 
 		await new Promise<void>((resolve) => {
 			service.selectTranslate(key, scope, params).subscribe((result) => {
@@ -57,7 +57,7 @@ describe('ScopedTranslationService', () => {
 		const params = { name: 'John' };
 		const translatedValue = 'Hallo John';
 
-		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
+		vi.spyOn(translocoService as any, 'selectTranslate').mockReturnValue(of(translatedValue));
 
 		await new Promise<void>((resolve) => {
 			service.selectTranslate(key, scope, params).subscribe((result) => {
@@ -73,7 +73,7 @@ describe('ScopedTranslationService', () => {
 		const params = {};
 		const translatedValue = 'Hallo';
 
-		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
+		vi.spyOn(translocoService as any, 'selectTranslate').mockReturnValue(of(translatedValue));
 
 		await new Promise<void>((resolve) => {
 			service.selectTranslate(key, scope, params).subscribe((result) => {
@@ -89,7 +89,7 @@ describe('ScopedTranslationService', () => {
 		const params = undefined;
 		const translatedValue = 'Hallo';
 
-		translocoService.selectTranslate.mockReturnValue(of(translatedValue));
+		vi.spyOn(translocoService as any, 'selectTranslate').mockReturnValue(of(translatedValue));
 
 		await new Promise<void>((resolve) => {
 			service.selectTranslate(key, scope, params).subscribe((result) => {
@@ -101,8 +101,8 @@ describe('ScopedTranslationService', () => {
 
 	it('toggles the active language', () => {
 		const availableLangs = ['en', 'de'];
-		translocoService.getAvailableLangs.mockReturnValue(availableLangs);
-		translocoService.getActiveLang.mockReturnValue('en');
+		vi.spyOn(translocoService as any, 'getAvailableLangs').mockReturnValue(availableLangs);
+		vi.spyOn(translocoService as any, 'getActiveLang').mockReturnValue('en');
 
 		service.toggleLanguage();
 
@@ -111,7 +111,7 @@ describe('ScopedTranslationService', () => {
 
 	it('updates the current language signal', () => {
 		const currentLang = 'de';
-		translocoService.getActiveLang.mockReturnValue(currentLang);
+		vi.spyOn(translocoService as any, 'getActiveLang').mockReturnValue(currentLang);
 
 		service.getActiveLang();
 

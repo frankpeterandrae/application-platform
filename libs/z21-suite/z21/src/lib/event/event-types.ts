@@ -21,11 +21,11 @@ import {
 
 /**
  * Discrete events derived from Z21 datasets.
- * - event.track.power: Track power on/off state
- * - event.system.state: Central station status bitmask
- * - event.loco.info: Locomotive speed/function info
- * - event.system.state: Parsed Z21 system state snapshot
- * - event.turnout.info: Turnout state info
+ * - system.event.track.power: Track power on/off state
+ * - system.event.state: Central station status bitmask
+ * - loco.event.info: Locomotive speed/function info
+ * - system.event.state: Parsed Z21 system state snapshot
+ * - switching.event.turnout.info: Turnout state info
  * - event.unknown.lan_x: Unrecognized LAN-X command for diagnostics
  * - event.unknown.x.bus: Unrecognized X-Bus message for diagnostics
  */
@@ -51,7 +51,7 @@ export type Z21Event =
 export type DerivedTrackFlags = {
 	powerOn?: boolean;
 	emergencyStop?: boolean;
-	short?: boolean;
+	shortCircuit?: boolean;
 	programmingMode?: boolean;
 	highTemperature?: boolean;
 	powerLost?: boolean;

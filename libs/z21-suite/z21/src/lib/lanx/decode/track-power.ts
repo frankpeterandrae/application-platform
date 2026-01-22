@@ -14,21 +14,42 @@ import type { Z21Event } from '../../event/event-types';
  *
  * @returns Array of Z21Event entries produced from the dataset.
  */
-export function decodeLanXTrackPowerPayload(command: LanXCommandKey): Extract<Z21Event, { type: 'event.track.power' }>[] {
+export function decodeLanXTrackPowerPayload(command: LanXCommandKey): Extract<Z21Event, { event: 'system.event.track.power' }>[] {
+	const raw = Array.from(Buffer.from(command, 'ascii'));
 	if (command === 'LAN_X_BC_TRACK_POWER_OFF') {
-		return [{ type: 'event.track.power', on: false }];
+		return [
+			{
+				event: 'system.event.track.power',
+				payload: { emergencyStop: false, powerOn: false, programmingMode: false, shortCircuit: false, raw }
+			}
+		];
 	}
 
 	if (command === 'LAN_X_BC_TRACK_POWER_ON') {
-		return [{ type: 'event.track.power', on: true }];
+		return [
+			{
+				event: 'system.event.track.power',
+				payload: { emergencyStop: false, powerOn: true, programmingMode: false, shortCircuit: false, raw }
+			}
+		];
 	}
 
 	if (command === 'LAN_X_BC_PROGRAMMING_MODE') {
-		return [{ type: 'event.track.power', on: true, programmingMode: true }];
+		return [
+			{
+				event: 'system.event.track.power',
+				payload: { emergencyStop: false, powerOn: true, programmingMode: true, shortCircuit: false, raw }
+			}
+		];
 	}
 
 	if (command === 'LAN_X_BC_TRACK_SHORT_CIRCUIT') {
-		return [{ type: 'event.track.power', on: false, shortCircuit: true }];
+		return [
+			{
+				event: 'system.event.track.power',
+				payload: { emergencyStop: false, powerOn: false, programmingMode: false, shortCircuit: true, raw }
+			}
+		];
 	}
 
 	return [];

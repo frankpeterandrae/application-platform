@@ -31,13 +31,13 @@ describe('deriveTrackFlagsFromSystemState', () => {
 		checks: {
 			powerOn?: boolean;
 			emergencyStop?: boolean;
-			short?: boolean;
+			shortCircuit?: boolean;
 			programmingMode?: boolean;
 		}
 	): void {
 		if (checks.powerOn !== undefined) expect(result.powerOn).toBe(checks.powerOn);
 		if (checks.emergencyStop !== undefined) expect(result.emergencyStop).toBe(checks.emergencyStop);
-		if (checks.short !== undefined) expect(result.short).toBe(checks.short);
+		if (checks.shortCircuit !== undefined) expect(result.shortCircuit).toBe(checks.shortCircuit);
 		if (checks.programmingMode !== undefined) expect(result.programmingMode).toBe(checks.programmingMode);
 	}
 
@@ -71,7 +71,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectCentralFlags(flags, {
 				powerOn: true,
 				emergencyStop: false,
-				short: false,
+				shortCircuit: false,
 				programmingMode: false
 			});
 		});
@@ -82,7 +82,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectCentralFlags(flags, {
 				powerOn: false,
 				emergencyStop: false,
-				short: false
+				shortCircuit: false
 			});
 		});
 
@@ -92,17 +92,17 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectCentralFlags(flags, {
 				emergencyStop: true,
 				powerOn: true,
-				short: false
+				shortCircuit: false
 			});
 		});
 
-		it('detects short circuit flag', () => {
+		it('detects shortCircuit circuit flag', () => {
 			const flags = deriveFlags(0x06, 0x00);
 
 			expectCentralFlags(flags, {
 				powerOn: false,
 				emergencyStop: false,
-				short: true
+				shortCircuit: true
 			});
 		});
 
@@ -134,7 +134,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			});
 		});
 
-		it('detects external short circuit flag', () => {
+		it('detects external shortCircuit circuit flag', () => {
 			const flags = deriveFlags(0x00, 0x04);
 
 			expectExtendedFlags(flags, {
@@ -143,7 +143,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			});
 		});
 
-		it('detects internal short circuit flag', () => {
+		it('detects internal shortCircuit circuit flag', () => {
 			const flags = deriveFlags(0x00, 0x08);
 
 			expectExtendedFlags(flags, {
@@ -166,7 +166,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectFlags(flags, {
 				emergencyStop: true,
 				powerOn: false,
-				short: true
+				shortCircuit: true
 			});
 		});
 
@@ -187,7 +187,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectFlags(flags, {
 				emergencyStop: true,
 				powerOn: false,
-				short: true,
+				shortCircuit: true,
 				programmingMode: true,
 				highTemperature: true,
 				powerLost: true,
@@ -230,7 +230,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expectCentralFlags(flags, {
 				powerOn: true,
 				emergencyStop: false,
-				short: false,
+				shortCircuit: false,
 				programmingMode: false
 			});
 			expectExtendedFlags(flags, {
@@ -246,7 +246,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			const flags = deriveFlags(0xff, 0xff);
 
 			expect(flags.emergencyStop).toBe(true);
-			expect(flags.short).toBe(true);
+			expect(flags.shortCircuit).toBe(true);
 			expect(flags.programmingMode).toBe(true);
 			expect(flags.highTemperature).toBe(true);
 			expect(flags.powerLost).toBe(true);
@@ -261,7 +261,7 @@ describe('deriveTrackFlagsFromSystemState', () => {
 			expect(flags.programmingMode).toBe(true);
 			expect(flags.powerOn).toBe(true);
 			expect(flags.emergencyStop).toBe(false);
-			expect(flags.short).toBe(false);
+			expect(flags.shortCircuit).toBe(false);
 		});
 
 		it('handles only CSE RCN-213 mode flag', () => {

@@ -3,6 +3,9 @@
  * All rights reserved.
  */
 
+import { Domain } from '../../types';
+import { Event } from '../event';
+
 export const TurnoutState = {
 	STRAIGHT: 'STRAIGHT',
 	DIVERGING: 'DIVERGING',
@@ -11,4 +14,9 @@ export const TurnoutState = {
 
 export type TurnoutState = (typeof TurnoutState)[keyof typeof TurnoutState];
 
-export type TurnoutInfoEvent = { type: 'event.turnout.info'; addr: number; state: TurnoutState };
+export type TurnoutInfoEventPayload = {
+	addr: number;
+	state: TurnoutState;
+};
+
+export type TurnoutInfoEvent = Event<Domain.SWITCHING, 'turnout.info', TurnoutInfoEventPayload>;

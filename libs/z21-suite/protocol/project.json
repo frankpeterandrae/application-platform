@@ -13,6 +13,19 @@
 				"vitestConfig": "libs/z21-suite/protocol/vitest.config.mts",
 				"reportsDirectory": "../../../coverage/libs/z21-suite/protocol",
 				"passWithNoTests": true
+			},
+			"dependsOn": ["typecheck-test", "typecheck-lib"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
 			}
 		}
 	}

@@ -4,15 +4,15 @@
  */
 import * as dgram from 'node:dgram';
 
-import { Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { DeepMock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { Logger, Z21LanHeader } from '@application-platform/z21-shared';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, Mocked, vi } from 'vitest';
 
 import { Z21BroadcastFlag } from '../constants';
 
 import { Z21Udp } from './udp';
 
-// Mock dgram module
+// DeepMock dgram module
 vi.mock('node:dgram', () => {
 	const socket = {
 		on: vi.fn(),
@@ -26,16 +26,16 @@ vi.mock('node:dgram', () => {
 });
 
 type MockSocket = {
-	on: vi.Mock;
-	bind: vi.Mock;
-	send: vi.Mock;
-	close: vi.Mock;
-	removeAllListeners: vi.Mock;
-	address: vi.Mock;
+	on: Mock;
+	bind: Mock;
+	send: Mock;
+	close: Mock;
+	removeAllListeners: Mock;
+	address: Mock;
 };
 
 type Services = {
-	logger: vi.Mocked<Logger>;
+	logger: Mocked<Logger>;
 	socket: MockSocket;
 	udp: Z21Udp;
 };
@@ -43,12 +43,12 @@ type Services = {
 describe('Z21Udp', () => {
 	// Helper function to get mocked socket (similar to getSocket but typed)
 	function getSocket(): MockSocket {
-		return (dgram.createSocket as vi.Mock).mock.results[0].value;
+		return (dgram.createSocket as Mock).mock.results[0].value;
 	}
 
 	// Helper function to create test services (similar to makeProviders in bootstrap.spec.ts)
 	function makeServices(host = 'host', port = 1234): Services {
-		const logger = Mock<Logger>() as any;
+		const logger = DeepMock<Logger>() as any;
 		const udp = new Z21Udp(host, port, logger);
 		const socket = getSocket();
 
@@ -61,7 +61,7 @@ describe('Z21Udp', () => {
 	}
 
 	// Helper function to create datagram event spy
-	function createDatagramSpy(udp: Z21Udp): vi.Mock {
+	function createDatagramSpy(udp: Z21Udp): Mock {
 		const spy = vi.fn();
 		udp.on('datagram', spy);
 		return spy;
@@ -69,7 +69,7 @@ describe('Z21Udp', () => {
 
 	// Helper function to verify datagram event structure
 	function expectDatagramEvent(
-		spy: vi.Mock,
+		spy: Mock,
 		expected: {
 			from?: { address: string; port: number };
 			raw?: Buffer;

@@ -5,17 +5,17 @@
 
 import { TrackStatusManager, type CommandStationInfo, type LocoManager } from '@application-platform/domain';
 import type { ServerToClient } from '@application-platform/protocol';
-import type { DerivedTrackFlags, Z21Dataset, Z21Event, Z21UdpDatagram, Z21UdpFrom } from '@application-platform/z21';
+import type { Z21Dataset, Z21Event, Z21UdpDatagram, Z21UdpFrom } from '@application-platform/z21';
 import { datasetsToEvents, decodeSystemState, deriveTrackFlagsFromSystemState, parseZ21Datagram } from '@application-platform/z21';
 import {
+	LocoInfoEventPayload,
+	PowerPayload,
 	Z21LanHeader,
 	type HardwareType,
-	type LocoInfoEvent,
 	type Logger,
 	type Z21CodeEvent,
 	type Z21FirmwareVersionEvent,
 	type Z21HwinfoEvent,
-	type Z21StatusEvent,
 	type Z21StoppedEvent,
 	type Z21VersionEvent
 } from '@application-platform/z21-shared';
@@ -71,7 +71,7 @@ export class Z21EventHandler {
 				payload: {
 					rawHex,
 					datasets: [{ kind: 'ds.serial', serial, from }],
-					events: [{ type: 'event.serial', serial }]
+					events: [{ event: 'event.serial', serial }]
 				}
 			});
 			return;
@@ -122,7 +122,7 @@ export class Z21EventHandler {
 			header,
 			frameLen: len,
 			datasetKinds: datasets.map((d) => d.kind),
-			eventTypes: events.map((e) => e.type)
+			eventTypes: events.map((e) => e.event)
 		});
 		this.logger.debug('z21.rx.raw', { from: dg.from, hex: dg.rawHex });
 	}
@@ -159,7 +159,7 @@ export class Z21EventHandler {
 			payload: {
 				rawHex,
 				datasets: [{ kind: 'ds.system.state', from, payload: state }],
-				events: [{ type: 'event.system.state', state }]
+				events: [{ event: 'system.event.state', state }]
 			}
 		});
 
@@ -167,16 +167,22 @@ export class Z21EventHandler {
 			centralState: state.centralState,
 			centralStateEx: state.centralStateEx
 		});
-		this.updateTrackStatusFromSystemState(flags);
+		const payload: PowerPayload = {
+			powerOn: !!flags.powerOn,
+			emergencyStop: !!flags.emergencyStop,
+			shortCircuit: !!flags.shortCircuit,
+			programmingMode: !!flags.programmingMode
+		};
+		this.updateTrackPower(payload, sys.kind);
 	}
 
 	/**
 	 * Forward CV-related events to the CV programming service so it can resolve any waiting promises.
 	 */
 	private forwardCvEvents(events: readonly Z21Event[]): void {
-		for (const ev of events) {
-			if (ev.type === 'event.cv.result' || ev.type === 'event.cv.nack') {
-				this.cvProgrammingService.onEvent(ev);
+		for (const event of events) {
+			if (event.event === 'programming.event.cv.result' || event.event === 'programming.event.cv.nack') {
+				this.cvProgrammingService.onEvent(event);
 			}
 		}
 	}
@@ -185,32 +191,38 @@ export class Z21EventHandler {
 	 * Central switch to handle individual events. Kept small by delegating to helpers.
 	 */
 	private handleEvent(event: Z21Event, datasets: Z21Dataset[], dg: Z21UdpDatagram): void {
-		switch (event.type) {
-			case 'event.system.state': {
+		switch (event.event) {
+			case 'system.event.state': {
 				const flags = deriveTrackFlagsFromSystemState({
 					centralState: event.payload.centralState,
 					centralStateEx: event.payload.centralStateEx
 				});
-				this.updateTrackStatusFromSystemState(flags);
+				const payload: PowerPayload = {
+					powerOn: !!flags.powerOn,
+					emergencyStop: !!flags.emergencyStop,
+					shortCircuit: !!flags.shortCircuit,
+					programmingMode: !!flags.programmingMode
+				};
+				this.updateTrackPower(payload, 'ds.lan.x');
 				break;
 			}
-			case 'event.loco.info': {
-				this.updateLocoInfoFromZ21(event);
+			case 'loco.event.info': {
+				this.updateLocoInfoFromZ21(event.payload);
 				break;
 			}
-			case 'event.turnout.info': {
+			case 'switching.event.turnout.info': {
 				this.broadcast({
 					type: 'switching.message.turnout.state',
-					payload: { addr: event.addr, state: event.state }
+					payload: { addr: event.payload.addr, state: event.payload.state }
 				});
 				break;
 			}
-			case 'event.track.power': {
-				this.updateTrackPowerFromXbus(event.on);
+			case 'system.event.track.power': {
+				this.updateTrackPower(event.payload, 'ds.lan.x');
 				break;
 			}
 			case 'event.unknown.lan_x': {
-				this.logUnknown('lan_x', event.type, {
+				this.logUnknown('lan_x', event.event, {
 					from: dg.from,
 					hex: dg.rawHex,
 					datasets,
@@ -218,12 +230,12 @@ export class Z21EventHandler {
 				});
 				break;
 			}
-			case 'event.z21.status': {
-				this.updateTrackStatusFromLanX(event);
+			case 'system.event.status': {
+				this.updateTrackPower(event.payload, 'ds.lan.x');
 				break;
 			}
 			case 'event.unknown.x.bus': {
-				this.logUnknown('x_bus', event.type, {
+				this.logUnknown('x_bus', event.event, {
 					from: dg.from,
 					hex: dg.rawHex,
 					xHeader: event.xHeader,
@@ -231,28 +243,28 @@ export class Z21EventHandler {
 				});
 				break;
 			}
-			case 'event.z21.x.bus.version': {
+			case 'system.event.x.bus.version': {
 				this.handleXBusVersion(event);
 				break;
 			}
-			case 'event.z21.firmware.version': {
+			case 'system.event.firmware.version': {
 				this.handleFirmwareVersion(event);
 				break;
 			}
-			case 'event.z21.stopped': {
+			case 'system.event.stopped': {
 				this.handleStopped(event);
 				break;
 			}
-			case 'event.z21.hwinfo': {
+			case 'system.event.hwinfo': {
 				this.handleHwInfo(event);
 				break;
 			}
-			case 'event.z21.code': {
+			case 'system.event.z21.code': {
 				this.handleCode(event);
 				break;
 			}
-			case 'event.cv.result':
-			case 'event.cv.nack':
+			case 'programming.event.cv.result':
+			case 'programming.event.cv.nack':
 				// Already forwarded to CvProgrammingService before switch-case
 				// Nothing more to do here
 				break;
@@ -265,54 +277,54 @@ export class Z21EventHandler {
 		}
 	}
 
-	private handleXBusVersion(ev: Z21VersionEvent): void {
-		this.logger.info('z21.x.bus.version', ev);
+	private handleXBusVersion(event: Z21VersionEvent): void {
+		this.logger.info('z21.x.bus.version', event);
 
-		this.commandStationInfo.setXBusVersion(ev);
-		if (ev.cmdsId === 0x12 || ev.cmdsId === 0x13) {
-			const hardwareType: HardwareType = ev.cmdsId === 0x12 ? 'Z21_OLD' : 'z21_START';
+		this.commandStationInfo.setXBusVersion(event.payload);
+		if (event.payload.cmdsId === 0x12 || event.payload.cmdsId === 0x13) {
+			const hardwareType: HardwareType = event.payload.cmdsId === 0x12 ? 'Z21_OLD' : 'z21_START';
 			this.commandStationInfo.setHardwareType(hardwareType);
 			this.broadcast({ type: 'system.message.hardware.info', payload: { hardwareType } });
 		}
 		this.broadcast({
 			type: 'system.message.x.bus.version',
-			payload: { version: ev.xBusVersionString, cmdsId: ev.cmdsId }
+			payload: { version: event.payload.xBusVersionString, cmdsId: event.payload.cmdsId }
 		});
 		this.csInfoOrchestrator.poke();
 		this.csInfoOrchestrator.ack('xBusVersion');
 	}
 
-	private handleFirmwareVersion(ev: Z21FirmwareVersionEvent): void {
-		this.logger.info('z21.firmware.version', ev);
-		this.commandStationInfo.setFirmwareVersion(ev);
-		this.broadcast({ type: 'system.message.firmware.version', payload: { major: ev.major, minor: ev.minor } });
+	private handleFirmwareVersion(event: Z21FirmwareVersionEvent): void {
+		this.logger.info('z21.firmware.version', event);
+		this.commandStationInfo.setFirmwareVersion(event.payload);
+		this.broadcast({ type: 'system.message.firmware.version', payload: { major: event.payload.major, minor: event.payload.minor } });
 		this.csInfoOrchestrator.poke();
 		this.csInfoOrchestrator.ack('firmware');
 	}
 
-	private handleStopped(ev: Z21StoppedEvent): void {
-		this.logger.info('z21.stopped', ev);
+	private handleStopped(event: Z21StoppedEvent): void {
+		this.logger.info('z21.stopped', event);
 		this.trackStatusManager.setEmergencyStop(true, 'ds.lan.x');
 		this.broadcast({ type: 'system.message.stop', payload: {} });
 	}
 
-	private handleHwInfo(ev: Z21HwinfoEvent): void {
-		this.logger.info('z21.hwinfo', ev);
-		this.commandStationInfo.setFirmwareVersion({ major: ev.payload.majorVersion, minor: ev.payload.minorVersion });
-		this.commandStationInfo.setHardwareType(ev.payload.hardwareType);
+	private handleHwInfo(event: Z21HwinfoEvent): void {
+		this.logger.info('z21.hwinfo', event);
+		this.commandStationInfo.setFirmwareVersion({ major: event.payload.majorVersion, minor: event.payload.minorVersion });
+		this.commandStationInfo.setHardwareType(event.payload.hardwareType);
 		this.broadcast({
 			type: 'system.message.firmware.version',
-			payload: { major: ev.payload.majorVersion, minor: ev.payload.minorVersion }
+			payload: { major: event.payload.majorVersion, minor: event.payload.minorVersion }
 		});
-		this.broadcast({ type: 'system.message.hardware.info', payload: { hardwareType: ev.payload.hardwareType } });
+		this.broadcast({ type: 'system.message.hardware.info', payload: { hardwareType: event.payload.hardwareType } });
 		this.csInfoOrchestrator.poke();
 		this.csInfoOrchestrator.ack('hwinfo');
 	}
 
-	private handleCode(ev: Z21CodeEvent): void {
-		this.logger.info('z21.code', ev);
-		this.commandStationInfo.setCode(ev.code);
-		this.broadcast({ type: 'system.message.z21.code', payload: { code: ev.code } });
+	private handleCode(event: Z21CodeEvent): void {
+		this.logger.info('z21.code', event);
+		this.commandStationInfo.setCode(event.payload.code);
+		this.broadcast({ type: 'system.message.z21.code', payload: { code: event.payload.code } });
 		this.csInfoOrchestrator.ack('code');
 	}
 
@@ -333,45 +345,11 @@ export class Z21EventHandler {
 	/**
 	 * Updates track power status based on X-Bus power signal and notifies clients.
 	 */
-	private updateTrackPowerFromXbus(on: boolean): void {
-		const status = this.trackStatusManager.updateFromXbusPower(on);
+	private updateTrackPower(payload: PowerPayload, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x'): void {
+		const status = this.trackStatusManager.updateStatus(payload, source);
 		this.broadcast({
 			type: 'system.message.trackpower',
-			payload: {
-				on,
-				short: status.short ?? false
-			}
-		});
-	}
-
-	/**
-	 * Updates track status from derived system state flags and notifies clients.
-	 */
-	private updateTrackStatusFromSystemState(flags: DerivedTrackFlags): void {
-		const status = this.trackStatusManager.updateFromSystemState(flags);
-		this.broadcast({
-			type: 'system.message.trackpower',
-			payload: {
-				on: status.powerOn ?? false,
-				short: status.short ?? false,
-				emergencyStop: status.emergencyStop
-			}
-		});
-	}
-
-	/**
-	 * Updates track status from LAN_X command station status event.
-	 * @param csStatusEvent - Command station status event
-	 */
-	private updateTrackStatusFromLanX(csStatusEvent: Z21StatusEvent): void {
-		const status = this.trackStatusManager.updateFromLanX(csStatusEvent);
-		this.broadcast({
-			type: 'system.message.trackpower',
-			payload: {
-				on: status.powerOn ?? false,
-				short: status.short ?? false,
-				emergencyStop: status.emergencyStop
-			}
+			payload: status
 		});
 	}
 
@@ -379,7 +357,7 @@ export class Z21EventHandler {
 	 * Updates locomotive info from Z21 and broadcasts to clients.
 	 * @param locoInfo - Locomotive info event from Z21
 	 */
-	private updateLocoInfoFromZ21(locoInfo: LocoInfoEvent): void {
+	private updateLocoInfoFromZ21(locoInfo: LocoInfoEventPayload): void {
 		const locoState = this.locoManager.updateLocoInfoFromZ21(locoInfo);
 		this.broadcast({
 			type: 'loco.message.state',

@@ -18,10 +18,10 @@ describe('Z21UiStore', () => {
 	it('updates powerOn when receiving system.message.trackpower messages', () => {
 		expect(store.powerOn()).toBe(false);
 
-		store.updateFromServer({ type: 'system.message.trackpower', payload: { on: true } } as SystemTrackPower);
+		store.updateFromServer({ type: 'system.message.trackpower', payload: { powerOn: true } } as SystemTrackPower);
 		expect(store.powerOn()).toBe(true);
 
-		store.updateFromServer({ type: 'system.message.trackpower', payload: { on: false } } as SystemTrackPower);
+		store.updateFromServer({ type: 'system.message.trackpower', payload: { powerOn: false } } as SystemTrackPower);
 		expect(store.powerOn()).toBe(false);
 	});
 

@@ -11,11 +11,11 @@ import type { Bootstrap } from './bootstrap/bootstrap';
 /**
  * Note: main.ts is an entry-point module that executes immediately on import.
  * Therefore, we must use vi.mock() at module level.
- * We cannot use Mock<T>() helper in the factory because vi.resetModules()
- * causes issues with the Proxy-based Mock implementation.
+ * We cannot use DeepMock<T>() helper in the factory because vi.resetModules()
+ * causes issues with the Proxy-based DeepMock implementation.
  */
 
-// Mock Bootstrap at module level with a constructor-like mock whose prototype
+// DeepMock Bootstrap at module level with a constructor-like mock whose prototype
 // contains start/stop spies. That ensures `new Bootstrap(...).start()` is
 // present even when the function is called as a constructor.
 vi.mock('./bootstrap/bootstrap', () => {
@@ -31,7 +31,7 @@ vi.mock('./bootstrap/bootstrap', () => {
 	return { Bootstrap: ctor };
 });
 
-// Mock createProviders at module level
+// DeepMock createProviders at module level
 vi.mock('./bootstrap/providers', () => ({
 	createProviders: vi.fn().mockReturnValue({
 		cfg: { httpPort: 5050, z21: { host: '127.0.0.1', udpPort: 21105 } },
@@ -61,7 +61,7 @@ describe('main', () => {
 			logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() }
 		});
 
-		// Spy on process.on to capture signal handlers
+		// Spy powerOn process.powerOn to capture signal handlers
 		processOnSpy = vi.spyOn(process, 'on').mockImplementation((event: string | symbol, handler: (...args: any[]) => void) => {
 			if (event === 'SIGINT') {
 				sigintHandler = handler as () => void;
@@ -88,8 +88,8 @@ describe('main', () => {
 	async function getBootstrap(): Promise<Bootstrap & Mocked<Bootstrap>> {
 		const { Bootstrap } = await import('./bootstrap/bootstrap');
 		// When a mock is used as a constructor, the constructed objects are stored
-		// on mock.instances. Use that to get the created instance.
-		return (Bootstrap as Mock).mock.instances[0];
+		// in mock.instances. Cast the retrieved instance to the expected type.
+		return (Bootstrap as Mock).mock.instances[0] as unknown as Bootstrap & Mocked<Bootstrap>;
 	}
 
 	async function getCreateProviders(): Promise<Mock> {
@@ -221,14 +221,14 @@ describe('main', () => {
 	});
 
 	describe('SIGINT handling', () => {
-		it('calls stop on Bootstrap instance when SIGINT is received', async () => {
+		it('calls stop powerOn Bootstrap instance when SIGINT is received', async () => {
 			await requireMain();
 
 			const bootstrap = await getBootstrap();
 
 			expect(sigintHandler).toBeDefined();
 			if (!sigintHandler) throw new Error('SIGINT handler not registered');
-			sigintHandler();
+			sigintHandler?.();
 
 			expect(bootstrap.stop).toHaveBeenCalled();
 		});
@@ -239,9 +239,9 @@ describe('main', () => {
 			const bootstrap = await getBootstrap();
 
 			if (!sigintHandler) throw new Error('SIGINT handler not registered');
-			sigintHandler();
-			sigintHandler();
-			sigintHandler();
+			sigintHandler?.();
+			sigintHandler?.();
+			sigintHandler?.();
 
 			expect(bootstrap.stop).toHaveBeenCalledTimes(3);
 		});
@@ -264,7 +264,7 @@ describe('main', () => {
 			// The production signal handler now catches errors from stop(); assert
 			// stop() was called but the handler does not rethrow.
 			if (!sigintHandler) throw new Error('SIGINT handler not registered');
-			expect(() => sigintHandler()).not.toThrow();
+			expect(() => sigintHandler?.()).not.toThrow();
 			expect(bootstrap.stop).toHaveBeenCalled();
 		});
 	});
@@ -277,7 +277,7 @@ describe('main', () => {
 
 			expect(sigtermHandler).toBeDefined();
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
-			sigtermHandler();
+			sigtermHandler?.();
 
 			expect(bootstrap.stop).toHaveBeenCalled();
 		});
@@ -288,9 +288,9 @@ describe('main', () => {
 			const bootstrap = await getBootstrap();
 
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
-			sigtermHandler();
-			sigtermHandler();
-			sigtermHandler();
+			sigtermHandler?.();
+			sigtermHandler?.();
+			sigtermHandler?.();
 
 			expect(bootstrap.stop).toHaveBeenCalledTimes(3);
 		});
@@ -311,7 +311,7 @@ describe('main', () => {
 			const bootstrap = await getBootstrap();
 
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
-			expect(() => sigtermHandler()).not.toThrow();
+			expect(() => sigtermHandler?.()).not.toThrow();
 			expect(bootstrap.stop).toHaveBeenCalled();
 		});
 	});
@@ -324,8 +324,8 @@ describe('main', () => {
 
 			if (!sigintHandler) throw new Error('SIGINT handler not registered');
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
-			sigintHandler();
-			sigtermHandler();
+			sigintHandler?.();
+			sigtermHandler?.();
 
 			expect(bootstrap.stop).toHaveBeenCalledTimes(2);
 		});
@@ -336,14 +336,14 @@ describe('main', () => {
 			const bootstrap = await getBootstrap();
 
 			if (!sigintHandler) throw new Error('SIGINT handler not registered');
-			sigintHandler();
+			sigintHandler?.();
 			expect(bootstrap.stop).toHaveBeenCalled();
 
 			// Clear mock history between signal handler tests
 			bootstrap.stop.mockClear();
 
 			if (!sigtermHandler) throw new Error('SIGTERM handler not registered');
-			sigtermHandler();
+			sigtermHandler?.();
 			expect(bootstrap.stop).toHaveBeenCalled();
 		});
 

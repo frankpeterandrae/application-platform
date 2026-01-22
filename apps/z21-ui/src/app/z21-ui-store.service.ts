@@ -33,7 +33,7 @@ export class Z21UiStore {
 	public updateFromServer(msg: ServerToClient): void {
 		switch (msg.type) {
 			case 'system.message.trackpower':
-				this.powerOn.set(msg.payload.on);
+				this.powerOn.set(msg.payload.powerOn);
 				break;
 
 			case 'loco.message.state':

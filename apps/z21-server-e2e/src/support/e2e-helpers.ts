@@ -12,7 +12,7 @@ import * as path from 'node:path';
 
 import WebSocket from 'ws';
 
-type WsMessage = { type: string; payload: { [key: string]: unknown } };
+export type WsMessage = { type: string; payload: { [key: string]: unknown } };
 
 export type E2eCtx = {
 	proc: ChildProcessWithoutNullStreams;

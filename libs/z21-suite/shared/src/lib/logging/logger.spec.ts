@@ -3,18 +3,22 @@
  * All rights reserved.
  */
 
+import { vi } from 'vitest';
+
 import { createConsoleLogger, type LogLevel } from './logger';
 
 describe('createConsoleLogger', () => {
-	let consoleLogSpy: vi.SpyInstance;
+	let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 	let originalDateToISOString: () => string;
 	const fixedTimestamp = '2026-01-05T12:00:00.000Z';
 
 	beforeEach(() => {
-		// Mock console.log to capture output
-		consoleLogSpy = vi.spyOn(console, 'log').mockImplementation();
+		// DeepMock console.log to capture output
+		consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {
+			/* empty */
+		});
 
-		// Mock Date.toISOString for consistent timestamps in tests
+		// DeepMock Date.toISOString for consistent timestamps in tests
 		originalDateToISOString = Date.prototype.toISOString;
 		Date.prototype.toISOString = vi.fn(() => fixedTimestamp);
 	});
@@ -88,39 +92,49 @@ describe('createConsoleLogger', () => {
 		it('does not log debug when level is info', () => {
 			const logger = createConsoleLogger({ level: 'info' });
 
-			logger.debug('should not appear');
+			const result = logger.debug('should not appear');
 
 			expect(consoleLogSpy).not.toHaveBeenCalled();
+			expect(result).toBeUndefined();
 		});
 
 		it('does not log info when level is warn', () => {
 			const logger = createConsoleLogger({ level: 'warn' });
 
-			logger.info('should not appear');
-			logger.debug('should not appear');
+			const infoResult = logger.info('should not appear');
+			const debugResult = logger.debug('should not appear');
 
 			expect(consoleLogSpy).not.toHaveBeenCalled();
+			expect(infoResult).toBeUndefined();
+			expect(debugResult).toBeUndefined();
 		});
 
 		it('does not log warn when level is error', () => {
 			const logger = createConsoleLogger({ level: 'error' });
 
-			logger.warn('should not appear');
-			logger.info('should not appear');
-			logger.debug('should not appear');
+			const warnResult = logger.warn('should not appear');
+			const infoResult = logger.info('should not appear');
+			const debugResult = logger.debug('should not appear');
 
 			expect(consoleLogSpy).not.toHaveBeenCalled();
+			expect(warnResult).toBeUndefined();
+			expect(infoResult).toBeUndefined();
+			expect(debugResult).toBeUndefined();
 		});
 
 		it('does not log anything when level is silent', () => {
 			const logger = createConsoleLogger({ level: 'silent' });
 
-			logger.error('should not appear');
-			logger.warn('should not appear');
-			logger.info('should not appear');
-			logger.debug('should not appear');
+			const errorResult = logger.error('should not appear');
+			const warnResult = logger.warn('should not appear');
+			const infoResult = logger.info('should not appear');
+			const debugResult = logger.debug('should not appear');
 
 			expect(consoleLogSpy).not.toHaveBeenCalled();
+			expect(errorResult).toBeUndefined();
+			expect(warnResult).toBeUndefined();
+			expect(infoResult).toBeUndefined();
+			expect(debugResult).toBeUndefined();
 		});
 
 		it('logs higher level messages when level is set lower', () => {

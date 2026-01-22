@@ -77,13 +77,13 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
  */
 function handleXBus(payload: Buffer, out: Z21Dataset[]): void {
 	if (payload.length < 2) {
-		out.push({ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload, reason: 'x-bus too short' });
+		out.push({ kind: 'ds.unknown', header: Z21LanHeader.LAN_X, payload, reason: 'x-bus too shortCircuit' });
 		return;
 	}
 
 	const xHeader = payload[0];
-	const bodyNoXor = payload.subarray(0, payload.length - 1);
-	const xorByte = payload[payload.length - 1];
+	const bodyNoXor = payload.subarray(0, -1);
+	const xorByte = payload.at(-1) as number;
 	const db = bodyNoXor.subarray(1);
 
 	const calc = xbusXor(bodyNoXor);

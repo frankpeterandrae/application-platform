@@ -16,13 +16,11 @@ import { XHeader } from './x-header';
 export const LAN_X_COMMANDS = {
 	/**
 	 * Get version of the Z21 central.
-	 *
 	 */
 	LAN_X_GET_VERSION: {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.GET_VERSION
 	} as const satisfies LanXCommand,
-
 	/**
 	 * Get status of the Z21 central.
 	 */
@@ -30,7 +28,6 @@ export const LAN_X_COMMANDS = {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.GET_STATUS
 	} as const satisfies LanXCommand,
-
 	/**
 	 * Set track power off.
 	 */
@@ -38,7 +35,6 @@ export const LAN_X_COMMANDS = {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.TRACK_POWER_OFF
 	} as const satisfies LanXCommand,
-
 	/**
 	 * Set track power on.
 	 */
@@ -146,14 +142,14 @@ export const LAN_X_COMMANDS = {
 		xBusCmd: XBusCmd.BC_BC_PROGRAMMING_MODE
 	} as const satisfies LanXCommand,
 	/**
-	 * Broadcast: track short circuit.
+	 * Broadcast: track shortCircuit circuit.
 	 */
 	LAN_X_BC_TRACK_SHORT_CIRCUIT: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.BC_TRACK_SHORT_CIRCUIT
 	} as const satisfies LanXCommand,
 	/**
-	 * CV read NACK with short circuit.
+	 * CV read NACK with shortCircuit circuit.
 	 */
 	LAN_X_CV_NACK_SC: {
 		xHeader: XHeader.BROADCAST,

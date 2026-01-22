@@ -9,7 +9,7 @@ import { PROTOCOL_VERSION, type ClientToServer, type ServerToClient } from '@app
 type Pending = {
 	resolve: (msg: ServerToClient) => void;
 	reject: (err: Error) => void;
-	timer: number;
+	timer: ReturnType<typeof setTimeout>;
 };
 
 type MsgHandler = (msg: ServerToClient) => void;

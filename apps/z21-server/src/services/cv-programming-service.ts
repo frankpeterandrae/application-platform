@@ -37,23 +37,23 @@ export class CvProgrammingService {
 			return;
 		}
 
-		if (event.type === 'event.cv.result') {
-			if (event.cv !== this.inFlight.cvAdress) {
+		if (event.event === 'programming.event.cv.result') {
+			if (event.payload.cv !== this.inFlight.cvAdress) {
 				// CV address mismatch - ignore this response
 				return;
 			}
 
 			this.succeed({
-				cvAdress: event.cv,
-				cvValue: event.value
+				cvAdress: event.payload.cv,
+				cvValue: event.payload.value
 			});
 
 			return;
 		}
 
-		if (event.type === 'event.cv.nack') {
+		if (event.event === 'programming.event.cv.nack') {
 			if (event.payload.shortCircuit) {
-				this.fail(new Error('CV short circuit detected'));
+				this.fail(new Error('CV shortCircuit circuit detected'));
 				return;
 			} else {
 				this.fail(new Error('CV programming NACK received'));

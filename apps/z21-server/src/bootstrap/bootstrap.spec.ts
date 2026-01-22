@@ -9,10 +9,10 @@ import http from 'node:http';
 
 import { CommandStationInfo, LocoManager } from '@application-platform/domain';
 import { LocoDrive } from '@application-platform/protocol';
-import { Mock, type DeepMocked } from '@application-platform/shared-node-test';
+import { DeepMock, type DeepMocked } from '@application-platform/shared-node-test';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
 import { Logger } from '@application-platform/z21-shared';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { Z21EventHandler } from '../handler/z21-event-handler';
 import { AppWsServer } from '../infra/ws/app-websocket-server';
@@ -23,23 +23,23 @@ import { Bootstrap } from './bootstrap';
 import { Providers } from './providers';
 
 describe('Bootstrap', () => {
-	let providers: DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock };
+	let providers: DeepMocked<Providers> & { wsOnConnection: Mock; broadcast: Mock };
 
-	function makeProviders(): DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock } {
+	function makeProviders(): DeepMocked<Providers> & { wsOnConnection: Mock; broadcast: Mock } {
 		const wsOnConnection = vi.fn();
 		const broadcast = vi.fn();
 		const wsServerClose = vi.fn((cb?: () => void) => {
 			cb?.();
 			return {} as any;
 		});
-		const mockUdp = Mock<Z21Udp>();
-		const mockWsServer = Mock<AppWsServer>();
-		const mockZ21CommandService = Mock<Z21CommandService>();
-		const mockZ21EventHandler = Mock<Z21EventHandler>();
-		const mockLocoManager = Mock<LocoManager>();
-		const mockCsInfoOrchestrator = Mock<CommandStationInfoOrchestrator>();
-		const mockLogger = Mock<Logger>();
-		const mockHttpServer = Mock<http.Server>();
+		const mockUdp = DeepMock<Z21Udp>();
+		const mockWsServer = DeepMock<AppWsServer>();
+		const mockZ21CommandService = DeepMock<Z21CommandService>();
+		const mockZ21EventHandler = DeepMock<Z21EventHandler>();
+		const mockLocoManager = DeepMock<LocoManager>();
+		const mockCsInfoOrchestrator = DeepMock<CommandStationInfoOrchestrator>();
+		const mockLogger = DeepMock<Logger>();
+		const mockHttpServer = DeepMock<http.Server>();
 
 		mockLocoManager.subscribeLocoInfoOnce.mockReturnValue(true);
 		mockLocoManager.stopAll.mockReturnValue([
@@ -56,7 +56,7 @@ describe('Bootstrap', () => {
 			return mockHttpServer as unknown as http.Server;
 		});
 
-		const providers: DeepMocked<Providers> & { wsOnConnection: vi.Mock; broadcast: vi.Mock } = {
+		const providers: DeepMocked<Providers> & { wsOnConnection: Mock; broadcast: Mock } = {
 			cfg: { httpPort: 5050, z21: { host: '1.2.3.4', udpPort: 21105 }, safety: { stopAllOnClientDisconnect: true } } as any,
 			logger: mockLogger as any,
 			httpServer: mockHttpServer as any,
@@ -71,10 +71,10 @@ describe('Bootstrap', () => {
 			z21EventHandler: mockZ21EventHandler as any,
 			locoManager: mockLocoManager as any,
 			csInfoOrchestrator: mockCsInfoOrchestrator as any,
-			commandStationInfo: Mock<CommandStationInfo>() as any,
+			commandStationInfo: DeepMock<CommandStationInfo>() as any,
 			wsOnConnection,
 			broadcast,
-			cvProgrammingService: Mock<CvProgrammingService>() as any
+			cvProgrammingService: DeepMock<CvProgrammingService>() as any
 		};
 
 		return providers;
@@ -86,7 +86,7 @@ describe('Bootstrap', () => {
 
 	// Helper function to setup mocked CommandStationInfo and real orchestrator for testing
 	function setupMockedOrchestrator(hasXBusVersion: boolean, hasFirmwareVersion: boolean): void {
-		const mockCommandStationInfo = Mock<CommandStationInfo>();
+		const mockCommandStationInfo = DeepMock<CommandStationInfo>();
 		mockCommandStationInfo.hasXBusVersion.mockReturnValue(hasXBusVersion);
 		mockCommandStationInfo.hasFirmwareVersion.mockReturnValue(hasFirmwareVersion);
 
@@ -122,7 +122,7 @@ describe('Bootstrap', () => {
 
 		bootstrap.start();
 
-		const datagramHandler = (providers.udp.on as vi.Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
+		const datagramHandler = (providers.udp.on as Mock).mock.calls.find((call) => call[0] === 'datagram')?.[1];
 		expect(datagramHandler).toBeDefined();
 
 		const testDatagram = { raw: Buffer.from([0x04, 0x00]), rawHex: '0x01', from: { address: '127.0.0.1', port: 21105 } };
@@ -199,7 +199,7 @@ describe('Bootstrap', () => {
 	it('does not request loco info on connection when subscribeLocoInfoOnce returns false', () => {
 		providers.locoManager.subscribeLocoInfoOnce.mockReturnValue(false);
 		providers.cfg.dev = { subscribeLocoAddr: 1845 };
-		(providers.z21CommandService.getLocoInfo as vi.Mock).mockClear();
+		(providers.z21CommandService.getLocoInfo as Mock).mockClear();
 
 		const bootstrap = new Bootstrap(providers);
 
@@ -214,8 +214,8 @@ describe('Bootstrap', () => {
 	});
 
 	it('does not request loco info on connection when dev config is missing', () => {
-		(providers.locoManager.subscribeLocoInfoOnce as vi.Mock).mockClear();
-		(providers.z21CommandService.getLocoInfo as vi.Mock).mockClear();
+		(providers.locoManager.subscribeLocoInfoOnce as Mock).mockClear();
+		(providers.z21CommandService.getLocoInfo as Mock).mockClear();
 
 		const bootstrap = new Bootstrap(providers);
 
@@ -239,7 +239,7 @@ describe('Bootstrap', () => {
 		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
 		// Clear mocks from start() to focus on onConnect behavior
-		(providers.z21CommandService.getXBusVersion as vi.Mock).mockClear();
+		(providers.z21CommandService.getXBusVersion as Mock).mockClear();
 
 		onConnect({});
 
@@ -257,7 +257,7 @@ describe('Bootstrap', () => {
 		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
 		// Clear mocks from start() to focus on onConnect behavior
-		(providers.z21CommandService.getFirmwareVersion as vi.Mock).mockClear();
+		(providers.z21CommandService.getFirmwareVersion as Mock).mockClear();
 
 		onConnect({});
 
@@ -276,7 +276,7 @@ describe('Bootstrap', () => {
 	});
 
 	it('wires client message handler to process incoming WS messages', () => {
-		// Mock locoManager.setSpeed to return a valid state
+		// DeepMock locoManager.setSpeed to return a valid state
 		providers.locoManager.setSpeed.mockReturnValue({ speed: 0.5, dir: 'FWD', fns: {}, estop: false });
 
 		const bootstrap = new Bootstrap(providers);
@@ -348,7 +348,7 @@ describe('Bootstrap', () => {
 		providers.udp.stop.mockImplementation(() => {
 			throw new Error('UDP stop error');
 		});
-		(providers.wsServer.close as vi.Mock).mockImplementation(() => {
+		(providers.wsServer.close as Mock).mockImplementation(() => {
 			throw new Error('WS close error');
 		});
 		providers.httpServer.close.mockImplementation(() => {
@@ -379,7 +379,7 @@ describe('Bootstrap', () => {
 
 		const [, , onConnect] = providers.wsOnConnection!.mock.calls[0];
 
-		const initialCalls = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
+		const initialCalls = (providers.udp.sendSystemStateGetData as Mock).mock.calls.length;
 
 		onConnect({});
 
@@ -416,7 +416,7 @@ describe('Bootstrap', () => {
 		const [, onDisconnect, onConnect] = providers.wsOnConnection!.mock.calls[0];
 		onConnect({});
 
-		const callsBeforeAdvance = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
+		const callsBeforeAdvance = (providers.udp.sendSystemStateGetData as Mock).mock.calls.length;
 
 		vi.advanceTimersByTime(60_000);
 		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(callsBeforeAdvance + 1);
@@ -425,7 +425,7 @@ describe('Bootstrap', () => {
 
 		expect(providers.udp.sendLogOff).toHaveBeenCalledTimes(1);
 
-		const callsAfterDisconnect = (providers.udp.sendSystemStateGetData as vi.Mock).mock.calls.length;
+		const callsAfterDisconnect = (providers.udp.sendSystemStateGetData as Mock).mock.calls.length;
 		vi.advanceTimersByTime(120_000);
 		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(callsAfterDisconnect);
 

@@ -9,7 +9,7 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
-		"module": "preserve",
+		"module": "esnext",
 		"target": "ES2022",
 		"moduleResolution": "bundler",
 		"lib": ["DOM", "ES2022"],
@@ -42,5 +42,14 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "scripts/**/*", "vitest.workspace.ts", "vitest.setup.ts"]
+	"include": [
+		"global.d.ts",
+		"tools/**/*",
+		"libs/**/*",
+		"apps/**/*",
+		"scripts/**/*",
+		"vitest.workspace.ts",
+		"vitest.setup.ts",
+		"types/**/*"
+	]
 }

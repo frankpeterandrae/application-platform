@@ -13,24 +13,27 @@ import { CentralStatus } from '../../event/event-types';
  *
  * @returns Array of Z21Event entries produced from the dataset.
  */
-export function decodeLanXStatusChangedPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.z21.status' }>[] {
+export function decodeLanXStatusChangedPayload(payload: Uint8Array): Extract<Z21Event, { event: 'system.event.status' }>[] {
 	if (payload.length < 2) {
 		return [];
 	}
+
+	const raw = Array.from(payload);
 	const emergencyStop = (payload[1] & CentralStatus.EmergencyStop) !== 0;
 	const shortCircuit = (payload[1] & CentralStatus.ShortCircuit) !== 0;
 	const trackVoltageOff = (payload[1] & CentralStatus.TrackVoltageOff) !== 0;
-	const powerOn = !trackVoltageOff;
+	const on = !trackVoltageOff;
 	const programmingMode = (payload[1] & CentralStatus.ProgrammingModeActive) !== 0;
 
 	return [
 		{
-			type: 'event.z21.status',
+			event: 'system.event.status',
 			payload: {
 				emergencyStop,
 				shortCircuit,
-				powerOn,
-				programmingMode
+				powerOn: on,
+				programmingMode,
+				raw
 			}
 		}
 	];

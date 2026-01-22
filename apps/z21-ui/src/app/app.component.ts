@@ -106,7 +106,7 @@ export class AppComponent {
 	 * Sends a `loco.command.function.set` message with the targeted function number and desired state.
 	 *
 	 * @param fn - Function number to set
-	 * @param on - Desired function state (true = on)
+	 * @param on - Desired function state (true = powerOn)
 	 */
 	public sendFn(fn: number, on: boolean): void {
 		const requestId = crypto.randomUUID();
@@ -171,10 +171,10 @@ export class AppComponent {
 		const requestId = crypto.randomUUID();
 		if (this.store.powerOn()) {
 			this.store.powerOn.set(false);
-			this.ws.send({ type: 'system.command.trackpower.set', payload: { on: false, requestId } });
+			this.ws.send({ type: 'system.command.trackpower.set', payload: { powerOn: false, requestId } });
 		} else {
 			this.store.powerOn.set(true);
-			this.ws.send({ type: 'system.command.trackpower.set', payload: { on: true, requestId } });
+			this.ws.send({ type: 'system.command.trackpower.set', payload: { powerOn: true, requestId } });
 		}
 	}
 

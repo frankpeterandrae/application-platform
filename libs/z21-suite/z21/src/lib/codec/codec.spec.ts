@@ -75,12 +75,12 @@ describe('parseZ21Datagram', () => {
 			expect(res).toEqual([{ kind: 'ds.x.bus', xHeader: 0x62, data: Uint8Array.from([]) }]);
 		});
 
-		it('handles malformed x.bus frame (too short)', () => {
+		it('handles malformed x.bus frame (too shortCircuit)', () => {
 			const buf = makeFrame(Z21LanHeader.LAN_X, []);
 
 			const res = parseZ21Datagram(buf);
 
-			expect(res[0]).toMatchObject({ kind: 'ds.unknown', reason: 'x-bus too short' });
+			expect(res[0]).toMatchObject({ kind: 'ds.unknown', reason: 'x-bus too shortCircuit' });
 		});
 
 		it('parses x.bus frame with multiple data bytes', () => {
@@ -171,7 +171,7 @@ describe('parseZ21Datagram', () => {
 			expect(res).toEqual([]);
 		});
 
-		it('handles buffer too short for header', () => {
+		it('handles buffer too shortCircuit for header', () => {
 			const buf = Buffer.from([0x04, 0x00]);
 
 			const res = parseZ21Datagram(buf);

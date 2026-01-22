@@ -6,7 +6,7 @@ import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
 
 import { FULL_BYTE_MASK } from '../constants';
 
-import { encodeAccessoryAddress, encodeCvAddress, encodeLanX, xbusXor } from './frames';
+import { encodeAccessoryAddress, encodeCvAddress, encodeLanX, encodeLocoAddress, xbusXor } from './frames';
 
 describe('frames', () => {
 	// Helper function to verify buffer structure (similar to helper functions in bootstrap.spec.ts)
@@ -23,7 +23,7 @@ describe('frames', () => {
 
 	// Helper function to extract XOR byte from buffer
 	function getXorByte(buffer: Buffer): number {
-		return buffer[buffer.length - 1];
+		return buffer.at(-1) as number;
 	}
 
 	// Helper function to extract xBus payload (without XOR)
@@ -244,6 +244,46 @@ describe('frames', () => {
 			});
 		});
 	});
+	describe('encodeLocoAddress', () => {
+		it('encodes shortCircuit address 1', () => {
+			const result = encodeLocoAddress(1);
+			expect(result.adrMsb).toBe(0x00);
+			expect(result.adrLsb).toBe(0x01);
+		});
+
+		it('encodes shortCircuit address 127 (no long address prefix)', () => {
+			const result = encodeLocoAddress(127);
+			expect(result.adrMsb).toBe(0x00);
+			expect(result.adrLsb).toBe(0x7f);
+		});
+
+		it('encodes long address 128 with prefix', () => {
+			const result = encodeLocoAddress(128);
+			expect(result.adrMsb).toBe(0xc0);
+			expect(result.adrLsb).toBe(0x80);
+		});
+
+		it('encodes long address 300 with upper bits set', () => {
+			const result = encodeLocoAddress(300);
+			expect(result.adrMsb).toBe(0xc1);
+			expect(result.adrLsb).toBe(0x2c);
+		});
+
+		it('encodes maximum supported address 9999', () => {
+			const result = encodeLocoAddress(9999);
+			expect(result.adrMsb).toBe(0xe7);
+			expect(result.adrLsb).toBe(0x0f);
+		});
+
+		it('throws for address below range', () => {
+			expect(() => encodeLocoAddress(0)).toThrow('out of range');
+		});
+
+		it('throws for address above range', () => {
+			expect(() => encodeLocoAddress(10000)).toThrow('out of range');
+		});
+	});
+
 	describe('encodeAccessoryAddress', () => {
 		it('encodes address 0', () => {
 			const result = encodeAccessoryAddress(0);

@@ -7,7 +7,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXStoppedPayload } from './stopped';
 
-type Z21StoppedEvent = Extract<Z21Event, { type: 'event.z21.stopped' }>;
+type Z21StoppedEvent = Extract<Z21Event, { event: 'system.event.stopped' }>;
 
 describe('decodeLanXStoppedPayload', () => {
 	// Helper function to extract first stopped event from result (similar to helper functions in bootstrap.spec.ts)
@@ -18,8 +18,8 @@ describe('decodeLanXStoppedPayload', () => {
 
 	// Helper function to verify event structure
 	function expectStoppedEvent(event: Z21StoppedEvent): void {
-		expect(event.type).toBe('event.z21.stopped');
-		expect(Object.keys(event)).toEqual(['type']);
+		expect(event.event).toBe('system.event.stopped');
+		expect(Object.keys(event)).toEqual(['event', 'payload']);
 	}
 
 	// Helper function to verify event array structure
@@ -32,13 +32,13 @@ describe('decodeLanXStoppedPayload', () => {
 		it('returns z21.stopped event', () => {
 			const events = decodeLanXStoppedPayload() as Z21StoppedEvent[];
 
-			expect(events).toEqual([{ type: 'event.z21.stopped' }]);
+			expect(events).toEqual([{ event: 'system.event.stopped', payload: { raw: [] } }]);
 		});
 
 		it('returns event with correct type property', () => {
 			const event = extractStoppedEvent();
 
-			expect(event.type).toBe('event.z21.stopped');
+			expect(event.event).toBe('system.event.stopped');
 		});
 
 		it('returns event with only type property', () => {
@@ -75,7 +75,7 @@ describe('decodeLanXStoppedPayload', () => {
 			const events = decodeLanXStoppedPayload();
 			const originalEvent = { ...events[0] };
 
-			events[0].type = 'modified' as any;
+			events[0].event = 'modified' as any;
 
 			const newEvents = decodeLanXStoppedPayload();
 			expect(newEvents[0]).toEqual(originalEvent);

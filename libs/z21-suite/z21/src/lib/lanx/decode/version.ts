@@ -23,7 +23,7 @@ function xBusVersionToVersion(xBusVersion: number): number {
  * Byte 0: XBus Version
  * Byte 1: CMDs ID
  */
-export function decodeLanXVersionPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.z21.x.bus.version' }>[] {
+export function decodeLanXVersionPayload(payload: Uint8Array): Extract<Z21Event, { event: 'system.event.x.bus.version' }>[] {
 	const raw = Array.from(payload);
 	const xBusVersion = payload[0];
 	const cmdsId = payload[1];
@@ -32,11 +32,13 @@ export function decodeLanXVersionPayload(payload: Uint8Array): Extract<Z21Event,
 
 	return [
 		{
-			type: 'event.z21.x.bus.version',
-			raw,
-			xBusVersion,
-			xBusVersionString: version > 0 ? `V${version.toFixed(1)}` : 'Unknown',
-			cmdsId
+			event: 'system.event.x.bus.version',
+			payload: {
+				raw,
+				xBusVersion,
+				xBusVersionString: version > 0 ? `V${version.toFixed(1)}` : 'Unknown',
+				cmdsId
+			}
 		}
 	];
 }
