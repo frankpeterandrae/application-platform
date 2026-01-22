@@ -4,17 +4,22 @@
  */
 
 import { DeepMocked, resetMocksBeforeEach } from '@application-platform/shared-node-test';
-import { XBusCmd, XHeader, Z21StatusEvent, Z21StoppedEvent, Z21VersionEvent } from '@application-platform/z21-shared';
-import { describe, expect, it, vi } from 'vitest';
+import {
+	LocoInfoEvent,
+	TurnoutInfoEvent,
+	XBusCmd,
+	XHeader,
+	Z21StatusEvent,
+	Z21StoppedEvent,
+	Z21VersionEvent
+} from '@application-platform/z21-shared';
+import { describe, expect, it, Mock, vi } from 'vitest';
 
 import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXPayload } from './decoder';
 
-type TrackPowerEvent = Extract<Z21Event, { type: 'event.track.power' }>;
-
-type LocoInfoEvent = { type: 'event.loco.info.mock' };
-type TurnoutInfoEvent = { type: 'event.turnout.info.mock' };
+type TrackPowerEvent = Extract<Z21Event, { event: 'system.event.track.power' }>;
 
 // Use hoist-safe mock factories that return vi.fn() placeholders. We'll import
 // the mocked modules inside beforeEach to obtain the vi.fn references and
@@ -58,21 +63,24 @@ beforeEach(async () => {
 
 	resetMocksBeforeEach(decoders);
 
-	decoders.decodeLanXLocoInfoPayload.mockReturnValue([{ type: 'event.loco.info.mock' } as LocoInfoEvent]);
-	decoders.decodeLanXTurnoutInfoPayload.mockReturnValue([{ type: 'event.turnout.info.mock' } as TurnoutInfoEvent]);
+	decoders.decodeLanXLocoInfoPayload.mockReturnValue([{ event: 'loco.event.info' } as LocoInfoEvent]);
+	decoders.decodeLanXTurnoutInfoPayload.mockReturnValue([{ event: 'switching.event.turnout.info' } as unknown as TurnoutInfoEvent]);
 	decoders.decodeLanXTrackPowerPayload.mockImplementation((command: string) => [
-		{ type: 'event.track.power', on: command === 'LAN_X_BC_TRACK_POWER_ON' } as TrackPowerEvent
+		{ event: 'system.event.track.power', payload: { powerOn: command === 'LAN_X_BC_TRACK_POWER_ON' } } as TrackPowerEvent
 	]);
 	decoders.decodeLanXStatusChangedPayload.mockReturnValue([
 		{
-			type: 'event.z21.status',
+			event: 'system.event.status',
 			payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
 		} as Z21StatusEvent
 	]);
 	decoders.decodeLanXVersionPayload.mockReturnValue([
-		{ type: 'event.z21.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] } as Z21VersionEvent
+		{
+			event: 'system.event.x.bus.version',
+			payload: { xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] }
+		} as Z21VersionEvent
 	]);
-	decoders.decodeLanXStoppedPayload.mockReturnValue([{ type: 'event.z21.stopped' } as Z21StoppedEvent]);
+	decoders.decodeLanXStoppedPayload.mockReturnValue([{ event: 'system.event.stopped' } as Z21StoppedEvent]);
 });
 
 // Note: instead of module-level vi.mock, we create DeepMocks at runtime
@@ -86,15 +94,15 @@ describe('decodeLanXPayload', () => {
 	// Helper function to verify decoder was called with payload
 	function expectDecoderCalled(decoder: any, payload: Uint8Array): void {
 		expect(decoder).toBeDefined();
-		expect(Array.isArray((decoder as vi.Mock).mock?.calls)).toBe(true);
-		expect((decoder as vi.Mock).mock.calls[0][0]).toEqual(payload);
+		expect(Array.isArray((decoder as Mock).mock?.calls)).toBe(true);
+		expect((decoder as Mock).mock.calls[0][0]).toEqual(payload);
 	}
 
 	// Helper function to verify decoder was called with command name
 	function expectDecoderCalledWithCommand(decoder: any, commandName: string): void {
 		expect(decoder).toBeDefined();
-		expect(Array.isArray((decoder as vi.Mock).mock?.calls)).toBe(true);
-		expect((decoder as vi.Mock).mock.calls[0][0]).toEqual(commandName);
+		expect(Array.isArray((decoder as Mock).mock?.calls)).toBe(true);
+		expect((decoder as Mock).mock.calls[0][0]).toEqual(commandName);
 	}
 
 	// Helper function to verify event array properties
@@ -107,7 +115,7 @@ describe('decodeLanXPayload', () => {
 
 	// Helper function to verify event type
 	function expectEventType(event: Z21Event, expectedType: string): void {
-		expect(event.type).toBe(expectedType);
+		expect(event.event).toBe(expectedType);
 	}
 
 	describe('loco info decoding', () => {
@@ -115,7 +123,7 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(0x01);
 			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, payload);
 
-			expect(events).toEqual([{ type: 'event.loco.info.mock' }]);
+			expect(events).toEqual([{ event: 'loco.event.info' }]);
 		});
 
 		it('handles large payload data', () => {
@@ -127,8 +135,8 @@ describe('decodeLanXPayload', () => {
 
 		it('returns multiple events when decoder produces multiple events', () => {
 			vi.mocked(decoders.decodeLanXLocoInfoPayload).mockReturnValueOnce([
-				{ type: 'event.loco.info.mock' },
-				{ type: 'event.loco.info.mock' }
+				{ event: 'loco.event.info' },
+				{ event: 'loco.event.info' }
 			] as any);
 
 			const events = decodeLanXPayload(XHeader.LOCO_INFO_ANSWER, makePayload(0x01));
@@ -150,7 +158,7 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(0x02, 0x02);
 			const events = decodeLanXPayload(XHeader.TURNOUT_INFO, payload);
 
-			expect(events).toEqual([{ type: 'event.turnout.info.mock' }]);
+			expect(events).toEqual([{ event: 'switching.event.turnout.info' }]);
 		});
 	});
 
@@ -160,14 +168,17 @@ describe('decodeLanXPayload', () => {
 			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, payload);
 
 			expect(events).toEqual([
-				{ type: 'event.z21.status', payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false } }
+				{
+					event: 'system.event.status',
+					payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
+				}
 			]);
 		});
 
 		it('preserves event properties from decoder', () => {
 			const events = decodeLanXPayload(XHeader.STATUS_CHANGED, makePayload(XBusCmd.STATUS_CHANGED, 0xaa));
 
-			expect(events[0]).toHaveProperty('type', 'event.z21.status');
+			expect(events[0]).toHaveProperty('event', 'system.event.status');
 			expect(events[0]).toHaveProperty('payload');
 		});
 
@@ -182,27 +193,27 @@ describe('decodeLanXPayload', () => {
 		it('returns track power off for LAN_X_BC_TRACK_POWER_OFF', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_OFF));
 
-			expect(events).toEqual([{ type: 'event.track.power', on: false }]);
+			expect(events).toEqual([{ event: 'system.event.track.power', payload: { powerOn: false } }]);
 		});
 
 		it('returns track power on for LAN_X_BC_TRACK_POWER_ON', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_POWER_ON));
 
-			expect(events).toEqual([{ type: 'event.track.power', on: true }]);
+			expect(events).toEqual([{ event: 'system.event.track.power', payload: { powerOn: true } }]);
 		});
 
 		it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_BC_PROGRAMMING_MODE));
 
 			expectEventArray(events);
-			expectEventType(events[0], 'event.track.power');
+			expectEventType(events[0], 'system.event.track.power');
 		});
 
 		it('returns track power events for LAN_X_BC_TRACK_SHORT_CIRCUIT', () => {
 			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_TRACK_SHORT_CIRCUIT));
 
 			expectEventArray(events);
-			expectEventType(events[0], 'event.track.power');
+			expectEventType(events[0], 'system.event.track.power');
 		});
 	});
 
@@ -211,7 +222,9 @@ describe('decodeLanXPayload', () => {
 			const payload = makePayload(XBusCmd.GET_VERSION, 0x30, 0x12);
 			const events = decodeLanXPayload(0x63, payload);
 
-			expect(events).toEqual([{ type: 'event.z21.x.bus.version', xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] }]);
+			expect(events).toEqual([
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V1.2', cmdsId: 1, xBusVersion: 0x12, raw: [] } }
+			]);
 		});
 	});
 
@@ -219,7 +232,7 @@ describe('decodeLanXPayload', () => {
 		it('returns stopped events for LAN_X_BC_STOPPED', () => {
 			const events = decodeLanXPayload(0x81, makePayload(0x81));
 
-			expect(events).toEqual([{ type: 'event.z21.stopped' }]);
+			expect(events).toEqual([{ event: 'system.event.stopped' }]);
 		});
 	});
 

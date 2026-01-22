@@ -9,7 +9,7 @@ import { delay, of } from 'rxjs';
 import { vi } from 'vitest';
 
 /**
- * Mock service for ScopedTranslationService.
+ * DeepMock service for ScopedTranslationService.
  */
 export class MockScopedTranslationService {
 	/**
@@ -21,7 +21,7 @@ export class MockScopedTranslationService {
 	 */
 	public translate = (key: string, scope?: string, params: Record<string, string> = {}): string => {
 		return key;
-	}; // Add a short delay
+	}; // Add a shortCircuit delay
 
 	/**
 	 * Mocked translate function.
@@ -32,8 +32,8 @@ export class MockScopedTranslationService {
 	 */
 	public selectTranslate = (key: string, scope?: string, params: Record<string, string> = {}): Observable<string> => {
 		return of(key).pipe(delay(100));
-	}; // Add a short delay
+	}; // Add a shortCircuit delay
 
-	public currentLang = signal('en'); // Mock `currentLang` as a signal
-	public toggleLanguage = vi.fn(); // Mock toggleLanguage method (Vitest)
+	public currentLang = signal('en'); // DeepMock `currentLang` as a signal
+	public toggleLanguage = vi.fn(); // DeepMock toggleLanguage method (Vitest)
 }

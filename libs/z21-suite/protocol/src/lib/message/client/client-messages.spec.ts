@@ -41,22 +41,22 @@ describe('Client Message Types', () => {
 			const msg: TrackpowerSet = {
 				type: 'system.command.trackpower.set',
 				payload: {
-					on: true,
+					powerOn: true,
 					requestId: 'tp-001'
 				}
 			};
-			expect(msg.payload.on).toBe(true);
+			expect(msg.payload.powerOn).toBe(true);
 		});
 
 		it('accepts trackpower off message', () => {
 			const msg: TrackpowerSet = {
 				type: 'system.command.trackpower.set',
 				payload: {
-					on: false,
+					powerOn: false,
 					requestId: 'tp-002'
 				}
 			};
-			expect(msg.payload.on).toBe(false);
+			expect(msg.payload.powerOn).toBe(false);
 		});
 	});
 

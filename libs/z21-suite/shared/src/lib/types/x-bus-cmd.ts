@@ -11,14 +11,23 @@
  */
 /* eslint-disable @typescript-eslint/no-duplicate-enum-values */
 export const enum XBusCmd {
+	/** Acknowledge for a broadcast command to turn track power off. */
 	BC_TRACK_POWER_OFF = 0x00,
+	/** Acknowledge for a broadcast command to turn track power on. */
 	BC_TRACK_POWER_ON = 0x01,
+	/** Acknowledge for a broadcast command in programming mode. */
 	BC_BC_PROGRAMMING_MODE = 0x02,
+	/** Acknowledge for a broadcast command. */
 	BC_TRACK_SHORT_CIRCUIT = 0x08,
+	/** Negative acknowledge for a CV read or write operation in service mode. */
 	CV_NACK_SC = 0x12,
+	/** Negative acknowledge for a CV read or write operation. */
 	CV_NACK = 0x13,
+	/** Read a configuration variable (CV) from the locomotive decoder. */
 	READ = 0x11,
+	/** Write a value to a configuration variable (CV) in the locomotive decoder. */
 	WRITE = 0x12,
+	/** Acknowledge for a CV read or write operation. */
 	CV_RESULT = 0x14,
 	/** Request the version of the locomotive decoder. */
 	GET_VERSION = 0x21,

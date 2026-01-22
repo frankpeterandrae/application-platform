@@ -72,7 +72,7 @@ describe('encodeLanXGetLocoInfo', () => {
 			expect(addr).toEqual(expected);
 		});
 
-		it('encodes short address without prefix', () => {
+		it('encodes shortCircuit address without prefix', () => {
 			const result = encodeLanXGetLocoInfo(75);
 
 			const addr = extractAddress(result);
@@ -91,7 +91,7 @@ describe('encodeLanXGetLocoInfo', () => {
 			const result = encodeLanXGetLocoInfo(127);
 
 			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x7f }); // 127 is still a short address
+			expect(addr).toEqual({ high: 0x00, low: 0x7f }); // 127 is still a shortCircuit address
 		});
 
 		it('handles boundary case with address 128', () => {

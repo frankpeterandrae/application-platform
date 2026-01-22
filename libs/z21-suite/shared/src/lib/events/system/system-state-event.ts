@@ -3,7 +3,10 @@
  * All rights reserved.
  */
 
-export type SystemStateEvent = { type: 'event.system.state'; payload: Z21SystemState };
+import { Domain } from '../../types';
+import { Event } from '../event';
+
+export type SystemStateEvent = Event<Domain.SYSTEM, 'state', Z21SystemState>;
 /**
  * Parsed Z21 system state fields, as defined by the protocol.
  */

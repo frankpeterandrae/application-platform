@@ -20,7 +20,7 @@ import { type Z21Event } from './event-types';
  */
 export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 	if (ds.kind === 'ds.system.state') {
-		return [{ type: 'event.system.state', payload: decodeSystemState(ds.state) }];
+		return [{ event: 'system.event.state', payload: { ...decodeSystemState(ds.state), raw: Array.from(ds.state) } }];
 	}
 
 	if (ds.kind === 'ds.x.bus') {
@@ -33,7 +33,7 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 	}
 
 	if (ds.kind === 'ds.code') {
-		return [{ type: 'event.z21.code', code: ds.code, raw: [ds.code] }];
+		return [{ event: 'system.event.z21.code', payload: { code: ds.code, raw: [ds.code] } }];
 	}
 
 	// bad_xor / unknown -> keine Events, Observability läuft im Handler über Logging

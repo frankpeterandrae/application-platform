@@ -55,7 +55,7 @@ describe('DialogService', () => {
 			providers: [
 				DialogService,
 				{ provide: overlayModule.Overlay, useValue: mockOverlay },
-				{ provide: dialogTokens.DIALOG_OVERLAY_REF, useValue: mockOverlayRef },
+				{ provide: dialogTokens.DIALOG_DATA, useValue: mockOverlayRef },
 				Injector
 			]
 		});

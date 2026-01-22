@@ -9,7 +9,7 @@ import { CentralStatus, CentralStatusEx, type DerivedTrackFlags } from '../event
  * Derives human-friendly track flags from system state bitfields.
  *
  * @param sysState - Central state and extended state bytes.
- * @returns DerivedTrackFlags indicating power, emergency stop, short, programming mode.
+ * @returns DerivedTrackFlags indicating power, emergency stop, shortCircuit, programming mode.
  */
 export function deriveTrackFlagsFromSystemState(sysState: { centralState: number; centralStateEx: number }): DerivedTrackFlags {
 	const cs = sysState.centralState;
@@ -30,7 +30,7 @@ export function deriveTrackFlagsFromSystemState(sysState: { centralState: number
 	return {
 		powerOn,
 		emergencyStop,
-		short,
+		shortCircuit: short,
 		programmingMode,
 		highTemperature,
 		powerLost,

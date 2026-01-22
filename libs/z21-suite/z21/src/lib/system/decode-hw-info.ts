@@ -39,12 +39,12 @@ export function decodeHwInfo(hwtype: number, fwVersionBcd: number): Z21HwinfoEve
 	const minorVersion = versionNumber % 100;
 
 	return {
-		type: 'event.z21.hwinfo',
+		event: 'system.event.hwinfo',
 		payload: {
 			hardwareType,
 			majorVersion: invalidBcd ? 0 : majorVersion,
-			minorVersion: invalidBcd ? 0 : minorVersion
-		},
-		raw: [hwtype, fwVersionBcd]
+			minorVersion: invalidBcd ? 0 : minorVersion,
+			raw: [hwtype, fwVersionBcd]
+		}
 	};
 }

@@ -5,5 +5,12 @@
 	"prefix": "lib",
 	"projectType": "library",
 	"tags": ["type:util", "scope:shared", "platform:agnostic"],
-	"targets": {}
+	"targets": {
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
 }

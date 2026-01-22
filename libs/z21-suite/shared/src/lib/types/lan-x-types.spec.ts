@@ -221,7 +221,7 @@ describe('LAN_X_COMMANDS Map', () => {
 				if (!seen.has(key)) {
 					seen.set(key, []);
 				}
-				seen.get(key)!.push(name);
+				seen.get(key)?.push(name);
 			});
 
 			// Allow some known duplicates (like answer/event pairs)

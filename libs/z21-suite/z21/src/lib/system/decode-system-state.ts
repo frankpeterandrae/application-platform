@@ -8,11 +8,11 @@ import type { Z21SystemState } from '@application-platform/z21-shared';
 /**
  * Decodes a 16-byte system state payload into typed fields.
  *
- * @param state - Raw system state bytes from a Z21 dataset.
+ * @param payload - Raw system state bytes from a Z21 dataset.
  * @returns Parsed Z21SystemState structure.
  */
-export function decodeSystemState(state: Uint8Array): Z21SystemState {
-	const b = Buffer.from(state);
+export function decodeSystemState(payload: Uint8Array): Z21SystemState {
+	const b = Buffer.from(payload);
 	return {
 		mainCurrent_mA: b.readInt16LE(0),
 		progCurrent_mA: b.readInt16LE(2),

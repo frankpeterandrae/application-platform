@@ -4,7 +4,7 @@
  */
 
 import { CommandStationInfo, LocoManager } from '@application-platform/domain';
-import { DeepMocked, Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { DeepMock, DeepMocked, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import type { Z21UdpDatagram } from '@application-platform/z21';
 import {
 	CvNackEvent,
@@ -21,7 +21,7 @@ import {
 	Z21StoppedEvent,
 	Z21VersionEvent
 } from '@application-platform/z21-shared';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, MockedFunction, vi } from 'vitest';
 
 import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
 import { CvProgrammingService } from '../services/cv-programming-service';
@@ -55,7 +55,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 	// Create a local reference to the mocked functions
 	const z21Mocks = () => globalThis.__z21TestMocks!;
 
-	let broadcast: vi.MockedFunction<BroadcastFn>;
+	let broadcast: MockedFunction<BroadcastFn>;
 	let locoManager: DeepMocked<LocoManager>;
 	let commandStationInfo: DeepMocked<CommandStationInfo>;
 	let csInfoOrchestrator: DeepMocked<CommandStationInfoOrchestrator>;
@@ -65,11 +65,11 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 	beforeEach(() => {
 		broadcast = vi.fn();
-		locoManager = Mock<LocoManager>();
-		commandStationInfo = Mock<CommandStationInfo>();
-		csInfoOrchestrator = Mock<CommandStationInfoOrchestrator>();
-		logger = Mock<Logger>();
-		cvProgrammingService = Mock<CvProgrammingService>();
+		locoManager = DeepMock<LocoManager>();
+		commandStationInfo = DeepMock<CommandStationInfo>();
+		csInfoOrchestrator = DeepMock<CommandStationInfoOrchestrator>();
+		logger = DeepMock<Logger>();
+		cvProgrammingService = DeepMock<CvProgrammingService>();
 
 		// Reset all mocks before each test
 		if (globalThis.__z21TestMocks) {
@@ -114,7 +114,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 				payload: {
 					rawHex: '0x01',
 					datasets: [{ kind: 'ds.serial', serial: 123, from: { address: '127.0.0.1', port: 21105 } }],
-					events: [{ type: 'event.serial', serial: 123 }]
+					events: [{ event: 'event.serial', serial: 123 }]
 				}
 			});
 		});
@@ -131,7 +131,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
 					payload: expect.objectContaining({
-						events: [{ type: 'event.serial', serial: 0 }]
+						events: [{ event: 'event.serial', serial: 0 }]
 					})
 				})
 			);
@@ -149,7 +149,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			expect(broadcast).toHaveBeenCalledWith(
 				expect.objectContaining({
 					payload: expect.objectContaining({
-						events: [{ type: 'event.serial', serial: 0xffffffff }]
+						events: [{ event: 'event.serial', serial: 0xffffffff }]
 					})
 				})
 			);
@@ -184,7 +184,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
 				{
-					type: 'event.system.state',
+					event: 'system.event.state',
 					payload: { centralState: 0x03, centralStateEx: 0x04 }
 				}
 			] as any);
@@ -214,7 +214,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
 				{
-					type: 'event.system.state',
+					event: 'system.event.state',
 					payload: { centralState: 0x00, centralStateEx: 0x00 }
 				}
 			] as any);
@@ -233,8 +233,8 @@ describe('Z21EventHandler.handleDatagram', () => {
 				expect.objectContaining({
 					type: 'system.message.trackpower',
 					payload: expect.objectContaining({
-						on: expect.any(Boolean),
-						short: expect.any(Boolean)
+						powerOn: expect.any(Boolean),
+						shortCircuit: expect.any(Boolean)
 					})
 				})
 			);
@@ -288,8 +288,8 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts system.message.x.bus.version with xBusVersion string and cmdsId', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x01, xBusVersion: 0x30, raw: [] }
-			] as any);
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.0', cmdsId: 0x01, xBusVersion: 0x30, raw: [] } }
+			] as Z21VersionEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
@@ -310,7 +310,10 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 		it('stores xBusVersion in command station info', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
-			const versionEvent = { type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x02, xBusVersion: 0x30, raw: [] };
+			const versionEvent = {
+				event: 'system.event.x.bus.version',
+				payload: { xBusVersionString: 'V3.0', cmdsId: 0x02, xBusVersion: 0x30, raw: [] }
+			};
 			z21Mocks().datasetsToEvents.mockReturnValue([versionEvent] as Z21VersionEvent[]);
 
 			const payload = {
@@ -321,13 +324,13 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			handler.handleDatagram(payload);
 
-			expect(commandStationInfo.setXBusVersion).toHaveBeenCalledWith(versionEvent);
+			expect(commandStationInfo.setXBusVersion).toHaveBeenCalledWith(versionEvent.payload);
 		});
 
 		it('broadcasts with minimum cmdsId value', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V1.0', cmdsId: 0x00, xBusVersion: 0x10, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V1.0', cmdsId: 0x00, xBusVersion: 0x10, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -350,7 +353,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts with maximum cmdsId value', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V4.0', cmdsId: 0xff, xBusVersion: 0x40, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V4.0', cmdsId: 0xff, xBusVersion: 0x40, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -373,7 +376,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('handles Unknown xBusVersion string', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'Unknown', cmdsId: 0xff, xBusVersion: 0x00, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'Unknown', cmdsId: 0xff, xBusVersion: 0x00, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -396,7 +399,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('sets hardware type to Z21_OLD when cmdsId is 0x12', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x12, xBusVersion: 0x30, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.0', cmdsId: 0x12, xBusVersion: 0x30, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -419,7 +422,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('sets hardware type to z21_START when cmdsId is 0x13', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.6', cmdsId: 0x13, xBusVersion: 0x36, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.6', cmdsId: 0x13, xBusVersion: 0x36, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -442,7 +445,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('does not set hardware type when cmdsId is neither 0x12 nor 0x13', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x14, xBusVersion: 0x30, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.0', cmdsId: 0x14, xBusVersion: 0x30, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -452,18 +455,18 @@ describe('Z21EventHandler.handleDatagram', () => {
 			} as Z21UdpDatagram;
 
 			// Initialize mock before checking
-			(commandStationInfo.setHardwareType as vi.Mock).mockClear();
+			(commandStationInfo.setHardwareType as Mock).mockClear();
 
 			handler.handleDatagram(payload);
 
 			expect(commandStationInfo.setHardwareType).not.toHaveBeenCalled();
-			expect(broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'event.system.message.hardware.info' }));
+			expect(broadcast).not.toHaveBeenCalledWith(expect.objectContaining({ event: 'event.system.message.hardware.info' }));
 		});
 
 		it('calls csInfoOrchestrator poke and ack after processing xBusVersion', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x01, xBusVersion: 0x30, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.0', cmdsId: 0x01, xBusVersion: 0x30, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -481,7 +484,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('calls orchestrator in correct order for cmdsId 0x12', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: 'V3.0', cmdsId: 0x12, xBusVersion: 0x30, raw: [] }
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: 'V3.0', cmdsId: 0x12, xBusVersion: 0x30, raw: [] } }
 			] as Z21VersionEvent[]);
 
 			const payload = {
@@ -502,7 +505,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts system.message.firmware.version with major and minor versions', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0x12, minor: 0x34, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0x12, minor: 0x34, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -524,7 +527,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 		it('stores firmware version in command station info', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
-			const versionEvent = { type: 'event.z21.firmware.version', major: 0x25, minor: 0x99, raw: [] };
+			const versionEvent = { event: 'system.event.firmware.version', payload: { major: 0x25, minor: 0x99, raw: [] } };
 			z21Mocks().datasetsToEvents.mockReturnValue([versionEvent] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -535,13 +538,13 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			handler.handleDatagram(payload);
 
-			expect(commandStationInfo.setFirmwareVersion).toHaveBeenCalledWith(versionEvent);
+			expect(commandStationInfo.setFirmwareVersion).toHaveBeenCalledWith(versionEvent.payload);
 		});
 
 		it('broadcasts firmware version with minimum values', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0x00, minor: 0x00, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0x00, minor: 0x00, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -564,7 +567,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts firmware version with maximum values', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0xff, minor: 0xff, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0xff, minor: 0xff, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -587,7 +590,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts firmware version with different major and minor values', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0x30, minor: 0x06, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0x30, minor: 0x06, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -610,7 +613,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('calls csInfoOrchestrator poke and ack after processing firmware version', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0x12, minor: 0x34, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0x12, minor: 0x34, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -628,7 +631,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('calls orchestrator in correct order for firmware version', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.firmware.version', major: 0x01, minor: 0x20, raw: [] }
+				{ event: 'system.event.firmware.version', payload: { major: 0x01, minor: 0x20, raw: [] } }
 			] as Z21FirmwareVersionEvent[]);
 
 			const payload = {
@@ -648,7 +651,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 	describe('z21.stopped events', () => {
 		it('broadcasts system.message.stop when emergency stop is triggered', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.z21.stopped' }] as Z21StoppedEvent[]);
+			z21Mocks().datasetsToEvents.mockReturnValue([{ event: 'system.event.stopped' }] as Z21StoppedEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x00, 0x00, 0x00, 0x00]),
@@ -669,7 +672,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts turnout state with STRAIGHT position', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.turnout.info', addr: 42, state: 'STRAIGHT' }
+				{ event: 'switching.event.turnout.info', payload: { addr: 42, state: 'STRAIGHT' } }
 			] as TurnoutInfoEvent[]);
 
 			const payload = {
@@ -692,7 +695,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts turnout state with DIVERGING position', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.turnout.info', addr: 123, state: 'DIVERGING' }
+				{ event: 'switching.event.turnout.info', payload: { addr: 123, state: 'DIVERGING' } }
 			] as TurnoutInfoEvent[]);
 
 			const payload = {
@@ -715,7 +718,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('handles maximum turnout address', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.turnout.info', addr: 16383, state: 'STRAIGHT' }
+				{ event: 'switching.event.turnout.info', payload: { addr: 16383, state: 'STRAIGHT' } }
 			] as TurnoutInfoEvent[]);
 
 			const payload = {
@@ -748,17 +751,20 @@ describe('Z21EventHandler.handleDatagram', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
 				{
-					type: 'event.loco.info',
-					addr: 100,
-					speed: 0.5,
-					direction: 'FWD',
-					functionMap: { 0: true },
-					speedSteps: 128,
-					emergencyStop: false,
-					isDoubleTraction: false,
-					isMmLoco: false,
-					isOccupied: true,
-					isSmartsearch: true
+					event: 'loco.event.info',
+					payload: {
+						addr: 100,
+						speed: 0.5,
+						direction: 'FWD',
+						functionMap: { 0: true },
+						speedSteps: 128,
+						emergencyStop: false,
+						isDoubleTraction: false,
+						isMmLoco: false,
+						isOccupied: true,
+						isSmartsearch: true,
+						raw: []
+					}
 				}
 			] as LocoInfoEvent[]);
 
@@ -782,17 +788,20 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('updates loco manager with loco info event', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			const locoInfoEvent = {
-				type: 'event.loco.info',
-				addr: 200,
-				speed: 0.8,
-				direction: 'REV',
-				functionMap: { 1: true, 5: false },
-				speedSteps: 128,
-				emergencyStop: false,
-				isDoubleTraction: false,
-				isMmLoco: false,
-				isOccupied: true,
-				isSmartsearch: true
+				event: 'loco.event.info',
+				payload: {
+					addr: 200,
+					speed: 0.8,
+					direction: 'REV',
+					functionMap: { 1: true, 5: false },
+					speedSteps: 128,
+					emergencyStop: false,
+					isDoubleTraction: false,
+					isMmLoco: false,
+					isOccupied: true,
+					isSmartsearch: true,
+					raw: []
+				}
 			};
 			z21Mocks().datasetsToEvents.mockReturnValue([locoInfoEvent] as LocoInfoEvent[]);
 
@@ -804,7 +813,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			handler.handleDatagram(payload);
 
-			expect(locoManager.updateLocoInfoFromZ21).toHaveBeenCalledWith(locoInfoEvent);
+			expect(locoManager.updateLocoInfoFromZ21).toHaveBeenCalledWith(locoInfoEvent.payload);
 		});
 
 		it('broadcasts estop flag when locomotive is in emergency stop', () => {
@@ -814,7 +823,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			});
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.loco.info', addr: 50, speed: 0, direction: 'FWD', functionMap: {} }
+				{ event: 'loco.event.info', payload: { addr: 50, speed: 0, direction: 'FWD', functionMap: {} } }
 			] as LocoInfoEvent[]);
 
 			const payload = {
@@ -839,17 +848,20 @@ describe('Z21EventHandler.handleDatagram', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus' }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
 				{
-					type: 'event.loco.info',
-					addr: 300,
-					speed: 0.3,
-					direction: 'REV',
-					functionMap: { 0: true, 1: false, 2: true, 10: true },
-					speedSteps: 128,
-					emergencyStop: false,
-					isDoubleTraction: false,
-					isMmLoco: false,
-					isOccupied: true,
-					isSmartsearch: true
+					event: 'loco.event.info',
+					payload: {
+						addr: 300,
+						speed: 0.3,
+						direction: 'REV',
+						functionMap: { 0: true, 1: false, 2: true, 10: true },
+						speedSteps: 128,
+						emergencyStop: false,
+						isDoubleTraction: false,
+						isMmLoco: false,
+						isOccupied: true,
+						isSmartsearch: true,
+						raw: []
+					}
 				}
 			] as LocoInfoEvent[]);
 
@@ -873,7 +885,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('broadcasts firmware and hardware info and acks orchestrator', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.hwinfo', hwtype: 0x00000204, fwVersionBcd: 0x00000125 }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.hwinfo', payload: { hardwareType: 'z21_START', majorVersion: 1, minorVersion: 25 }, raw: [] }
+				{ event: 'system.event.hwinfo', payload: { hardwareType: 'z21_START', majorVersion: 1, minorVersion: 25, raw: [] } }
 			] as Z21HwinfoEvent[]);
 
 			const payload = {
@@ -898,7 +910,9 @@ describe('Z21EventHandler.handleDatagram', () => {
 	describe('z21.code events', () => {
 		it('broadcasts code and stores it then acks orchestrator', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.code', code: 2 }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.z21.code', code: 2, raw: [] }] as Z21CodeEvent[]);
+			z21Mocks().datasetsToEvents.mockReturnValue([
+				{ event: 'system.event.z21.code', payload: { code: 2, raw: [] } }
+			] as Z21CodeEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x05, 0x00, 0x18, 0x00, 0x02]),
@@ -967,7 +981,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 		it('logs unknown LAN_X events', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus', xHeader: 0x99, data: Buffer.from([0x01]) }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.unknown.lan_x' } as UnknownLanXEvent[]]);
+			z21Mocks().datasetsToEvents.mockReturnValue([{ event: 'event.unknown.lan_x' } as unknown as UnknownLanXEvent[]]);
 
 			const payload = {
 				raw: Buffer.from([0x06, 0x00, 0x40, 0x00, 0x99, 0x01]),
@@ -989,7 +1003,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 		it('logs unknown X-Bus events', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus', xHeader: 0x88, data: Buffer.from([0x01]) }] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.unknown.x.bus', xHeader: 0x88, bytes: [0x01] } as UnknownXBusEvent
+				{ event: 'event.unknown.x.bus', xHeader: 0x88, bytes: [0x01] } as UnknownXBusEvent
 			]);
 
 			const payload = {
@@ -1013,7 +1027,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 		it('logs completely unknown event types in default case', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus', xHeader: 0x77, data: Buffer.from([]) }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.something.completely.unknown' } as any]);
+			z21Mocks().datasetsToEvents.mockReturnValue([{ event: 'event.something.completely.unknown' } as any]);
 
 			const payload = {
 				raw: Buffer.from([0x05, 0x00, 0x40, 0x00, 0x77]),
@@ -1035,7 +1049,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 	describe('z21.stopped events', () => {
 		it('sets emergency stop and broadcasts system.message.stop', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus', xHeader: 0x81, data: Buffer.from([0x00]) }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.z21.stopped' }] as Z21StoppedEvent[]);
+			z21Mocks().datasetsToEvents.mockReturnValue([{ event: 'system.event.stopped' }] as Z21StoppedEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x07, 0x00, 0x40, 0x00, 0x81, 0x00, 0x81]),
@@ -1046,7 +1060,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 			handler.handleDatagram(payload);
 
 			expect(broadcast).toHaveBeenCalledWith({ type: 'system.message.stop', payload: {} });
-			expect(logger.info).toHaveBeenCalledWith('z21.stopped', expect.objectContaining({ type: 'event.z21.stopped' }));
+			expect(logger.info).toHaveBeenCalledWith('z21.stopped', expect.objectContaining({ event: 'system.event.stopped' }));
 		});
 	});
 
@@ -1055,7 +1069,9 @@ describe('Z21EventHandler.handleDatagram', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([
 				{ kind: 'ds.x.bus', xHeader: 0x64, data: Buffer.from([0x14, 0x00, 0x1c, 0x2a]) }
 			] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.cv.result', cv: 29, value: 42, raw: [] }] as CvResultEvent[]);
+			z21Mocks().datasetsToEvents.mockReturnValue([
+				{ event: 'programming.event.cv.result', payload: { cv: 29, value: 42, raw: [] } }
+			] as CvResultEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x0a, 0x00, 0x40, 0x00, 0x64, 0x14, 0x00, 0x1c, 0x2a, 0x5a]),
@@ -1067,16 +1083,21 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			expect(cvProgrammingService.onEvent).toHaveBeenCalledWith(
 				expect.objectContaining({
-					type: 'event.cv.result',
-					cv: 29,
-					value: 42
+					event: 'programming.event.cv.result',
+					payload: {
+						cv: 29,
+						value: 42,
+						raw: []
+					}
 				})
 			);
 		});
 
 		it('forwards cv.nack to CvProgrammingService', () => {
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.x.bus', xHeader: 0x61, data: Buffer.from([0x13]) }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.cv.nack', payload: { shortCircuit: false } }] as CvNackEvent[]);
+			z21Mocks().datasetsToEvents.mockReturnValue([
+				{ event: 'programming.event.cv.nack', payload: { shortCircuit: false } }
+			] as CvNackEvent[]);
 
 			const payload = {
 				raw: Buffer.from([0x07, 0x00, 0x40, 0x00, 0x61, 0x13, 0x72]),
@@ -1088,7 +1109,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 
 			expect(cvProgrammingService.onEvent).toHaveBeenCalledWith(
 				expect.objectContaining({
-					type: 'event.cv.nack'
+					event: 'programming.event.cv.nack'
 				})
 			);
 		});
@@ -1100,7 +1121,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 				{ kind: 'ds.x.bus', xHeader: 0x63, data: Buffer.from([0x21, 0x12, 0x13]) }
 			] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: '1.9', cmdsId: 0x12 } as Z21VersionEvent
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: '1.9', cmdsId: 0x12 } } as Z21VersionEvent
 			]);
 
 			const payload = {
@@ -1120,7 +1141,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 				{ kind: 'ds.x.bus', xHeader: 0x63, data: Buffer.from([0x21, 0x13, 0x13]) }
 			] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: '1.9', cmdsId: 0x13 } as Z21VersionEvent
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: '1.9', cmdsId: 0x13 } } as Z21VersionEvent
 			]);
 
 			const payload = {
@@ -1140,7 +1161,7 @@ describe('Z21EventHandler.handleDatagram', () => {
 				{ kind: 'ds.x.bus', xHeader: 0x63, data: Buffer.from([0x21, 0x14, 0x13]) }
 			] as any);
 			z21Mocks().datasetsToEvents.mockReturnValue([
-				{ type: 'event.z21.x.bus.version', xBusVersionString: '1.9', cmdsId: 0x14 } as Z21VersionEvent
+				{ event: 'system.event.x.bus.version', payload: { xBusVersionString: '1.9', cmdsId: 0x14 } } as Z21VersionEvent
 			]);
 
 			const payload = {
@@ -1176,7 +1197,23 @@ describe('Z21EventHandler.handleDatagram', () => {
 			systemStateBuffer[1] = 0x00; // centralStateEx
 
 			z21Mocks().parseZ21Datagram.mockReturnValue([{ kind: 'ds.system.state', state: systemStateBuffer }] as any);
-			z21Mocks().datasetsToEvents.mockReturnValue([{ type: 'event.z21.system.state', raw: [] }] as SystemStateEvent);
+			z21Mocks().datasetsToEvents.mockReturnValue([
+				{
+					event: 'system.event.state',
+					payload: {
+						mainCurrent_mA: 0x0124,
+						progCurrent_mA: 0x0124,
+						filteredMainCurrent_mA: 0x0124,
+						temperature_C: 0x0124,
+						supplyVoltage_mV: 0x0124,
+						vccVoltage_mV: 0x0124,
+						centralState: 0x0124,
+						centralStateEx: 0x0124,
+						capabilities: 0x0124,
+						raw: []
+					}
+				}
+			] as SystemStateEvent[]);
 			const payload = {
 				raw: Buffer.from([0x14, 0x00, 0x84, 0x00, ...systemStateBuffer]),
 				rawHex: '0x14008400...',

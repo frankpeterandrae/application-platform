@@ -12,21 +12,21 @@ import { setupTestingModule } from '../../../test-setup';
 import { ImageLoaderComponent } from './image-loader.component';
 
 /**
- * Mock implementation of IntersectionObserver for testing purposes.
+ * DeepMock implementation of IntersectionObserver for testing purposes.
  */
 class MockIntersectionObserver {
 	/**
-	 * Mock observe method.
+	 * DeepMock observe method.
 	 */
 	public observe = vi.fn();
 
 	/**
-	 * Mock unobserve method.
+	 * DeepMock unobserve method.
 	 */
 	public unobserve = vi.fn();
 
 	/**
-	 * Mock disconnect method.
+	 * DeepMock disconnect method.
 	 */
 	public disconnect = vi.fn();
 }

@@ -82,7 +82,7 @@ export function decodeSpeed(db2: number, db3: number): LocoSpeedDecodeResult {
 		speedSteps = 128;
 	}
 
-	const direction = (db3 & SpeedByteMask.DIRECTION_FORWARD) !== 0 ? Direction.FWD : Direction.REV;
+	const direction = (db3 & SpeedByteMask.DIRECTION_FORWARD) === 0 ? Direction.REV : Direction.FWD;
 	const SPEED_VALUE_MASK = SpeedByteMask.VALUE;
 	const speedRaw = db3 & SPEED_VALUE_MASK;
 	// In the X-BUS protocol, a speed value of 1 encodes "emergency stop".

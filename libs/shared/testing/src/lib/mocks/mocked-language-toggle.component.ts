@@ -13,6 +13,6 @@ import { Component } from '@angular/core';
 	standalone: true
 })
 export class MockedLanguageToggleComponent {
-	// Mock any properties or methods
-	public language = 'en'; // Mock as an observable if `currentLang` is an observable
+	// DeepMock any properties or methods
+	public language = 'en'; // DeepMock as an observable if `currentLang` is an observable
 }

@@ -1,5 +1,10 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 /**
- * Encodes a Programming on Main (POM) CV write command.
+ * Encodes a Programming powerOn Main (POM) CV write command.
  * @param cvAdress - CV address to write
  * @param cvValue - CV value to write (0-255)
  * @returns Uint8Array representing the POM CV write command payload

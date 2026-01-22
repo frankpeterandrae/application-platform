@@ -52,7 +52,7 @@ describe('ColorGridComponent', () => {
 				column: 2
 			}
 		];
-		colorService.getColors.mockReturnValue(of(colors));
+		vi.spyOn(colorService as any, 'getColors').mockReturnValue(of(colors));
 
 		component.ngOnInit();
 

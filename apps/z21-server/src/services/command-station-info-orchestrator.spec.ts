@@ -4,8 +4,9 @@
  */
 
 import { CommandStationInfo } from '@application-platform/domain';
-import { DeepMocked, Mock, resetMocksBeforeEach } from '@application-platform/shared-node-test';
+import { DeepMock, DeepMocked, resetMocksBeforeEach } from '@application-platform/shared-node-test';
 import { Z21CommandService } from '@application-platform/z21';
+import type { Mock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CommandStationInfoOrchestrator } from './command-station-info-orchestrator';
@@ -18,8 +19,8 @@ describe('CommandStationInfoOrchestrator', () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 
-		commandStationInfo = Mock<CommandStationInfo>();
-		z21CommandService = Mock<Z21CommandService>();
+		commandStationInfo = DeepMock<CommandStationInfo>();
+		z21CommandService = DeepMock<Z21CommandService>();
 
 		// Clear mock history
 		resetMocksBeforeEach({ commandStationInfo, z21CommandService });
@@ -51,7 +52,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.getFirmwareVersion.mockReturnValue({ major: 1, minor: 20 });
 
 			// Initialize mock before checking
-			(z21CommandService.getFirmwareVersion as vi.Mock).mockClear();
+			(z21CommandService.getFirmwareVersion as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -109,7 +110,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasHardwareType.mockReturnValue(true);
 
 			// Initialize mock before checking
-			(z21CommandService.getHardwareInfo as vi.Mock).mockClear();
+			(z21CommandService.getHardwareInfo as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -163,7 +164,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasXBusVersion.mockReturnValue(true);
 
 			// Initialize mock before checking
-			(z21CommandService.getXBusVersion as vi.Mock).mockClear();
+			(z21CommandService.getXBusVersion as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -174,7 +175,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasXBusVersion.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getHardwareInfo as vi.Mock).mockClear();
+			(z21CommandService.getHardwareInfo as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -230,7 +231,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasCode.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getCode as vi.Mock).mockClear();
+			(z21CommandService.getCode as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -242,7 +243,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasCode.mockReturnValue(true);
 
 			// Initialize mock before checking
-			(z21CommandService.getCode as vi.Mock).mockClear();
+			(z21CommandService.getCode as Mock).mockClear();
 
 			orchestrator.poke();
 
@@ -384,7 +385,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getHardwareInfo as vi.Mock).mockClear();
+			(z21CommandService.getHardwareInfo as Mock).mockClear();
 
 			orchestrator.poke();
 			expect(z21CommandService.getFirmwareVersion).toHaveBeenCalledTimes(1);
@@ -402,7 +403,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getXBusVersion as vi.Mock).mockClear();
+			(z21CommandService.getXBusVersion as Mock).mockClear();
 
 			orchestrator.poke();
 			expect(z21CommandService.getFirmwareVersion).toHaveBeenCalledTimes(1);
@@ -422,7 +423,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasHardwareType.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getCode as vi.Mock).mockClear();
+			(z21CommandService.getCode as Mock).mockClear();
 
 			orchestrator.poke();
 			expect(z21CommandService.getHardwareInfo).toHaveBeenCalledTimes(1);
@@ -440,9 +441,9 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasFirmwareVersion.mockReturnValue(false);
 
 			// Initialize mocks before checking
-			(z21CommandService.getXBusVersion as vi.Mock).mockClear();
-			(z21CommandService.getHardwareInfo as vi.Mock).mockClear();
-			(z21CommandService.getCode as vi.Mock).mockClear();
+			(z21CommandService.getXBusVersion as Mock).mockClear();
+			(z21CommandService.getHardwareInfo as Mock).mockClear();
+			(z21CommandService.getCode as Mock).mockClear();
 
 			orchestrator.poke();
 			orchestrator.ack('firmware');
@@ -459,7 +460,7 @@ describe('CommandStationInfoOrchestrator', () => {
 			commandStationInfo.hasHardwareType.mockReturnValue(false);
 
 			// Initialize mock before checking
-			(z21CommandService.getCode as vi.Mock).mockClear();
+			(z21CommandService.getCode as Mock).mockClear();
 
 			orchestrator.poke();
 			orchestrator.ack('hwinfo');

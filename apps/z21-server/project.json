@@ -85,6 +85,19 @@
 				"vitestConfig": "apps/z21-server/vitest.config.mts",
 				"reportsDirectory": "../../coverage/apps/z21-server",
 				"passWithNoTests": true
+			},
+			"dependsOn": ["typecheck-test", "typecheck-app"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
 			}
 		}
 	}

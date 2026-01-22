@@ -32,7 +32,8 @@ import {
 	startServerAndConnectWs,
 	stopCtx,
 	waitFor,
-	waitForWsType
+	waitForWsType,
+	WsMessage
 } from '../support/e2e-helpers';
 
 describe('server e2e', () => {
@@ -214,8 +215,8 @@ describe('server e2e', () => {
 			await sendUdpHex('07004000610160'); // dein funktionierendes Frame
 			const locoState: SystemTrackPower = await waitForWsType<any>(ctx, 'system.message.trackpower');
 
-			expect(locoState.payload.on).toBe(true);
-			expect(locoState.payload.short).toBe(false);
+			expect(locoState.payload.powerOn).toBe(true);
+			expect(locoState.payload.shortCircuit).toBe(false);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -226,8 +227,8 @@ describe('server e2e', () => {
 			await sendUdpHex('07004000610061'); // dein funktionierendes Frame
 			const locoState: SystemTrackPower = await waitForWsType<any>(ctx, 'system.message.trackpower');
 
-			expect(locoState.payload.on).toBe(false);
-			expect(locoState.payload.short).toBe(false);
+			expect(locoState.payload.powerOn).toBe(false);
+			expect(locoState.payload.shortCircuit).toBe(false);
 
 			await stopCtx(ctx);
 		}, 20000);
@@ -248,10 +249,10 @@ describe('server e2e', () => {
 			await waitFor(() => z21.rx[0] ?? undefined, {
 				label: 'z21 rx LOCO_DRIVE',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 
 			// erwartetes Frame aus deinem Serverlog:
 			expect(hex).toContain('0a004000e413c735b0b5');
@@ -274,10 +275,10 @@ describe('server e2e', () => {
 			await waitFor(() => z21.rx[0] ?? undefined, {
 				label: 'z21 rx TURNOUT_SET',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 
 			// erwartetes Frame aus deinem Serverlog:
 			expect(hex).toContain('0900400053000ca8f7');
@@ -289,7 +290,7 @@ describe('server e2e', () => {
 		it('sends TRACK_POWER ON to Z21 when UI sends system.command.trackpower.set on', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
-			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-003' } };
+			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-003' } };
 			// WS command wie bei dir im Log:
 			ctx.ws?.send(JSON.stringify(command));
 
@@ -297,12 +298,13 @@ describe('server e2e', () => {
 			await waitFor(() => z21.rx[0] ?? undefined, {
 				label: 'z21 rx TRACK_POWER ON  set',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 
 			// erwartetes Frame aus deinem Serverlog:
+
 			expect(hex).toContain('070040002181a0');
 
 			await z21.close();
@@ -321,10 +323,10 @@ describe('server e2e', () => {
 			await waitFor(() => z21.rx[0] ?? undefined, {
 				label: 'z21 rx LOCO_ESTOP  set',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 
 			// erwartetes Frame aus deinem Serverlog:
 			expect(hex).toContain('0800400092c73560');
@@ -348,10 +350,10 @@ describe('server e2e', () => {
 			await waitFor(() => z21.rx[0] ?? undefined, {
 				label: 'z21 rx LOCO_FUNCTION  set',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 
 			// erwartetes Frame aus deinem Serverlog:
 			expect(hex).toContain('0a004000e4f8c73547a9');
@@ -387,10 +389,10 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
 				label: 'z21 rx activate',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS (Basic)
 			expect(hex).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
 
@@ -404,14 +406,14 @@ describe('server e2e', () => {
 			// Closing the last client should trigger LAN_LOGOFF
 			ws.ws.close();
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04003000'), {
 				label: 'z21 rx logoff',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			// Assert that the LAN_LOGOFF frame was actually emitted to the Z21 fake
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).toContain('04003000');
 
 			await stopCtx({ ...base, ws: ws.ws });
@@ -426,14 +428,14 @@ describe('server e2e', () => {
 			ws.ws.terminate();
 
 			// Jetzt muss der server per heartbeat feststellen: kein pong => terminate => disconnect => LAN_LOGOFF
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04003000'), {
 				label: 'z21 rx logoff after zombie kick',
 				timeoutMs: 3000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			// Assert that the LAN_LOGOFF frame was emitted after kicking the zombie
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).toContain('04003000');
 
 			await stopCtx({ ...base, ws: ws.ws });
@@ -450,7 +452,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
 				label: 'z21 rx activate (2 frames)',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 			z21.rx.splice(0);
 
@@ -462,16 +464,16 @@ describe('server e2e', () => {
 			// kurz warten: wenn dein Code fälschlich logoff schickt, taucht es jetzt auf
 			await delay(500);
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).not.toContain('04003000'); // LAN_LOGOFF
 
 			// Cleanup: jetzt erst der letzte Client -> dann MUSS logoff kommen
 			ws2.ws.close();
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04003000'), {
 				label: 'z21 rx logoff on last disconnect',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			await stopCtx({ ...base, ws: ws2.ws });
@@ -488,10 +490,10 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
 				label: 'z21 rx activate #1',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex1 = z21.rx.map((b) => b.toString('hex'));
+			const hex1 = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex1).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
 			expect(hex1).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
 
@@ -499,10 +501,10 @@ describe('server e2e', () => {
 			z21.rx.splice(0);
 			ws1.ws.close();
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04003000'), {
 				label: 'z21 rx logoff',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			// 3) second connect => activation again
@@ -512,10 +514,10 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx.length : undefined), {
 				label: 'z21 rx activate #2',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex2 = z21.rx.map((b) => b.toString('hex'));
+			const hex2 = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex2).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
 			expect(hex2).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
 
@@ -532,10 +534,10 @@ describe('server e2e', () => {
 		const ctx = { ...base, ws: ws.ws, messages: ws.messages };
 
 		// 1) Server must request firmware version (LAN_X_GET_FIRMWARE_VERSION)
-		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '07004000f10afb'), {
+		await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '07004000f10afb'), {
 			label: 'z21 rx firmware request',
 			timeoutMs: 2000,
-			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 		});
 
 		// send firmware reply = 1.23 (BCD): 0x09 0x00 0x40 0x00 0xf3 0x0a 0x01 0x23 0xdb
@@ -547,10 +549,10 @@ describe('server e2e', () => {
 		expect(fw.payload.minor).toBe(23);
 
 		// 2) With FW >= 1.20, server should request LAN_GET_HWINFO
-		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001a00'), {
+		await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04001a00'), {
 			label: 'z21 rx hwinfo request',
 			timeoutMs: 2000,
-			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 		});
 
 		// send hwinfo reply: hwType = z21_START (0x00000204), fw = 1.23 (0x23 0x01 0x00 0x00)
@@ -561,10 +563,10 @@ describe('server e2e', () => {
 		expect(hw.payload.hardwareType).toBe('z21_START');
 
 		// 3) For z21_START, server should request LAN_GET_CODE
-		await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04001800'), {
+		await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04001800'), {
 			label: 'z21 rx code request',
 			timeoutMs: 2000,
-			dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+			dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 		});
 
 		// send code reply: unlocked (0x02)
@@ -584,7 +586,7 @@ describe('server e2e', () => {
 			// Test with loco 1845 - use proven working frame
 			await sendUdpHex('0f004000efc735048004000000009d');
 			await delay(200);
-			const loco1Messages = ctx.messages?.filter((m) => m.type === 'loco.message.state' && m.payload['addr'] === 1845);
+			const loco1Messages = ctx.messages?.filter((m: WsMessage) => m.type === 'loco.message.state' && m.payload['addr'] === 1845);
 			expect(loco1Messages?.length).toBeGreaterThan(0);
 
 			await stopCtx(ctx);
@@ -610,7 +612,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx multiple locos',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			expect(z21.rx.length).toBeGreaterThanOrEqual(2);
@@ -647,7 +649,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx function toggles',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
@@ -682,7 +684,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx multiple function numbers',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
@@ -719,7 +721,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 3 ? z21.rx : undefined), {
 				label: 'z21 rx multiple turnouts',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			expect(z21.rx.length).toBeGreaterThanOrEqual(3);
@@ -748,10 +750,10 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx turnout both directions',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex.length).toBeGreaterThanOrEqual(2);
 			// Frames should be different (different port bits)
 			expect(hex[0]).not.toBe(hex[1]);
@@ -781,13 +783,13 @@ describe('server e2e', () => {
 			const command: LocoEStop = { type: 'loco.command.eStop', payload: { addr: 1845, requestId: 'req-019' } };
 			ctx.ws?.send(JSON.stringify(command));
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '0800400092c73560'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '0800400092c73560'), {
 				label: 'z21 rx loco estop',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).toContain('0800400092c73560'); // LAN_X_SET_LOCO_E_STOP
 
 			await z21.close();
@@ -811,7 +813,7 @@ describe('server e2e', () => {
 			ws1.ws.close();
 
 			// Wait for logoff
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '04003000'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '04003000'), {
 				label: 'z21 rx logoff',
 				timeoutMs: 2000
 			});
@@ -825,7 +827,7 @@ describe('server e2e', () => {
 				timeoutMs: 2000
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex).toContain('0800500001000000'); // Re-activation successful
 
 			await stopCtx({ ...base, ws: ws2.ws });
@@ -844,7 +846,7 @@ describe('server e2e', () => {
 			await delay(300);
 
 			// Server should still be responsive - send valid command
-			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-020' } };
+			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-020' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for the valid command to be processed
@@ -862,7 +864,7 @@ describe('server e2e', () => {
 	});
 
 	describe('address range validation', () => {
-		it('handles short and long locomotive addresses', async () => {
+		it('handles shortCircuit and long locomotive addresses', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
@@ -884,7 +886,7 @@ describe('server e2e', () => {
 			await waitFor(() => (z21.rx.length >= 2 ? z21.rx : undefined), {
 				label: 'z21 rx both addresses',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
 			expect(z21.rx.length).toBeGreaterThanOrEqual(2);
@@ -906,13 +908,13 @@ describe('server e2e', () => {
 			// Wait for LAN_X_CV_READ command to be sent to Z21
 			// Format: 09 00 40 00 23 11 00 1c <XOR>
 			// 23 = CV_READ header, 11 = READ sub-command, 00 1c = CV29 address (MSB-first)
-			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('09004000231')), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex').startsWith('09004000231')), {
 				label: 'z21 rx CV_READ CV29',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex.some((h) => h.startsWith('090040002311') && h.includes('001c'))).toBe(true);
 
 			await z21.close();
@@ -928,7 +930,7 @@ describe('server e2e', () => {
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command with sub-command 0x11 and MSB-first address (00 1c)
-			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('09004000231100')), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex').startsWith('09004000231100')), {
 				label: 'z21 rx CV_READ',
 				timeoutMs: 2000
 			});
@@ -960,13 +962,13 @@ describe('server e2e', () => {
 			// Wait for LAN_X_CV_WRITE command to be sent to Z21
 			// Format: 0a 00 40 00 24 12 00 1c 0e <XOR>
 			// 24 = CV_WRITE header, 12 = WRITE sub-command, 00 1c = CV29 (MSB-first), 0e = value 14
-			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('0a004000241200')), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex').startsWith('0a004000241200')), {
 				label: 'z21 rx CV_WRITE CV29=14',
 				timeoutMs: 2000,
-				dump: () => `\nRX:\n${z21.rx.map((b) => b.toString('hex')).join('\n')}`
+				dump: () => `\nRX:\n${z21.rx.map((b: any) => b.toString('hex')).join('\n')}`
 			});
 
-			const hex = z21.rx.map((b) => b.toString('hex'));
+			const hex = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex.some((h) => h.startsWith('0a004000241200'))).toBe(true);
 
 			await z21.close();
@@ -982,7 +984,7 @@ describe('server e2e', () => {
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for write command with MSB-first address (00 1c)
-			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('0a004000241200')), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex').startsWith('0a004000241200')), {
 				label: 'z21 rx CV_WRITE',
 				timeoutMs: 2000
 			});
@@ -1010,7 +1012,7 @@ describe('server e2e', () => {
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command
-			await waitFor(() => z21.rx.find((b) => b.toString('hex').startsWith('090040002311')), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex').startsWith('090040002311')), {
 				label: 'z21 rx CV_READ',
 				timeoutMs: 2000
 			});
@@ -1027,7 +1029,7 @@ describe('server e2e', () => {
 			await stopCtx(ctx);
 		}, 20000);
 
-		it('broadcasts cv.nack with short circuit flag when Z21 sends LAN_X_CV_NACK_SC', async () => {
+		it('broadcasts cv.nack with shortCircuit circuit flag when Z21 sends LAN_X_CV_NACK_SC', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
@@ -1047,7 +1049,7 @@ describe('server e2e', () => {
 			// Wait for WS broadcast with CV NACK Short Circuit
 			const cvNack: CvNack = await waitForWsType<any>(ctx, 'programming.replay.cv.nack', 4000);
 			expect(cvNack.payload.error).toBeDefined();
-			expect(cvNack.payload.error).toContain('short circuit');
+			expect(cvNack.payload.error).toContain('shortCircuit circuit');
 
 			await z21.close();
 			await stopCtx(ctx);
@@ -1078,7 +1080,7 @@ describe('server e2e', () => {
 			ctx.ws?.send(JSON.stringify(command3));
 			await waitFor(() => z21.rx.length >= 3, { label: 'cv29 read', timeoutMs: 2000 });
 
-			const cvReads = z21.rx.filter((b) => b.toString('hex').startsWith('090040002311'));
+			const cvReads = z21.rx.filter((b: any) => b.toString('hex').startsWith('090040002311'));
 			expect(cvReads.length).toBeGreaterThanOrEqual(3);
 
 			await z21.close();
@@ -1106,10 +1108,13 @@ describe('server e2e', () => {
 			await delay(1500);
 
 			// Server should still be responsive
-			const command2: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { on: true, requestId: 'req-023' } };
+			const command2: TrackpowerSet = {
+				type: 'system.command.trackpower.set',
+				payload: { powerOn: true, requestId: 'req-023' }
+			};
 			ctx.ws?.send(JSON.stringify(command2));
 
-			await waitFor(() => z21.rx.find((b) => b.toString('hex') === '070040002181a0'), {
+			await waitFor(() => z21.rx.find((b: any) => b.toString('hex') === '070040002181a0'), {
 				label: 'z21 rx track power after timeout',
 				timeoutMs: 2000
 			});

@@ -9,7 +9,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXStatusChangedPayload } from './status-changed';
 
-type Z21StatusEvent = Extract<Z21Event, { type: 'event.z21.status' }>;
+type Z21StatusEvent = Extract<Z21Event, { event: 'system.event.status' }>;
 
 describe('decodeLanXStatusChangedPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -33,7 +33,7 @@ describe('decodeLanXStatusChangedPayload', () => {
 			shortCircuit: boolean;
 		}
 	): void {
-		expect(event.type).toBe('event.z21.status');
+		expect(event.event).toBe('system.event.status');
 		expect(event.payload.emergencyStop).toBe(expectedFlags.emergencyStop);
 		expect(event.payload.powerOn).toBe(expectedFlags.powerOn);
 		expect(event.payload.programmingMode).toBe(expectedFlags.programmingMode);
@@ -91,7 +91,7 @@ describe('decodeLanXStatusChangedPayload', () => {
 			});
 		});
 
-		it('decodes short circuit flag when bit 2 is set', () => {
+		it('decodes shortCircuit circuit flag when bit 2 is set', () => {
 			const event = extractStatusEvent(makePayload(XBusCmd.STATUS_CHANGED, 0x04));
 
 			expectStatusFlags(event, {
@@ -126,7 +126,7 @@ describe('decodeLanXStatusChangedPayload', () => {
 	});
 
 	describe('edge cases and validation', () => {
-		it('returns empty array when payload is too short', () => {
+		it('returns empty array when payload is too shortCircuit', () => {
 			const events = decodeLanXStatusChangedPayload(makePayload(XBusCmd.STATUS_CHANGED));
 
 			expectEmptyResult(events);
@@ -164,7 +164,7 @@ describe('decodeLanXStatusChangedPayload', () => {
 			const events = decodeLanXStatusChangedPayload(makePayload(XBusCmd.STATUS_CHANGED, 0x00)) as Z21StatusEvent[];
 
 			expect(events).toHaveLength(1);
-			expect(events[0].type).toBe('event.z21.status');
+			expect(events[0].event).toBe('system.event.status');
 		});
 	});
 

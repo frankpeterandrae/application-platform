@@ -6,7 +6,7 @@
 import { Z21HwinfoEvent } from '@application-platform/z21-shared';
 
 import { decodeHwInfo } from './decode-hw-info';
-type HwInfoEvent = Extract<Z21HwinfoEvent, { type: 'event.z21.hwinfo' }>;
+type HwInfoEvent = Extract<Z21HwinfoEvent, { event: 'system.event.hwinfo' }>;
 describe('decodeHwInfo', () => {
 	// Helper function to decode and extract result (similar to helper functions in bootstrap.spec.ts)
 	function decode(hwType: number, fwVersion: number): HwInfoEvent {
@@ -23,11 +23,11 @@ describe('decodeHwInfo', () => {
 			raw: [number, number];
 		}
 	): void {
-		expect(result.type).toBe('event.z21.hwinfo');
+		expect(result.event).toBe('system.event.hwinfo');
 		expect(result.payload.hardwareType).toBe(expected.hardwareType);
 		expect(result.payload.majorVersion).toBe(expected.majorVersion);
 		expect(result.payload.minorVersion).toBe(expected.minorVersion);
-		expect(result.raw).toEqual(expected.raw);
+		expect(result.payload.raw).toEqual(expected.raw);
 	}
 
 	// Helper function to verify firmware version
@@ -141,7 +141,7 @@ describe('decodeHwInfo', () => {
 		it('always returns event with type z21.hwinfo', () => {
 			const result = decode(0x00000200, 0x00000120);
 
-			expect(result.type).toBe('event.z21.hwinfo');
+			expect(result.event).toBe('system.event.hwinfo');
 		});
 
 		it('includes payload with hardware and firmware info', () => {
@@ -158,7 +158,7 @@ describe('decodeHwInfo', () => {
 			const fwVersion = 0x00000145;
 			const result = decode(hwType, fwVersion);
 
-			expect(result.raw).toEqual([hwType, fwVersion]);
+			expect(result.payload.raw).toEqual([hwType, fwVersion]);
 		});
 	});
 

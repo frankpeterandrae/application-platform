@@ -161,7 +161,8 @@
 				"vitestConfig": "apps/homepage/vitest.config.mts",
 				"reportsDirectory": "../../coverage/apps/homepage",
 				"passWithNoTests": true
-			}
+			},
+			"dependsOn": ["typecheck-test", "typecheck-app"]
 		},
 		"serve-static": {
 			"continuous": true,
@@ -175,6 +176,18 @@
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
+			}
 		}
 	}
 }

@@ -64,7 +64,7 @@ export type Providers = {
 
 	/**
 	 * Z21 inbound event handler:
-	 * - Updates track status (power/short/e-stop)
+	 * - Updates track status (power/shortCircuit/e-stop)
 	 * - Broadcasts datasets and derived events to connected clients
 	 */
 	z21EventHandler: Z21EventHandler;

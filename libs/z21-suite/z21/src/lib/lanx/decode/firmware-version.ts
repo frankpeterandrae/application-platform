@@ -13,7 +13,7 @@ import type { Z21Event } from '../../event/event-types';
  *      e.g., [0x01, 0x23] represents version 1.23
  * @returns Array of Z21Event entries with firmware version information.
  */
-export function decodeLanXFirmwareVersionPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.z21.firmware.version' }>[] {
+export function decodeLanXFirmwareVersionPayload(payload: Uint8Array): Extract<Z21Event, { event: 'system.event.firmware.version' }>[] {
 	const bcdToNumber = (value: number | undefined): number => {
 		if (value === undefined) return 0;
 		const high = (value >> 4) & 0x0f;
@@ -26,10 +26,12 @@ export function decodeLanXFirmwareVersionPayload(payload: Uint8Array): Extract<Z
 	const raw = Array.from(payload);
 	return [
 		{
-			type: 'event.z21.firmware.version',
-			raw,
-			major,
-			minor
+			event: 'system.event.firmware.version',
+			payload: {
+				raw,
+				major,
+				minor
+			}
 		}
 	];
 }

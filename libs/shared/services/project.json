@@ -14,7 +14,20 @@
 				"reportsDirectory": "../../../coverage/libs/shared/services",
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{options.reportsDirectory}"],
+			"dependsOn": ["typecheck-test", "typecheck-lib"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
 		}
 	}
 }

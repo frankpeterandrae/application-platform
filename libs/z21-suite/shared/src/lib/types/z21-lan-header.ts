@@ -10,9 +10,9 @@
 export const enum Z21LanHeader {
 	/** Request the Z21 central's serial number. */
 	LAN_GET_SERIAL_NUMBER = 0x0010,
-	/** Request software information from the Z21. TODO: add handling */
+	/** Request software information from the Z21. */
 	LAN_GET_CODE = 0x0018,
-	/** Request hardware information from the Z21. TODO: add handling */
+	/** Request hardware information from the Z21. */
 	LAN_GET_HWINFO = 0x001a,
 	/** Log off from the Z21 central station. */
 	LAN_LOGOFF = 0x0030,
@@ -64,9 +64,9 @@ export const enum Z21LanHeader {
 	LAN_BOOSTER_SYSTEMSTATE_DATACHANGED = 0x00ba,
 	/** Request LAN booster system state data. TODO: add handling */
 	LAN_BOOSTER_SYSTEMSTATE_GETDATA = 0x00bb,
-	/** CAN protocol RX message. */
+	/** CAN protocol RX message. TODO: add handling */
 	LAN_CAN_DETECTOR = 0x00c4,
-	/** CAN protocol TX message. */
+	/** CAN protocol TX message. TODO: add handling */
 	LAN_CAN_DEVICE_GET_DESCRIPTION = 0x00c8,
 	/** CAN protocol device description message. TODO: add handling */
 	LAN_CAN_DEVICE_SET_DESCRIPTION = 0x00c9,

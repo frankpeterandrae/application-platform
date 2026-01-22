@@ -3,14 +3,14 @@
  * All rights reserved.
  */
 
-import { DeepMocked, Mock } from '@application-platform/shared-node-test';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DeepMock, DeepMocked } from '@application-platform/shared-node-test';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
 
 import { WsServer } from './websocket-server';
 
-// Mock the 'ws' module with a constructable mock so `new WebSocketServer()` works.
+// DeepMock the 'ws' module with a constructable mock so `new WebSocketServer()` works.
 vi.mock('ws', () => {
 	const WebSocketServer = vi.fn(function (this: any, _opts?: any) {
 		// Constructed instances should expose `clients` and `on`.
@@ -26,7 +26,7 @@ describe('WsServer', () => {
 
 	// Helper function to create mock WebSocket client (similar to makeProviders in bootstrap.spec.ts)
 	function makeMockWebSocket(overrides: Partial<WebSocket> = {}): DeepMocked<WebSocket> {
-		const mock = Mock<WebSocket>();
+		const mock = DeepMock<WebSocket>();
 		// Use Object.defineProperty for readonly properties
 		Object.defineProperty(mock, 'readyState', {
 			value: overrides.readyState ?? 1, // OPEN state by default
@@ -44,30 +44,30 @@ describe('WsServer', () => {
 
 	// Helper function to get connection handler from wss.on calls
 	function getConnectionHandler(): ((ws: WebSocket) => void) | undefined {
-		return wssInstance.on.mock.calls.find((c) => c[0] === 'connection')?.[1];
+		return wssInstance.on.mock.calls.find((c: any) => c[0] === 'connection')?.[1];
 	}
 
 	// Helper function to get message handler from ws.on calls
 	function getMessageHandler(ws: DeepMocked<WebSocket>): ((data: any) => void) | undefined {
-		return ws.on.mock.calls.find((c) => c[0] === 'message')?.[1];
+		return ws.on.mock.calls.find((c: any) => c[0] === 'message')?.[1];
 	}
 
 	// Helper function to get close handler from ws.on calls
 	function getCloseHandler(ws: DeepMocked<WebSocket>): (() => void) | undefined {
-		return ws.on.mock.calls.find((c) => c[0] === 'close')?.[1];
+		return ws.on.mock.calls.find((c: any) => c[0] === 'close')?.[1];
 	}
 
 	// Helper function to get pong handler from ws.on calls
 	function getPongHandler(ws: DeepMocked<WebSocket>): (() => void) | undefined {
-		return ws.on.mock.calls.find((c) => c[0] === 'pong')?.[1];
+		return ws.on.mock.calls.find((c: any) => c[0] === 'pong')?.[1];
 	}
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		(WebSocketServer as unknown as vi.Mock).mockClear();
+		(WebSocketServer as unknown as Mock).mockClear();
 		wsServer = new WsServer({} as any);
 		// When a mock is used as a constructor, constructed instances are in mock.instances
-		wssInstance = (WebSocketServer as unknown as vi.Mock).mock.instances[0];
+		wssInstance = (WebSocketServer as unknown as Mock).mock.instances[0];
 		// Clear clients set from previous tests
 		wssInstance.clients.clear();
 	});
@@ -178,7 +178,7 @@ describe('WsServer', () => {
 
 	describe('broadcasting', () => {
 		it('broadcasts only to open clients and serializes non-string messages', () => {
-			// Create simple mock objects without using Mock<WebSocket> for this test
+			// Create simple mock objects without using DeepMock<WebSocket> for this test
 			// because Set operations with Proxy objects cause issues
 			const wsOpen1: any = {
 				readyState: 1,

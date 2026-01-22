@@ -15,7 +15,8 @@ import { decodeDccAddress } from './_shared';
  *
  * @returns Array of Z21Event entries produced from the dataset.
  */
-export function decodeLanXTurnoutInfoPayload(payload: Uint8Array): Extract<Z21Event, { type: 'event.turnout.info' }>[] {
+export function decodeLanXTurnoutInfoPayload(payload: Uint8Array): Extract<Z21Event, { event: 'switching.event.turnout.info' }>[] {
+	const raw = Array.from(payload);
 	const addr = decodeDccAddress(payload[0], payload[1]);
 
 	const zz = payload[2] & 0x03;
@@ -28,5 +29,5 @@ export function decodeLanXTurnoutInfoPayload(payload: Uint8Array): Extract<Z21Ev
 		state = TurnoutState.UNKNOWN;
 	}
 
-	return [{ type: 'event.turnout.info', addr, state }];
+	return [{ event: 'switching.event.turnout.info', payload: { addr, state, raw } }];
 }

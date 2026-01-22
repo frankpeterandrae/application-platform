@@ -7,10 +7,10 @@ import * as fs from 'node:fs';
 import type * as http from 'node:http';
 import * as path from 'node:path';
 
-import { Mock, type DeepMocked } from '@application-platform/shared-node-test';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DeepMock, type DeepMocked } from '@application-platform/shared-node-test';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-// Mock the node:fs module so its named exports (like readFile) are writable
+// DeepMock the node:fs module so its named exports (like readFile) are writable
 // and mockImplementation can be applied under ESM.
 vi.mock('node:fs', () => ({
 	readFile: vi.fn()
@@ -27,7 +27,7 @@ describe('createStaticFileServer', () => {
 
 	// Helper function to create mock request (similar to makeProviders in bootstrap.spec.ts)
 	function makeMockRequest(overrides: Partial<http.IncomingMessage> = {}): DeepMocked<http.IncomingMessage> {
-		const mock = Mock<http.IncomingMessage>();
+		const mock = DeepMock<http.IncomingMessage>();
 		mock.url = '/';
 		mock.headers = { host: 'localhost' };
 		Object.assign(mock, overrides);
@@ -36,12 +36,12 @@ describe('createStaticFileServer', () => {
 
 	// Helper function to create mock response
 	function makeMockResponse(): DeepMocked<http.ServerResponse> {
-		return Mock<http.ServerResponse>();
+		return DeepMock<http.ServerResponse>();
 	}
 
 	// Helper function to setup fs.readFile mock for successful file read
 	function mockFileRead(fileContent: Buffer, condition?: (filePath: string) => boolean): void {
-		(fs.readFile as unknown as vi.Mock).mockImplementation(
+		(fs.readFile as unknown as Mock).mockImplementation(
 			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void): void => {
 				if (condition && !condition(filePath)) {
 					callback(new Error('ENOENT') as NodeJS.ErrnoException, null as any);
@@ -54,7 +54,7 @@ describe('createStaticFileServer', () => {
 
 	// Helper function to setup fs.readFile mock for file not found
 	function mockFileNotFound(): void {
-		(fs.readFile as unknown as vi.Mock).mockImplementation(
+		(fs.readFile as unknown as Mock).mockImplementation(
 			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void): void => {
 				callback(new Error('ENOENT') as NodeJS.ErrnoException, null);
 			}
@@ -63,7 +63,7 @@ describe('createStaticFileServer', () => {
 
 	// Helper function to setup fs.readFile mock with fallback to index.html
 	function mockFileWithIndexFallback(indexContent: Buffer): void {
-		(fs.readFile as unknown as vi.Mock).mockImplementation(
+		(fs.readFile as unknown as Mock).mockImplementation(
 			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void): void => {
 				if (filePath.includes('index.html')) {
 					callback(null, indexContent);
@@ -78,7 +78,7 @@ describe('createStaticFileServer', () => {
 		// Clear mock call history and reset the mocked readFile implementation
 		vi.clearAllMocks();
 		// Ensure fs.readFile is a mock function we control
-		(fs.readFile as unknown as vi.Mock).mockReset();
+		(fs.readFile as unknown as Mock).mockReset();
 		mockReq = makeMockRequest();
 		mockRes = makeMockResponse();
 	});
@@ -246,7 +246,7 @@ describe('createStaticFileServer', () => {
 
 			handler(mockReq as any, mockRes as any);
 
-			const firstCall = (fs.readFile as unknown as vi.Mock).mock.calls[0][0];
+			const firstCall = (fs.readFile as unknown as Mock).mock.calls[0][0];
 			expect(firstCall).toContain(path.resolve('/public'));
 		});
 	});

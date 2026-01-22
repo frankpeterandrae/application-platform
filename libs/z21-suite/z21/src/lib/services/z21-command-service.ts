@@ -46,7 +46,7 @@ export class Z21CommandService {
 	 */
 	public sendTrackPower(on: boolean): void {
 		const buf = on ? encodeLanXSetTrackPowerOn() : encodeLanXSetTrackPowerOff();
-		this.logger.debug('[z21] tx TRACK_POWER', { on: on ? 'ON' : 'OFF', hex: buf.toString('hex') });
+		this.logger.debug('[z21] tx TRACK_POWER', { powerOn: on ? 'ON' : 'OFF', hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
 

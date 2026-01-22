@@ -69,12 +69,11 @@ describe('datasetsToEvents', () => {
 				centralStateEx: 8,
 				capabilities: 9
 			});
-
 			const events = datasetsToEvents(dataset);
 
 			expect(events).toEqual([
 				{
-					type: 'event.system.state',
+					event: 'system.event.state',
 					payload: {
 						mainCurrent_mA: 1,
 						progCurrent_mA: 2,
@@ -84,7 +83,8 @@ describe('datasetsToEvents', () => {
 						vccVoltage_mV: 6,
 						centralState: 7,
 						centralStateEx: 8,
-						capabilities: 9
+						capabilities: 9,
+						raw: [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 8, 0, 9]
 					}
 				}
 			]);
@@ -96,8 +96,8 @@ describe('datasetsToEvents', () => {
 			const events = datasetsToEvents(dataset);
 
 			expectEventCount(events, 1);
-			expect(events[0].type).toBe('event.system.state');
-			if (events[0].type === 'event.system.state') {
+			expect(events[0].event).toBe('system.event.state');
+			if (events[0].event === 'system.event.state') {
 				expect(events[0].payload.mainCurrent_mA).toBe(0);
 				expect(events[0].payload.progCurrent_mA).toBe(0);
 			}
@@ -110,7 +110,7 @@ describe('datasetsToEvents', () => {
 			const events = datasetsToEvents(dataset);
 
 			expectEventCount(events, 1);
-			expect(events[0].type).toBe('event.system.state');
+			expect(events[0].event).toBe('system.event.state');
 		});
 
 		it('returns exactly one event for system.state datasets', () => {
@@ -125,26 +125,26 @@ describe('datasetsToEvents', () => {
 	describe('x.bus datasets', () => {
 		it('emits z21.status for status changed dataset', () => {
 			const xlan = LAN_X_COMMANDS.LAN_X_STATUS_CHANGED;
-			const dataset = makeXBusDataset(xlan.xHeader, [xlan.xBusCmd!, 0xaa]);
+			const dataset = makeXBusDataset(xlan.xHeader, [xlan.xBusCmd, 0xaa]);
 
 			const events = datasetsToEvents(dataset);
 
 			expect(events).toEqual([
 				{
-					type: 'event.z21.status',
-					payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false }
+					event: 'system.event.status',
+					payload: { emergencyStop: false, powerOn: false, programmingMode: true, shortCircuit: false, raw: [0x22, 0xaa] }
 				}
 			]);
 		});
 
 		it('delegates to decodeLanXPayload for x.bus datasets', () => {
 			const xlan = LAN_X_COMMANDS.LAN_X_STATUS_CHANGED;
-			const dataset = makeXBusDataset(xlan.xHeader, [xlan.xBusCmd!, 0x00]);
+			const dataset = makeXBusDataset(xlan.xHeader, [xlan.xBusCmd, 0x00]);
 
 			const events = datasetsToEvents(dataset);
 
 			expect(events.length).toBeGreaterThan(0);
-			expect(events[0].type).toBe('event.z21.status');
+			expect(events[0].event).toBe('system.event.status');
 		});
 
 		it('returns decoded events from decodeLanXPayload', () => {
@@ -162,7 +162,7 @@ describe('datasetsToEvents', () => {
 			const events = datasetsToEvents(dataset);
 
 			expectEventCount(events, 1);
-			expect(events[0].type).toBe('event.track.power');
+			expect(events[0].event).toBe('system.event.track.power');
 		});
 
 		it('handles track power on event', () => {
@@ -171,7 +171,7 @@ describe('datasetsToEvents', () => {
 			const events = datasetsToEvents(dataset);
 
 			expectEventCount(events, 1);
-			expect(events[0].type).toBe('event.track.power');
+			expect(events[0].event).toBe('system.event.track.power');
 		});
 	});
 
@@ -183,13 +183,13 @@ describe('datasetsToEvents', () => {
 
 			expect(events).toEqual([
 				{
-					type: 'event.z21.hwinfo',
+					event: 'system.event.hwinfo',
 					payload: {
 						hardwareType: 'Z21_OLD',
 						majorVersion: 1,
-						minorVersion: 20
-					},
-					raw: [0x00000200, 0x00000120]
+						minorVersion: 20,
+						raw: [0x00000200, 0x00000120]
+					}
 				}
 			]);
 		});
@@ -199,8 +199,8 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
 				expect(events[0].payload.hardwareType).toBe('Z21_NEW');
 				expect(events[0].payload.majorVersion).toBe(2);
 				expect(events[0].payload.minorVersion).toBe(30);
@@ -212,8 +212,8 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
 				expect(events[0].payload.hardwareType).toBe('Z21_XL');
 				expect(events[0].payload.majorVersion).toBe(1);
 				expect(events[0].payload.minorVersion).toBe(45);
@@ -225,8 +225,8 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
 				expect(events[0].payload.hardwareType).toBe('UNKNOWN');
 			}
 		});
@@ -236,8 +236,8 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
 				expect(events[0].payload.majorVersion).toBe(0);
 				expect(events[0].payload.minorVersion).toBe(0);
 			}
@@ -248,8 +248,8 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
 				expect(events[0].payload.majorVersion).toBe(9);
 				expect(events[0].payload.minorVersion).toBe(99);
 			}
@@ -260,9 +260,9 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.hwinfo');
-			if (events[0].type === 'event.z21.hwinfo') {
-				expect(events[0].raw).toEqual([0x00000201, 0x00000120]);
+			expect(events[0].event).toBe('system.event.hwinfo');
+			if (events[0].event === 'system.event.hwinfo') {
+				expect(events[0].payload.raw).toEqual([0x00000201, 0x00000120]);
 			}
 		});
 
@@ -283,9 +283,11 @@ describe('datasetsToEvents', () => {
 
 			expect(events).toEqual([
 				{
-					type: 'event.z21.code',
-					code: 0,
-					raw: [0]
+					event: 'system.event.z21.code',
+					payload: {
+						code: 0,
+						raw: [0]
+					}
 				}
 			]);
 		});
@@ -297,9 +299,11 @@ describe('datasetsToEvents', () => {
 
 			expect(events).toEqual([
 				{
-					type: 'event.z21.code',
-					code: 255,
-					raw: [255]
+					event: 'system.event.z21.code',
+					payload: {
+						code: 255,
+						raw: [255]
+					}
 				}
 			]);
 		});
@@ -309,10 +313,10 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.code');
-			if (events[0].type === 'event.z21.code') {
-				expect(events[0].code).toBe(42);
-				expect(events[0].raw).toEqual([42]);
+			expect(events[0].event).toBe('system.event.z21.code');
+			if (events[0].event === 'system.event.z21.code') {
+				expect(events[0].payload.code).toBe(42);
+				expect(events[0].payload.raw).toEqual([42]);
 			}
 		});
 
@@ -321,9 +325,9 @@ describe('datasetsToEvents', () => {
 
 			const events = datasetsToEvents(dataset);
 
-			expect(events[0].type).toBe('event.z21.code');
-			if (events[0].type === 'event.z21.code') {
-				expect(events[0].raw).toEqual([123]);
+			expect(events[0].event).toBe('system.event.z21.code');
+			if (events[0].event === 'system.event.z21.code') {
+				expect(events[0].payload.raw).toEqual([123]);
 			}
 		});
 

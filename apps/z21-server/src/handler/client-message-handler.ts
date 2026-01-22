@@ -69,8 +69,11 @@ export class ClientMessageHandler {
 
 			case 'system.command.trackpower.set': {
 				// Ping the Z21 gateway (demo behavior), then broadcast new power state
-				this.z21Service.sendTrackPower(msg.payload.on);
-				this.broadcast({ type: 'system.message.trackpower', payload: { on: msg.payload.on, short: false } });
+				this.z21Service.sendTrackPower(msg.payload.powerOn);
+				this.broadcast({
+					type: 'system.message.trackpower',
+					payload: { powerOn: msg.payload.powerOn, shortCircuit: false, emergencyStop: false, programmingMode: false }
+				});
 				break;
 			}
 			case 'loco.command.drive': {

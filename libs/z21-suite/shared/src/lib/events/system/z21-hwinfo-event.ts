@@ -3,6 +3,9 @@
  * All rights reserved.
  */
 
+import { Domain } from '../../types';
+import { Event } from '../event';
+
 export const HARDWARE_TYPE = {
 	0x00000200: 'Z21_OLD',
 	0x00000201: 'Z21_NEW',
@@ -19,12 +22,12 @@ export const HARDWARE_TYPE = {
 
 export type HardwareType = (typeof HARDWARE_TYPE)[keyof typeof HARDWARE_TYPE];
 
-export type Z21HwinfoEvent = {
-	type: 'event.z21.hwinfo';
-	raw: number[];
-	payload: {
+export type Z21HwinfoEvent = Event<
+	Domain.SYSTEM,
+	'hwinfo',
+	{
 		majorVersion: number;
 		minorVersion: number;
 		hardwareType: HardwareType | 'UNKNOWN';
-	};
-};
+	}
+>;

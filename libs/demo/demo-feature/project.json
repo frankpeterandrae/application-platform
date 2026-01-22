@@ -14,10 +14,23 @@
 				"reportsDirectory": "../../../coverage/libs/demo/demo-feature",
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{options.reportsDirectory}"],
+			"dependsOn": ["typecheck-test", "typecheck-lib"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
 		}
 	}
 }

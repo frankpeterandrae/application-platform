@@ -10,7 +10,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXTurnoutInfoPayload } from './turnout-info';
 
-type TurnoutInfoEvent = Extract<Z21Event, { type: 'event.turnout.info' }>;
+type TurnoutInfoEvent = Extract<Z21Event, { event: 'switching.event.turnout.info' }>;
 
 describe('decodeLanXTurnoutInfoPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -37,9 +37,9 @@ describe('decodeLanXTurnoutInfoPayload', () => {
 			addr: number;
 		}
 	): void {
-		expect(event.type).toBe('event.turnout.info');
-		expect(event.state).toBe(expectedValues.state);
-		expect(event.addr).toBe(expectedValues.addr);
+		expect(event.event).toBe('switching.event.turnout.info');
+		expect(event.payload.state).toBe(expectedValues.state);
+		expect(event.payload.addr).toBe(expectedValues.addr);
 	}
 
 	// Helper function to verify event array structure
@@ -83,44 +83,44 @@ describe('decodeLanXTurnoutInfoPayload', () => {
 			const payload = makePayload(0x00, 0x00, 0x00);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.state).toBe(TurnoutState.UNKNOWN);
+			expect(event.payload.state).toBe(TurnoutState.UNKNOWN);
 		});
 	});
 
 	describe('address decoding', () => {
-		it('decodes short address correctly', () => {
+		it('decodes shortCircuit address correctly', () => {
 			const payload = makePayload(0x00, 0x03, 0x01);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.addr).toBe(3);
+			expect(event.payload.addr).toBe(3);
 		});
 
 		it('decodes long address correctly', () => {
 			const payload = makePayload(0x12, 0x34, 0x01);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.addr).toBe(calculateAddress(0x12, 0x34));
+			expect(event.payload.addr).toBe(calculateAddress(0x12, 0x34));
 		});
 
 		it('masks MSB to 6 bits', () => {
 			const payload = makePayload(0xff, 0x42, 0x01);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.addr).toBe(0x3f42);
+			expect(event.payload.addr).toBe(0x3f42);
 		});
 
 		it('handles minimum address', () => {
 			const payload = makePayload(0x00, 0x00, 0x01);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.addr).toBe(0);
+			expect(event.payload.addr).toBe(0);
 		});
 
 		it('handles maximum address', () => {
 			const payload = makePayload(0xff, 0xff, 0x01);
 			const event = extractTurnoutInfo(payload);
 
-			expect(event.addr).toBe(calculateAddress(0xff, 0xff));
+			expect(event.payload.addr).toBe(calculateAddress(0xff, 0xff));
 		});
 	});
 
@@ -162,7 +162,7 @@ describe('decodeLanXTurnoutInfoPayload', () => {
 		it('returns event with correct type property', () => {
 			const event = extractTurnoutInfo(makePayload(0x12, 0x34, 0x01));
 
-			expect(event.type).toBe('event.turnout.info');
+			expect(event.event).toBe('switching.event.turnout.info');
 		});
 
 		it('returns single event in array', () => {

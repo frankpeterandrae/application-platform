@@ -36,37 +36,42 @@ describe('Server Message Types', () => {
 	});
 
 	describe('SystemTrackPower', () => {
-		it('accepts track power on without short', () => {
+		it('accepts track power on without shortCircuit', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
 				payload: {
-					on: true,
-					short: false
+					powerOn: true,
+					shortCircuit: false,
+					emergencyStop: false,
+					programmingMode: false
 				}
 			};
-			expect(msg.payload.on).toBe(true);
-			expect(msg.payload.short).toBe(false);
+			expect(msg.payload.powerOn).toBe(true);
+			expect(msg.payload.shortCircuit).toBe(false);
 		});
 
-		it('accepts track power off with short', () => {
+		it('accepts track power off with shortCircuit', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
 				payload: {
-					on: false,
-					short: true
+					powerOn: false,
+					shortCircuit: true,
+					emergencyStop: false,
+					programmingMode: false
 				}
 			};
-			expect(msg.payload.on).toBe(false);
-			expect(msg.payload.short).toBe(true);
+			expect(msg.payload.powerOn).toBe(false);
+			expect(msg.payload.shortCircuit).toBe(true);
 		});
 
 		it('accepts track power with emergency stop', () => {
 			const msg: SystemTrackPower = {
 				type: 'system.message.trackpower',
 				payload: {
-					on: false,
-					short: false,
-					emergencyStop: true
+					powerOn: false,
+					shortCircuit: false,
+					emergencyStop: true,
+					programmingMode: false
 				}
 			};
 			expect(msg.payload.emergencyStop).toBe(true);
@@ -210,7 +215,7 @@ describe('Server Message Types', () => {
 				payload: {
 					rawHex: '0x070040006101',
 					datasets: [{ kind: 'ds.x.bus' }],
-					events: [{ type: 'event.track.power' }]
+					events: [{ event: 'system.event.track.power' }]
 				}
 			};
 			expect(msg.payload.rawHex).toBe('0x070040006101');

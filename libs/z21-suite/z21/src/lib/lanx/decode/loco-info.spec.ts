@@ -19,7 +19,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXLocoInfoPayload } from './loco-info';
 
-type LocoInfoEvent = Extract<Z21Event, { type: 'event.loco.info' }>;
+type LocoInfoEvent = Extract<Z21Event, { event: 'loco.event.info' }>;
 
 describe('decodeLanXLocoInfoPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -35,8 +35,8 @@ describe('decodeLanXLocoInfoPayload', () => {
 
 	// Helper function to verify address decoding
 	function expectAddress(event: LocoInfoEvent, adrMsb: number, adrLsb: number): void {
-		expect(event.addr).toBe(((adrMsb & AddessByteMask.MSB) << 8) + adrLsb);
-		expect(event.type).toBe('event.loco.info');
+		expect(event.payload.addr).toBe(((adrMsb & AddessByteMask.MSB) << 8) + adrLsb);
+		expect(event.event).toBe('loco.event.info');
 	}
 
 	// Helper function to verify speed and direction
@@ -49,10 +49,10 @@ describe('decodeLanXLocoInfoPayload', () => {
 			emergencyStop: boolean;
 		}
 	): void {
-		expect(event.speedSteps).toBe(expectedValues.speedSteps);
-		expect(event.speed).toBe(expectedValues.speed);
-		expect(event.direction).toBe(expectedValues.direction);
-		expect(event.emergencyStop).toBe(expectedValues.emergencyStop);
+		expect(event.payload.speedSteps).toBe(expectedValues.speedSteps);
+		expect(event.payload.speed).toBe(expectedValues.speed);
+		expect(event.payload.direction).toBe(expectedValues.direction);
+		expect(event.payload.emergencyStop).toBe(expectedValues.emergencyStop);
 	}
 
 	// Helper function to verify loco type flags
@@ -65,16 +65,16 @@ describe('decodeLanXLocoInfoPayload', () => {
 			isSmartsearch?: boolean;
 		}
 	): void {
-		if (expectedValues.isMmLoco !== undefined) expect(event.isMmLoco).toBe(expectedValues.isMmLoco);
-		if (expectedValues.isOccupied !== undefined) expect(event.isOccupied).toBe(expectedValues.isOccupied);
-		if (expectedValues.isDoubleTraction !== undefined) expect(event.isDoubleTraction).toBe(expectedValues.isDoubleTraction);
-		if (expectedValues.isSmartsearch !== undefined) expect(event.isSmartsearch).toBe(expectedValues.isSmartsearch);
+		if (expectedValues.isMmLoco !== undefined) expect(event.payload.isMmLoco).toBe(expectedValues.isMmLoco);
+		if (expectedValues.isOccupied !== undefined) expect(event.payload.isOccupied).toBe(expectedValues.isOccupied);
+		if (expectedValues.isDoubleTraction !== undefined) expect(event.payload.isDoubleTraction).toBe(expectedValues.isDoubleTraction);
+		if (expectedValues.isSmartsearch !== undefined) expect(event.payload.isSmartsearch).toBe(expectedValues.isSmartsearch);
 	}
 
 	// Helper function to verify function states
 	function expectFunctionStates(event: LocoInfoEvent, states: Array<{ fn: number; state: boolean | undefined }>): void {
 		for (const { fn, state } of states) {
-			expect(event.functionMap[fn]).toBe(state);
+			expect(event.payload.functionMap[fn]).toBe(state);
 		}
 	}
 
@@ -307,22 +307,22 @@ describe('decodeLanXLocoInfoPayload', () => {
 	});
 
 	describe('address decoding', () => {
-		it('decodes short address', () => {
+		it('decodes shortCircuit address', () => {
 			const event = extractLocoInfo(makePayload(0x00, 0x03, 0, 0, 0));
 
-			expect(event.addr).toBe(3);
+			expect(event.payload.addr).toBe(3);
 		});
 
 		it('decodes long address', () => {
 			const event = extractLocoInfo(makePayload(0xc5, 0x39, 0, 0, 0));
 
-			expect(event.addr).toBe(1337);
+			expect(event.payload.addr).toBe(1337);
 		});
 
 		it('masks MSB to 6 bits', () => {
 			const event = extractLocoInfo(makePayload(0xff, 0x42, 0, 0, 0));
 
-			expect(event.addr).toBe(0x3f42);
+			expect(event.payload.addr).toBe(0x3f42);
 		});
 	});
 

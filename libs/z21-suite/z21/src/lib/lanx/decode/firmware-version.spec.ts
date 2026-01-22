@@ -7,7 +7,7 @@ import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXFirmwareVersionPayload } from './firmware-version';
 
-type FirmwareVersionEvent = Extract<Z21Event, { type: 'event.z21.firmware.version' }>;
+type FirmwareVersionEvent = Extract<Z21Event, { event: 'system.event.firmware.version' }>;
 
 describe('decodeLanXFirmwareVersionPayload', () => {
 	// Helper function to create payload from bytes (similar to helper functions in bootstrap.spec.ts)
@@ -23,14 +23,14 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 
 	// Helper function to verify firmware version values
 	function expectFirmwareVersion(event: FirmwareVersionEvent, major: number, minor: number): void {
-		expect(event.major).toBe(major);
-		expect(event.minor).toBe(minor);
-		expect(event.type).toBe('event.z21.firmware.version');
+		expect(event.payload.major).toBe(major);
+		expect(event.payload.minor).toBe(minor);
+		expect(event.event).toBe('system.event.firmware.version');
 	}
 
 	// Helper function to verify raw payload preservation
 	function expectRawPayload(event: FirmwareVersionEvent, expectedBytes: number[]): void {
-		expect(event.raw).toEqual(expectedBytes);
+		expect(event.payload.raw).toEqual(expectedBytes);
 	}
 
 	describe('BCD decoding', () => {
@@ -50,13 +50,13 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 		it('decodes major version from DB1 (index 1)', () => {
 			const event = extractFirmwareVersion(makePayload(0xff, 0x99, 0x00));
 
-			expect(event.major).toBe(99);
+			expect(event.payload.major).toBe(99);
 		});
 
 		it('decodes minor version from DB2 (index 2)', () => {
 			const event = extractFirmwareVersion(makePayload(0xff, 0x00, 0x88));
 
-			expect(event.minor).toBe(88);
+			expect(event.payload.minor).toBe(88);
 		});
 	});
 
@@ -84,7 +84,7 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 			const event = extractFirmwareVersion(makePayload(0x12, 0x34, 0x56, 0x78));
 
 			expectFirmwareVersion(event, 34, 56);
-			expect(event.raw.length).toBe(4);
+			expect(event.payload.raw.length).toBe(4);
 		});
 	});
 
@@ -97,7 +97,7 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 
 			// Verify immutability - modifying original should not affect event
 			payload[0] = 0x00;
-			expect(event.raw[0]).toBe(0xab);
+			expect(event.payload.raw[0]).toBe(0xab);
 		});
 
 		it('preserves all payload bytes including header', () => {
