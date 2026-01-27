@@ -4,7 +4,8 @@
  */
 
 import { DeepMock, DeepMocked } from '@application-platform/shared-node-test';
-import type { Z21CommandService, Z21Event } from '@application-platform/z21';
+import type { Z21CommandService } from '@application-platform/z21';
+import { Z21Event } from '@application-platform/z21-shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { CvProgrammingService } from './cv-programming-service';

@@ -11,11 +11,10 @@ import {
 	XHeader,
 	Z21StatusEvent,
 	Z21StoppedEvent,
-	Z21VersionEvent
+	Z21VersionEvent,
+	type Z21Event
 } from '@application-platform/z21-shared';
 import { describe, expect, it, Mock, vi } from 'vitest';
-
-import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXPayload } from './decoder';
 

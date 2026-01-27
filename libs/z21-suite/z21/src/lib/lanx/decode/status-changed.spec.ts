@@ -3,9 +3,7 @@
  * All rights reserved.
  */
 
-import { XBusCmd } from '@application-platform/z21-shared';
-
-import { type Z21Event } from '../../event/event-types';
+import { XBusCmd, type Z21Event } from '@application-platform/z21-shared';
 
 import { decodeLanXStatusChangedPayload } from './status-changed';
 

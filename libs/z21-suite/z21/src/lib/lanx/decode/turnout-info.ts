@@ -2,9 +2,8 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
+import type { Z21Event } from '@application-platform/z21-shared';
 import { TurnoutState } from '@application-platform/z21-shared';
-
-import type { Z21Event } from '../../event/event-types';
 
 import { decodeDccAddress } from './_shared';
 

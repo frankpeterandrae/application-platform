@@ -3,9 +3,7 @@
  * All rights reserved.
  */
 
-import type { LanXCommandKey } from '@application-platform/z21-shared';
-
-import type { Z21Event } from '../../event/event-types';
+import type { LanXCommandKey, Z21Event } from '@application-platform/z21-shared';
 
 /**
  * Decodes track power on/off commands into Z21Event entries.

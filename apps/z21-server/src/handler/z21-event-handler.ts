@@ -5,11 +5,12 @@
 
 import { TrackStatusManager, type CommandStationInfo, type LocoManager } from '@application-platform/domain';
 import type { ServerToClient } from '@application-platform/protocol';
-import type { Z21Dataset, Z21Event, Z21UdpDatagram, Z21UdpFrom } from '@application-platform/z21';
+import type { Z21Dataset, Z21UdpDatagram, Z21UdpFrom } from '@application-platform/z21';
 import { datasetsToEvents, decodeSystemState, deriveTrackFlagsFromSystemState, parseZ21Datagram } from '@application-platform/z21';
 import {
 	LocoInfoEventPayload,
 	PowerPayload,
+	Z21Event,
 	Z21LanHeader,
 	type HardwareType,
 	type Logger,

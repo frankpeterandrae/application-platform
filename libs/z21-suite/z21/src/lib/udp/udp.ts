@@ -131,7 +131,7 @@ export class Z21Udp extends EventEmitter {
 	 * Requests the current system state snapshot (Header 0x0085).
 	 */
 	public sendSystemStateGetData(): void {
-		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
+		const pkt = encodeXBusLanFrame(Z21LanHeader.LAN_SYSTEMSTATE_GETDATA);
 		this.sendRaw(pkt);
 	}
 

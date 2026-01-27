@@ -11,7 +11,7 @@ import { CommandStationInfo, LocoManager } from '@application-platform/domain';
 import { LocoDrive } from '@application-platform/protocol';
 import { DeepMock, type DeepMocked } from '@application-platform/shared-node-test';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
-import { Logger } from '@application-platform/z21-shared';
+import { Logger, ServerConfig } from '@application-platform/z21-shared';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { Z21EventHandler } from '../handler/z21-event-handler';
@@ -57,7 +57,11 @@ describe('Bootstrap', () => {
 		});
 
 		const providers: DeepMocked<Providers> & { wsOnConnection: Mock; broadcast: Mock } = {
-			cfg: { httpPort: 5050, z21: { host: '1.2.3.4', udpPort: 21105 }, safety: { stopAllOnClientDisconnect: true } } as any,
+			cfg: {
+				httpPort: 5050,
+				z21: { host: '1.2.3.4', udpPort: 21105, broadcastflags: { basic: true } },
+				safety: { stopAllOnClientDisconnect: true }
+			} as ServerConfig,
 			logger: mockLogger as any,
 			httpServer: mockHttpServer as any,
 			udp: mockUdp as any,

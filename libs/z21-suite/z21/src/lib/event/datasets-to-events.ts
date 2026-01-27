@@ -3,12 +3,13 @@
  * All rights reserved.
  */
 
+import { Z21Event } from '@application-platform/z21-shared';
+
 import type { Z21Dataset } from '../codec/codec-types';
 import { decodeLanXPayload } from '../lanx/decode/decoder';
+import { decodeBroadcstflags } from '../system/decode-broadcastflags';
 import { decodeHwInfo } from '../system/decode-hw-info';
 import { decodeSystemState } from '../system/decode-system-state';
-
-import { type Z21Event } from './event-types';
 
 /**
  * Converts a decoded Z21 dataset into one or more higher-level events.
@@ -34,6 +35,9 @@ export function datasetsToEvents(ds: Z21Dataset): Z21Event[] {
 
 	if (ds.kind === 'ds.code') {
 		return [{ event: 'system.event.z21.code', payload: { code: ds.code, raw: [ds.code] } }];
+	}
+	if (ds.kind === 'ds.broadcast.flags') {
+		return [decodeBroadcstflags(ds.flags)];
 	}
 
 	// bad_xor / unknown -> keine Events, Observability läuft im Handler über Logging

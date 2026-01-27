@@ -17,4 +17,5 @@ export type Z21Dataset =
 	| { kind: 'ds.unknown'; header: number; payload: Uint8Array; reason: string }
 	| { kind: 'ds.bad_xor'; calc: string; recv: string }
 	| { kind: 'ds.hwinfo'; hwtype: number; fwVersionBcd: number }
-	| { kind: 'ds.code'; code: number };
+	| { kind: 'ds.code'; code: number }
+	| { kind: 'ds.broadcast.flags'; flags: number };

@@ -96,7 +96,7 @@ describe('parseZ21Datagram', () => {
 	describe('System state frame parsing', () => {
 		it('parses system.state frame with 16-byte payload', () => {
 			const payload = makeSystemStatePayload();
-			const buf = makeFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED, payload);
+			const buf = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, payload);
 
 			const res = parseZ21Datagram(buf);
 
@@ -105,7 +105,7 @@ describe('parseZ21Datagram', () => {
 
 		it('handles system.state frame with wrong payload length', () => {
 			const payload = [0x01, 0x02, 0x03];
-			const buf = makeFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED, payload);
+			const buf = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, payload);
 
 			const res = parseZ21Datagram(buf);
 
@@ -150,6 +150,38 @@ describe('parseZ21Datagram', () => {
 			const res = parseZ21Datagram(buf);
 
 			expect(res[0]).toMatchObject({ kind: 'ds.unknown', reason: 'unrecognized header or invalid payload length' });
+		});
+	});
+
+	describe('Broadcast flags frame parsing', () => {
+		it('parses broadcast flags frame with 8-byte payload', () => {
+			const payload = makeHWInfoPayload(0xaabbccdd, 0x01020304);
+			const buf = makeFrame(Z21LanHeader.LAN_GET_BROADCASTFLAGS, payload);
+
+			const res = parseZ21Datagram(buf);
+
+			expect(res).toEqual([{ kind: 'ds.broadcast.flags', flags: 0xaabbccdd }]);
+		});
+
+		it('handles broadcast flags frame with wrong payload length', () => {
+			const payload = [0x01, 0x02, 0x03, 0x04];
+			const buf = makeFrame(Z21LanHeader.LAN_GET_BROADCASTFLAGS, payload);
+
+			const res = parseZ21Datagram(buf);
+
+			expect(res[0]).toMatchObject({ kind: 'ds.unknown', reason: 'unrecognized header or invalid payload length' });
+		});
+
+		it('parses broadcast flags frame when mixed with other frames', () => {
+			const frame1 = makeFrame(Z21LanHeader.LAN_X, makeXBusPayload([0x10, 0x01]));
+			const frame2 = makeFrame(Z21LanHeader.LAN_GET_BROADCASTFLAGS, makeHWInfoPayload(0x11223344, 0x0));
+			const buf = Buffer.concat([frame1, frame2]);
+
+			const res = parseZ21Datagram(buf);
+
+			expect(res).toHaveLength(2);
+			expect(res[0]).toMatchObject({ kind: 'ds.x.bus' });
+			expect(res[1]).toEqual({ kind: 'ds.broadcast.flags', flags: 0x11223344 });
 		});
 	});
 
@@ -231,7 +263,7 @@ describe('parseZ21Datagram', () => {
 
 		it('parses mix of different supported frame types', () => {
 			const frame1 = makeFrame(Z21LanHeader.LAN_X, makeXBusPayload([0x10, 0x01]));
-			const frame2 = makeFrame(Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED, makeSystemStatePayload());
+			const frame2 = makeFrame(Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED, makeSystemStatePayload());
 			const frame3 = makeFrame(Z21LanHeader.LAN_GET_CODE, [0x42]);
 			const buf = Buffer.concat([frame1, frame2, frame3]);
 

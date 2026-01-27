@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type Z21Event } from '../../event/event-types';
+import { type Z21Event } from '@application-platform/z21-shared';
 /**
  * Convert XBus Version to standard version number
  * e.g 0x30 = V3.0, 0x36 = V3.6, 0x40 = V4.0

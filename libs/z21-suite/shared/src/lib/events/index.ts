@@ -3,9 +3,11 @@
  * All rights reserved.
  */
 
+export * from './event-types';
 export * from './loco/loco-info-event';
 export * from './programming';
 export * from './switching/turnout-info-event';
+export * from './system/broadcastflag-event';
 export * from './system/system-state-event';
 export * from './system/track-power-event';
 export * from './system/z21-code-event';

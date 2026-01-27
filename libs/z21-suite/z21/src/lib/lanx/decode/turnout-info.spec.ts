@@ -3,10 +3,9 @@
  * All rights reserved.
  */
 
-import { TurnoutState } from '@application-platform/z21-shared';
+import { TurnoutState, type Z21Event } from '@application-platform/z21-shared';
 
 import { AddessByteMask } from '../../constants';
-import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXTurnoutInfoPayload } from './turnout-info';
 

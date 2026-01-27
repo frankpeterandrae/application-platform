@@ -37,9 +37,9 @@ export const enum Z21LanHeader {
 	/** Program RM-Bus module information. TODO: add handling */
 	LAN_RMBUS_PROGRAMMODULE = 0x0082,
 	/** Notification that system state has changed. */
-	LAN_SYSTEM_STATE_DATACHANGED = 0x0084,
+	LAN_SYSTEMSTATE_DATACHANGED = 0x0084,
 	/** Request current system state snapshot from Z21. */
-	LAN_SYSTEM_STATE_DATAGET = 0x0085,
+	LAN_SYSTEMSTATE_GETDATA = 0x0085,
 	/** Notification that RAILCOM data has changed. TODO: add handling */
 	LAN_RAILCOM_DATACHANGED = 0x0088,
 	/** Request RAILCOM data from the Z21. TODO: add handling */

@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type Z21Event } from '../../event/event-types';
+import { type Z21Event } from '@application-platform/z21-shared';
 
 /**
  * Decodes a LAN X payload indicating that the command station has stopped.

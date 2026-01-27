@@ -9,11 +9,11 @@
  */
 export const enum LocoFunctionSwitchType {
 	/** Explicitly set function to off. */
-	Off = 0b00,
+	OFF = 0b00,
 	/** Explicitly set function to on. */
-	On = 0b01,
+	ON = 0b01,
 	/** Toggle function state. */
-	Toggle = 0b10
+	TOGGLE = 0b10
 }
 
 /**
@@ -21,12 +21,26 @@ export const enum LocoFunctionSwitchType {
  * Used in LAN_SET_BROADCASTFLAGS messages.
  */
 export const enum Z21BroadcastFlag {
-	/** Disable all broadcasts. TODO: add handling */
-	None = 0x00000000,
+	/** Disable all broadcasts. */
+	NONE = 0x00000000,
 	/** Enable basic broadcasts (e.g., serial, power state). */
-	Basic = 0x00000001,
+	BASIC = 0x00000001,
+	/** Enable RM-BUS data broadcasts. */
+	R_MBUS = 0x00000002,
+	/** Enable RAILCOM data broadcasts. */
+	RAILCOM = 0x00000004,
 	/** Enable system state broadcasts (comprehensive status frames). */
-	SystemState = 0x00000100
+	SYSTEM_STATE = 0x00000100,
+	/** Enable locomotive info/status change broadcasts. */
+	CHANGED_LOCO_INFO = 0x00010000,
+	/** Enable turnout state change broadcasts. */
+	LOCO_NET_WITHOUT_LOCO_AND_SWITCHES = 0x01000000,
+	/** Enable broadcasts for locomotives and switches. */
+	LOCO_NET_WITH_LOCO_AND_SWITCHES = 0x02000000,
+	/** Enable dispatcher broadcasts. */
+	LOCO_NET_DETECTOR = 0x08000000,
+	/** Enable RM-BUS data change broadcasts. */
+	RAILCOM_DATACHANGED = 0x00040000
 }
 
 /**

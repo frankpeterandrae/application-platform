@@ -10,6 +10,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
+import { ServerConfig } from '@application-platform/z21-shared';
 import WebSocket from 'ws';
 
 export type WsMessage = { type: string; payload: { [key: string]: unknown } };
@@ -72,9 +73,16 @@ export function mkTmpConfig(httpPort: number, fakeZ21Port: number, listenPort?: 
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'z21-e2e-'));
 	const cfgPath = path.join(dir, 'config.json');
 
-	const cfg: { httpPort: number; z21: Record<string, unknown>; safety: { stopAllOnClientDisconnect: boolean } } = {
+	const cfg: ServerConfig = {
 		httpPort,
-		z21: { host: '127.0.0.1', udpPort: fakeZ21Port, ...(listenPort ? { listenPort } : {}) },
+		z21: {
+			host: '127.0.0.1',
+			udpPort: fakeZ21Port,
+			...(listenPort ? { listenPort } : {}),
+			broadcastflags: {
+				basic: true
+			}
+		},
 		safety: { stopAllOnClientDisconnect: false }
 	};
 
@@ -159,7 +167,7 @@ export async function stopCtx(ctx: E2eCtx): Promise<void> {
 		ctx.ws.close();
 	}
 	ctx.proc.kill('SIGTERM');
-	if (ctx.ws && ctx.ws.readyState === WebSocket.OPEN) {
+	if (ctx.ws?.readyState === WebSocket.OPEN) {
 		const ws = ctx.ws; // ensure stable reference without non-null assertions
 		await new Promise<void>((resolve) => {
 			ws?.once('close', () => resolve());

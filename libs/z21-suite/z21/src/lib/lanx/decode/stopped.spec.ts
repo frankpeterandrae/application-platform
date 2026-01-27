@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { type Z21Event } from '../../event/event-types';
+import { type Z21Event } from '@application-platform/z21-shared';
 
 import { decodeLanXStoppedPayload } from './stopped';
 

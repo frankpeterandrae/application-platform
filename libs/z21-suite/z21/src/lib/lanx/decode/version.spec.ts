@@ -3,9 +3,7 @@
  * All rights reserved.
  */
 
-import { Z21VersionEvent } from '@application-platform/z21-shared';
-
-import { type Z21Event } from '../../event/event-types';
+import { Z21VersionEvent, type Z21Event } from '@application-platform/z21-shared';
 
 import { decodeLanXVersionPayload } from './version';
 
