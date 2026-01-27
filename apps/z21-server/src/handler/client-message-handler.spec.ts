@@ -200,7 +200,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 7, fn: 2, on: false } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(7, 2, false);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(7, 2, LocoFunctionSwitchType.Off);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(7, 2, LocoFunctionSwitchType.OFF);
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
 				payload: {
@@ -218,7 +218,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 10, fn: 5, on: false } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, false);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.Off);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.OFF);
 		});
 
 		it('sets function to ON when on is true', () => {
@@ -226,7 +226,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 10, fn: 5, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, true);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.On);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.ON);
 		});
 
 		it('handles function number 0', () => {
@@ -234,7 +234,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 100, fn: 0, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(100, 0, true);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(100, 0, LocoFunctionSwitchType.On);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(100, 0, LocoFunctionSwitchType.ON);
 		});
 
 		it('handles function number 31', () => {
@@ -242,7 +242,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.set', payload: { addr: 100, fn: 31, on: true } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(100, 31, true);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(100, 31, LocoFunctionSwitchType.On);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(100, 31, LocoFunctionSwitchType.ON);
 		});
 
 		it('calls locoManager before z21Service', () => {
@@ -267,7 +267,7 @@ describe('ClientMessageHandler.handle', () => {
 
 			expect(locoManager.getState).toHaveBeenCalledWith(7);
 			expect(locoManager.setFunction).toHaveBeenCalledWith(7, 2, false);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(7, 2, LocoFunctionSwitchType.Toggle);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(7, 2, LocoFunctionSwitchType.TOGGLE);
 			expect(broadcast).toHaveBeenCalledWith({
 				type: 'loco.message.state',
 				payload: {
@@ -286,7 +286,7 @@ describe('ClientMessageHandler.handle', () => {
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 10, fn: 5 } } as ClientToServer, ws);
 
 			expect(locoManager.setFunction).toHaveBeenCalledWith(10, 5, true);
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.Toggle);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.TOGGLE);
 		});
 
 		it('treats undefined function state as OFF and toggles to ON', () => {
@@ -318,7 +318,7 @@ describe('ClientMessageHandler.handle', () => {
 			locoManager.setFunction.mockReturnValue({ speed: 0, dir: 'FWD', fns: { 5: true }, estop: false });
 			void handler.handle({ type: 'loco.command.function.toggle', payload: { addr: 10, fn: 5 } } as ClientToServer, ws);
 
-			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.Toggle);
+			expect(z21Service.setLocoFunction).toHaveBeenCalledWith(10, 5, LocoFunctionSwitchType.TOGGLE);
 		});
 
 		it('calls getState before setFunction', () => {

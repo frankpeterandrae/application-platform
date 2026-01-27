@@ -6,20 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { LogLevel } from '@application-platform/z21-shared';
-
-/**
- * Server configuration shape loaded from config.json or environment.
- * - httpPort: HTTP server listening port
- * - z21: Z21 central host and UDP port
- * - safety: runtime safety features
- */
-export type ServerConfig = {
-	dev?: { subscribeLocoAddr?: number; logLevel?: LogLevel; pretty?: boolean };
-	httpPort: number;
-	z21: { host: string; udpPort: number; listenPort?: number; debug?: boolean };
-	safety: { stopAllOnClientDisconnect: boolean };
-};
+import { ServerConfig } from '@application-platform/z21-shared';
 
 /**
  * Default configuration used when no config file is present or parsing fails.

@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { CentralStatus, CentralStatusEx, type DerivedTrackFlags } from '../event/event-types';
+import { CentralStatus, CentralStatusEx, type DerivedTrackFlags } from '@application-platform/z21-shared';
 
 /**
  * Derives human-friendly track flags from system state bitfields.

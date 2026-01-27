@@ -10,10 +10,10 @@ import { CommandStationInfo, LocoManager } from '@application-platform/domain';
 import type { ServerToClient } from '@application-platform/protocol';
 import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
-import { createConsoleLogger, type Logger } from '@application-platform/z21-shared';
+import { createConsoleLogger, ServerConfig, type Logger } from '@application-platform/z21-shared';
 
 import { Z21EventHandler } from '../handler/z21-event-handler';
-import { loadConfig, type ServerConfig } from '../infra/config/config';
+import { loadConfig } from '../infra/config/config';
 import { AppWsServer } from '../infra/ws/app-websocket-server';
 import { CommandStationInfoOrchestrator } from '../services/command-station-info-orchestrator';
 import { CvProgrammingService } from '../services/cv-programming-service';

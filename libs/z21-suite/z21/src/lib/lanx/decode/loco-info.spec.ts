@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Direction } from '@application-platform/z21-shared';
+import { Direction, type Z21Event } from '@application-platform/z21-shared';
 
 import {
 	AddessByteMask,
@@ -15,7 +15,6 @@ import {
 	LowFunctionsByteMask,
 	SpeedByteMask
 } from '../../constants';
-import { type Z21Event } from '../../event/event-types';
 
 import { decodeLanXLocoInfoPayload } from './loco-info';
 

@@ -4,8 +4,7 @@
  */
 
 import { resetMocksBeforeEach } from '@application-platform/shared-node-test';
-
-import { DerivedTrackFlags } from '../event/event-types';
+import { DerivedTrackFlags } from '@application-platform/z21-shared';
 
 import { deriveTrackFlagsFromSystemState } from './derive-track-flags';
 

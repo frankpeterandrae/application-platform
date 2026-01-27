@@ -49,7 +49,7 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 			case Z21LanHeader.LAN_X:
 				handleXBus(payload, out);
 				break;
-			case Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED:
+			case Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED:
 				handleSystemState(payload, out);
 				break;
 			case Z21LanHeader.LAN_GET_HWINFO:
@@ -57,6 +57,9 @@ export function parseZ21Datagram(buf: Buffer): Z21Dataset[] {
 				break;
 			case Z21LanHeader.LAN_GET_CODE:
 				handleCode(payload, out);
+				break;
+			case Z21LanHeader.LAN_GET_BROADCASTFLAGS:
+				handleBroadcastFlags(payload, out);
 				break;
 			default:
 				out.push({ kind: 'ds.unknown', header, payload, reason: 'unrecognized header or invalid payload length' });
@@ -94,7 +97,6 @@ function handleXBus(payload: Buffer, out: Z21Dataset[]): void {
 	out.push({ kind: 'ds.x.bus', xHeader, data: Uint8Array.from(db) });
 }
 
-// Helper: parse system state payload (expects 16 bytes)
 /**
  * Parse a system state payload (expects 16 bytes) and push a 'ds.system.state' dataset.
  * @param payload - payload buffer
@@ -104,7 +106,7 @@ function handleSystemState(payload: Buffer, out: Z21Dataset[]): void {
 	if (payload.length !== 16) {
 		out.push({
 			kind: 'ds.unknown',
-			header: Z21LanHeader.LAN_SYSTEM_STATE_DATACHANGED,
+			header: Z21LanHeader.LAN_SYSTEMSTATE_DATACHANGED,
 			payload,
 			reason: 'unrecognized header or invalid payload length'
 		});
@@ -113,7 +115,6 @@ function handleSystemState(payload: Buffer, out: Z21Dataset[]): void {
 	out.push({ kind: 'ds.system.state', state: Uint8Array.from(payload) });
 }
 
-// Helper: parse hwinfo payload (expects 8 bytes)
 /**
  * Parse hwinfo payload (expects 8 bytes) and push a 'ds.hwinfo' dataset.
  * @param payload - payload buffer
@@ -134,7 +135,6 @@ function handleHwInfo(payload: Buffer, out: Z21Dataset[]): void {
 	out.push({ kind: 'ds.hwinfo', hwtype, fwVersionBcd });
 }
 
-// Helper: parse code payload (expects 1 byte)
 /**
  * Parse code payload (expects 1 byte) and push a 'ds.code' dataset.
  * @param payload - payload buffer
@@ -151,4 +151,23 @@ function handleCode(payload: Buffer, out: Z21Dataset[]): void {
 		return;
 	}
 	out.push({ kind: 'ds.code', code: payload[0] });
+}
+
+/**
+ * Parse broadcast flags payload (expects 8 bytes) and push a 'ds.broadcast.flags' dataset.
+ * @param payload - payload buffer
+ * @param out - collector for decoded datasets
+ */
+function handleBroadcastFlags(payload: Buffer, out: Z21Dataset[]): void {
+	if (payload.length !== 8) {
+		out.push({
+			kind: 'ds.unknown',
+			header: Z21LanHeader.LAN_GET_BROADCASTFLAGS,
+			payload,
+			reason: 'unrecognized header or invalid payload length'
+		});
+		return;
+	}
+	const flags = payload.readUint32LE(0);
+	out.push({ kind: 'ds.broadcast.flags', flags });
 }

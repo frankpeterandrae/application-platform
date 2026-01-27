@@ -2,22 +2,21 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import {
-	CvNackEvent,
-	CvResultEvent,
-	LocoInfoEvent,
-	SystemStateEvent,
-	TrackPowerEvent,
-	TurnoutInfoEvent,
-	UnknownLanXEvent,
-	UnknownXBusEvent,
-	Z21CodeEvent,
-	Z21FirmwareVersionEvent,
-	Z21HwinfoEvent,
-	Z21StatusEvent,
-	Z21StoppedEvent,
-	Z21VersionEvent
-} from '@application-platform/z21-shared';
+
+import { LocoInfoEvent } from './loco/loco-info-event';
+import { CvNackEvent, CvResultEvent } from './programming';
+import { TurnoutInfoEvent } from './switching/turnout-info-event';
+import { BroadcastflagEvent } from './system/broadcastflag-event';
+import { SystemStateEvent } from './system/system-state-event';
+import { TrackPowerEvent } from './system/track-power-event';
+import { Z21CodeEvent } from './system/z21-code-event';
+import { Z21FirmwareVersionEvent } from './system/z21-firmware-version-event';
+import { Z21HwinfoEvent } from './system/z21-hwinfo-event';
+import { Z21StatusEvent } from './system/z21-status-event';
+import { Z21StoppedEvent } from './system/z21-stopped-event';
+import { Z21VersionEvent } from './system/z21-version-event';
+import { UnknownLanXEvent } from './unkown/unknown-lan-x-event';
+import { UnknownXBusEvent } from './unkown/unknown-x-bus-event';
 
 /**
  * Discrete events derived from Z21 datasets.
@@ -30,6 +29,7 @@ import {
  * - event.unknown.x.bus: Unrecognized X-Bus message for diagnostics
  */
 export type Z21Event =
+	| BroadcastflagEvent
 	| CvNackEvent
 	| CvResultEvent
 	| LocoInfoEvent

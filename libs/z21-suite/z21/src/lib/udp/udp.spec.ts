@@ -218,18 +218,18 @@ describe('Z21Udp', () => {
 		});
 
 		it('sendSetBroadcastFlags builds proper packet', () => {
-			services.udp.sendSetBroadcastFlags(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
+			services.udp.sendSetBroadcastFlags(Z21BroadcastFlag.SYSTEM_STATE | Z21BroadcastFlag.BASIC);
 
 			const send = services.socket.send.mock.calls[0][0] as Buffer;
 			expectBufferHeader(send, 0x0008, Z21LanHeader.LAN_SET_BROADCASTFLAGS);
-			expect(send.readUInt32LE(4)).toBe(Z21BroadcastFlag.SystemState | Z21BroadcastFlag.Basic);
+			expect(send.readUInt32LE(4)).toBe(Z21BroadcastFlag.SYSTEM_STATE | Z21BroadcastFlag.BASIC);
 		});
 
 		it('sendSystemStateGetData builds proper packet', () => {
 			services.udp.sendSystemStateGetData();
 
 			const send = services.socket.send.mock.calls[0][0] as Buffer;
-			expectBufferHeader(send, 0x0004, Z21LanHeader.LAN_SYSTEM_STATE_DATAGET);
+			expectBufferHeader(send, 0x0004, Z21LanHeader.LAN_SYSTEMSTATE_GETDATA);
 		});
 
 		it('sendLogOff builds proper packet', () => {

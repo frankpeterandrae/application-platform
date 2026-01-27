@@ -101,7 +101,7 @@ describe('Bootstrap session lifecycle', () => {
 
 		expect(providers.csInfoOrchestrator.reset).toHaveBeenCalledTimes(1);
 		expect(providers.csInfoOrchestrator.poke).toHaveBeenCalledTimes(1);
-		expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(Z21BroadcastFlag.Basic);
+		expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(Z21BroadcastFlag.NONE);
 		expect(providers.udp.sendSystemStateGetData).toHaveBeenCalledTimes(1);
 	});
 
@@ -227,5 +227,60 @@ describe('Bootstrap session lifecycle', () => {
 
 		expect(() => bootstrap.stop()).not.toThrow();
 		expect(providers.udp.sendLogOff).not.toHaveBeenCalled();
+	});
+
+	describe('setBroadcast', () => {
+		it('diasable all broadcast flags when config is undefined', () => {
+			providers.cfg.z21.broadcastflags = undefined;
+			const bootstrap = new Bootstrap(providers);
+
+			bootstrap['setBroadcast']();
+
+			expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(Z21BroadcastFlag.NONE);
+		});
+
+		it('sets only enabled broadcast flags from config', () => {
+			providers.cfg.z21.broadcastflags = {
+				basic: true,
+				rMbus: false,
+				railcom: true,
+				systemState: false,
+				changedLocoInfo: true,
+				locoNetWithoutLocoAndSwitches: false,
+				locoNetWithLocoAndSwitches: true,
+				locoNetDetector: false,
+				railcomDatachanged: true
+			};
+			const bootstrap = new Bootstrap(providers);
+
+			bootstrap['setBroadcast']();
+
+			expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(
+				Z21BroadcastFlag.BASIC |
+					Z21BroadcastFlag.RAILCOM |
+					Z21BroadcastFlag.CHANGED_LOCO_INFO |
+					Z21BroadcastFlag.LOCO_NET_WITH_LOCO_AND_SWITCHES |
+					Z21BroadcastFlag.RAILCOM_DATACHANGED
+			);
+		});
+
+		it('sets no broadcast flags when all config flags are false', () => {
+			providers.cfg.z21.broadcastflags = {
+				basic: false,
+				rMbus: false,
+				railcom: false,
+				systemState: false,
+				changedLocoInfo: false,
+				locoNetWithoutLocoAndSwitches: false,
+				locoNetWithLocoAndSwitches: false,
+				locoNetDetector: false,
+				railcomDatachanged: false
+			};
+			const bootstrap = new Bootstrap(providers);
+
+			bootstrap['setBroadcast']();
+
+			expect(providers.udp.sendSetBroadcastFlags).toHaveBeenCalledWith(Z21BroadcastFlag.NONE);
+		});
 	});
 });

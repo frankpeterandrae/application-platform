@@ -1271,4 +1271,52 @@ describe('Z21CommandService', () => {
 			expectValidBuffer(buffer);
 		});
 	});
+
+	describe('getBroadcastFlags', () => {
+		it('sends broadcast flags request command to UDP', () => {
+			services.service.getBroadcastFlags();
+
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+		});
+
+		it('always produces same buffer for repeated calls', () => {
+			services.service.getBroadcastFlags();
+			const buffer1 = services.udp.sendRaw.mock.calls[0][0];
+
+			services.service.getBroadcastFlags();
+			const buffer2 = services.udp.sendRaw.mock.calls[1][0];
+
+			expect(buffer1).toEqual(buffer2);
+		});
+
+		it('sends LAN_GET_BROADCASTFLAGS formatted message with correct header', () => {
+			services.service.getBroadcastFlags();
+
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
+			const len = buffer.readUInt16LE(0);
+			expect(len).toBe(buffer.length);
+			const lanHeader = buffer.readUInt16LE(2);
+			expect(lanHeader).toBe(0x0051);
+		});
+
+		it('produces buffer that can be sent directly over UDP', () => {
+			services.service.getBroadcastFlags();
+
+			const buffer = services.udp.sendRaw.mock.calls[0][0];
+			expect(Buffer.isBuffer(buffer)).toBe(true);
+			expect(buffer.length).toBeLessThanOrEqual(1472);
+		});
+
+		it('sends different buffer than getCode command', () => {
+			services.service.getBroadcastFlags();
+			const b1 = services.udp.sendRaw.mock.calls[0][0];
+
+			services.service.getCode();
+			const b2 = services.udp.sendRaw.mock.calls[1][0];
+
+			expect(b1).not.toEqual(b2);
+		});
+	});
 });

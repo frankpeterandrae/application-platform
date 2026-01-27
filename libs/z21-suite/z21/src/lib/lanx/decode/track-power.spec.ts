@@ -3,9 +3,8 @@
  * All rights reserved.
  */
 
+import type { Z21Event } from '@application-platform/z21-shared';
 import { LanXCommandKey, PowerPayload } from '@application-platform/z21-shared';
-
-import type { Z21Event } from '../../event/event-types';
 
 import { decodeLanXTrackPowerPayload } from './track-power';
 

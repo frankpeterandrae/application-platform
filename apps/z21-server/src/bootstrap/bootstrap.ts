@@ -5,10 +5,10 @@
 
 import { type ServerToClient } from '@application-platform/protocol';
 import { Z21BroadcastFlag } from '@application-platform/z21';
+import { Broadcastflags, ServerConfig } from '@application-platform/z21-shared';
 import { type WebSocket as WsWebSocket } from 'ws';
 
 import { ClientMessageHandler } from '../handler/client-message-handler';
-import { type ServerConfig } from '../infra/config/config';
 
 import { createProviders, Providers } from './providers';
 
@@ -230,9 +230,33 @@ export class Bootstrap {
 		this.providers.csInfoOrchestrator.reset();
 		this.providers.csInfoOrchestrator.poke();
 
-		this.providers.udp.sendSetBroadcastFlags(Z21BroadcastFlag.Basic);
+		this.setBroadcast();
 		this.providers.udp.sendSystemStateGetData();
 		this.startZ21Heartbeat();
+	}
+
+	private setBroadcast(): void {
+		let castFlags = Z21BroadcastFlag.NONE;
+		const flagConfig = this.providers.cfg.z21.broadcastflags;
+		const flags: { key: keyof Broadcastflags; value: Z21BroadcastFlag }[] = [
+			{ key: 'basic', value: Z21BroadcastFlag.BASIC },
+			{ key: 'rMbus', value: Z21BroadcastFlag.R_MBUS },
+			{ key: 'railcom', value: Z21BroadcastFlag.RAILCOM },
+			{ key: 'systemState', value: Z21BroadcastFlag.SYSTEM_STATE },
+			{ key: 'changedLocoInfo', value: Z21BroadcastFlag.CHANGED_LOCO_INFO },
+			{ key: 'locoNetWithoutLocoAndSwitches', value: Z21BroadcastFlag.LOCO_NET_WITHOUT_LOCO_AND_SWITCHES },
+			{ key: 'locoNetWithLocoAndSwitches', value: Z21BroadcastFlag.LOCO_NET_WITH_LOCO_AND_SWITCHES },
+			{ key: 'locoNetDetector', value: Z21BroadcastFlag.LOCO_NET_DETECTOR },
+			{ key: 'railcomDatachanged', value: Z21BroadcastFlag.RAILCOM_DATACHANGED }
+		];
+
+		for (const { key, value } of flags) {
+			if (flagConfig?.[key]) {
+				castFlags |= value;
+			}
+		}
+
+		this.providers.udp.sendSetBroadcastFlags(castFlags);
 	}
 
 	private deactivateZ21Session(): void {

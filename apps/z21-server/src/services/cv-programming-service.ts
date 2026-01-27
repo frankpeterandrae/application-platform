@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 
-import type { Z21CommandService, Z21Event } from '@application-platform/z21';
+import type { Z21CommandService } from '@application-platform/z21';
+import { Z21Event } from '@application-platform/z21-shared';
 
 /**
  * Service for managing CV (Configuration Variable) programming operations.

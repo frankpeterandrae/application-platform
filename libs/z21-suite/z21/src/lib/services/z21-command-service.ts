@@ -230,4 +230,13 @@ export class Z21CommandService {
 		this.logger.debug('[z21] tx CV_WRITE', { cvAddress, cvValue, hex: buf.toString('hex') });
 		this.udp.sendRaw(buf);
 	}
+
+	/**
+	 *  Requests the Z21 broadcast flags information.
+	 */
+	public getBroadcastFlags(): void {
+		const buf = encodeXBusLanFrame(Z21LanHeader.LAN_GET_BROADCASTFLAGS);
+		this.logger.debug('[z21] tx LAN_GET_BROADCASTFLAGS', { hex: buf.toString('hex') });
+		this.udp.sendRaw(buf);
+	}
 }

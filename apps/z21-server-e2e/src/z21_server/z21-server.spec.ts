@@ -393,8 +393,8 @@ describe('server e2e', () => {
 			});
 
 			const hex = z21.rx.map((b: any) => b.toString('hex'));
-			expect(hex).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS (Basic)
-			expect(hex).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+			expect(hex).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS (BASIC)
+			expect(hex).toContain('04008500'); // LAN_SYSTEMSTATE_GETDATA
 
 			await stopCtx({ ...base, ws: ws.ws });
 			await z21.close();
@@ -495,7 +495,7 @@ describe('server e2e', () => {
 
 			const hex1 = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex1).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
-			expect(hex1).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+			expect(hex1).toContain('04008500'); // LAN_SYSTEMSTATE_GETDATA
 
 			// 2) disconnect => logoff
 			z21.rx.splice(0);
@@ -519,7 +519,7 @@ describe('server e2e', () => {
 
 			const hex2 = z21.rx.map((b: any) => b.toString('hex'));
 			expect(hex2).toContain('0800500001000000'); // LAN_SET_BROADCASTFLAGS
-			expect(hex2).toContain('04008500'); // LAN_SYSTEM_STATE_DATAGET
+			expect(hex2).toContain('04008500'); // LAN_SYSTEMSTATE_GETDATA
 
 			await stopCtx({ ...base, ws: ws2.ws });
 			await z21.close();

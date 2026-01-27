@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import type { Z21Event } from '../../event/event-types';
-import { CentralStatus } from '../../event/event-types';
+import type { Z21Event } from '@application-platform/z21-shared';
+import { CentralStatus } from '@application-platform/z21-shared';
 
 /**
  * Decodes LAN X system commands into Z21Event arrays.

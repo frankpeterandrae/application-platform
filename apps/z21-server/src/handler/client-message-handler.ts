@@ -100,7 +100,7 @@ export class ClientMessageHandler {
 				this.z21Service.setLocoFunction(
 					msg.payload.addr,
 					msg.payload.fn,
-					msg.payload.on ? LocoFunctionSwitchType.On : LocoFunctionSwitchType.Off
+					msg.payload.on ? LocoFunctionSwitchType.ON : LocoFunctionSwitchType.OFF
 				);
 				this.broadcast({
 					type: 'loco.message.state',
@@ -122,7 +122,7 @@ export class ClientMessageHandler {
 					msg.payload.fn,
 					!(this.locoManager.getState(msg.payload.addr)?.fns[msg.payload.fn] ?? false)
 				);
-				this.z21Service.setLocoFunction(msg.payload.addr, msg.payload.fn, LocoFunctionSwitchType.Toggle);
+				this.z21Service.setLocoFunction(msg.payload.addr, msg.payload.fn, LocoFunctionSwitchType.TOGGLE);
 				this.broadcast({
 					type: 'loco.message.state',
 					payload: {
