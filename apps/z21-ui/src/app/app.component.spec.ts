@@ -234,4 +234,92 @@ describe('AppComponent', () => {
 		} as LocoState);
 		expect(comp.store.speedUi()).toBeCloseTo(0.2);
 	});
+
+	it('readCv sets cvValue on success and clears cvError', async () => {
+		const comp = fixture.componentInstance;
+		mockWs.request = vi.fn().mockResolvedValue({
+			type: 'programming.replay.cv.result',
+			payload: { cvValue: 7 }
+		});
+
+		await comp.readCv();
+
+		expect(comp.cvError()).toBeNull();
+		expect(comp.cvValue()).toBe(7);
+		expect(mockWs.request).toHaveBeenCalledTimes(1);
+	});
+
+	it('readCv sets cvError on failure and clears cvValue', async () => {
+		const comp = fixture.componentInstance;
+		mockWs.request = vi.fn().mockRejectedValue(new Error('boom'));
+
+		await comp.readCv();
+
+		expect(comp.cvValue()).toBeNull();
+		expect(comp.cvError()).toBe('boom');
+	});
+
+	it('writeCv guards against null cvValue', async () => {
+		const comp = fixture.componentInstance;
+		mockWs.request = vi.fn();
+		comp.cvValue.set(null);
+
+		await comp.writeCv();
+
+		expect(comp.cvError()).toBe('cvValue is null');
+		expect(mockWs.request).not.toHaveBeenCalled();
+	});
+
+	it('writeCv clears cvError on success and reports errors on failure', async () => {
+		const comp = fixture.componentInstance;
+
+		comp.cvValue.set(12);
+		mockWs.request = vi.fn().mockResolvedValue({
+			type: 'programming.replay.cv.result',
+			payload: { cvValue: 12 }
+		});
+		await comp.writeCv();
+		expect(comp.cvError()).toBeNull();
+
+		mockWs.request = vi.fn().mockRejectedValue(new Error('nope'));
+		await comp.writeCv();
+		expect(comp.cvError()).toBe('nope');
+	});
+
+	it('sendEStop emits a loco.command.eStop message', () => {
+		const comp = fixture.componentInstance;
+		mockWs.open();
+		const sendSpy = vi.fn();
+		mockWs.send = (msg: any) => {
+			if (mockWs._isOpen) sendSpy(JSON.stringify(msg));
+		};
+
+		comp.store.selectedAddr.set(99);
+		comp.sendEStop();
+
+		expect(sendSpy).toHaveBeenCalledTimes(1);
+		const send = JSON.parse(sendSpy.mock.calls[0][0]);
+		expect(send.type).toBe('loco.command.eStop');
+		expect(send.payload.addr).toBe(99);
+	});
+
+	it('setLocoNumber and draggingSpeed update store signals', () => {
+		const comp = fixture.componentInstance;
+
+		comp.setLocoNumber(123);
+		expect(comp.store.selectedAddr()).toBe(123);
+
+		comp.draggingSpeed(true);
+		expect(comp.store.draggingSpeed()).toBe(true);
+	});
+
+	it('numericKeySort orders numeric keys and prefers non-numeric before numeric', () => {
+		const comp = fixture.componentInstance as any;
+		const sort = comp.numericKeySort as (a: { key: string }, b: { key: string }) => number;
+
+		expect(sort({ key: 'a' }, { key: 'b' })).toBe(0);
+		expect(sort({ key: 'a' }, { key: '2' })).toBeLessThan(0);
+		expect(sort({ key: '2' }, { key: 'a' })).toBeGreaterThan(0);
+		expect(sort({ key: '2' }, { key: '10' })).toBeLessThan(0);
+	});
 });

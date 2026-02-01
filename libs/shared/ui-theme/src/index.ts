@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -8,6 +8,7 @@ export * from './lib/components/card/card.component';
 export * from './lib/components/dialog/dialog-service';
 export * from './lib/components/dialog/dialog-tokens';
 export * from './lib/components/dialog/dialog.component';
+export * from './lib/components/dropdown-select/dropdown-select.component';
 export * from './lib/components/footer/footer.component';
 export * from './lib/components/header/header.component';
 export * from './lib/components/image-loader/image-loader.component';

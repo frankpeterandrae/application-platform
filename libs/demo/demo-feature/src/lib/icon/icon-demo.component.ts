@@ -4,7 +4,7 @@
  */
 
 import { Component } from '@angular/core';
-import { TooltipDirective } from '@application-platform/shared/ui-theme';
+import { IconDefinition, TooltipDirective } from '@application-platform/shared/ui-theme';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 /**
@@ -16,5 +16,10 @@ import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 	templateUrl: './icon-demo.component.html'
 })
 export class IconDemoComponent {
-	public icons = ['check', 'close', 'home', 'menu', 'paintbrush', 'search'];
+	private readonly iconDefinition = IconDefinition;
+
+	// enum to array conversion
+	public icons = Object.keys(this.iconDefinition)
+		.map((key) => this.iconDefinition[key as keyof typeof this.iconDefinition])
+		.filter((value) => !!value);
 }

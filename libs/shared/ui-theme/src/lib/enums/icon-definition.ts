@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 export enum IconDefinition {
-	HOUSE = 'house-chimney-solid',
-	PALETTE = 'palette-solid',
-	BRUSH = 'paint-brush-solid',
+	HOUSE = 'home',
+	BRUSH = 'paintbrush',
 	SEARCH = 'search',
 	NONE = '',
+	CLOSE = 'close',
+	COMPUTER = 'computer',
+	Z21 = 'z21',
 	GERMAN = 'german',
 	GERMAN_MONOCHROME = 'german_monochrome',
 	ENGLISH = 'english',

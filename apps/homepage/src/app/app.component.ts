@@ -80,7 +80,7 @@ export class AppComponent implements OnInit {
 			},
 			{
 				label: paintRack,
-				icon: IconDefinition.PALETTE,
+				icon: IconDefinition.BRUSH,
 				route: '/paint-rack'
 			},
 			...(environment.production
@@ -88,7 +88,7 @@ export class AppComponent implements OnInit {
 				: [
 						{
 							label: inDevelopment,
-							icon: IconDefinition.PALETTE,
+							icon: IconDefinition.BRUSH,
 							route: '/dev',
 							children: [{ label: test, route: '/dev/test' }]
 						}

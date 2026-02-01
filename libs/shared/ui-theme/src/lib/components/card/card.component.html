@@ -1,8 +1,11 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
-<div class="card-border fpa-p-2" [ngClass]="{ 'fpa-dark-text fpa-bg-linen': !inverted(), 'fpa-light-text fpa-bg-ebony-s3': inverted() }">
+<div
+	class="card-border fpa-p-2"
+	[ngClass]="{ 'fpa-dark-text fpa-bg-light-shades': !inverted(), 'fpa-light-text fpa-bg-dark-shades-s3': inverted() }"
+>
 	<ng-content></ng-content>
 </div>
