@@ -1,0 +1,23 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@forward '../../base/variables' with (
+	$light-shades: #eff4f3,
+	$light-shades-highlight: #f1f5f4,
+	$light-accent: #8fa6a2,
+	$light-accent-highlight: #9bafab,
+	$main-band: #8da69a,
+	$main-band-highlight: #99afa4,
+	$dark-accent: #59a7a2,
+	$dark-accent-highlight: #6bb0ab,
+	$dark-shades: #2f4147,
+	$dark-shades-highlight: #45545a,
+	$default: #999999,
+	$primary: #8da69a,
+	$info: #1c2427,
+	$success: #5fac66,
+	$warning: #dd9c2e,
+	$danger: #f44336
+);

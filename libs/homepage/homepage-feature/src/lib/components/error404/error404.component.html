@@ -1,12 +1,12 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
 <div class="fpa-flex fpa-flex-column fpa-height-100 fpa-flex-justify-center fpa-flex-align-items-center">
 	<theme-card>
 		<div class="fpa-flex fpa-flex-column fpa-flex-justify-center fpa-flex-align-items-center">
-			<h1 class="fpa-color-crimson">404</h1>
+			<h1 class="fpa-color-main-band">404</h1>
 			<h2>{{ 'Error404Component.lbl.PageNotFound' | fpaTranslate: 'feature' | async }}</h2>
 			<p class="fpa-mb-1">{{ 'Error404Component.lbl.PageNotFoundDescription' | fpaTranslate: 'feature' | async }}</p>
 			<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="backToStartpage" (buttonClick)="routeToHome()" />

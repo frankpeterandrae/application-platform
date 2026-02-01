@@ -4,7 +4,7 @@
  */
 
 import { Component } from '@angular/core';
-import { ButtonColorDefinition, ButtonComponent } from '@application-platform/shared/ui-theme';
+import { ButtonColorDefinition, ButtonComponent, IconDefinition } from '@application-platform/shared/ui-theme';
 
 /**
  *
@@ -16,4 +16,5 @@ import { ButtonColorDefinition, ButtonComponent } from '@application-platform/sh
 })
 export class ButtonDemoComponent {
 	protected readonly ButtonColorDefinition = ButtonColorDefinition;
+	protected readonly IconDefinition = IconDefinition;
 }

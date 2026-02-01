@@ -37,7 +37,7 @@
 				],
 				"styles": [
 					"apps/homepage/src/styles.scss",
-					"libs/shared/ui-theme/src/lib/theme/styles.scss",
+					"libs/shared/ui-theme/src/lib/theme/themed/homepage-theme.scss",
 					"node_modules/@angular/cdk/overlay-prebuilt.css"
 				],
 				"scripts": [],

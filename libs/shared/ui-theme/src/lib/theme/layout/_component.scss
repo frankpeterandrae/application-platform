@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 @use '../electrons/colors';
@@ -8,7 +8,7 @@
 @use './spacing';
 
 .fpa-content {
-	@extend %fpa-bg-ebony;
+	@extend %fpa-bg-dark-shades;
 	@extend %fpa-flex;
 	@extend %fpa-flex-column;
 	@extend %fpa-height-100;

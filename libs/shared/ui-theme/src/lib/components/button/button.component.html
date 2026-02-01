@@ -1,9 +1,18 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
-<button class="fpa-button fpa-px-1 fpa-py-05" [type]="type()" [ngClass]="buttonClasses" (click)="callback()">
+<button
+	class="fpa-button fpa-px-1 fpa-py-05"
+	[type]="type()"
+	[ngClass]="buttonClasses"
+	[attr.aria-expanded]="ariaExpanded()"
+	[attr.aria-haspopup]="ariaHaspopup()"
+	(click)="callback()"
+	(keydown)="keydownEvent.emit($event)"
+	[disabled]="disabled()"
+>
 	<div class="fpa-flex fpa-flex-row" [ngClass]="contentClasses">
 		@if (icon()) {
 			<fast-svg [name]="icon()!" [size]="'16'" />
