@@ -21,5 +21,5 @@ export class HeaderComponent {
 	/**
 	 * An array of MenuItem objects that represent the items to be displayed in the menu.
 	 */
-	public menuItems = input.required<MenuItem[]>();
+	public menuItems = input<MenuItem[]>([]);
 }

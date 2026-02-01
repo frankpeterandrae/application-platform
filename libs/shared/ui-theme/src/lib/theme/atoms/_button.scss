@@ -1,9 +1,10 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 @use '../base/prefix';
 @use '../base/variables';
+@use '../base/utility';
 @use '../electrons/colors';
 
 .#{prefix.$prefix}button-no-style {
@@ -14,7 +15,7 @@
 
 .#{prefix.$prefix}button {
 	border: none;
-	border-radius: 3px;
+	border-radius: variables.$border-radius-small;
 	position: relative;
 	font-weight: 400;
 	text-transform: uppercase;
@@ -22,12 +23,12 @@
 	will-change: box-shadow, transform;
 	transition:
 		box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1),
-		background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		background-color 0.2s cubic-bezier(0.4, 0, 0.2, 2);
 	cursor: pointer;
 
 	span {
 		margin: 3px;
-		height: 16px;
+		height: 1rem;
 	}
 }
 
@@ -39,11 +40,21 @@
 .#{prefix.$prefix}default {
 	background-color: #{variables.$default};
 
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$default, 2);
+	}
+
 	@extend %#{prefix.$prefix}dark-text;
 }
 
 .#{prefix.$prefix}primary {
 	background-color: #{variables.$primary};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$primary, 2);
+	}
 
 	@extend %#{prefix.$prefix}light-text;
 }
@@ -51,11 +62,21 @@
 .#{prefix.$prefix}info {
 	background-color: #{variables.$info};
 
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$info, 2);
+	}
+
 	@extend %#{prefix.$prefix}light-text;
 }
 
 .#{prefix.$prefix}success {
 	background-color: #{variables.$success};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$success, 2);
+	}
 
 	@extend %#{prefix.$prefix}light-text;
 }
@@ -63,11 +84,21 @@
 .#{prefix.$prefix}warning {
 	background-color: #{variables.$warning};
 
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$warning, 2);
+	}
+
 	@extend %#{prefix.$prefix}light-text;
 }
 
 .#{prefix.$prefix}danger {
 	background-color: #{variables.$danger};
+
+	&:hover:not(:disabled),
+	&.active:not(:disabled) {
+		background: utility.tint(variables.$danger, 2);
+	}
 
 	@extend %#{prefix.$prefix}light-text;
 }

@@ -3,8 +3,8 @@
   ~ All rights reserved.
   -->
 
-<div class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-bg-crimson fpa-box-shadow">
-	<nav class="fpa-flex fpa-flex-row fpa-bg-crimson fpa-p-1 navbar">
+<div class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-bg-main-band fpa-box-shadow">
+	<nav class="fpa-flex fpa-flex-row fpa-bg-main-band fpa-p-1 navbar">
 		@for (navigationItem of menuItems(); track navigationItem.label) {
 			<ng-container [ngTemplateOutlet]="navList" [ngTemplateOutletContext]="{ navigationItem }"></ng-container>
 		}
@@ -33,13 +33,13 @@
 					<span>{{ navigationItem.label }}</span>
 				</button>
 				<div
-					class="dropdown-content fpa-bg-linen fpa-dark-text"
+					class="dropdown-content fpa-bg-light-shades fpa-dark-text"
 					[ngClass]="{ 'nav-show-dropdown': showDropdown[navigationItem.route] }"
 				>
 					@for (navigationItemChild of toArray(navigationItem.children); track navigationItemChild) {
 						<ng-container
 							[ngTemplateOutlet]="navList"
-							[ngTemplateOutletContext]="{ navigationItem: navigationItemChild, color: ColorDefinition.CRIMSON }"
+							[ngTemplateOutletContext]="{ navigationItem: navigationItemChild, color: ColorDefinition.MAIN_BAND }"
 						></ng-container>
 					}
 				</div>

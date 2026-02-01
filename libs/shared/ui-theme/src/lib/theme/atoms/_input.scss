@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 @use '../base/prefix';
@@ -47,7 +47,7 @@ input {
 
 		&.#{prefix.$prefix}is-focused {
 			.#{prefix.$prefix}input-label {
-				color: variables.$crimson;
+				color: variables.$main-band;
 			}
 		}
 

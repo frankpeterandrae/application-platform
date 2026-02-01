@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 @use '../base/prefix';
@@ -7,7 +7,7 @@
 
 .#{prefix.$prefix}link {
 	text-decoration: none;
-	color: variables.$sandy-brown;
+	color: variables.$light-accent;
 	transition: color 0.3s;
 
 	&:hover {

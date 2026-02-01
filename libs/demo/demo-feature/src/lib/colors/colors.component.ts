@@ -20,23 +20,23 @@ export class ColorsComponent {
 	/**
 	 * List of color names.
 	 */
-	public colorsWithVariables = ['linen', 'sandy-brown', 'crimson', 'slate-gray', 'ebony'];
+	public colorsWithVariables = ['light-shades', 'light-accent', 'main-band', 'dark-accent', 'dark-shades'];
 
 	public colors = [
-		'crimson-highlight',
-		'crimson',
+		'main-band-highlight',
+		'main-band',
 		'danger',
 		'default',
-		'ebony-highlight',
-		'ebony',
+		'dark-shades-highlight',
+		'dark-shades',
 		'info',
-		'linen-highlight',
-		'linen',
+		'light-shades-highlight',
+		'light-shades',
 		'primary',
-		'sandy-brown-highlight',
-		'sandy-brown',
-		'slate-gray-highlight',
-		'slate-gray',
+		'light-accent-highlight',
+		'light-accent',
+		'dark-accent-highlight',
+		'dark-accent',
 		'success',
 		'warning'
 	];
