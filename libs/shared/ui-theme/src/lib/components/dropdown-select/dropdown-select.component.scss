@@ -1,0 +1,89 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../../theme/base/variables';
+
+:host {
+	display: inline-block;
+}
+
+.fpa-dropdown-select {
+	position: relative;
+	display: inline-flex;
+	font-family: inherit;
+}
+
+.fpa-dropdown-select.is-disabled {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.fpa-dropdown-select-list-container {
+	position: absolute;
+	top: calc(100% + 8px);
+	left: 0.75rem;
+	z-index: 50;
+	opacity: 0;
+	transform: translateY(-6px);
+	pointer-events: none;
+	transition:
+		opacity 140ms ease,
+		transform 140ms ease;
+
+	&.open {
+		opacity: 1;
+		transform: translateY(0);
+		pointer-events: auto;
+	}
+
+	/* When the popup is too close to the viewport right edge, align it to the host's right. */
+	&.align-right {
+		left: auto;
+		right: 0.75rem; /* mirror the left offset used by default */
+		transform-origin: top right;
+	}
+}
+
+.fpa-dropdown-select-list {
+	list-style: none;
+	padding: 8px;
+	border-radius: variables.$border-radius;
+	border: 1px solid variables.$light-shades;
+	backdrop-filter: blur(1rem);
+	box-shadow: 0 0.75rem 2rem variables.$dark-shades-highlight;
+
+	li + li {
+		margin-top: 4px;
+	}
+}
+
+/* Visually hide the native select but keep it available to assistive technologies */
+.fpa-dropdown-select-native-select {
+	/* visually-hidden technique */
+	position: absolute !important;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	white-space: nowrap;
+	border: 0;
+	padding: 0;
+	margin: -1px;
+}
+
+/*
+ Style the inner native button of a theme-button when the parent marks it selected.
+ Use ::ng-deep to penetrate the component style encapsulation without changing the button component.
+*/
+theme-button.selected {
+	::ng-deep button {
+		background: variables.$primary;
+		color: #fff;
+		border-color: variables.$primary;
+	}
+}
+
+/* keep non-selected / disabled styles local to the button component */

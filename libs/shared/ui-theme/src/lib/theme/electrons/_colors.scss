@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -8,29 +8,29 @@
 @use '../base/utility';
 
 $colors: (
-	crimson-highlight: variables.$crimson-highlight,
-	crimson: variables.$crimson,
+	main-band-highlight: variables.$main-band-highlight,
+	main-band: variables.$main-band,
 	danger: variables.$danger,
 	default: variables.$default,
-	ebony-highlight: variables.$ebony-highlight,
-	ebony: variables.$ebony,
+	dark-shades-highlight: variables.$dark-shades-highlight,
+	dark-shades: variables.$dark-shades,
 	info: variables.$info,
-	linen-highlight: variables.$linen-highlight,
-	linen: variables.$linen,
+	light-shades-highlight: variables.$light-shades-highlight,
+	light-shades: variables.$light-shades,
 	primary: variables.$primary,
-	sandy-brown-highligh: variables.$sandy-brown-highlight,
-	sandy-brown: variables.$sandy-brown,
-	slate-gray-highlight: variables.$slate-gray-highlight,
-	slate-gray: variables.$slate-gray,
+	light-accent-highlight: variables.$light-accent-highlight,
+	light-accent: variables.$light-accent,
+	dark-accent-highlight: variables.$dark-accent-highlight,
+	dark-accent: variables.$dark-accent,
 	success: variables.$success,
 	warning: variables.$warning
 );
 $colors-with-variants: (
-	linen: variables.$linen,
-	sandy-brown: variables.$sandy-brown,
-	crimson: variables.$crimson,
-	slate-gray: variables.$slate-gray,
-	ebony: variables.$ebony
+	light-shades: variables.$light-shades,
+	light-accent: variables.$light-accent,
+	main-band: variables.$main-band,
+	dark-accent: variables.$dark-accent,
+	dark-shades: variables.$dark-shades
 );
 
 @each $name, $color in $colors {
@@ -86,21 +86,21 @@ $tints-count: 9;
 }
 
 .#{prefix.$prefix}text-shadow-light {
-	-webkit-text-stroke: 2px variables.$linen;
+	-webkit-text-stroke: 2px variables.$light-shades;
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-light-small {
-	-webkit-text-stroke: 1px variables.$linen;
+	-webkit-text-stroke: 1px variables.$light-shades;
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-dark {
-	-webkit-text-stroke: 2px variables.$ebony;
+	-webkit-text-stroke: 2px variables.$dark-shades;
 	paint-order: stroke fill;
 }
 
 .#{prefix.$prefix}text-shadow-dark-small {
-	-webkit-text-stroke: 1px variables.$ebony;
+	-webkit-text-stroke: 1px variables.$dark-shades;
 	paint-order: stroke fill;
 }

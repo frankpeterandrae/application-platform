@@ -5,10 +5,10 @@
 
 <div class="fpa-pos-fix fpa-back-drop" (click)="backdropClick()" (keydown.escape)="backdropClick()" aria-hidden="true"></div>
 
-<div class="fpa-flex fpa-flex-column fpa-bg-linen fpa-box-shadow fpa-dark-text fpa-p-1 dialog-container">
+<div class="fpa-flex fpa-flex-column fpa-bg-light-shades fpa-box-shadow fpa-dark-text fpa-p-1 dialog-container">
 	<header class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-border-bottom fpa-border-grey-t6 fpa-mb-05 fpa-p-05">
 		<h2>{{ data.settings?.title }}</h2>
-		<theme-button (buttonClick)="close()" [color]="undefined" [icon]="'close'"></theme-button>
+		<theme-button (buttonClick)="close()" [color]="undefined" [icon]="IconDefinition.CLOSE"></theme-button>
 	</header>
 	<div class="fpa-p-05">
 		<ng-content></ng-content>

@@ -6,7 +6,7 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, inject } from '@angular/core';
 
-import { ButtonColorDefinition } from '../../enums';
+import { ButtonColorDefinition, IconDefinition } from '../../enums';
 import type { DialogConfigModel } from '../../model/dialog-config.model';
 import { ButtonComponent } from '../button/button.component';
 
@@ -41,4 +41,5 @@ export class DialogComponent {
 	}
 
 	protected readonly ButtonColorDefinition = ButtonColorDefinition;
+	protected readonly IconDefinition = IconDefinition;
 }

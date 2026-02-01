@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 export enum ColorDefinition {
-	LINEN = 'linen',
-	LINEN_HIGHLIGHT = 'linen-highlight',
-	SANDY_BROWN = 'sandy-brown',
-	SANDY_BROWN_HIGHLIGHT = 'sandy-brown-highlight',
-	CRIMSON = 'crimson',
-	CRIMSON_HIGHLIGHT = 'crimson-highlight',
-	SLATE_GRAY = 'slate-gray',
-	SLATE_GRAY_HIGHLIGHT = 'slate-gray-highlight',
-	EBONY = 'ebony',
-	EBONY_HIGHLIGHT = 'ebony-highlight'
+	LIGHT_SHADES = 'light-shades',
+	LIGHT_SHADES_HIGHLIGHT = 'light-shades-highlight',
+	LIGHT_ACCENT = 'light-accent',
+	LIGHT_ACCENT_HIGHLIGHT = 'light-accent-highlight',
+	MAIN_BAND = 'main-band',
+	MAIN_BAND_HIGHLIGHT = 'main-band-highlight',
+	DARK_ACCENT = 'dark-accent',
+	DARK_ACCENT_HIGHLIGHT = 'dark-accent-highlight',
+	DARK_SHADES = 'dark-shades',
+	DARK_SHADES_HIGHLIGHT = 'dark-shades-highlight'
 }

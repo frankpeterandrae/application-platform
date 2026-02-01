@@ -1,13 +1,18 @@
 <!--
-  ~ Copyright (c) 2024. Frank-Peter Andrä
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
 
-<div class="fpa-flex fpa-flex-row fpa-height-100">
-	<theme-sidebar [menuItems]="menuItems"></theme-sidebar>
-	<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-flex-1">
-		<div class="fpa-grid-col-end-12 fpa-overflow-y-auto">
-			<router-outlet></router-outlet>
+<div class="fpa-flex fpa-flex-column fpa-height-100">
+	<theme-header class="fpa-flex-shrink-1">
+		<theme-dropdown-select [options]="opts()" [(selected)]="selectedTheme" (selectionChange)="setTheme($event)" />
+	</theme-header>
+	<div class="fpa-flex fpa-flex-row fpa-height-100">
+		<theme-sidebar [menuItems]="menuItems"></theme-sidebar>
+		<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-flex-1">
+			<div class="fpa-grid-col-end-12 fpa-overflow-y-auto">
+				<router-outlet></router-outlet>
+			</div>
 		</div>
 	</div>
 </div>

@@ -1,31 +1,31 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 @use './utility';
 
 // base colors
-$linen: #f0e8e6;
-$linen-highlight: #f0e8e6;
-$sandy-brown: #e8a554;
-$sandy-brown-highlight: #ffb55d;
-$crimson: #c93642;
-$crimson-highlight: #c93642;
-$slate-gray: #968e8b;
-$slate-gray-highlight: #a59c99;
-$ebony: #2b222d;
-$ebony-highlight: #2f2531;
-$default: #999;
-$primary: #c93642;
-$info: #0f0d0f;
-$success: #728b4c;
-$warning: #ef7b14;
-$danger: #c93642;
+$light-shades: #f0e8e6 !default;
+$light-shades-highlight: #f1eae9 !default;
+$light-accent: #e8a554 !default;
+$light-accent-highlight: #ebae66 !default;
+$main-band: #c93642 !default;
+$main-band-highlight: #cf4d56 !default;
+$dark-accent: #968e8b !default;
+$dark-accent-highlight: #a09a97 !default;
+$dark-shades: #2b222d !default;
+$dark-shades-highlight: #413942 !default;
+$default: #999 !default;
+$primary: #c93642 !default;
+$info: #0f0d0f !default;
+$success: #728b4c !default;
+$warning: #ef7b14 !default;
+$danger: #c93642 !default;
 
 // text colors
-$light-text: utility.tint($linen, 8);
-$dark-text: utility.shade($ebony, 8);
+$light-text: utility.tint($light-shades, 8);
+$dark-text: utility.shade($dark-shades, 8);
 $font-family: 'Lato', 'Helvetica', 'Arial', sans-serif;
 
 // standard radius

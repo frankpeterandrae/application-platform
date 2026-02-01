@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<div #host class="fpa-dropdown-select" [class.is-disabled]="disabled()">
+	<theme-button
+		[buttonText]="buttonLabel()"
+		[disabled]="disabled()"
+		[ariaExpanded]="isOpen()"
+		[ariaHaspopup]="'listbox'"
+		[icon]="$any(selectedOption())?.icon"
+		(buttonClick)="toggle()"
+		(keydownEvent)="onButtonKeydown($event)"
+	>
+		<!-- projected content intentionally empty; icon passed via inputs when TemplateRef -->
+	</theme-button>
+
+	<div class="fpa-dropdown-select-list-container" [class.open]="isOpen()">
+		<!-- Native select for accessibility; visually hidden but available to AT.
+         Uses index as option value and syncs selection with the component model. -->
+		<select class="fpa-dropdown-select-native-select" (change)="onNativeSelectChange($event)">
+			@for (opt of options(); track opt) {
+				<option [value]="$index" [selected]="selectedOption()?.value === opt.value">{{ opt.label }}</option>
+			}
+		</select>
+
+		<div class="fpa-dropdown-select-list">
+			@for (opt of options(); track opt) {
+				<div [attr.tabindex]="$index === activeIndex() ? '0' : '-1'" (keydown)="onListKeydown($event)">
+					<theme-button
+						[buttonText]="opt.label"
+						[disabled]="!!(disabled() || opt.disabled)"
+						[icon]="opt.icon ?? undefined"
+						(buttonClick)="selectOption(opt)"
+						[class.active]="$index === activeIndex()"
+						[class.selected]="selectedOption()?.value === opt.value"
+					>
+					</theme-button>
+				</div>
+			}
+		</div>
+	</div>
+</div>
