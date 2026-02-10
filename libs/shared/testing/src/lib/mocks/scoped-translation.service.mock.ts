@@ -5,8 +5,11 @@
 
 // eslint-disable *
 import { signal, type Injector, type Signal } from '@angular/core';
-import type { HashMap, TranslocoScope } from '@jsverse/transloco';
+import type { TranslocoScope } from '@jsverse/transloco';
 import * as jestMock from 'jest-mock';
+
+/** @internal HashMap type for transloco compatibility */
+type HashMap<T = unknown> = Record<string, T>;
 
 type ScopeType = string | TranslocoScope | TranslocoScope[];
 type SignalKey = Signal<string> | Signal<string[]> | Signal<string>[];
