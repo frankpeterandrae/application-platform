@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 import { LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
-import { themeTextModules } from '../../i18n/i18n';
+import { i18nTextModules } from '../../i18n/i18n';
 
 /**
  * FooterComponent is a standalone Angular component that represents the footer section of the theme.
@@ -19,5 +19,5 @@ import { themeTextModules } from '../../i18n/i18n';
 	providers: [{ provide: LOGGER_SOURCE, useValue: 'FooterComponent' }, provideTranslocoScope(Scopes.THEME)]
 })
 export class FooterComponent {
-	public readonly themeTextModules = themeTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 }

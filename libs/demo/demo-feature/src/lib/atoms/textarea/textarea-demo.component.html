@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<form [formGroup]="demoForm">
+		<h3 class="fpa-h2">Basic Textarea</h3>
+		<div class="fpa-mb-2">
+			<theme-textarea
+				[label]="'Comments'"
+				[placeholder]="'Enter your comments (min 10 characters)...'"
+				[formControl]="demoForm.controls.comment"
+			>
+			</theme-textarea>
+		</div>
+
+		<h3 class="fpa-h2">Description Field</h3>
+		<div class="fpa-mb-2">
+			<theme-textarea
+				[label]="'Description'"
+				[placeholder]="'Describe your project...'"
+				[formControl]="demoForm.controls.description"
+			>
+			</theme-textarea>
+		</div>
+
+		<h3 class="fpa-h2">Disabled Textarea</h3>
+		<div class="fpa-mb-2">
+			<theme-textarea [label]="'Disabled Field'" [formControl]="demoForm.controls.disabledTextarea"> </theme-textarea>
+		</div>
+
+		<h3 class="fpa-h2">Form Values</h3>
+		<theme-card>
+			<pre class="fpa-small">{{ demoForm.value | json }}</pre>
+		</theme-card>
+	</form>
+</demo-theme>

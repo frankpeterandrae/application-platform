@@ -9,6 +9,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModu
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { FloatingLabelDirective } from '../../directives/floating-lable';
+import { IconDefinition } from '../../enums';
 
 export interface SelectOption<T = unknown> {
 	label: string;
@@ -131,4 +132,6 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 	protected isFloating(): boolean {
 		return this.isDynamic() && this.selectFocused;
 	}
+
+	protected readonly IconDefinition = IconDefinition;
 }

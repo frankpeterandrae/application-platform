@@ -8,17 +8,16 @@ import { RouterOutlet } from '@angular/router';
 import {
 	DropdownOption,
 	DropdownSelectComponent,
+	FooterComponent,
 	HeaderComponent,
-	IconDefinition,
-	MenuItem,
-	SidebarComponent
+	IconDefinition
 } from '@application-platform/shared/ui-theme';
 
 /**
  * The root component of the demo application.
  */
 @Component({
-	imports: [SidebarComponent, RouterOutlet, HeaderComponent, DropdownSelectComponent],
+	imports: [RouterOutlet, HeaderComponent, DropdownSelectComponent, FooterComponent],
 	selector: 'demo-root',
 	templateUrl: './app.component.html'
 })
@@ -28,9 +27,6 @@ export class AppComponent implements AfterViewInit {
 
 	/** The title of the application. */
 	public title = 'demo';
-
-	/** The color definitions used in the application. */
-	public menuItems: MenuItem[];
 
 	public selectedTheme = signal<'homepage' | 'z21'>('homepage');
 
@@ -43,13 +39,6 @@ export class AppComponent implements AfterViewInit {
 	 * Avoid heavy DOM work here — `setTheme` only creates/appends a link element.
 	 */
 	constructor() {
-		this.menuItems = [
-			{ id: 'button', label: 'Button', route: 'button' },
-			{ id: 'checkbox', label: 'Checkbox', route: 'checkbox' },
-			{ id: 'colors', label: 'Colors', route: 'colors' },
-			{ id: 'icons', label: 'Icons', route: 'icons' },
-			{ id: 'typography', label: 'Typography', route: 'typography' }
-		];
 		this.setTheme('homepage');
 	}
 
@@ -84,7 +73,10 @@ export class AppComponent implements AfterViewInit {
 	 * @param bundleName - The base name of the theme bundle (e.g. 'homepage', 'z21'),
 	 *                     or null if no specific bundle is requested.
 	 */
-	public setTheme(bundleName: string | null): void {
+	public setTheme(bundleName: 'homepage' | 'z21' | null): void {
+		if (bundleName) {
+			this.selectedTheme.set(bundleName);
+		}
 		const themeBundleName = `${bundleName}-theme`;
 
 		// Always prefer an element that exists in the document (tests may remove the

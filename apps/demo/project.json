@@ -23,7 +23,12 @@
 					{
 						"glob": "**/*",
 						"input": "libs/shared/ui-theme/src/assets",
-						"output": "assets"
+						"output": "assets/theme"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/demo/demo-feature/src/assets",
+						"output": "assets/demo-feature"
 					}
 				],
 				"styles": [

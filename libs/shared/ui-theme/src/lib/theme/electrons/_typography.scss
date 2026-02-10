@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -143,4 +143,16 @@ p {
 
 .#{prefix.$prefix}text-uppercase {
 	text-transform: uppercase;
+}
+
+.#{prefix.$prefix}text-lowercase {
+	text-transform: lowercase;
+}
+
+.#{prefix.$prefix}text-capitalize {
+	text-transform: capitalize;
+}
+
+.#{prefix.$prefix}italic {
+	font-style: italic;
 }

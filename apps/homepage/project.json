@@ -22,17 +22,22 @@
 					{
 						"glob": "**/*",
 						"input": "libs/homepage/colour-rack/src/assets",
-						"output": "assets"
+						"output": "assets/colour-rack"
 					},
 					{
 						"glob": "**/*",
 						"input": "libs/shared/ui-theme/src/assets",
-						"output": "assets"
+						"output": "assets/theme"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/demo/demo-feature/src/assets",
+						"output": "assets/demo-feature"
 					},
 					{
 						"glob": "**/*",
 						"input": "libs/homepage/homepage-feature/src/assets",
-						"output": "assets"
+						"output": "assets/homepage-feature"
 					}
 				],
 				"styles": [

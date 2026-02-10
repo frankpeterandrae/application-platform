@@ -1,0 +1,29 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andr�
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<div class="fpa-mt-2">
+		<h3>Tabs Component Example</h3>
+		<p>Click on the tabs to switch between different content sections:</p>
+		<div class="fpa-mt-2">
+			<theme-tab-group>
+				@for (tab of tabs; track tab.label) {
+					<theme-tab [label]="tab.label">
+						<div class="fpa-p-2">
+							{{ tab.content }}
+						</div>
+					</theme-tab>
+				}
+			</theme-tab-group>
+		</div>
+		<h3 class="fpa-mt-3">Features</h3>
+		<ul>
+			<li>Multiple tabs with label and content</li>
+			<li>Active tab automatic tracking</li>
+			<li>Tab selection with click and keyboard support</li>
+			<li>Responsive design</li>
+			<li>Content projection with ng-content</li>
+		</ul>
+	</div>
+</demo-theme>

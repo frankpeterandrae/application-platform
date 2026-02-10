@@ -19,7 +19,7 @@ import { Color } from '../models/color.model';
 export class ColorService {
 	private readonly http = inject(HttpClient);
 
-	private readonly colorsUrl = 'assets/colors.json';
+	private readonly colorsUrl = 'assets/colour-rack/colors.json';
 
 	/**
 	 * Fetches the list of colors from the JSON file.

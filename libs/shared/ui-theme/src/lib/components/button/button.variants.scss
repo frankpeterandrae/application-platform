@@ -84,4 +84,6 @@
 
 .#{prefix.$prefix}no-color {
 	background-color: transparent;
+
+	@include button-text-color(variables.$dark-text);
 }

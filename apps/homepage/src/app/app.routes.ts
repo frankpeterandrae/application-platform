@@ -28,7 +28,8 @@ const devRoutes: Route[] = [
 				 */
 				loadComponent: () => import('@application-platform/homepage-feature').then((m) => m.Error404Component),
 				canActivate: [EnvGuard]
-			}
+			},
+			{ path: 'demo', loadChildren: () => import('@application-platform/demo-feature').then((m) => m.demoFeatureRoutes) }
 		]
 	}
 ];
@@ -54,7 +55,7 @@ export const appRoutes: Route[] = [
 		 */
 		loadComponent: (): Promise<Type<unknown>> =>
 			import('@application-platform/colour-rack').then((m) => m.ColorSearchContainerComponent),
-		providers: [provideTranslocoScope(Scopes.COLOR_RACK)]
+		providers: [provideTranslocoScope(Scopes.COLOUR_RACK)]
 	},
 	...(environment.production ? [] : devRoutes),
 	{

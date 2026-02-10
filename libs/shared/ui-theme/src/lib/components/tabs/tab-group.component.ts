@@ -26,11 +26,14 @@ export class TabGroupComponent implements AfterContentInit {
 	 */
 	public ngAfterContentInit(): void {
 		// Activate first tab if none are active
-		const activeTabs = this.tabs().filter((tab) => tab.active);
-		const allTaps = this.tabs();
-		if (!activeTabs.length && allTaps[0]) {
-			this.selectTab(allTaps[0]);
-		}
+		// Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
+		setTimeout(() => {
+			const activeTabs = this.tabs().filter((tab) => tab.active);
+			const allTaps = this.tabs();
+			if (!activeTabs.length && allTaps[0]) {
+				this.selectTab(allTaps[0]);
+			}
+		});
 	}
 
 	/**

@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andr�
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<div class="fpa-mt-2">
+		<h3>Range Input Example</h3>
+		<p>Enter a range with from and to values:</p>
+		<form [formGroup]="rangeForm">
+			<theme-range-input [label]="'Price Range (0 - 5000)'" [formControl]="priceRangeControl" (valueChange)="onValueChange($event)">
+			</theme-range-input>
+			<div class="fpa-mt-2">
+				<p><strong>Current Value:</strong></p>
+				<p>From: {{ currentFrom }}</p>
+				<p>To: {{ currentTo }}</p>
+			</div>
+		</form>
+		<h3 class="fpa-mt-3">Features</h3>
+		<ul>
+			<li>Two-input range selector (from/to)</li>
+			<li>ControlValueAccessor integration for Reactive Forms</li>
+			<li>Custom label support</li>
+			<li>Value change output emitter</li>
+			<li>Form validation ready</li>
+		</ul>
+	</div>
+</demo-theme>

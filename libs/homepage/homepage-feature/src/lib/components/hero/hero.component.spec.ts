@@ -33,6 +33,6 @@ describe('HeroComponent', () => {
 		// wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		expect(component.paragraph()).toBe('feature.HeroComponent.lbl.Paragraph1');
+		expect(component.paragraph()).toBe('homepageFeatureI18n.HeroComponent.lbl.Paragraph1');
 	});
 });

@@ -6,7 +6,7 @@
 import { Component } from '@angular/core';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -54,9 +54,12 @@ describe('TabGroupComponent', () => {
 
 	describe('ngAfterContentInit', () => {
 		it('should activate first tab if none are active', () => {
+			vi.useFakeTimers();
 			tabGroupComponent.ngAfterContentInit();
+			vi.runAllTimers();
 			const tabs = tabGroupComponent.tabs();
 			expect(tabs[0]?.active).toBe(true);
+			vi.useRealTimers();
 		});
 
 		it('should not activate first tab if one is already active', () => {

@@ -6,7 +6,9 @@
 // Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
 import '@angular/compiler';
 import type { TestModuleMetadata } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { setupTestingModule as sharedSetup } from '@application-platform/testing';
+import { of } from 'rxjs';
 
 /**
  * Sets up the Angular testing module with the provided metadata.
@@ -14,5 +16,19 @@ import { setupTestingModule as sharedSetup } from '@application-platform/testing
  * @returns {Promise<void>} A promise that resolves when the test module is compiled.
  */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
-	return sharedSetup({ imports, providers, declarations });
+	const demoProviders = [
+		{
+			provide: ActivatedRoute,
+			useValue: {
+				params: of({}),
+				snapshot: {
+					paramMap: {
+						get: (): any => null
+					}
+				}
+			}
+		},
+		...providers
+	];
+	return sharedSetup({ imports, providers: demoProviders, declarations });
 }

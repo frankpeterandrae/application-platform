@@ -3,7 +3,6 @@
  * All rights reserved.
  */
 
-import { CommonModule } from '@angular/common';
 import {
 	ChangeDetectionStrategy,
 	Component,
@@ -61,7 +60,7 @@ export interface DropdownOption<T> {
 @Component({
 	selector: 'theme-dropdown-select',
 	standalone: true,
-	imports: [CommonModule, ButtonComponent],
+	imports: [ButtonComponent],
 	templateUrl: './dropdown-select.component.html',
 	styleUrls: ['./dropdown-select.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush
@@ -136,6 +135,17 @@ export class DropdownSelectComponent<T> {
 		this.activeIndex.set(-1);
 		// remove any alignment class when closed
 		this.setPopupAlignRight(false);
+		this.setPopupFlipUp(false);
+
+		// Reset inline styles
+		const host = this.hostEl().nativeElement;
+		const popup = host.querySelector<HTMLElement>('.fpa-dropdown-select-list-container');
+		if (popup) {
+			popup.style.top = '';
+			popup.style.bottom = '';
+			popup.style.left = '';
+			popup.style.right = '';
+		}
 	}
 
 	/**
@@ -149,6 +159,7 @@ export class DropdownSelectComponent<T> {
 
 	/**
 	 * Compute whether the popup would overflow to the right and toggle the align-right class.
+	 * Also check if it would overflow the bottom and flip it upward if needed.
 	 * We allow a small margin (8px) to avoid touching the viewport edge.
 	 */
 	private adjustPopupAlignment(): void {
@@ -159,9 +170,10 @@ export class DropdownSelectComponent<T> {
 				const popup = host.querySelector<HTMLElement>('.fpa-dropdown-select-list-container');
 				if (!popup) return;
 
-				// Measure popup width
+				// Measure popup dimensions
 				const popupRect = popup.getBoundingClientRect();
 				const popupWidth = popupRect.width || popup.offsetWidth;
+				const popupHeight = popupRect.height || popup.offsetHeight;
 
 				// Measure host position relative to viewport
 				const hostRect = host.getBoundingClientRect();
@@ -169,17 +181,47 @@ export class DropdownSelectComponent<T> {
 				// calculate the left offset where popup would be placed (0.75rem in CSS)
 				// Convert rem to px using root font-size
 				const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize || '16');
-				const leftOffsetPx = 0.75 * rootFontSize;
+				const offsetPx = 0.75 * rootFontSize;
 
 				// absolute position of popup's left edge if placed normally
-				const popupLeft = hostRect.left + leftOffsetPx;
+				const popupLeft = hostRect.left + offsetPx;
 
 				// small safety margin from viewport edge
 				const margin = 8;
 
+				// Check horizontal overflow
 				const willOverflowRight = popupLeft + popupWidth + margin > window.innerWidth;
 
 				this.setPopupAlignRight(willOverflowRight);
+
+				// Check vertical overflow
+				const spaceBelow = window.innerHeight - hostRect.bottom - margin;
+				const spaceAbove = hostRect.top - margin;
+				const willOverflowBottom = spaceBelow < popupHeight;
+				const shouldFlipUp = willOverflowBottom && spaceAbove > spaceBelow;
+
+				this.setPopupFlipUp(shouldFlipUp);
+
+				// Set the position for fixed positioning
+				if (shouldFlipUp) {
+					// Position above the button
+					const bottomPos = window.innerHeight - hostRect.top + 8;
+					popup.style.bottom = `${bottomPos}px`;
+					popup.style.top = 'auto';
+				} else {
+					// Position below the button
+					const topPos = hostRect.bottom + 8;
+					popup.style.top = `${topPos}px`;
+					popup.style.bottom = 'auto';
+				}
+
+				if (willOverflowRight) {
+					popup.style.right = `${window.innerWidth - hostRect.right + offsetPx}px`;
+					popup.style.left = 'auto';
+				} else {
+					popup.style.left = `${popupLeft}px`;
+					popup.style.right = 'auto';
+				}
 			} catch (e) {
 				// Log and intentionally ignore measurement errors to avoid breaking dropdown behavior.
 				this.logger.warn('DropdownSelectComponent: failed to adjust popup alignment', e);
@@ -193,6 +235,14 @@ export class DropdownSelectComponent<T> {
 		if (!popup) return;
 		if (alignRight) popup.classList.add('align-right');
 		else popup.classList.remove('align-right');
+	}
+
+	private setPopupFlipUp(flipUp: boolean): void {
+		const host = this.hostEl().nativeElement;
+		const popup = host.querySelector('.fpa-dropdown-select-list-container');
+		if (!popup) return;
+		if (flipUp) popup.classList.add('flip-up');
+		else popup.classList.remove('flip-up');
 	}
 
 	/**

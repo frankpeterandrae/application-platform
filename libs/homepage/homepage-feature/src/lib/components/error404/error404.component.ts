@@ -9,7 +9,7 @@ import { ButtonColorDefinition, ButtonComponent, CardComponent } from '@applicat
 import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
-import { featureTextModules } from '../../i18n/i18n';
+import { i18nTextModules } from '../../i18n/i18n';
 
 /**
  * Component for displaying a 404 error page.
@@ -18,13 +18,13 @@ import { featureTextModules } from '../../i18n/i18n';
 	selector: 'homepage-feature-error404',
 	imports: [ButtonComponent, CardComponent, TranslationDirective],
 	templateUrl: './error404.component.html',
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'Error404Component' }, provideTranslocoScope(Scopes.FEATURE)]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'Error404Component' }, provideTranslocoScope(Scopes.HOMEPAGE_FEATURE)]
 })
 export class Error404Component extends BaseComponent {
 	private readonly router = inject(Router);
-	public readonly featureTextModules = featureTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 	public readonly ButtonColorDefinition = ButtonColorDefinition;
-	public readonly backToStart = translateSignal(featureTextModules.Error404Component.lbl.BackToStartpage);
+	public readonly backToStart = translateSignal(i18nTextModules.Error404Component.lbl.BackToStartpage);
 
 	/**
 	 * Navigates to the home page.

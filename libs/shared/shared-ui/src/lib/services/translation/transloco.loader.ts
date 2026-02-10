@@ -22,6 +22,7 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 	 * @returns {Observable<Translation>} An observable that emits the translation data.
 	 */
 	public getTranslation(lang: string): Observable<Translation> {
-		return this.http.get<Translation>(`/assets/i18n/${lang}.json`);
+		const path = lang.includes('/') ? `/assets/${lang}.json` : `/assets/i18n/${lang}.json`;
+		return this.http.get<Translation>(path);
 	}
 }

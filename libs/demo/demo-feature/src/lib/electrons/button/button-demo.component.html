@@ -1,0 +1,146 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">Farb-Varianten</h3>
+	<table class="fpa-paragraph">
+		<thead>
+			<tr>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Button.lbl.TableHeaderVariante | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}Variante
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderEnabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderDisabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Primary</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="'Primary'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="'Primary'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Success</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.SUCCESS" [buttonText]="'Success'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.SUCCESS" [buttonText]="'Success'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Info</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.INFO" [buttonText]="'Info'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.INFO" [buttonText]="'Info'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Warning</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.WARNING" [buttonText]="'Warning'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.WARNING" [buttonText]="'Warning'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Danger</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.DANGER" [buttonText]="'Danger'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.DANGER" [buttonText]="'Danger'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Default</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.DEFAULT" [buttonText]="'Default'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [color]="ButtonColorDefinition.DEFAULT" [buttonText]="'Default'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Default</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [buttonText]="'Default'"></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button [buttonText]="'Default'" [disabled]="true"></theme-button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h3 class="fpa-h2">Icon-Varianten</h3>
+
+	<table class="fpa-paragraph">
+		<thead>
+			<tr>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Button.lbl.TableHeaderVariante | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}Variante
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderEnabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderDisabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Icon vor Text</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						[buttonText]="'Search'"
+						[icon]="IconDefinition.SEARCH"
+					></theme-button>
+				</td>
+				<td class="fpa-py-1 f pa-border-bottom fpa-border-themed-divider">
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						[buttonText]="'Search'"
+						[icon]="IconDefinition.SEARCH"
+						[disabled]="true"
+					></theme-button>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Icon nach Text</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						[buttonText]="'Search'"
+						[icon]="IconDefinition.SEARCH"
+						[iconEnd]="true"
+					></theme-button>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						[buttonText]="'Search'"
+						[icon]="IconDefinition.SEARCH"
+						[iconEnd]="true"
+						[disabled]="true"
+					></theme-button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</demo-theme>

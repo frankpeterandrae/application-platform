@@ -1,0 +1,14 @@
+<!--
+  ~ Copyright (c) 2024-2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">{{ i18nTextModules.Icon.lbl.AvailableIcons | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h3>
+	<div class="fpa-flex fpa-flex-row fpa-flex-wrap">
+		@for (icon of icons; track icon) {
+			<div class="fpa-flex fpa-flex-row fpa-flex-align-items-center fpa-mx-05" [themeTooltip]="icon">
+				<fast-svg class="fpa-color-main-band fpa-mx-05" [name]="icon" [size]="'32'" />
+			</div>
+		}
+	</div>
+</demo-theme>

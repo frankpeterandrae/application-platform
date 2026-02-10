@@ -1,4 +1,4 @@
-export const featureTextModules = {
+export const i18nTextModules = {
 	Error404Component: {
 		lbl: {
 			BackToStartpage: 'Error404Component.lbl.BackToStartpage',

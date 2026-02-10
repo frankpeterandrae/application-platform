@@ -67,7 +67,7 @@ describe('ColorService', () => {
 			expect(colors).toEqual(mockColors);
 		});
 
-		const req = httpMock.expectOne('assets/colors.json');
+		const req = httpMock.expectOne('assets/colour-rack/colors.json');
 		expect(req.request.method).toBe('GET');
 		req.flush(mockColors);
 	});
@@ -79,7 +79,7 @@ describe('ColorService', () => {
 			expect(colors).toEqual(mockColors);
 		});
 
-		const req = httpMock.expectOne('assets/colors.json');
+		const req = httpMock.expectOne('assets/colour-rack/colors.json');
 		expect(req.request.method).toBe('GET');
 		req.flush(mockColors);
 	});
@@ -92,7 +92,7 @@ describe('ColorService', () => {
 			(error) => expect(error.status).toBe(404)
 		);
 
-		const req = httpMock.expectOne('assets/colors.json');
+		const req = httpMock.expectOne('assets/colour-rack/colors.json');
 		req.flush(errorMessage, { status: 404, statusText: 'Not Found' });
 	});
 });

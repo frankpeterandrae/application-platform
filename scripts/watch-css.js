@@ -18,8 +18,8 @@ function compileSass() {
 	(async () => {
 		try {
 			// Define paths
-			const scssPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme/styles.scss');
-			const cssOutputPath = path.join(__dirname, 'libs/shared/ui-theme/src/lib/theme'); // Output to lib root
+			const scssPath = path.join(__dirname, '../libs/shared/ui-theme/src/lib/theme/styles.scss');
+			const cssOutputPath = path.join(__dirname, '../libs/shared/ui-theme/src/lib/theme/'); // Output to lib root
 			const outputFileName = 'styles.css'; // Desired CSS file name
 
 			// Compile SCSS to CSS using compileAsync

@@ -49,7 +49,10 @@ describe('HomeComponent', () => {
 		// wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		expect(mockTitle.setTitle).toHaveBeenCalledWith('feature.HomeComponent.meta.Title');
-		expect(mockMeta.addTag).toHaveBeenCalledWith({ name: 'description', content: 'feature.HomeComponent.meta.Description' });
+		expect(mockTitle.setTitle).toHaveBeenCalledWith('homepageFeatureI18n.HomeComponent.meta.Title');
+		expect(mockMeta.addTag).toHaveBeenCalledWith({
+			name: 'description',
+			content: 'homepageFeatureI18n.HomeComponent.meta.Description'
+		});
 	});
 });

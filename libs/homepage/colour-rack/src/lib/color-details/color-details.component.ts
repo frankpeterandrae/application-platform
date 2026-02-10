@@ -3,14 +3,13 @@
  * All rights reserved.
  */
 
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
 import { DialogComponent, DIALOG_DATA } from '@application-platform/shared/ui-theme';
 import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope } from '@jsverse/transloco';
 
-import { colorRackTextModules } from '../i18n/i18n';
+import { i18nTextModules } from '../i18n/i18n';
 import { ColorType } from '../models/color-type.enum';
 import type { Color } from '../models/color.model';
 /**
@@ -18,13 +17,13 @@ import type { Color } from '../models/color.model';
  */
 @Component({
 	selector: 'cr-color-details',
-	imports: [CommonModule, DialogComponent, TranslationDirective],
+	imports: [DialogComponent, TranslationDirective],
 	templateUrl: './color-details.component.html',
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorDetailsComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorDetailsComponent' }, provideTranslocoScope(Scopes.COLOUR_RACK)]
 })
 export class ColorDetailsComponent extends BaseComponent {
 	public readonly data = inject<DialogConfigModel<Color>>(DIALOG_DATA);
-	public readonly colorRackTextModules = colorRackTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 
 	/**
 	 * Returns the color type as a string.
@@ -37,6 +36,6 @@ export class ColorDetailsComponent extends BaseComponent {
 		if (types?.every((type) => type in ColorType)) {
 			return types.map((type) => ColorType[type as keyof typeof ColorType]).join('-');
 		}
-		return 'ds.unknown';
+		return 'Unknown';
 	}
 }

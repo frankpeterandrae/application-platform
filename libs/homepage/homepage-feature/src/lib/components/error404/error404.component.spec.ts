@@ -35,7 +35,7 @@ describe('Error404Component', () => {
 		// wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));
 		fixture.detectChanges();
-		expect(component.backToStart()).toBe('feature.Error404Component.lbl.BackToStartpage');
+		expect(component.backToStart()).toBe('homepageFeatureI18n.Error404Component.lbl.BackToStartpage');
 	});
 
 	it('should navigate to home on routeToHome call', async () => {

@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">Basic Dropdown</h3>
+	<div class="fpa-mb-2">
+		<theme-dropdown-select
+			[options]="options()"
+			[selected]="selectedValue()"
+			(selectionChange)="selectedValue.set($event)"
+			placeholder="Select a person"
+		>
+		</theme-dropdown-select>
+		@if (selectedValue()) {
+			<p>Selected: {{ selectedValue()?.name }}</p>
+		}
+	</div>
+
+	<h3 class="fpa-h2">Dropdown with Icons</h3>
+	<div class="fpa-mb-2">
+		<theme-dropdown-select
+			[options]="iconOptions()"
+			[selected]="selectedIcon()"
+			(selectionChange)="selectedIcon.set($event)"
+			placeholder="Select an option"
+		>
+		</theme-dropdown-select>
+		@if (selectedIcon()) {
+			<p>Selected: {{ selectedIcon() }}</p>
+		}
+	</div>
+
+	<h3 class="fpa-h2">Disabled Option</h3>
+	<div class="fpa-mb-2">
+		<p>Note: Diana is disabled and cannot be selected.</p>
+		<theme-dropdown-select
+			[options]="options()"
+			[selected]="selectedValue()"
+			(selectionChange)="selectedValue.set($event)"
+			placeholder="Select a person"
+		>
+		</theme-dropdown-select>
+	</div>
+</demo-theme>

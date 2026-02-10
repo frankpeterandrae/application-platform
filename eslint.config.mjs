@@ -75,7 +75,7 @@ export default [
 						},
 						{
 							sourceTag: 'scope:homepage',
-							onlyDependOnLibsWithTags: ['scope:homepage', 'scope:shared']
+							onlyDependOnLibsWithTags: ['scope:homepage', 'scope:shared', 'scope:demo']
 						},
 						{
 							sourceTag: 'scope:demo',

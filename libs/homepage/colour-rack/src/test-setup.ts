@@ -8,8 +8,8 @@ import '@angular/compiler';
 import type { TestModuleMetadata } from '@angular/core/testing';
 import { setupTestingModule as sharedSetup } from '@application-platform/testing';
 
-import de from './assets/i18n/color-rack/de.json';
-import en from './assets/i18n/color-rack/en.json';
+import de from './assets/i18n/de.json';
+import en from './assets/i18n/en.json';
 
 /**
  * Sets up the Angular testing module with the provided metadata.

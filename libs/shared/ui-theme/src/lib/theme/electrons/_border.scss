@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -30,24 +30,4 @@
 
 .#{prefix.$prefix}border-right {
 	border-right: 1px solid;
-}
-
-.#{prefix.$prefix}border-grey-t6 {
-	border-color: utility.tint(variables.$info, 6);
-}
-
-.#{prefix.$prefix}border-primary {
-	border-color: variables.$primary;
-}
-
-.#{prefix.$prefix}border-success {
-	border-color: variables.$success;
-}
-
-.#{prefix.$prefix}border-warning {
-	border-color: variables.$warning;
-}
-
-.#{prefix.$prefix}border-danger {
-	border-color: variables.$danger;
 }

@@ -5,7 +5,7 @@
 
 <div class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-bg-main-band fpa-box-shadow">
 	<nav class="fpa-flex fpa-flex-row fpa-bg-main-band fpa-p-1 navbar">
-    @for (navigationItem of menuItems(); track navigationItem.id) {
+		@for (navigationItem of menuItems(); track navigationItem.id) {
 			<ng-container [ngTemplateOutlet]="navList" [ngTemplateOutletContext]="{ navigationItem }"></ng-container>
 		}
 	</nav>

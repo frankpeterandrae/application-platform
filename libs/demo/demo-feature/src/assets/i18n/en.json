@@ -1,0 +1,183 @@
+{
+	"Button": {
+		"lbl": {
+			"ButtonTextDescription": "The text displayed on the button",
+			"ColorDescription": "The colour variant of the button (PRIMARY, SUCCESS, INFO, WARNING, DANGER, DEFAULT)",
+			"Description": "The <code>theme-button</code> component is a versatile button with various colour variations and options. It can be used to create interactive elements in the application.",
+			"DisabledDescription": "Disables the button if true",
+			"IconDescription": "An icon before the text",
+			"IconEndDescription": "If true, the icon is displayed after the text.",
+			"TableHeaderVariante": "Variant",
+			"Title": "Button"
+		}
+	},
+	"ButtonBar": {
+		"lbl": {
+			"ButtonsDescription": "Array of button configurations",
+			"Description": "The <code>theme-button-bar</code> component displays a horizontal group of buttons, typically used for form actions or navigation controls.",
+			"Title": "Button Bar"
+		}
+	},
+	"Card": {
+		"lbl": {
+			"Description": "The <code>theme-card</code> component is a container for grouping related content. It provides a clean, organized way to display information with optional inverted styling.",
+			"InvertedDescription": "When true, applies inverted color scheme to the card",
+			"Title": "Card"
+		}
+	},
+	"Checkbox": {
+		"lbl": {
+			"CheckboxesDescription": "Configuration of the checkbox",
+			"Description": "The <code>theme-checkbox-group</code> component is a flexible checkbox group with different colour variations. It can be used to create multiple selectable options in the application.",
+			"LabelDescription": "The text displayed in the checkbox",
+			"TableHeaderColor": "Colour",
+			"Title": "Checkbox"
+		}
+	},
+	"Colors": {
+		"lbl": {
+			"ColorsWithoutVariations": "Colours with variants",
+			"ColorsWithVariations": "Colours with variants",
+			"Description": "This page shows the available color variations in the theme system. Colors with variables offer shades (darker variations) and tints (lighter variations) for flexible design.",
+			"Shades": "Shades",
+			"Tints": "Tints",
+			"Title": "Colors"
+		}
+	},
+	"Common": {
+		"lbl": {
+			"ColorVariantions": "Colour variants",
+			"TableHeaderDisabled": "Disabled",
+			"TableHeaderEnabled": "Enabled"
+		}
+	},
+	"DemoThemeContainer": {
+		"lbl": {
+			"Examples": "Examples",
+			"Optional": "Optional",
+			"PropsInterface": "Props interface",
+			"Usage": "Usage"
+		}
+	},
+	"Dialog": {
+		"lbl": {
+			"Description": "The <code>theme-dialog</code> component is a modal dialog window for important user interactions. The DialogService is used to open dialogs programmatically.",
+			"OpenDescription": "Opens a dialog with the specified component and configuration",
+			"Title": "Dialog"
+		}
+	},
+	"Dropdown": {
+		"lbl": {
+			"Description": "The <code>theme-dropdown-select</code> component is a flexible dropdown select field with keyboard navigation and automatic popup alignment. It supports any value type through generics.",
+			"DisabledDescription": "Disables the dropdown field or individual options",
+			"OptionsDescription": "Array of available options to select from",
+			"PlaceholderDescription": "Placeholder text displayed when no option is selected",
+			"SelectedDescription": "The currently selected option or null",
+			"Title": "Dropdown Select"
+		}
+	},
+	"Footer": {
+		"lbl": {
+			"Description": "Die <code>theme-footer</code> Komponente zeigt einen kleinen Footer-Bereich mit Copyright-Text und übersetzten Beschriftungen an.",
+			"Title": "Footer"
+		}
+	},
+	"Header": {
+		"lbl": {
+			"Description": "The <code>theme-header</code> component displays the header section of the application with navigation menu support.",
+			"MenuItemsDescription": "Array of menu items to display in the header navigation",
+			"Title": "Header"
+		}
+	},
+	"Icon": {
+		"lbl": {
+			"AvailableIcons": "Available icons",
+			"Description": "The <code>fast-svg</code> component enables the display of SVG icons from the icon set. All available icons are shown here.",
+			"Title": "Icon"
+		}
+	},
+	"ImageLoader": {
+		"lbl": {
+			"AltDescription": "Alternative text for the image (required for accessibility)",
+			"Description": "The <code>theme-image-loader</code> component provides lazy loading, responsive images with automatic srcset generation, placeholder support, and error handling.",
+			"SrcDescription": "The source URL of the image to load",
+			"Title": "Image Loader"
+		}
+	},
+	"Input": {
+		"lbl": {
+			"Description": "The <code>theme-input</code> component is a form input field with floating labels, icon support, and validation integration.",
+			"DisabledDescription": "When true, disables the input field",
+			"IconDescription": "Optional icon to display inside the input field",
+			"LabelDescription": "The label text for the input field",
+			"PlaceholderDescription": "Placeholder text shown when the field is empty",
+			"Title": "Input",
+			"TypeDescription": "The HTML input type (text, email, password, etc.)"
+		}
+	},
+	"LanguageToggle": {
+		"lbl": {
+			"Description": "The <code>theme-language-toggle</code> component allows users to switch between available languages (English and German) with a visual flag indicator.",
+			"Title": "Language Toggle"
+		}
+	},
+	"Login": {
+		"lbl": {
+			"Description": "The <code>theme-login</code> component provides a complete login form with email and password validation, integrated with the DataConnectionService for authentication.",
+			"FormDescription": "Reactive form group containing email and password controls with validation",
+			"LoginMethodDescription": "Handles the login action when the form is valid and submits credentials",
+			"Title": "Login"
+		}
+	},
+	"RangeInput": {
+		"lbl": {
+			"Description": "The <code>theme-range-input</code> component provides a two-input range selector with from and to values, integrated with ControlValueAccessor for Reactive Forms support.",
+			"FormControlDescription": "FormControl instance for managing the range input value",
+			"LabelDescription": "Label text displayed above the range input",
+			"Title": "Range Input",
+			"ValueChangeDescription": "Output emitter fired when the range value changes"
+		}
+	},
+	"Select": {
+		"lbl": {
+			"Description": "The <code>theme-select</code> component is a dropdown select field with support for single and multi-select, custom labels, and dynamic layout.",
+			"FormControlDescription": "FormControl instance for managing the select value",
+			"IsDynamicDescription": "When true, enables dynamic layout behavior",
+			"LabelDescription": "Label text displayed above the select field",
+			"MultipleDescription": "When true, enables multi-select mode",
+			"OptionsDescription": "Array of SelectOption objects with label and value properties",
+			"Title": "Select"
+		}
+	},
+	"Tabs": {
+		"lbl": {
+			"ActiveTabDescription": "The index of the currently active tab",
+			"Description": "The <code>theme-tabs</code> component displays multiple tab panels with clickable tab headers for switching between different content sections.",
+			"TabsDescription": "Array of tab items with label and content properties",
+			"ThemeTabDescription": "Individual tab within the tab group with label input",
+			"Title": "Tabs"
+		}
+	},
+	"Textarea": {
+		"lbl": {
+			"Description": "The <code>theme-textarea</code> component is a multi-line text input field with floating labels and validation support.",
+			"IsDynamicDescription": "When true, enables dynamic label behavior",
+			"LabelDescription": "The label text for the textarea",
+			"PlaceholderDescription": "Placeholder text shown when the field is empty",
+			"Title": "Textarea"
+		}
+	},
+	"Tooltip": {
+		"lbl": {
+			"Description": "The <code>themeTooltip</code> directive displays a tooltip when users hover over an element. It can be applied to any HTML element.",
+			"Title": "Tooltip",
+			"TooltipTextDescription": "The text to be displayed inside the tooltip"
+		}
+	},
+	"Typography": {
+		"lbl": {
+			"Description": "Overview of the available typography styles in the theme system. Use these CSS classes for consistent text formatting in your application.",
+			"Title": "Typography"
+		}
+	}
+}

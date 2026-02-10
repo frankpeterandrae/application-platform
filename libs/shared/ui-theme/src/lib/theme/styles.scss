@@ -6,6 +6,7 @@
 
 // atoms
 @use './atoms/back-drop';
+@use './atoms/badge';
 @use './atoms/floating-label';
 @use './atoms/image';
 @use './atoms/link';
@@ -26,6 +27,7 @@
 
 // electrons
 @use './electrons/border';
+@use './electrons/border-themed';
 @use './electrons/colors';
 @use './electrons/fonts';
 @use './electrons/typography';

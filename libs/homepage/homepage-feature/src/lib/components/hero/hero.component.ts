@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
-import { featureTextModules } from '../../i18n/i18n';
+import { i18nTextModules } from '../../i18n/i18n';
 
 /**
  * Component decorator for defining the HeroComponent.
@@ -17,13 +17,13 @@ import { featureTextModules } from '../../i18n/i18n';
 	templateUrl: './hero.component.html',
 	styleUrl: './hero.component.scss',
 	imports: [TranslationDirective],
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'HeroComponent' }, provideTranslocoScope(Scopes.FEATURE)]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'HeroComponent' }, provideTranslocoScope(Scopes.HOMEPAGE_FEATURE)]
 })
 export class HeroComponent extends BaseComponent {
-	public readonly featureTextModules = featureTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 
 	/**
 	 * The translated paragraph text.
 	 */
-	public paragraph = translateSignal(featureTextModules.HeroComponent.lbl.Paragraph1);
+	public paragraph = translateSignal(i18nTextModules.HeroComponent.lbl.Paragraph1);
 }

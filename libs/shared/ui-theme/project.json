@@ -5,6 +5,15 @@
 	"prefix": "theme",
 	"projectType": "library",
 	"tags": ["type:ui", "scope:shared", "platform:browser"],
+	"metadata": {
+		"assets": [
+			{
+				"glob": "**/*",
+				"input": "{projectRoot}/src/assets",
+				"output": "assets"
+			}
+		]
+	},
 	"targets": {
 		"test": {
 			"executor": "@nx/vitest:test",

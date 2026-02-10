@@ -29,20 +29,17 @@ describe('appRoutes', () => {
 		expect(defaultRoute?.pathMatch).toBe('full');
 	});
 
-	it('should define demo routes for components', () => {
-		const demoRoutes = ['button', 'colors', 'icons', 'typography'];
-		demoRoutes.forEach((path) => {
-			const route = appRoutes.find((r) => r.path === path);
-			expect(route).toBeDefined();
-			expect(route?.loadComponent).toBeDefined();
-		});
+	it('should define demo route for lazy-loaded children', () => {
+		const demoRoute = appRoutes.find((r) => r.path === 'demo');
+		expect(demoRoute).toBeDefined();
+		expect(demoRoute?.loadChildren).toBeDefined();
 	});
 
-	it('should have loadComponent functions for lazy loading', () => {
+	it('should have loadChildren functions for lazy loading', () => {
 		const lazyRoutes = appRoutes.filter((r) => r.path !== '' && r.path !== '**');
 		lazyRoutes.forEach((route) => {
 			if (route.path && !route.redirectTo) {
-				expect(typeof route.loadComponent).toBe('function');
+				expect(typeof route.loadChildren).toBe('function');
 			}
 		});
 	});
