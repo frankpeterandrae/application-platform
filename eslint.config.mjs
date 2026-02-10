@@ -222,11 +222,6 @@ export default [
 	},
 
 	// -----------------------------
-	// workspace helper files: no special parser override — allow TS project service to include them
-	// (vitest.workspace.ts is included in tsconfig.tools.json so the project service will find it)
-	// -----------------------------
-
-	// -----------------------------
 	// Ensure vitest.workspace.ts is parsed with the tools tsconfig (use absolute paths)
 	{
 		files: ['vitest.workspace.ts', './vitest.workspace.ts'],
@@ -234,7 +229,6 @@ export default [
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				project: ['./tsconfig.tools.json'],
 				allowDefaultProject: ['./vitest.workspace.ts'],
 				createDefaultProgram: true
 			}
@@ -267,7 +261,6 @@ export default [
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				project: ['./tsconfig.tools.json'],
 				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
 				createDefaultProgram: true
 			}
@@ -345,14 +338,13 @@ export default [
 
 	// -----------------------------
 	// Type-aware rules (nur server + libs; UI Apps bleiben schnell)
-	// -----------------------------
+	//
 	...tseslint.config({
 		files: ['apps/**/*.ts', 'libs/**/*.ts'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				project: ['./tsconfig.tools.json'],
 				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
 				createDefaultProgram: true
 			}

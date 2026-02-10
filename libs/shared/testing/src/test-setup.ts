@@ -13,10 +13,13 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import type { HashMap, Translation, TranslocoConfig } from '@jsverse/transloco';
+import type { Translation, TranslocoConfig } from '@jsverse/transloco';
 import { translateSignal, TranslocoTestingModule } from '@jsverse/transloco';
 
 import { ScopedTranslationServiceMock, TranslateSignalMock } from './lib/mocks/scoped-translation.service.mock';
+
+/** @internal HashMap type for transloco compatibility */
+type HashMap<T = unknown> = Record<string, T>;
 
 // Initialize TestBed environment for testing using non-deprecated APIs.
 // Use BrowserTestingModule instead of deprecated BrowserDynamicTestingModule.
