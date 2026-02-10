@@ -1,0 +1,183 @@
+{
+	"Button": {
+		"lbl": {
+			"ButtonTextDescription": "Der angezeigte Text des Buttons",
+			"ColorDescription": "Die Farbvariante des Buttons (PRIMARY, SUCCESS, INFO, WARNING, DANGER, DEFAULT)",
+			"Description": "Die <code>theme-button</code> Komponente ist ein vielseitiger Button mit verschiedenen Farbvarianten und Optionen. Damit können interaktive Elemente in der Anwendung erstellt werden.",
+			"DisabledDescription": "Deaktiviert den Button, wenn true",
+			"IconDescription": "Ein Icon vor dem Text",
+			"IconEndDescription": "Wenn true, wird das Icon nach dem Text angezeigt",
+			"TableHeaderVariante": "Variante",
+			"Title": "Button"
+		}
+	},
+	"ButtonBar": {
+		"lbl": {
+			"ButtonsDescription": "Array von Button-Konfigurationen",
+			"Description": "Die <code>theme-button-bar</code> Komponente zeigt eine horizontale Gruppe von Buttons an, typischerweise für Formular-Aktionen oder Navigationssteuerungen verwendet.",
+			"Title": "Button Bar"
+		}
+	},
+	"Card": {
+		"lbl": {
+			"Description": "Die <code>theme-card</code> Komponente ist ein Container zum Gruppieren verwandter Inhalte. Sie bietet eine saubere, organisierte Möglichkeit zur Darstellung von Informationen mit optionalem invertiertem Styling.",
+			"InvertedDescription": "Wenn true, wird ein invertiertes Farbschema auf die Karte angewendet",
+			"Title": "Card"
+		}
+	},
+	"Checkbox": {
+		"lbl": {
+			"CheckboxesDescription": "Konfiguration der Checkbox",
+			"Description": "Die <code>theme-checkbox-group</code> Komponente ist eine flexible Checkbox-Gruppe mit verschiedenen Farbvarianten. Damit können mehrere auswählbare Optionen in der Anwendung erstellt werden.",
+			"LabelDescription": "Der angezeigte Text der Checkbox",
+			"TableHeaderColor": "Farbe",
+			"Title": "Checkbox"
+		}
+	},
+	"Colors": {
+		"lbl": {
+			"ColorsWithoutVariations": "Farben mit Varianten",
+			"ColorsWithVariations": "Farben mit Varianten",
+			"Description": "Diese Seite zeigt die verfügbaren Farbvarianten im Theme-System. Farben mit Variablen bieten Shades (dunklere Varianten) und Tints (hellere Varianten) für flexible Gestaltung.",
+			"Shades": "Schattierungen",
+			"Tints": "Tönungen",
+			"Title": "Farben"
+		}
+	},
+	"Common": {
+		"lbl": {
+			"ColorVariantions": "Farb-Varianten",
+			"TableHeaderDisabled": "Deaktiviert",
+			"TableHeaderEnabled": "Aktiviert"
+		}
+	},
+	"DemoThemeContainer": {
+		"lbl": {
+			"Examples": "Beispiele",
+			"Optional": "Optional",
+			"PropsInterface": "Props interface",
+			"Usage": "Verwendung"
+		}
+	},
+	"Dialog": {
+		"lbl": {
+			"Description": "Die <code>theme-dialog</code> Komponente ist ein modales Dialog-Fenster für wichtige Benutzerinteraktionen. Der DialogService wird verwendet, um Dialoge programmatisch zu öffnen.",
+			"OpenDescription": "Öffnet einen Dialog mit der angegebenen Komponente und Konfiguration",
+			"Title": "Dialog"
+		}
+	},
+	"Dropdown": {
+		"lbl": {
+			"Description": "Die <code>theme-dropdown-select</code> Komponente ist ein flexibles Dropdown-Auswahlfeld mit Tastaturnavigation und automatischer Popup-Ausrichtung. Es unterstützt beliebige Werttypen durch Generics.",
+			"DisabledDescription": "Deaktiviert das Dropdown-Feld oder einzelne Optionen",
+			"OptionsDescription": "Array von verfügbaren Optionen zum Auswählen",
+			"PlaceholderDescription": "Platzhaltertext, der angezeigt wird, wenn keine Option ausgewählt ist",
+			"SelectedDescription": "Die aktuell ausgewählte Option oder null",
+			"Title": "Dropdown Select"
+		}
+	},
+	"Footer": {
+		"lbl": {
+			"Description": "The <code>theme-footer</code> component displays a small footer section with copyright text and translated labels.",
+			"Title": "Footer"
+		}
+	},
+	"Header": {
+		"lbl": {
+			"Description": "Die <code>theme-header</code> Komponente zeigt den Header-Bereich der Anwendung mit Navigationsmenü-Unterstützung an.",
+			"MenuItemsDescription": "Array von Menüelementen zum Anzeigen in der Header-Navigation",
+			"Title": "Header"
+		}
+	},
+	"Icon": {
+		"lbl": {
+			"AvailableIcons": "Verfügbare Icons",
+			"Description": "Die <code>fast-svg</code> Komponente ermöglicht die Anzeige von SVG-Icons aus dem Icon-Set. Alle verfügbaren Icons werden hier dargestellt.",
+			"Title": "Icon"
+		}
+	},
+	"ImageLoader": {
+		"lbl": {
+			"AltDescription": "Alternativtext für das Bild (erforderlich für Barrierefreiheit)",
+			"Description": "Die <code>theme-image-loader</code> Komponente bietet Lazy Loading, responsive Bilder mit automatischer srcset-Generierung, Platzhalter-Unterstützung und Fehlerbehandlung.",
+			"SrcDescription": "Die Quell-URL des zu ladenden Bildes",
+			"Title": "Image Loader"
+		}
+	},
+	"Input": {
+		"lbl": {
+			"Description": "Die <code>theme-input</code> Komponente ist ein Formular-Eingabefeld mit schwebenden Labels, Icon-Unterstützung und Validierungsintegration.",
+			"DisabledDescription": "Wenn true, wird das Eingabefeld deaktiviert",
+			"IconDescription": "Optionales Icon zur Anzeige im Eingabefeld",
+			"LabelDescription": "Der Label-Text für das Eingabefeld",
+			"PlaceholderDescription": "Platzhaltertext, der angezeigt wird, wenn das Feld leer ist",
+			"Title": "Input",
+			"TypeDescription": "Der HTML-Eingabetyp (text, email, password, usw.)"
+		}
+	},
+	"LanguageToggle": {
+		"lbl": {
+			"Description": "Die <code>theme-language-toggle</code> Komponente ermöglicht es Benutzern, zwischen den verfügbaren Sprachen (Englisch und Deutsch) mit einer visuellen Flaggen-Anzeige zu wechseln.",
+			"Title": "Language Toggle"
+		}
+	},
+	"Login": {
+		"lbl": {
+			"Description": "Die <code>theme-login</code> Komponente bietet ein vollständiges Login-Formular mit E-Mail- und Passwort-Validierung, integriert mit dem DataConnectionService für die Authentifizierung.",
+			"FormDescription": "Reaktive Formulargruppe mit E-Mail- und Passwort-Steuerelementen mit Validierung",
+			"LoginMethodDescription": "Verarbeitet die Login-Aktion, wenn das Formular gültig ist und sendet die Anmeldeinformationen",
+			"Title": "Login"
+		}
+	},
+	"RangeInput": {
+		"lbl": {
+			"Description": "Die <code>theme-range-input</code> Komponente bietet einen Zwei-Eingabe-Bereichs-Selector mit von und bis Werten, integriert mit ControlValueAccessor für Reactive Forms Unterstützung.",
+			"FormControlDescription": "FormControl-Instanz zur Verwaltung des Bereichseingabewerts",
+			"LabelDescription": "Beschriftungstext über der Bereichseingabe angezeigt",
+			"Title": "Range Input",
+			"ValueChangeDescription": "Ausgabe-Emitter wird ausgelöst, wenn sich der Bereichswert ändert"
+		}
+	},
+	"Select": {
+		"lbl": {
+			"Description": "Die <code>theme-select</code> Komponente ist ein Dropdown-Auswahlfeld mit Unterstützung für Einzel- und Mehrfachauswahl, benutzerdefinierten Labels und dynamischem Layout.",
+			"FormControlDescription": "FormControl-Instanz zur Verwaltung des Select-Werts",
+			"IsDynamicDescription": "Wenn true, wird dynamisches Layout-Verhalten aktiviert",
+			"LabelDescription": "Beschriftungstext über dem Auswahlfeld angezeigt",
+			"MultipleDescription": "Wenn true, wird der Mehrfachauswahlmodus aktiviert",
+			"OptionsDescription": "Array von SelectOption-Objekten mit Label- und Value-Eigenschaften",
+			"Title": "Select"
+		}
+	},
+	"Tabs": {
+		"lbl": {
+			"ActiveTabDescription": "Der Index des aktuell aktiven Registers",
+			"Description": "Die <code>theme-tabs</code> Komponente zeigt mehrere Registerkarten mit anklickbaren Registerköpfen zum Wechsel zwischen verschiedenen Inhaltsbereichen an.",
+			"TabsDescription": "Array von Registerelementen mit Label- und Content-Eigenschaften",
+			"ThemeTabDescription": "Einzelne Registerkarte innerhalb der Registerkartengruppe mit Beschriftungseingabe",
+			"Title": "Tabs"
+		}
+	},
+	"Textarea": {
+		"lbl": {
+			"Description": "Die <code>theme-textarea</code> Komponente ist ein mehrzeiliges Texteingabefeld mit schwebenden Labels und Validierungsunterstützung.",
+			"IsDynamicDescription": "Wenn true, wird das dynamische Label-Verhalten aktiviert",
+			"LabelDescription": "Der Label-Text für das Textarea",
+			"PlaceholderDescription": "Platzhaltertext, der angezeigt wird, wenn das Feld leer ist",
+			"Title": "Textbereich"
+		}
+	},
+	"Tooltip": {
+		"lbl": {
+			"Description": "Die <code>themeTooltip</code> Direktive zeigt einen Tooltip an, wenn Benutzer über ein Element fahren. Sie kann auf jedes HTML-Element angewendet werden.",
+			"Title": "Tooltip",
+			"TooltipTextDescription": "Der Text, der im Tooltip angezeigt werden soll"
+		}
+	},
+	"Typography": {
+		"lbl": {
+			"Description": "Übersicht über die verfügbaren Typografie-Stile im Theme-System. Verwende diese CSS-Klassen für eine einheitliche Textformatierung in der Anwendung.",
+			"Title": "Typography"
+		}
+	}
+}

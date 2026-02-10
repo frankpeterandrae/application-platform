@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-height-100" xmlns="http://www.w3.org/1999/html">
+	<theme-sidebar class="fpa-grid-col-end-1 fpa-overflow-hidden fpa-d-flex fpa-flex-column" [menuItems]="menuItems"></theme-sidebar>
+	<div class="fpa-grid-col-end-11 fpa-overflow-y-hidden fpa-flex fpa-flex-grow-1 fpa-height-100">
+		<div class="fpa-flex fpa-flex-grow-1 fpa-m-1">
+			<div class="fpa-content fpa-flex-grow-1">
+				<h1>{{ description().title | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h1>
+				<div class="fpa-overflow-auto">
+					@if (description().description) {
+						<span class="fpa-block fpa-mb-1">
+							<p [innerHTML]="description().description ?? '' | fpaSharedUiTranslate: Scopes.DEMO_FEATURE"></p>
+						</span>
+					}
+
+					@if (description().usage) {
+						<ng-container [ngTemplateOutlet]="usage" [ngTemplateOutletContext]="{ description }"></ng-container>
+					}
+
+					@if (description().definition) {
+						<ng-container [ngTemplateOutlet]="definition" [ngTemplateOutletContext]="{ description }"> </ng-container>
+					}
+
+					<theme-card>
+						<ng-content></ng-content>
+					</theme-card>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<ng-template #usage let-description="description">
+	<span class="fpa-block fpa-mb-1">
+		<h2>{{ i18nTextModules.DemoThemeContainer.lbl.Usage | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h2>
+		<demo-theme-prism [language]="description().language ?? 'html'" [code]="description().usage"></demo-theme-prism>
+	</span>
+</ng-template>
+
+<ng-template #definition let-description="description">
+	<span class="fpa-block fpa-mb-1">
+		<h2>{{ i18nTextModules.DemoThemeContainer.lbl.PropsInterface | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h2>
+
+		<div class="fpa-grid-12">
+			<div class="fpa-grid-col-end-{{ description().definition.span || '12' }}">
+				@for (row of description().definition.rows; track row) {
+					<theme-card class="fpa-block">
+						<span class="fpa-grid-12">
+							@for (column of row.columns; track column) {
+								@if (column.columntype === 'code') {
+									<span class="fpa-grid-col-end-{{ column.span }}"
+										><code [innerHTML]="column.value" class="badge fpa-bg-main-band fpa-light-text"></code
+									></span>
+								} @else {
+									<span class="fpa-small fpa-grid-col-end-{{ column.span }}">
+										<div class="fpa-font-weight-bold" [innerHTML]="column.type"></div>
+										<div [innerHTML]="column.value | fpaSharedUiTranslate: Scopes.DEMO_FEATURE"></div>
+										@if (column.optional) {
+											<div class="fpa-italic">
+												{{
+													i18nTextModules.DemoThemeContainer.lbl.Optional
+														| fpaSharedUiTranslate: Scopes.DEMO_FEATURE
+												}}
+											</div>
+										}
+									</span>
+								}
+							}
+						</span>
+					</theme-card>
+				}
+			</div>
+		</div></span
+	>
+</ng-template>

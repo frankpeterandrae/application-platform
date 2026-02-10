@@ -1,0 +1,204 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">{{ i18nTextModules.Common.lbl.ColorVariantions | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h3>
+	<table class="fpa-paragraph">
+		<thead>
+			<tr>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Checkbox.lbl.TableHeaderColor | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderEnabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+				<th class="fpa-text-left fpa-border-bottom fpa-border-themed-divider">
+					{{ i18nTextModules.Common.lbl.TableHeaderDisabled | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Light Shades</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Light Shades'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.LIGHT_SHADES,
+								id: CheckboxColorDefinition.LIGHT_SHADES,
+								value: CheckboxColorDefinition.LIGHT_SHADES,
+								color: CheckboxColorDefinition.LIGHT_SHADES
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Light Shades (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.LIGHT_SHADES,
+								id: CheckboxColorDefinition.LIGHT_SHADES + '-disabled',
+								value: CheckboxColorDefinition.LIGHT_SHADES,
+								color: CheckboxColorDefinition.LIGHT_SHADES,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Light Accent</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Light Accent'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.LIGHT_ACCENT,
+								id: CheckboxColorDefinition.LIGHT_ACCENT,
+								value: CheckboxColorDefinition.LIGHT_ACCENT,
+								color: CheckboxColorDefinition.LIGHT_ACCENT
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Light Accent (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.LIGHT_ACCENT,
+								id: CheckboxColorDefinition.LIGHT_ACCENT + '-disabled',
+								value: CheckboxColorDefinition.LIGHT_ACCENT,
+								color: CheckboxColorDefinition.LIGHT_ACCENT,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Main Band</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Main Band'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.MAIN_BAND,
+								id: CheckboxColorDefinition.MAIN_BAND,
+								value: CheckboxColorDefinition.MAIN_BAND,
+								color: CheckboxColorDefinition.MAIN_BAND
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Main Band (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.MAIN_BAND,
+								id: CheckboxColorDefinition.MAIN_BAND + '-disabled',
+								value: CheckboxColorDefinition.MAIN_BAND,
+								color: CheckboxColorDefinition.MAIN_BAND,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Dark Accent</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Dark Accent'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.DARK_ACCENT,
+								id: CheckboxColorDefinition.DARK_ACCENT,
+								value: CheckboxColorDefinition.DARK_ACCENT,
+								color: CheckboxColorDefinition.DARK_ACCENT
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Dark Accent (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.DARK_ACCENT,
+								id: CheckboxColorDefinition.DARK_ACCENT + '-disabled',
+								value: CheckboxColorDefinition.DARK_ACCENT,
+								color: CheckboxColorDefinition.DARK_ACCENT,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Dark Shades</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Dark Shades'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.DARK_SHADES,
+								id: CheckboxColorDefinition.DARK_SHADES,
+								value: CheckboxColorDefinition.DARK_SHADES,
+								color: CheckboxColorDefinition.DARK_SHADES
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Dark Shades (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.DARK_SHADES,
+								id: CheckboxColorDefinition.DARK_SHADES + '-disabled',
+								value: CheckboxColorDefinition.DARK_SHADES,
+								color: CheckboxColorDefinition.DARK_SHADES,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td class="fpa-small fpa-pr-2 fpa-py-1 fpa-border-bottom fpa-border-themed-divider">Success</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Success'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.SUCCESS,
+								id: CheckboxColorDefinition.SUCCESS,
+								value: CheckboxColorDefinition.SUCCESS,
+								color: CheckboxColorDefinition.SUCCESS
+							}
+						]"
+					/>
+				</td>
+				<td class="fpa-py-1 fpa-border-bottom fpa-border-themed-divider">
+					<theme-checkbox-group
+						[label]="'Success (disabled)'"
+						[checkboxes]="[
+							{
+								label: CheckboxColorDefinition.SUCCESS,
+								id: CheckboxColorDefinition.SUCCESS + '-disabled',
+								value: CheckboxColorDefinition.SUCCESS,
+								color: CheckboxColorDefinition.SUCCESS,
+								disabled: true
+							}
+						]"
+					/>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</demo-theme>

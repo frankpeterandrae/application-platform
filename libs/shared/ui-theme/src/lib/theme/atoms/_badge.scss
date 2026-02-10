@@ -1,0 +1,20 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../base/prefix';
+@use '../base/variables';
+@use '../base/utility';
+
+.#{prefix.$prefix}badge {
+	font-size: utility.calc-unit(12px);
+	font-family: variables.$font-family;
+	font-weight: 400;
+	line-height: 1;
+	padding: utility.calc-unit(2px) utility.calc-unit(5px);
+	border-radius: utility.calc-unit(11px);
+	box-sizing: border-box;
+	min-width: utility.calc-unit(16px);
+	min-height: utility.calc-unit(16px);
+}

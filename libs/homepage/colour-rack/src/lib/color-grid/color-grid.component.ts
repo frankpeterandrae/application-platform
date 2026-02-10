@@ -14,7 +14,7 @@ import { LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platfo
 import { provideTranslocoScope } from '@jsverse/transloco';
 
 import { ColorDetailsComponent } from '../color-details/color-details.component';
-import { colorRackTextModules } from '../i18n/i18n';
+import { i18nTextModules } from '../i18n/i18n';
 import type { Color } from '../models/color.model';
 import { ColorService } from '../services/color.service';
 
@@ -26,12 +26,12 @@ import { ColorService } from '../services/color.service';
 	templateUrl: './color-grid.component.html',
 	styleUrls: ['./color-grid.component.scss'],
 	imports: [NgStyle, CdkVirtualScrollViewport, CdkVirtualForOf, CdkFixedSizeVirtualScroll, TranslationDirective],
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorGridComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorGridComponent' }, provideTranslocoScope(Scopes.COLOUR_RACK)]
 })
 export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 	private readonly colorService = inject(ColorService);
 	private readonly dialogService = inject(DialogService);
-	public readonly colorRackTextModules = colorRackTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 
 	public readonly viewPort = viewChild.required(CdkVirtualScrollViewport);
 	/**

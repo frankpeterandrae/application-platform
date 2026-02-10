@@ -1,0 +1,66 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<form [formGroup]="demoForm">
+		<h3 class="fpa-h2">Basic Text Input</h3>
+		<div class="fpa-mb-2">
+			<theme-input
+				[label]="'Username'"
+				[type]="'text'"
+				[placeholder]="'Enter your username'"
+				[formControl]="demoForm.controls.textInput"
+			>
+			</theme-input>
+		</div>
+
+		<h3 class="fpa-h2">Email Input</h3>
+		<div class="fpa-mb-2">
+			<theme-input
+				[label]="'Email Address'"
+				[type]="'email'"
+				[placeholder]="'your.email@example.com'"
+				[formControl]="demoForm.controls.emailInput"
+				[darkText]="true"
+			>
+			</theme-input>
+		</div>
+
+		<h3 class="fpa-h2">Password Input</h3>
+		<div class="fpa-mb-2">
+			<theme-input
+				[label]="'Password'"
+				[type]="'password'"
+				[placeholder]="'Enter password (min 8 characters)'"
+				[formControl]="demoForm.controls.passwordInput"
+				[darkText]="true"
+			>
+			</theme-input>
+		</div>
+
+		<h3 class="fpa-h2">Input with Icon</h3>
+		<div class="fpa-mb-2">
+			<theme-input
+				[label]="'Search'"
+				[type]="'text'"
+				[placeholder]="'Search...'"
+				[icon]="IconDefinition.SEARCH"
+				[formControl]="demoForm.controls.iconInput"
+				[darkText]="true"
+			>
+			</theme-input>
+		</div>
+
+		<h3 class="fpa-h2">Disabled Input</h3>
+		<div class="fpa-mb-2">
+			<theme-input [label]="'Disabled Field'" [type]="'text'" [disabled]="true" [formControl]="demoForm.controls.disabledInput">
+			</theme-input>
+		</div>
+
+		<h3 class="fpa-h2">Form Values</h3>
+		<theme-card>
+			<pre class="fpa-small">{{ demoForm.value | json }}</pre>
+		</theme-card>
+	</form>
+</demo-theme>

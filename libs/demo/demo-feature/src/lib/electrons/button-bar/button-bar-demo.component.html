@@ -1,0 +1,26 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">Action Buttons</h3>
+	<p class="fpa-paragraph fpa-mb-1">Typical form action buttons (Cancel/Save):</p>
+	<theme-button-bar [buttons]="actionButtons"></theme-button-bar>
+
+	<h3 class="fpa-h2 fpa-mt-2">Navigation Buttons</h3>
+	<p class="fpa-paragraph fpa-mb-1">Navigation buttons with directional icons:</p>
+	<theme-button-bar [buttons]="navigationButtons"></theme-button-bar>
+
+	<h3 class="fpa-h2 fpa-mt-2">Multiple Actions</h3>
+	<p class="fpa-paragraph fpa-mb-1">Multiple action buttons for record management:</p>
+	<theme-button-bar [buttons]="multipleActionsButtons"></theme-button-bar>
+
+	<h3 class="fpa-h2 fpa-mt-2">Button Configuration</h3>
+	<theme-card>
+		<p class="fpa-paragraph">Each button in the button bar is configured using the <code>ButtonConfigModel</code> interface:</p>
+		<pre class="fpa-small"
+			>{{ pre }}
+    </pre
+		>
+	</theme-card>
+</demo-theme>

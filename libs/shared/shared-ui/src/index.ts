@@ -5,6 +5,7 @@
 
 export * from './lib/components/base/base.component';
 export * from './lib/directives/translation/translation.directive';
+export * from './lib/directives/translation/translation.pipe';
 export * from './lib/guards/env.guard';
 export * from './lib/services/data-connection/data.connection.service';
 export * from './lib/services/logger/logger.service';

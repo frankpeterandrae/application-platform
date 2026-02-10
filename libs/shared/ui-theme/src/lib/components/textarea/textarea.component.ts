@@ -68,7 +68,7 @@ export class TextareaComponent implements ControlValueAccessor {
 	 * @returns {boolean} - True if the textarea field has a value, otherwise false.
 	 */
 	public isFilled(): boolean {
-		return this.value.length > 0;
+		return this.value.length > 0 || !!this.placeholder();
 	}
 	/**
 	 * Handles the focus event on the textarea field.

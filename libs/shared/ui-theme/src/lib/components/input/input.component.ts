@@ -78,7 +78,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @returns {boolean} - True if the input field has a value, otherwise false.
 	 */
 	public isFilled(): boolean {
-		return this.value.length > 0;
+		return this.value.length > 0 || !!this.placeholder();
 	}
 
 	/**

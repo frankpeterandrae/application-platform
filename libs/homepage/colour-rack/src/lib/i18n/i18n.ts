@@ -1,4 +1,4 @@
-export const colorRackTextModules = {
+export const i18nTextModules = {
 	ColorDetails: {
 		lbl: {
 			AlternativeNames: 'ColorDetails.lbl.AlternativeNames',

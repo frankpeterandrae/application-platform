@@ -10,7 +10,7 @@ import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
 import { ColorGridComponent } from '../color-grid/color-grid.component';
 import { ColorSearchComponent } from '../color-search/color-search.component';
-import { colorRackTextModules } from '../i18n/i18n';
+import { i18nTextModules } from '../i18n/i18n';
 
 /**
  * Component for the color search container.
@@ -19,15 +19,15 @@ import { colorRackTextModules } from '../i18n/i18n';
 	selector: 'cr-color-search-container',
 	templateUrl: './color-search-container.component.html',
 	imports: [ColorSearchComponent, ColorGridComponent, TranslationDirective],
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorSearchContainerComponent' }, provideTranslocoScope(Scopes.COLOR_RACK)]
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorSearchContainerComponent' }, provideTranslocoScope(Scopes.COLOUR_RACK)]
 })
 export class ColorSearchContainerComponent implements OnInit {
 	private readonly meta = inject(Meta);
 	private readonly title = inject(Title);
-	public readonly colorRackTextModules = colorRackTextModules;
+	public readonly i18nTextModules = i18nTextModules;
 
-	private readonly metaTitle = translateSignal(colorRackTextModules.ColorSearchContainerComponent.meta.Title);
-	private readonly metaDescription = translateSignal(colorRackTextModules.ColorSearchContainerComponent.meta.Description);
+	private readonly metaTitle = translateSignal(i18nTextModules.ColorSearchContainerComponent.meta.Title);
+	private readonly metaDescription = translateSignal(i18nTextModules.ColorSearchContainerComponent.meta.Description);
 
 	/**
 	 * Lifecycle hook that is called after data-bound properties of a directive are initialized.

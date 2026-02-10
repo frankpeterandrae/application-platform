@@ -3,9 +3,8 @@
  * All rights reserved.
  */
 
-import { CommonModule } from '@angular/common';
-import { Component, input, output } from '@angular/core';
-import { ControlValueAccessor, ReactiveFormsModule } from '@angular/forms';
+import { Component, forwardRef, input, output } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 import { InputComponent } from '../input/input.component';
 
@@ -20,8 +19,15 @@ export interface RangeInput {
  */
 @Component({
 	selector: 'theme-range-input',
-	imports: [CommonModule, InputComponent, ReactiveFormsModule],
-	templateUrl: './range-input.component.html'
+	imports: [InputComponent, ReactiveFormsModule],
+	templateUrl: './range-input.component.html',
+	providers: [
+		{
+			provide: NG_VALUE_ACCESSOR,
+			useExisting: forwardRef(() => RangeInputComponent),
+			multi: true
+		}
+	]
 })
 export class RangeInputComponent implements ControlValueAccessor {
 	public label = input.required<string>();

@@ -1,0 +1,32 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andr�
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<div class="fpa-mt-2">
+		<h3>Tooltip Directive Examples</h3>
+		<p>Hover over the elements below to see the tooltips:</p>
+		<div class="fpa-mt-2">
+			<h4>Button with Tooltip</h4>
+			<button [themeTooltip]="'Click me to submit the form'" class="fpa-btn fpa-bg-primary">Submit</button>
+		</div>
+		<div class="fpa-mt-2">
+			<h4>Text with Tooltip</h4>
+			<span [themeTooltip]="'This text has additional information'" class="fpa-cursor-pointer fpa-text-primary">
+				Hover over this text
+			</span>
+		</div>
+		<div class="fpa-mt-2">
+			<h4>Icon with Tooltip</h4>
+			<span [themeTooltip]="'Help information about this feature'" class="fpa-cursor-pointer"> ?? Info Icon </span>
+		</div>
+		<h3 class="fpa-mt-3">Features</h3>
+		<ul>
+			<li>Appears on mouseenter, disappears on mouseleave</li>
+			<li>Automatically positions below the element</li>
+			<li>Can be applied to any HTML element</li>
+			<li>Lightweight directive implementation</li>
+			<li>Customizable via CSS classes</li>
+		</ul>
+	</div>
+</demo-theme>

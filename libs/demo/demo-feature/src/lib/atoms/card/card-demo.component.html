@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">Standard Card</h3>
+	<div class="fpa-mb-2">
+		<theme-card>
+			<h4 class="fpa-h3">Standard Card Title</h4>
+			<p class="fpa-paragraph">
+				This is a standard card component. Cards are used to group related content and make it easily scannable. They provide a
+				clean, organized way to display information.
+			</p>
+		</theme-card>
+	</div>
+
+	<h3 class="fpa-h2">Inverted Card</h3>
+	<div class="fpa-mb-2">
+		<theme-card [inverted]="true">
+			<h4 class="fpa-h3">Inverted Card Title</h4>
+			<p class="fpa-paragraph">
+				This is an inverted card component with different styling. Inverted cards use alternative colors for visual variety and
+				emphasis.
+			</p>
+		</theme-card>
+	</div>
+
+	<h3 class="fpa-h2">Card with Mixed Content</h3>
+	<div class="fpa-mb-2">
+		<theme-card>
+			<h4 class="fpa-h3">Card with Various Content</h4>
+			<p class="fpa-paragraph">Cards can contain various types of content:</p>
+			<ul class="fpa-paragraph">
+				<li>Text paragraphs</li>
+				<li>Images and media</li>
+				<li>Buttons and controls</li>
+				<li>Lists and tables</li>
+			</ul>
+		</theme-card>
+	</div>
+</demo-theme>

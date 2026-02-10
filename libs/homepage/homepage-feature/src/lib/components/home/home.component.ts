@@ -9,7 +9,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { BaseComponent, LOGGER_SOURCE, Scopes } from '@application-platform/shared-ui';
 import { provideTranslocoScope, translateSignal } from '@jsverse/transloco';
 
-import { featureTextModules } from '../../i18n/i18n';
+import { i18nTextModules } from '../../i18n/i18n';
 import { HeroComponent } from '../hero/hero.component';
 
 /**
@@ -18,15 +18,15 @@ import { HeroComponent } from '../hero/hero.component';
 @Component({
 	selector: 'homepage-feature-home',
 	imports: [HeroComponent],
-	providers: [{ provide: LOGGER_SOURCE, useValue: 'HomeComponent' }, provideTranslocoScope(Scopes.FEATURE)],
+	providers: [{ provide: LOGGER_SOURCE, useValue: 'HomeComponent' }, provideTranslocoScope(Scopes.HOMEPAGE_FEATURE)],
 	templateUrl: './home.component.html'
 })
 export class HomeComponent extends BaseComponent implements OnInit {
 	private readonly meta = inject(Meta);
 	private readonly title = inject(Title);
 
-	private readonly metaTitle = translateSignal(featureTextModules.HomeComponent.meta.Title);
-	private readonly metaDescription = translateSignal(featureTextModules.HomeComponent.meta.Description);
+	private readonly metaTitle = translateSignal(i18nTextModules.HomeComponent.meta.Title);
+	private readonly metaDescription = translateSignal(i18nTextModules.HomeComponent.meta.Description);
 
 	/**
 	 * Lifecycle hook that is called after data-bound properties of a directive are initialized.

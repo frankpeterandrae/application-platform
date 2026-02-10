@@ -59,6 +59,6 @@ describe('ColorDetailsComponent', () => {
 
 	it('should return "Unknown" when invalid types are provided', () => {
 		component.data.componentData = { type: 'Metallic' } as Color;
-		expect(component.colorType()).toBe('ds.unknown');
+		expect(component.colorType()).toBe('Unknown');
 	});
 });

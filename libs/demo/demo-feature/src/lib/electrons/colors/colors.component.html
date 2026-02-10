@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h2>{{ i18nTextModules.Colors.lbl.ColorsWithVariations | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h2>
+	<div class="color-container">
+		@for (color of colorsWithVariables; track color) {
+			<div class="color-row">
+				<div class="color-name">
+					{{ color }}
+					{{ i18nTextModules.Colors.lbl.Shades | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</div>
+				@for (shade of shades; track shade) {
+					<div class="color-shade">
+						@if (shade === 0) {
+							<div class="demo-colors-block" [ngClass]="'fpa-bg-' + color" [themeTooltip]="color"></div>
+						} @else {
+							<div
+								class="demo-colors-block"
+								[ngClass]="'fpa-bg-' + color + '-s' + shade"
+								[themeTooltip]="color + '-s' + shade"
+							></div>
+						}
+					</div>
+				}
+			</div>
+			<div class="color-row">
+				<div class="color-name">
+					{{ color }}
+					{{ i18nTextModules.Colors.lbl.Tints | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}
+				</div>
+				@for (tint of shades; track tint) {
+					<div class="color-shade">
+						@if (tint === 0) {
+							<div class="demo-colors-block" [ngClass]="'fpa-bg-' + color" [themeTooltip]="color"></div>
+						} @else {
+							<div
+								class="demo-colors-block"
+								[ngClass]="'fpa-bg-' + color + '-t' + tint"
+								[themeTooltip]="color + '-t' + tint"
+							></div>
+						}
+					</div>
+				}
+			</div>
+		}
+	</div>
+
+	<h2>{{ i18nTextModules.Colors.lbl.ColorsWithoutVariations | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h2>
+	<div class="color-container">
+		@for (color of colors; track color) {
+			<div class="color-row">
+				<div class="color-shade">
+					<div class="demo-colors-block" [ngClass]="'fpa-bg-' + color" [themeTooltip]="color"></div>
+				</div>
+			</div>
+		}
+	</div>
+</demo-theme>

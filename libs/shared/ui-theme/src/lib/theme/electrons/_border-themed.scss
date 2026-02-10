@@ -1,0 +1,16 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../base/prefix';
+@use '../base/variables';
+@use 'sass:map';
+
+$stroke-color-names: map.keys(variables.$stroke-colors);
+
+@each $color-name in $stroke-color-names {
+	.#{prefix.$prefix}border-themed-#{$color-name} {
+		border-color: map.get(variables.$stroke-colors, $color-name);
+	}
+}

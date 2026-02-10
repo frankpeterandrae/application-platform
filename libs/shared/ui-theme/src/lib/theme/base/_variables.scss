@@ -57,3 +57,18 @@ $breakpoints: (
 	xxl: $ultra-wide,
 	xxxl: $ultra-ultra-wide
 );
+$stroke-colors: (
+	primary: $main-band,
+	secondary: utility.tint($dark-accent, 2),
+	secondary-hover: utility.tint($dark-accent, 2),
+	tertiary: $dark-shades,
+	success: $success,
+	warning: $warning,
+	error: $danger,
+	active: $light-accent,
+	active-disabled: utility.tint($light-accent, 8),
+	info: utility.tint($info, 6),
+	disabled: utility.tint($dark-accent, 6),
+	divider: utility.tint($dark-accent, 8),
+	buttonbar-border: utility.tint($dark-accent, 7)
+);

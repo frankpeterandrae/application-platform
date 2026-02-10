@@ -5,14 +5,14 @@
 
 <div class="fpa-flex fpa-flex-column fpa-height-100">
 	<theme-header class="fpa-flex-shrink-1">
-		<theme-dropdown-select [options]="opts()" [(selected)]="selectedTheme" (selectionChange)="setTheme($event)" />
+		<theme-dropdown-select [options]="opts()" [selected]="selectedTheme()" (selectionChange)="setTheme($event)" />
 	</theme-header>
-	<div class="fpa-flex fpa-flex-row fpa-height-100">
-		<theme-sidebar [menuItems]="menuItems"></theme-sidebar>
-		<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-flex-1">
-			<div class="fpa-grid-col-end-12 fpa-overflow-y-auto">
-				<router-outlet></router-outlet>
-			</div>
+
+	<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-flex-1">
+		<div class="fpa-grid-col-end-12 fpa-overflow-y-auto fpa-overflow-sm-hidden fpa-m-1">
+			<router-outlet></router-outlet>
 		</div>
 	</div>
+
+	<theme-footer class="fpa-flex-shrink-1"></theme-footer>
 </div>

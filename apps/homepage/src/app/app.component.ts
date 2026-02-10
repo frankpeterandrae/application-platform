@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
 	private readonly paintRack = translateSignal(i18nTextModules.AppComponent.menu.lbl.PaintRack);
 	private readonly inDevelopment = translateSignal(i18nTextModules.AppComponent.menu.lbl.InDevelopment);
 	private readonly test = translateSignal(i18nTextModules.AppComponent.menu.lbl.Test);
+	private readonly demo: string = 'DEMO';
 
 	/**
 	 * The menu items are provided via a getter that reads translation signals.
@@ -59,7 +60,10 @@ export class AppComponent implements OnInit {
 							label: this.inDevelopment(),
 							icon: IconDefinition.BRUSH,
 							route: '/dev',
-							children: [{ id: 'test', label: this.test(), route: '/dev/test' }]
+							children: [
+								{ id: 'test', label: this.test(), route: '/dev/test' },
+								{ id: 'demo', label: this.demo, route: '/dev/demo' }
+							]
 						}
 					])
 		];

@@ -21,12 +21,13 @@
 }
 
 .fpa-dropdown-select-list-container {
-	position: absolute;
-	top: calc(100% + 8px);
-	left: 0.75rem;
+	position: fixed;
+	top: auto;
+	left: 0;
 	z-index: 50;
 	opacity: 0;
-	transform: translateY(-6px);
+	transform: scale(0.95);
+	transform-origin: top left;
 	pointer-events: none;
 	transition:
 		opacity 140ms ease,
@@ -34,15 +35,23 @@
 
 	&.open {
 		opacity: 1;
-		transform: translateY(0);
+		transform: scale(1);
 		pointer-events: auto;
+	}
+
+	/* When the popup is positioned above the button instead of below */
+	&.flip-up {
+		transform-origin: bottom left;
 	}
 
 	/* When the popup is too close to the viewport right edge, align it to the host's right. */
 	&.align-right {
 		left: auto;
-		right: 0.75rem; /* mirror the left offset used by default */
 		transform-origin: top right;
+
+		&.flip-up {
+			transform-origin: bottom right;
+		}
 	}
 }
 
@@ -53,6 +62,9 @@
 	border: 1px solid variables.$light-shades;
 	backdrop-filter: blur(1rem);
 	box-shadow: 0 0.75rem 2rem variables.$dark-shades-highlight;
+	max-width: 90vw;
+	max-height: 60vh;
+	overflow: auto;
 
 	li + li {
 		margin-top: 4px;

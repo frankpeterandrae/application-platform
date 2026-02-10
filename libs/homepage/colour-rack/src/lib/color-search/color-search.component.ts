@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 import { IconDefinition, InputComponent } from '@application-platform/shared/ui-theme';
 import { translateSignal } from '@jsverse/transloco';
 
-import { colorRackTextModules } from '../i18n/i18n';
+import { i18nTextModules } from '../i18n/i18n';
 
 /**
  * Component for searching colors.
@@ -25,7 +25,7 @@ export class ColorSearchComponent {
 	 */
 	public readonly searchEvent = output<string>();
 
-	public readonly searchColor = translateSignal(colorRackTextModules.ColorSearch.lbl.SearchColor);
+	public readonly searchColor = translateSignal(i18nTextModules.ColorSearch.lbl.SearchColor);
 	/**
 	 * Emits the search event with the current search text.
 	 * @param {string} $event - The current search text.
