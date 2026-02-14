@@ -20,4 +20,5 @@ export * from './lib/molecules/dropdown/dropdown-demo.component';
 export * from './lib/molecules/language-toggle/language-toggle-demo.component';
 export * from './lib/molecules/login/login-demo.component';
 export * from './lib/molecules/tabs/tabs-demo.component';
+export * from './lib/molecules/tree-view/tree-view-demo.component';
 export * from './lib/typography/typography-demo.component';

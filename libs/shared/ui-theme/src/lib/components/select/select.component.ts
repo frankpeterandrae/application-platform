@@ -129,7 +129,11 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 		return Array.isArray(this.value) ? this.value.length > 0 : !!this.value;
 	}
 
-	protected isFloating(): boolean {
+	/**
+	 * Determines if the select component should be in a floating state.
+	 * @returns {boolean} - True if the component is dynamic and focused, otherwise false.
+	 */
+	public isFloating(): boolean {
 		return this.isDynamic() && this.selectFocused;
 	}
 

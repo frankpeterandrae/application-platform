@@ -140,6 +140,11 @@ export class DemoThemeContainerComponent {
 				route: '../tooltip'
 			},
 			{
+				id: 'treeView',
+				label: this.translationPipe.transform(i18nTextModules.TreeView.lbl.Title, Scopes.DEMO_FEATURE),
+				route: '../tree-view'
+			},
+			{
 				id: 'typography',
 				label: this.translationPipe.transform(i18nTextModules.Typography.lbl.Title, Scopes.DEMO_FEATURE),
 				route: '../typography'

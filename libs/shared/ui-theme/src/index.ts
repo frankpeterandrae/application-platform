@@ -26,6 +26,7 @@ export * from './lib/components/shared/tooltip/tooltip.directive';
 export * from './lib/components/tabs/tab-group.component';
 export * from './lib/components/tabs/tab.component';
 export * from './lib/components/textarea/textarea.component';
+export * from './lib/components/tree-view/tree-view.component';
 export * from './lib/directives/floating-lable';
 export * from './lib/enums';
 export * from './lib/model';

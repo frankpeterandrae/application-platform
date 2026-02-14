@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-@use '../../theme/base/prefix';
+@use '../base/prefix';
 .#{prefix.$prefix}button-no-style {
 	background-color: transparent;
 	border: none;
