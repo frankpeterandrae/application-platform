@@ -174,6 +174,18 @@
 			"TooltipTextDescription": "Der Text, der im Tooltip angezeigt werden soll"
 		}
 	},
+	"TreeView": {
+		"lbl": {
+			"Content": "Nur verfügbar für LeafItem<T>. Speichert Daten jeglicher Art (string, number, object, etc.)",
+			"Description": "Die TreeView-Komponente zeigt eine hierarchische Baumstruktur mit Ordnern und Dateien an. Sie unterstützt verschachtelte Ordner, Dateiinhalte jeglicher Art und gibt das ausgewählte Element bei einem Klick aus.",
+			"Expanded": "Nur verfügbar für FolderItem. Legt fest, ob Unterordner sichtbar sind. Setzen Sie den Wert auf \"false\", um Ordner auszublenden.",
+			"FolderItem": "Typ für Ordnerelemente.",
+			"Items": "Array von Ordner- und Dateielementen. Elemente müssen mit LeafItem<T> oder FolderItem unter Verwendung des satisfies-Operators typisiert werden.",
+			"LeafItem": "Generischer Typ für Blattelemente.",
+			"SelectedItem": "Wird ausgelöst, wenn auf einen Ordner oder eine Datei geklickt wird. Gibt das gesamte Elementobjekt zurück.",
+			"Title": "Tree View"
+		}
+	},
 	"Typography": {
 		"lbl": {
 			"Description": "Übersicht über die verfügbaren Typografie-Stile im Theme-System. Verwende diese CSS-Klassen für eine einheitliche Textformatierung in der Anwendung.",

@@ -1,6 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
 
 const repoRoot = process.cwd();
 let filePaths = process.argv.slice(2); // Get the file paths passed by lint-staged or CLI

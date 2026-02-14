@@ -99,6 +99,13 @@
 			"options": {
 				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
 			}
+		},
+		"db:migrate": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "tsx tools/db-migrate.ts",
+				"cwd": "{workspaceRoot}"
+			}
 		}
 	}
 }

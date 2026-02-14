@@ -155,6 +155,15 @@ export const demoFeatureRoutes: Route[] = [
 			import('./directives/tooltip/tooltip-demo.component').then((m) => m.TooltipDemoComponent)
 	},
 	{
+		path: 'tree-view',
+		/**
+		 * Lazy loads the TreeViewDemoComponent from the demo-feature module.
+		 * @returns {Promise<Type<unknown>>} A promise that resolves to the TreeViewDemoComponent.
+		 */
+		loadComponent: (): Promise<Type<unknown>> =>
+			import('./molecules/tree-view/tree-view-demo.component').then((m) => m.TreeViewDemoComponent)
+	},
+	{
 		path: 'typography',
 		/**
 		 * Lazy loads the TypographyComponent from the demo-feature module.

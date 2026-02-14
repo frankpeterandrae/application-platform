@@ -1,0 +1,26 @@
+{
+	"name": "data-db",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/data-db/src",
+	"projectType": "library",
+	"tags": ["platform:node", "scope:z21", "type:data-access"],
+	"targets": {
+		"build": {
+			"executor": "@nx/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/libs/data-db",
+				"main": "libs/data-db/src/index.ts",
+				"tsConfig": "libs/data-db/tsconfig.lib.json",
+				"assets": ["libs/data-db/*.md"]
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"reportsDirectory": "../../coverage/libs/data-db"
+			}
+		}
+	}
+}

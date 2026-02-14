@@ -1,0 +1,12 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<demo-theme [description]="description">
+	<h3 class="fpa-h2">{{ i18nTextModules.TreeView.lbl.Title | fpaSharedUiTranslate: Scopes.DEMO_FEATURE }}</h3>
+	<theme-tree-view [items]="items" (selectedItem)="selectedItem($event)"></theme-tree-view>
+
+	@if (selectedItemContent()) {
+		<p>Selected: {{ selectedItemContent() | json }}</p>
+	}
+</demo-theme>

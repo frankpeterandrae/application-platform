@@ -25,6 +25,7 @@ export default [
 			'**/out-tsc',
 			'**/release',
 			'**/tools/**',
+			'eslint.config.mjs',
 			'**/vitest.config.*.timestamp*',
 			'*.log',
 			'**/.tmp/**',
@@ -261,7 +262,7 @@ export default [
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
+				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts', './libs/**/eslint.config.mjs'],
 				createDefaultProgram: true
 			}
 		},

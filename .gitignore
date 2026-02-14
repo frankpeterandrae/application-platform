@@ -58,3 +58,4 @@ __screenshots__/
 /playwright-report/
 /test-results/
 **/config.json
+/data/z21.db
