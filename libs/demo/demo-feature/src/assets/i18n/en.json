@@ -174,6 +174,18 @@
 			"TooltipTextDescription": "The text to be displayed inside the tooltip"
 		}
 	},
+	"TreeView": {
+		"lbl": {
+			"Content": "Only available on LeafItem<T>. Stores any type of data (string, number, object, etc.)",
+			"Description": "The TreeView component displays a hierarchical tree structure with folders and files. It supports nested folders, file content of any type, and emits the selected item on click.",
+			"Expanded": "Only available on FolderItem. Controls whether folder children are visible. Set to false for collapsed folders.",
+			"FolderItem": "Type for folder items.",
+			"Items": "Array of folder and file items. Items must be typed with LeafItem<T> or FolderItem using satisfies operator.",
+			"LeafItem": "Generic type for leaf items.",
+			"SelectedItem": "Emits when a folder or file item is clicked. Returns the entire item object.",
+			"Title": "Tree View"
+		}
+	},
 	"Typography": {
 		"lbl": {
 			"Description": "Overview of the available typography styles in the theme system. Use these CSS classes for consistent text formatting in your application.",

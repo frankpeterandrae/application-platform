@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+@for (item of items(); track item.id) {
+	<ng-container [ngTemplateOutlet]="root" [ngTemplateOutletContext]="{ item }"></ng-container>
+}
+
+<ng-template #root let-item="item">
+	@if (isFolderItem(item)) {
+		<ng-container [ngTemplateOutlet]="folderTemplate" [ngTemplateOutletContext]="{ item }"></ng-container>
+	} @else {
+		<ng-container [ngTemplateOutlet]="leafTemplate" [ngTemplateOutletContext]="{ item }"></ng-container>
+	}
+</ng-template>
+
+<ng-template #folderTemplate let-item="item">
+	<div class="theme-tree-view-folder">
+		<button
+			class="fpa-button-no-style theme-tree-view-folder-header"
+			(click)="toggleFolder(item)"
+			(keydown.enter)="toggleFolder(item)"
+			(keydown.space)="toggleFolder(item)"
+		>
+			<span class="theme-tree-view-folder-icon">{{ isFolderOpen(item) ? '📂' : '📁' }}</span>
+			<span class="theme-tree-view-folder-name">{{ item.label }}</span>
+		</button>
+		@if (isFolderOpen(item)) {
+			<div class="theme-tree-view-folder-children">
+				@for (child of item['children']; track child.id) {
+					<ng-container [ngTemplateOutlet]="root" [ngTemplateOutletContext]="{ item: child }"></ng-container>
+				}
+			</div>
+		}
+	</div>
+</ng-template>
+
+<ng-template #leafTemplate let-item="item">
+	<button
+		class="fpa-button-no-style theme-tree-view-leaf"
+		(click)="selectLeaf(item)"
+		(keydown.enter)="selectLeaf(item)"
+		(keydown.space)="selectLeaf(item)"
+	>
+		<span class="theme-tree-view-leaf-icon">📄</span>
+		<span class="theme-tree-view-leaf-name">{{ item.label }}</span>
+	</button>
+</ng-template>

@@ -3,12 +3,12 @@
  * All rights reserved.
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require('node:fs').promises;
+const path = require('node:path');
 
-const argv = process.argv.slice(2);
-const FIX = argv.includes('--fix');
-const FIX_ADD = argv.includes('--fix-add');
+const argv = new Set(process.argv.slice(2));
+const FIX = argv.has('--fix');
+const FIX_ADD = argv.has('--fix-add');
 const ROOT = process.cwd();
 
 async function findVitestConfigs(dir) {
@@ -139,10 +139,12 @@ async function processFile(file) {
 		console.log('Validation summary:');
 		for (const r of reports) {
 			const parts = [];
-			parts.push(r.file.replace(ROOT + path.sep, ''));
-			parts.push(`rel='${r.rel}'`);
-			parts.push(`cache:${r.hasCache ? (r.cacheMatches ? 'OK' : 'MISMATCH') : 'MISSING'}`);
-			parts.push(`output:${r.hasOut ? (r.outMatches ? 'OK' : 'MISMATCH') : 'MISSING'}`);
+			parts.push(
+				r.file.replace(ROOT + path.sep, ''),
+				`rel='${r.rel}'`,
+				`cache:${r.hasCache ? (r.cacheMatches ? 'OK' : 'MISMATCH') : 'MISSING'}`,
+				`output:${r.hasOut ? (r.outMatches ? 'OK' : 'MISMATCH') : 'MISSING'}`
+			);
 			if (r.changed) parts.push('(changed)');
 			console.log(' -', parts.join(' | '));
 		}
@@ -151,11 +153,11 @@ async function processFile(file) {
 		console.log(' --fix  ', FIX ? 'ENABLED' : 'disabled (dry-run)');
 		console.log(' --fix-add', FIX_ADD ? 'ENABLED' : 'disabled (do not add missing entries)');
 
-		if (!FIX) {
+		if (FIX) {
+			console.log('\nFiles were updated where replacements/inserts were possible.');
+		} else {
 			console.log('\nRun with --fix to apply the suggested replacements.');
 			console.log('Run with --fix --fix-add to also insert missing entries when possible.');
-		} else {
-			console.log('\nFiles were updated where replacements/inserts were possible.');
 		}
 	} catch (err) {
 		console.error('Error:', err);

@@ -15,15 +15,14 @@ import { IconDefinition } from '../../enums';
 @Component({
 	selector: 'theme-language-toggle',
 	imports: [FastSvgComponent],
-	templateUrl: './language-toggle.component.html',
-	styleUrls: ['./language-toggle.component.scss']
+	templateUrl: './language-toggle.component.html'
 })
 export class LanguageToggleComponent {
 	/** Service for handling translations and language changes. */
 	private readonly translationService = inject(ScopedTranslationServiceInterface);
 
 	/** Icon definitions used in the component. */
-	protected readonly IconDefinition = IconDefinition;
+	public readonly IconDefinition = IconDefinition;
 
 	/** Current language of the application. */
 	public language = this.translationService.currentLang;

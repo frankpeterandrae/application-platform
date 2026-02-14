@@ -1,0 +1,19 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+.theme-tree-view-folder-children {
+	padding-left: 1.5rem;
+	border-left: 1px dotted #1c2427;
+	position: relative;
+}
+
+.theme-tree-view-folder-children::before {
+	content: '';
+	bottom: 0;
+	position: absolute;
+	left: 0;
+	width: 1.5rem;
+	border-bottom: 1px dotted #1c2427;
+}

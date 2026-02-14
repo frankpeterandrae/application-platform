@@ -174,6 +174,18 @@ export const i18nTextModules = {
 			TooltipTextDescription: 'Tooltip.lbl.TooltipTextDescription'
 		}
 	},
+	TreeView: {
+		lbl: {
+			Content: 'TreeView.lbl.Content',
+			Description: 'TreeView.lbl.Description',
+			Expanded: 'TreeView.lbl.Expanded',
+			FolderItem: 'TreeView.lbl.FolderItem',
+			Items: 'TreeView.lbl.Items',
+			LeafItem: 'TreeView.lbl.LeafItem',
+			SelectedItem: 'TreeView.lbl.SelectedItem',
+			Title: 'TreeView.lbl.Title'
+		}
+	},
 	Typography: {
 		lbl: {
 			Description: 'Typography.lbl.Description',
