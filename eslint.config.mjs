@@ -268,7 +268,8 @@ export default [
 		plugins: {
 			import: importPlugin,
 			'unused-imports': unusedImports,
-			jsdoc
+			jsdoc,
+			'@typescript-eslint': tseslint.plugin
 		},
 		rules: {
 			// imports

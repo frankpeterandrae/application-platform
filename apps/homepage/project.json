@@ -158,7 +158,7 @@
 			"options": {
 				"tsConfig": "apps/homepage/tsconfig.spec.json",
 				"vitestConfig": "apps/homepage/vitest.config.mts",
-				"reportsDirectory": "../../coverage/apps/homepage",
+				"reportsDirectory": "{projectRoot}../../coverage/apps/homepage",
 				"passWithNoTests": true
 			},
 			"dependsOn": ["typecheck-test", "typecheck-app"]

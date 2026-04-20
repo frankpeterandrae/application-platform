@@ -75,9 +75,9 @@ describe('Logger', () => {
 		expect(console.debug).not.toHaveBeenCalled();
 	});
 
-	it('should log messages without source', () => {
+	it('should log messages without source', async () => {
 		TestBed.resetTestingModule();
-		setupTestingModule({});
+		await setupTestingModule({});
 		logger = TestBed.inject(Logger);
 		vi.spyOn(console, 'info');
 		logger.info('Info message');

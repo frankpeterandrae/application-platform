@@ -20,7 +20,7 @@
 			"options": {
 				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/ui-theme/vitest.config.mts",
-				"reportsDirectory": "../../../coverage/libs/shared/ui-theme",
+				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/ui-theme",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"],
