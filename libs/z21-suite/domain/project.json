@@ -11,7 +11,7 @@
 			"options": {
 				"tsConfig": "libs/z21-suite/domain//tsconfig.spec.json",
 				"vitestConfig": "libs/z21-suite/domain//vitest.config.mts",
-				"reportsDirectory": "../../../coverage/libs/z21-suite/domain",
+				"reportsDirectory": "{projectRoot}../../../coverage/libs/z21-suite/domain",
 				"passWithNoTests": true
 			},
 			"dependsOn": ["typecheck-test", "typecheck-lib"]

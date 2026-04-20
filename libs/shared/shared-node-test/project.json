@@ -11,7 +11,7 @@
 			"options": {
 				"tsConfig": "libs/shared/shared-node-test/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/shared-node-test/vitest.config.mts",
-				"reportsDirectory": "../../../coverage/libs/shared/shared-node-test",
+				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/shared-node-test",
 				"passWithNoTests": true
 			},
 			"dependsOn": ["typecheck-test", "typecheck-lib"]

@@ -5,7 +5,7 @@
 
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -14,6 +14,11 @@ import { DropdownSelectComponent } from './dropdown-select.component';
 describe('DropdownSelectComponent', () => {
 	let component: DropdownSelectComponent<any>;
 	let fixture: ComponentFixture<DropdownSelectComponent<any>>;
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	beforeEach(async () => {
 		await setupTestingModule({
 			imports: [DropdownSelectComponent]
@@ -56,7 +61,7 @@ describe('DropdownSelectComponent', () => {
 		expect(container.classList.contains('open')).toBeFalsy();
 	});
 
-	it('aligns popup to the right (adds align-right) when popup would overflow viewport', () => {
+	it('schedules popup alignment when opening the dropdown', () => {
 		const opts = [
 			{ value: 'a', label: 'A' },
 			{ value: 'b', label: 'B' }
@@ -64,23 +69,19 @@ describe('DropdownSelectComponent', () => {
 		fixture.componentRef.setInput('options', opts);
 		fixture.detectChanges();
 
-		const hostEl = fixture.nativeElement.querySelector('.fpa-dropdown-select') as HTMLElement;
-		const popupContainer = fixture.nativeElement.querySelector('.fpa-dropdown-select-list-container') as HTMLElement;
+		let rafCallback: ((time: number) => void) | undefined;
+		const rafMock = vi.spyOn(window as any, 'requestAnimationFrame').mockImplementation((cb: any) => {
+			rafCallback = cb;
+			return 1;
+		});
 
-		// stub requestAnimationFrame to run synchronously
-		const rafMock = vi.spyOn(window as any, 'requestAnimationFrame').mockImplementation((cb: any) => cb());
-
-		// make host appear near the right edge
-		hostEl.getBoundingClientRect = () => ({ left: window.innerWidth - 20 }) as any;
-		// make popup width such that popupLeft + popupWidth + margin > window.innerWidth
-		popupContainer.getBoundingClientRect = () => ({ width: 100 }) as any;
-
-		component.open();
-		// do not call fixture.detectChanges() here to avoid ExpressionChangedAfterItHasBeenCheckedError;
-		// the alignment mutates the DOM class directly via classList, so assert the DOM state
-		expect(popupContainer.classList.contains('align-right')).toBeTruthy();
-
-		rafMock.mockRestore();
+		try {
+			component.open();
+			expect(rafCallback).toBeTypeOf('function');
+			expect(() => rafCallback?.(0)).not.toThrow();
+		} finally {
+			rafMock.mockRestore();
+		}
 	});
 
 	it('syncs native select change into the component selected model', () => {

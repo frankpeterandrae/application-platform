@@ -58,3 +58,6 @@ __screenshots__/
 /playwright-report/
 /test-results/
 **/config.json
+
+.claude/worktrees
+.claude/settings.local.json

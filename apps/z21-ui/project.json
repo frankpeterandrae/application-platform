@@ -69,7 +69,7 @@
 			"options": {
 				"tsConfig": "apps/z21-ui/tsconfig.spec.json",
 				"vitestConfig": "apps/z21-ui/vitest.config.mts",
-				"reportsDirectory": "../../coverage/apps/z21-ui",
+				"reportsDirectory": "{projectRoot}../../coverage/apps/z21-ui",
 				"passWithNoTests": true
 			},
 			"dependsOn": ["typecheck-test", "typecheck-app"]

@@ -19,8 +19,8 @@ describe('EnvGuard', () => {
 	let guard: EnvGuard;
 	let router: Router;
 
-	beforeEach(() => {
-		setupTestingModule({
+	beforeEach(async () => {
+		await setupTestingModule({
 			providers: [EnvGuard, { provide: Router, useValue: { navigate: vi.fn() } }]
 		});
 		guard = TestBed.inject(EnvGuard);

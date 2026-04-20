@@ -11,7 +11,7 @@
 			"options": {
 				"tsConfig": "libs/shared/shared-ui/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/shared-ui/vitest.config.mts",
-				"reportsDirectory": "../../../coverage/libs/shared/shared-ui",
+				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/shared-ui",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"],

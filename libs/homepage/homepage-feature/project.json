@@ -11,7 +11,7 @@
 			"options": {
 				"tsConfig": "libs/homepage/homepage-feature/tsconfig.spec.json",
 				"vitestConfig": "libs/homepage/homepage-feature/vitest.config.mts",
-				"reportsDirectory": "../../../coverage/libs/homepage/homepage-feature",
+				"reportsDirectory": "{projectRoot}../../../coverage/libs/homepage/homepage-feature",
 				"passWithNoTests": true
 			},
 			"outputs": ["{options.reportsDirectory}"],

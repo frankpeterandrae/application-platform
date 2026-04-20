@@ -62,7 +62,7 @@ describe('NetworkStatusServiceService', () => {
 		mockNavigatorOnLine(true);
 
 		TestBed.resetTestingModule();
-		setupTestingModule({
+		await setupTestingModule({
 			providers: [NetworkStatusServiceService]
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
@@ -83,7 +83,7 @@ describe('NetworkStatusServiceService', () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
-		setupTestingModule({
+		await setupTestingModule({
 			providers: [NetworkStatusServiceService]
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
@@ -104,7 +104,7 @@ describe('NetworkStatusServiceService', () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
-		setupTestingModule({
+		await setupTestingModule({
 			providers: [NetworkStatusServiceService]
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
@@ -134,7 +134,7 @@ describe('NetworkStatusServiceService', () => {
 		mockNavigatorOnLine(true);
 
 		TestBed.resetTestingModule();
-		setupTestingModule({
+		await setupTestingModule({
 			providers: [NetworkStatusServiceService]
 		});
 		service = TestBed.inject(NetworkStatusServiceService);
@@ -164,7 +164,7 @@ describe('NetworkStatusServiceService', () => {
 		mockNavigatorOnLine(false);
 
 		TestBed.resetTestingModule();
-		setupTestingModule({
+		await setupTestingModule({
 			providers: [NetworkStatusServiceService]
 		});
 		service = TestBed.inject(NetworkStatusServiceService);

@@ -5,7 +5,6 @@
 
 import nx from '@nx/eslint-plugin';
 
-import '@typescript-eslint/eslint-plugin';
 import baseConfig from '../../../eslint.config.mjs';
 
 export default [
