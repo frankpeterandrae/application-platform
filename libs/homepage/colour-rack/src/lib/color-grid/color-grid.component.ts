@@ -170,4 +170,28 @@ export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
 			this.chunkSize = 12; // xl
 		}
 	}
+
+	/**
+	 * Get the correct background color with the correct gradient.
+	 * @param color
+	 */
+	public backgroundColor(color: Color): string | undefined {
+		if (color.secondaryColor) {
+			switch (color.type) {
+				case 'ME':
+				case 'S-ME':
+				case 'M-ME':
+				case 'H-ME':
+					return `linear-gradient(-45deg, ${color.secondaryColor}, ${color.mainColor}, ${color.secondaryColor})`;
+				case 'I':
+				case 'G':
+					return `linear-gradient(0deg,${color.secondaryColor},${color.mainColor})`;
+				case 'W':
+					return `radial-gradient(circle,${color.mainColor}, ${color.secondaryColor})`;
+				default:
+					return color.mainColor;
+			}
+		}
+		return color.mainColor;
+	}
 }

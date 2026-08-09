@@ -4,13 +4,13 @@
   -->
 
 <form [formGroup]="loginForm" (ngSubmit)="login()">
-	<div>
+	<div class="fpa-grid-8 fpa-pb-1">
 		<label for="email">Email:</label>
 		<input type="email" id="email" formControlName="email" required />
 	</div>
-	<div>
+	<div class="fpa-grid-8 fpa-pb-1">
 		<label for="password">Password:</label>
 		<input type="password" id="password" formControlName="password" required />
 	</div>
-	<theme-button [type]="'submit'" [color]="ButtonColorDefinition.PRIMARY">Login</theme-button>
+	<theme-button [type]="'submit'" [buttonText]="'Login'" [color]="ButtonColorDefinition.PRIMARY"></theme-button>
 </form>

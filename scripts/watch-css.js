@@ -19,7 +19,7 @@ function compileSass() {
 		try {
 			// Define paths
 			const scssPath = path.join(__dirname, '../libs/shared/ui-theme/src/lib/theme/styles.scss');
-			const cssOutputPath = path.join(__dirname, '../libs/shared/ui-theme/src/lib/theme/'); // Output to lib root
+			const cssOutputPath = path.join(__dirname, '../libs/shared/ui-theme/src/lib/theme/styles.css'); // Output to lib root
 			const outputFileName = 'styles.css'; // Desired CSS file name
 
 			// Compile SCSS to CSS using compileAsync
@@ -32,7 +32,7 @@ function compileSass() {
 			// Write the compiled CSS to the desired output file
 			await fs.writeFile(path.join(path.dirname(cssOutputPath), outputFileName), result.css);
 
-			console.log(`CSS successfully compiled to ${outputFileName}`);
+			console.log(`CSS successfully compiled to ${path.dirname(cssOutputPath)} ${outputFileName}`);
 		} catch (error) {
 			console.error('SASS compilation error:', error);
 			process.exit(1);
