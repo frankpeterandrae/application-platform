@@ -116,4 +116,4 @@ jobs:
             -Dsonar.tests=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.test-setup.ts
             -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
-            -Dsonar.javascript.lcov.reportPaths=coverage/**/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=**/coverage/**/lcov.info

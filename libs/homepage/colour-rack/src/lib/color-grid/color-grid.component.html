@@ -3,15 +3,13 @@
   ~ All rights reserved.
   -->
 <h2><span [fpaSharedUiTranslate]="i18nTextModules.ColorGridComponent.lbl.TwoThinCoats"></span></h2>
-<cdk-virtual-scroll-viewport [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" class="mobile-height">
+<cdk-virtual-scroll-viewport [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" class="mobile-height fpa-flex-grow-1">
 	<div *cdkVirtualFor="let colorItems of colors()" class="fpa-grid-12 fpa-grid-gap fpa-mb-05 fpa-mr-05">
 		@for (color of colorItems; track color.name) {
 			<a
 				class="color-tile fpa-grid-col-end-6 fpa-grid-col-end-sm-4 fpa-grid-col-end-md-2 fpa-grid-col-end-lg-2 fpa-grid-col-end-xl-1"
 				[ngStyle]="{
-					background: color.secondaryColor
-						? 'radial-gradient(circle,' + color.mainColor + ', ' + color.secondaryColor + ')'
-						: color.mainColor
+					background: backgroundColor(color)
 				}"
 				(click)="openDetails(color)"
 				(keydown.enter)="openDetails(color)"

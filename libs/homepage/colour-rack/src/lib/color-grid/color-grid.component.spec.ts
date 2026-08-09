@@ -244,6 +244,51 @@ describe('ColorGridComponent', () => {
 		});
 	});
 
+	it('should return the correct background color gradient', () => {
+		expect(
+			component.backgroundColor({
+				name: 'Red',
+				alternativeNames: [],
+				highlighted: false,
+				type: 'ME',
+				mainColor: '#111111',
+				secondaryColor: '#222222'
+			})
+		).toBe('linear-gradient(-45deg, #222222, #111111, #222222)');
+
+		expect(
+			component.backgroundColor({
+				name: 'Blue',
+				alternativeNames: [],
+				highlighted: false,
+				type: 'I',
+				mainColor: '#333333',
+				secondaryColor: '#444444'
+			})
+		).toBe('linear-gradient(0deg,#444444,#333333)');
+
+		expect(
+			component.backgroundColor({
+				name: 'White',
+				alternativeNames: [],
+				highlighted: false,
+				type: 'W',
+				mainColor: '#555555',
+				secondaryColor: '#666666'
+			})
+		).toBe('radial-gradient(circle,#555555, #666666)');
+
+		expect(
+			component.backgroundColor({
+				name: 'Plain',
+				alternativeNames: [],
+				highlighted: false,
+				type: 'B',
+				mainColor: '#777777'
+			})
+		).toBe('#777777');
+	});
+
 	it('should update item size based on first color tile dimensions', () => {
 		const firstCard = document.createElement('div');
 		Object.defineProperty(firstCard, 'offsetHeight', { value: 100, configurable: true });

@@ -4,7 +4,6 @@
 		"alternativeNames": ["Word Bearers Red (GW)", "Chaotic Red (AP)", "Nocturnal Red (VGC)"],
 		"type": "S",
 		"mainColor": "#4d1c16",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10001,
 		"barcode": 5060951920005
@@ -14,7 +13,6 @@
 		"alternativeNames": ["Mephiston Red (GW)", "Vampire Red (AP)", "Scarlet Blood (VGC)"],
 		"type": "M",
 		"mainColor": "#991915",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10002,
 		"barcode": 5060951920012
@@ -24,7 +22,6 @@
 		"alternativeNames": ["Evil Sunz Scarlet (GW)", "Pure Red (AP)", "Bloody Red (VGC)"],
 		"type": "H",
 		"mainColor": "#d31217",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10003,
 		"barcode": 5060951920029
@@ -34,7 +31,6 @@
 		"alternativeNames": ["Gal Vorbak Red (GW)", "N/A (AP)", "Evil Red (VGC)"],
 		"type": "S",
 		"mainColor": "#502626",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10121,
 		"barcode": 5060951921279
@@ -44,7 +40,6 @@
 		"alternativeNames": ["Wazdakka Red (GW)", "Wyvern Fury (AP)", "Gory Red (VGC)"],
 		"type": "M",
 		"mainColor": "#a42d39",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10122,
 		"barcode": 5060951921286
@@ -54,7 +49,6 @@
 		"alternativeNames": ["Wild Rider Red (GW)", "Blood Chalice (AP)", "Bloody Red (VGC)"],
 		"type": "H",
 		"mainColor": "#e12626",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10123,
 		"barcode": 5060951921293
@@ -64,7 +58,6 @@
 		"alternativeNames": ["Gal Vorbak Red (GW)", "Crusted Sore (AP)", "Nocturnal Red (VGC)"],
 		"type": "S",
 		"mainColor": "#784241",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10064,
 		"barcode": 5060951920661
@@ -74,7 +67,6 @@
 		"alternativeNames": ["Khorne Red (GW)", "Chaotic Red (AP)", "Succubus Skin (VGC)"],
 		"type": "M",
 		"mainColor": "#964844",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10065,
 		"barcode": 5060951920678
@@ -84,7 +76,6 @@
 		"alternativeNames": ["Wazdakka Red (GW)", "Abomination Gore  (AP)", "Gory Red (VGC)"],
 		"type": "H",
 		"mainColor": "#c45948",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10066,
 		"barcode": 5060951920685
@@ -94,7 +85,6 @@
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#733629",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10124,
 		"barcode": 5060951921309
@@ -104,7 +94,6 @@
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#e04134",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10125,
 		"barcode": 5060951921316
@@ -114,7 +103,6 @@
 		"alternativeNames": ["N/A (GW)", "Molten Lava (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#ce3f25",
-		"secondaryColor": "",
 		"wave": "3",
 		"sku": 10026,
 		"barcode": 5060951921323
@@ -124,7 +112,6 @@
 		"alternativeNames": ["Squig Orange (GW)", "Dry Rust (AP)", "N/A (VGC)"],
 		"type": "S",
 		"mainColor": "#bb4d38",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10010,
 		"barcode": 5060951920098
@@ -134,7 +121,6 @@
 		"alternativeNames": ["Troll Slayer Orange (GW)", "Lava Orange (AP)", "Hot Orange (VGC)"],
 		"type": "M",
 		"mainColor": "#d94b2e",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10011,
 		"barcode": 5060951920104
@@ -144,7 +130,6 @@
 		"alternativeNames": ["Fire Dragon Bright (GW),", "Mythical Orange  (AP)", "Orange Fire (VGC)"],
 		"type": "H",
 		"mainColor": "#ec7241",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10012,
 		"barcode": 5060951920111
@@ -154,7 +139,6 @@
 		"alternativeNames": ["Averland Sunset (GW)", "Basilisk Brown (AP)", "N/A (VMC),"],
 		"type": "S",
 		"mainColor": "#c4873a",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10004,
 		"barcode": 5060951920036
@@ -164,7 +148,6 @@
 		"alternativeNames": ["Yriel Yellow (GW)", "Daemonic Yellow (AP)", "Gold Yellow (VGC),"],
 		"type": "M",
 		"mainColor": "#f69f00",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10005,
 		"barcode": 5060951920043
@@ -174,7 +157,6 @@
 		"alternativeNames": ["Flash Gitz Yellow (GW)", "Babe Blonde (AP)", "Moon Yellow (VGC)"],
 		"type": "H",
 		"mainColor": "#f9b22d",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10006,
 		"barcode": 5060951920050
@@ -184,55 +166,60 @@
 		"alternativeNames": ["N/A (GW)", "Wasteland Clay (AP)", "Middlestone (VMC)"],
 		"type": "S",
 		"mainColor": "#ad9137",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10127,
+		"barcode": 5060951921330
 	},
 	{
 		"name": "Flak Gun Yellow",
 		"alternativeNames": ["N/A (GW)", "Burnt Turf (AP)", "Dark Sand (VMC)"],
 		"type": "M",
 		"mainColor": "#cdaf52",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10128,
+		"barcode": 5060951921347
 	},
 	{
 		"name": "Ambush Yellow",
 		"alternativeNames": ["N/A (GW)", "Barren Dune (AP)", "Pale Sand (VMC)"],
 		"type": "H",
 		"mainColor": "#ead06f",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10129,
+		"barcode": 5060951921354
 	},
 	{
 		"name": "Serpent Eye Yellow",
 		"alternativeNames": ["Phalanx Yellow (GW)", "Warped Yellow (AP)", "Lemon Yellow (VMC)"],
 		"type": "S",
 		"mainColor": "#f9d400",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10130,
+		"barcode": 5060951921361
 	},
 	{
 		"name": "Sun Bleach Yellow",
 		"alternativeNames": ["Dorn Yellow (GW)", "Space Dust (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#fae544",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10131,
+		"barcode": 5060951921378
 	},
 	{
 		"name": "Twin Suns Yellow",
 		"alternativeNames": ["N/A (GW)", "Ice Yellow (AP)", "Ice Yellow (VMC)"],
 		"type": "H",
 		"mainColor": "#edebb3",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10132,
+		"barcode": 5060951921385
 	},
 	{
 		"name": "Field Grey",
 		"alternativeNames": ["Vulkan Green (GW)", "Crypt Wraith (AP)", "Field Grey (VMC)"],
 		"type": "S",
 		"mainColor": "#787760",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10076,
 		"barcode": 5060951920784
@@ -242,7 +229,6 @@
 		"alternativeNames": ["Sons of Horus Green (GW)", "Venom Worm (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#88874e",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10077,
 		"barcode": 5060951920791
@@ -252,7 +238,6 @@
 		"alternativeNames": ["Krieg Khaki (GW)", "Combat Fatigues (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#919177",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10078,
 		"barcode": 5060951920807
@@ -262,7 +247,6 @@
 		"alternativeNames": ["Castellan Green (GW)", "Elf Green (AP)", "Cayman Green (VGC)"],
 		"type": "S",
 		"mainColor": "#76714b",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10079,
 		"barcode": 5060951920814
@@ -272,7 +256,6 @@
 		"alternativeNames": ["Warboss Green (GW)", "Goblin Green (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#b1a75e",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10080,
 		"barcode": 5060951920821
@@ -282,7 +265,6 @@
 		"alternativeNames": ["Straken Green (GW)", "Scaly Hide (AP)", "Camouflage Green (VGC)"],
 		"type": "H",
 		"mainColor": "#b5b289",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10081,
 		"barcode": 5060951920838
@@ -292,31 +274,33 @@
 		"alternativeNames": ["Death Guard Green (GW)", "Olive Drab (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#96a27c",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10136,
+		"barcode": 5060951921422
 	},
 	{
 		"name": "Zombie Rot",
 		"alternativeNames": ["Ionrach Skin (GW)", "Necrotic Flesh (AP)", "Pastel Green (VMC)"],
 		"type": "M",
 		"mainColor": "#bcbb75",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10137,
+		"barcode": 5060951921439
 	},
 	{
 		"name": "Pestilence Green",
 		"alternativeNames": ["Deepkin Flesh (GW)", "Grotesque Green (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#dde397",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10138,
+		"barcode": 5060951921446
 	},
 	{
 		"name": "Orc Hide",
 		"alternativeNames": ["Waaagh! Flesh (GW)", "Greenskin (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#819d62",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10073,
 		"barcode": 5060951920753
@@ -326,7 +310,6 @@
 		"alternativeNames": ["Warboss Green (GW)", "Goblin Green (AP)", "Sick Green (VGC)"],
 		"type": "M",
 		"mainColor": "#92b75f",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10074,
 		"barcode": 5060951920760
@@ -336,7 +319,6 @@
 		"alternativeNames": ["Skarsnik Green (GW)", "Mouldy Clothes (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#a8c46c",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10075,
 		"barcode": 5060951920777
@@ -346,7 +328,6 @@
 		"alternativeNames": ["Caliban Green (GW)", "Angel Green (AP)", "Dark Green (VGC)"],
 		"type": "S",
 		"mainColor": "#404b43",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10013,
 		"barcode": 5060951920128
@@ -356,7 +337,6 @@
 		"alternativeNames": ["Warpstone Glow (GW)", "Greenskin (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#3d5c43",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10014,
 		"barcode": 5060951920135
@@ -366,7 +346,6 @@
 		"alternativeNames": ["Moot Green (GW)", "Jungle Green (AP)", "Scorpy Green (VGC)"],
 		"type": "H",
 		"mainColor": "#587f30",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10015,
 		"barcode": 5060951920142
@@ -376,31 +355,33 @@
 		"alternativeNames": ["Lupercal Green (GW)", "Scarab Green (AP)", "Black Green (VMC)"],
 		"type": "S",
 		"mainColor": "#404443",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10133,
+		"barcode": 5060951921392
 	},
 	{
 		"name": "Traitor Green",
 		"alternativeNames": ["Sons of Horus Green (GW)", "Temple Gate Teal (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#34544f",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10134,
+		"barcode": 5060951921408
 	},
 	{
 		"name": "Legion Green",
 		"alternativeNames": ["Sybarite Green (GW)", "Pharaoh Guard (AP)", "Aquamarine (VGC)"],
 		"type": "H",
 		"mainColor": "#2c6b66",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10135,
+		"barcode": 5060951921415
 	},
 	{
 		"name": "Hydra Green",
 		"alternativeNames": ["Incubi Darkness (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#3c5051",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10082,
 		"barcode": 5060951920845
@@ -410,7 +391,6 @@
 		"alternativeNames": ["Kabalite Green (GW)", "Wizards Orb (AP)", "Scurvy Green (VGC)"],
 		"type": "M",
 		"mainColor": "#327864",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10083,
 		"barcode": 5060951920852
@@ -420,7 +400,6 @@
 		"alternativeNames": ["Sybarite Green (GW)", "Elemental Bolt (AP)", "Foul Green (VGC)"],
 		"type": "H",
 		"mainColor": "#5bb892",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10084,
 		"barcode": 5060951920869
@@ -430,31 +409,33 @@
 		"alternativeNames": ["Stegadon Scale Green (GW)", "Scarab Green (AP)", "Abyssal Turquoise (VMC)"],
 		"type": "S",
 		"mainColor": "#3a464e",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10139,
+		"barcode": 5060951921453
 	},
 	{
 		"name": "Antiquity Green",
 		"alternativeNames": ["Sotek Green (GW)", "Pharaoh Guard (AP)", "Turquoise (VGC)"],
 		"type": "M",
 		"mainColor": "#347c7d",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10140,
+		"barcode": 5060951921460
 	},
 	{
 		"name": "Mythic Turquoise",
 		"alternativeNames": ["Temple Guard Blue (GW)", "Talisman Teal (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#5b9d9e",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10141,
+		"barcode": 5060951921477
 	},
 	{
 		"name": "Sentient Turquoise",
 		"alternativeNames": ["Thousand Sons Blue (GW)", "Hydra Turquoise (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#3b84a4",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10067,
 		"barcode": 5060951920692
@@ -464,7 +445,6 @@
 		"alternativeNames": ["Ahriman Blue (GW)", "Royal Cloak (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#4498b7",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10068,
 		"barcode": 5060951920708
@@ -474,7 +454,6 @@
 		"alternativeNames": ["Baharroth Blue (GW)", "Toxic Mist (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#52afc5",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10069,
 		"barcode": 5060951920715
@@ -484,31 +463,33 @@
 		"alternativeNames": ["Caledor Sky (GW)", "Royal Blue (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#28509a",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10142,
+		"barcode": 5060951921484
 	},
 	{
 		"name": "Relic Blue",
 		"alternativeNames": ["Teclis Blue (GW)", "Crystal Blue (AP)", "Deep Sky Blue (VMC)"],
 		"type": "M",
 		"mainColor": "#287cbc",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10143,
+		"barcode": 5060951921491
 	},
 	{
 		"name": "Seafarer Blue",
 		"alternativeNames": ["Lothern Blue (GW)", "Arctic Gem (AP)", "Sky Blue (VMC)"],
 		"type": "H",
 		"mainColor": "#4e9dca",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10144,
+		"barcode": 5060951921504
 	},
 	{
 		"name": "Abyss Blue",
 		"alternativeNames": ["Kantor Blue (GW)", "Deep Blue (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#394967",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10070,
 		"barcode": 5060951920722
@@ -518,7 +499,6 @@
 		"alternativeNames": ["Caledor Sky (GW)", "Viking Blue (AP)", "Magic Blue (VGC)"],
 		"type": "M",
 		"mainColor": "#3764ad",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10071,
 		"barcode": 5060951920739
@@ -528,7 +508,6 @@
 		"alternativeNames": ["Hoeth Blue (GW)", "Voidshield Blue (AP)", "Electric Blue (VGC)"],
 		"type": "H",
 		"mainColor": "#417abe",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10072,
 		"barcode": 5060951920746
@@ -538,7 +517,6 @@
 		"alternativeNames": ["Macragge Blue (GW)", "Dark Sky (AP)", "Imperial Blue (VGC)"],
 		"type": "S",
 		"mainColor": "#444a70",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10007,
 		"barcode": 5060951920067
@@ -548,7 +526,6 @@
 		"alternativeNames": ["Altdorf Guard Blue (GW)", "Ultramarine Blue (AP)", "Elfic Blue (VGC)"],
 		"type": "M",
 		"mainColor": "#537aac",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10008,
 		"barcode": 5060951920074
@@ -558,7 +535,6 @@
 		"alternativeNames": ["Calgar Blue (GW)", "Electric Blue (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#6994c0",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10009,
 		"barcode": 5060951920081
@@ -568,31 +544,33 @@
 		"alternativeNames": ["Dark Reaper (GW)", "Night Sky (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#4c525c",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10145,
+		"barcode": 5060951921514
 	},
 	{
 		"name": "Shadow Blue",
 		"alternativeNames": ["Thunderhawk Blue (GW)", "Thunderous Blue (AP)", "Grey Blue (VMC)"],
 		"type": "M",
 		"mainColor": "#52656d",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10146,
+		"barcode": 5060951921521
 	},
 	{
 		"name": "Frost Blue",
 		"alternativeNames": ["Fenrisian Grey (GW)", "Frost Blue (AP)", "Steel Grey (VGC)"],
 		"type": "H",
 		"mainColor": "#7f9aa2",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10147,
+		"barcode": 5060951921538
 	},
 	{
 		"name": "Cold Corpse Blue",
 		"alternativeNames": ["The Fang (GW)", "Dungeon Grey (AP)", "Sombre Grey (VGC)"],
 		"type": "S",
 		"mainColor": "#51575c",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10049,
 		"barcode": 5060951920487
@@ -602,7 +580,6 @@
 		"alternativeNames": ["Russ Grey (GW)", "Wolf Grey (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#63768a",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10050,
 		"barcode": 5060951920494
@@ -612,7 +589,6 @@
 		"alternativeNames": ["Fenrisian Grey (GW)", "Ice Storm (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#7b8b99",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10051,
 		"barcode": 5060951920500
@@ -622,31 +598,33 @@
 		"alternativeNames": ["Daemonette Hide (GW)", "Hexed Violet (AP)", "Alien Purple (VGC)"],
 		"type": "S",
 		"mainColor": "#716c6e",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10151,
+		"barcode": 5060951921576
 	},
 	{
 		"name": "Enticing Purple",
 		"alternativeNames": ["Warpfiend Grey (GW)", "Violet Coven (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#877d8e",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10152,
+		"barcode": 5060951921583
 	},
 	{
 		"name": "Decadent Purple",
 		"alternativeNames": ["Slaanesh Grey (GW)", "Kraken Lavender (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#cdc7dc",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10153,
+		"barcode": 5060951921590
 	},
 	{
 		"name": "Amethyst Rayne",
 		"alternativeNames": ["Xereus Purple (GW)", "Alien Purple (AP)", "Hexed Lichen (VGC)"],
 		"type": "S",
 		"mainColor": "#534169",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10016,
 		"barcode": 5060951920159
@@ -656,15 +634,15 @@
 		"alternativeNames": ["Genestealer Purple (GW)", "Oozing Purple (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#7a598e",
-		"secondaryColor": "",
-		"wave": "1"
+		"wave": "1",
+		"sku": 10117,
+		"barcode": 5060951920166
 	},
 	{
 		"name": "Runic Purple",
 		"alternativeNames": ["Kakophoni Purple (GW)", "Toxic Boils (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#9d8eb4",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10018,
 		"barcode": 5060951920173
@@ -674,31 +652,33 @@
 		"alternativeNames": ["Naggaroth Night (GW)", "Terrestrial Titan (AP)", "Royal Purple (VGC)"],
 		"type": "S",
 		"mainColor": "#2b182c",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10148,
+		"barcode": 5060951921545
 	},
 	{
 		"name": "Enchantress Purple",
 		"alternativeNames": ["Phoenician Purple (GW)", "Diabolic Plumb (AP)", "Midnight Purple (VGC)"],
 		"type": "M",
 		"mainColor": "#5c335f",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10149,
+		"barcode": 5060951921552
 	},
 	{
 		"name": "Spectral Purple",
 		"alternativeNames": ["Kakophoni Purple (GW)", "Cultist Purple (AP)", "Blue Violet (VMC)"],
 		"type": "H",
 		"mainColor": "#a05495",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10150,
+		"barcode": 5060951921569
 	},
 	{
 		"name": "Royal Cloak",
 		"alternativeNames": ["Barak-Nar Burgundy (GW)", "Crusted Sore (AP)", "Deep Magenta (VGC)"],
 		"type": "S",
 		"mainColor": "#5b444b",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10046,
 		"barcode": 5060951920456
@@ -708,7 +688,6 @@
 		"alternativeNames": ["Screamer Pink (GW)", "Wasteland Soil (AP)", "Warlord Purple (VGC)"],
 		"type": "M",
 		"mainColor": "#995878",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10047,
 		"barcode": 5060951920463
@@ -718,7 +697,6 @@
 		"alternativeNames": ["Pink Horror (GW)", "Wasteland Soil (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#995878",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10048,
 		"barcode": 5060951920470
@@ -728,7 +706,6 @@
 		"alternativeNames": ["Pink Horror (GW)", "Warlock Purple (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#bf6066",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10061,
 		"barcode": 5060951920630
@@ -738,7 +715,6 @@
 		"alternativeNames": ["Emperor's Children (GW)", "Pixie Pink (AP)", "Squid Pink (VGC)"],
 		"type": "M",
 		"mainColor": "#e485a9",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10062,
 		"barcode": 5060951920647
@@ -748,7 +724,6 @@
 		"alternativeNames": ["Fulgrim Pink (GW)", "Centaur Skin (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#f4c4dd",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10063,
 		"barcode": 5060951920654
@@ -758,7 +733,6 @@
 		"alternativeNames": ["Catachan Flesh (GW)", "Onyx Skin (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#5d4334",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10097,
 		"barcode": 5060951920999
@@ -768,7 +742,6 @@
 		"alternativeNames": ["Blood Reaver Flesh (GW)", "Mocca Skin (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#8a5f4a",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10098,
 		"barcode": 5060951921002
@@ -778,7 +751,6 @@
 		"alternativeNames": ["Knight Questor Flesh (GW)", "Jasper Skin (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#9f7664",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10099,
 		"barcode": 5060951921019
@@ -788,7 +760,6 @@
 		"alternativeNames": ["N/A (GW)", "Dorado Skin (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#b1966f",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10094,
 		"barcode": 5060951920968
@@ -798,7 +769,6 @@
 		"alternativeNames": ["N/A (GW)", "Amber Skin (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#c7a170",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10095,
 		"barcode": 5060951920975
@@ -808,7 +778,6 @@
 		"alternativeNames": ["N/A (GW)", "Banshee Brown (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#e4c889",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10096,
 		"barcode": 5060951920982
@@ -818,7 +787,6 @@
 		"alternativeNames": ["Bugman's Glow (GW)", "Fur Brown (AP)", "Anthea Skin (VGC)"],
 		"type": "S",
 		"mainColor": "#906056",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10025,
 		"barcode": 5060951920241
@@ -828,7 +796,6 @@
 		"alternativeNames": ["Cadian Fleshtone (GW)", "Tanned Skin (AP)", "Skin Tone (VGC)"],
 		"type": "M",
 		"mainColor": "#b27d63",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10026,
 		"barcode": 5060951920258
@@ -838,7 +805,6 @@
 		"alternativeNames": ["Kislev Flesh (GW)", "Kobold Skin (AP)", "Pale Flesh (VGC)"],
 		"type": "H",
 		"mainColor": "#c59974",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10027,
 		"barcode": 5060951920265
@@ -848,7 +814,6 @@
 		"alternativeNames": ["Abaddon Black (GW)", "Matt Black (AP)", "Black (VGC)"],
 		"type": "S",
 		"mainColor": "#3e3937",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10019,
 		"barcode": 5060951920180
@@ -858,7 +823,6 @@
 		"alternativeNames": ["Corvus Black (GW)", "Necromancer Cloak (AP)", "Charcoal (VGC)"],
 		"type": "M",
 		"mainColor": "#434142",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10020,
 		"barcode": 5060951920197
@@ -868,7 +832,6 @@
 		"alternativeNames": ["Mechanicus Standard Grey (GW)", "Dungeon Grey (AP)", "Neutral Grey (VMC)"],
 		"type": "H",
 		"mainColor": "#5c5e61",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10021,
 		"barcode": 5060951920203
@@ -878,7 +841,6 @@
 		"alternativeNames": ["Dawnstone (GW)", "Uniform Grey (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#6e6c6d",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10022,
 		"barcode": 5060951920210
@@ -888,7 +850,6 @@
 		"alternativeNames": ["Administratum Grey (GW)", "Ash Grey (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#979798",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10023,
 		"barcode": 5060951920227
@@ -898,7 +859,6 @@
 		"alternativeNames": ["White Scar (GW)", "Matt White (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#f9faf9",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10024,
 		"barcode": 5060951920234
@@ -908,7 +868,6 @@
 		"alternativeNames": ["Zandri Dust (GW)", "Skeleton Bone (AP)", "Khaki (VGC)"],
 		"type": "S",
 		"mainColor": "#9e8560",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10031,
 		"barcode": 5060951920302
@@ -918,7 +877,6 @@
 		"alternativeNames": ["Ushabti Bone (GW)", "Skeleton Bone (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#b2986d",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10032,
 		"barcode": 5060951920319
@@ -928,7 +886,6 @@
 		"alternativeNames": ["Screaming Skull (GW)", "Skeleton Bone (AP)", "Bone White (VGC)"],
 		"type": "H",
 		"mainColor": "#cdba9b",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10033,
 		"barcode": 5060951920326
@@ -938,7 +895,6 @@
 		"alternativeNames": ["Rakarth Flesh (GW)", "Banshee Brown (AP)", "Warm Grey (VGC)"],
 		"type": "S",
 		"mainColor": "#a19186",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10034,
 		"barcode": 5060951920333
@@ -948,7 +904,6 @@
 		"alternativeNames": ["Pallid Wych Flesh (GW)", "Brainmatter Beige (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#d4cac1",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10035,
 		"barcode": 5060951920340
@@ -958,7 +913,6 @@
 		"alternativeNames": ["Corax White (GW)", "Spaceship Exterior (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#efede2",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10036,
 		"barcode": 5060951920357
@@ -968,7 +922,6 @@
 		"alternativeNames": ["Eshin Grey (GW)", "Necromancer Cloak (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#58584c",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10085,
 		"barcode": 5060951920876
@@ -978,7 +931,6 @@
 		"alternativeNames": ["Skavenblight Dinge (GW)", "Hardened Carapace (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#5d5a4b",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10086,
 		"barcode": 5060951920883
@@ -988,7 +940,6 @@
 		"alternativeNames": ["Stormvermin Fur (GW)", "Castle Grey (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#7b7867",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10087,
 		"barcode": 5060951920890
@@ -998,7 +949,6 @@
 		"alternativeNames": ["Steel Legion Drab (GW)", "Basilisk Brown (AP)", "Earth (VGC)"],
 		"type": "S",
 		"mainColor": "#5d4334",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10037,
 		"barcode": 5060951920364
@@ -1008,7 +958,6 @@
 		"alternativeNames": ["Morghast Bone (GW)", "Desert Yellow (AP)", "N/A (VMC )"],
 		"type": "M",
 		"mainColor": "#937c68",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10038,
 		"barcode": 5060951920371
@@ -1018,7 +967,6 @@
 		"alternativeNames": ["Karak Stone (GW)", "Skeleton Bone (AP)", "Stonewall Grey (VGC)"],
 		"type": "H",
 		"mainColor": "#a49179",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10039,
 		"barcode": 5060951920388
@@ -1028,7 +976,6 @@
 		"alternativeNames": ["Rhinox Hide (GW)", "Oak Brown (AP)", "Dark Fleshtone (VGC)"],
 		"type": "S",
 		"mainColor": "#53433b",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10028,
 		"barcode": 5060951920272
@@ -1038,7 +985,6 @@
 		"alternativeNames": ["Doombull Brown (GW)", "Dirt Spatter (AP)", "Dark Fleshtone (VGC)"],
 		"type": "M",
 		"mainColor": "#734539",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10029,
 		"barcode": 5060951920289
@@ -1048,7 +994,6 @@
 		"alternativeNames": ["Tuskgor Fur (GW)", "Leather Brown (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#93544e",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10030,
 		"barcode": 5060951920296
@@ -1058,7 +1003,6 @@
 		"alternativeNames": ["Dryad Bark (GW)", "Oak Brown (AP)", "N/A (VMC)"],
 		"type": "S",
 		"mainColor": "#5a4d4a",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10052,
 		"barcode": 5060951920517
@@ -1068,7 +1012,6 @@
 		"alternativeNames": ["Gorthor Brown (GW)", "Werewolf Fur (AP)", "N/A (VMC)"],
 		"type": "M",
 		"mainColor": "#725b52",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10053,
 		"barcode": 5060951920524
@@ -1078,7 +1021,6 @@
 		"alternativeNames": ["Baneblade Brown (GW)", "Monster Brown (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#866c5c",
-		"secondaryColor": "",
 		"wave": "1",
 		"sku": 10054,
 		"barcode": 5060951920531
@@ -1088,7 +1030,6 @@
 		"alternativeNames": ["Mournfang Brown (GW)", "Dirt Spatter (AP)", "Gorgone Brown (VGC)"],
 		"type": "S",
 		"mainColor": "#815939",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10088,
 		"barcode": 5060951920906
@@ -1098,7 +1039,6 @@
 		"alternativeNames": ["Skrag Brown (GW)", "Fur Brown (AP)", "Parasite Brown (VGC)"],
 		"type": "M",
 		"mainColor": "#be7737",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10089,
 		"barcode": 5060951920913
@@ -1108,7 +1048,6 @@
 		"alternativeNames": ["Deathclaw Brown (GW)", "Troll Claws (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#da9a52",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10090,
 		"barcode": 5060951920920
@@ -1118,7 +1057,6 @@
 		"alternativeNames": ["XV-88 (GW)", "Fur Brown (AP)", "Leather Brown (VGC)"],
 		"type": "S",
 		"mainColor": "#d68b49",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10091,
 		"barcode": 5060951920937
@@ -1128,7 +1066,6 @@
 		"alternativeNames": ["Tau Light Ochre (GW)", "Troll Claws (AP)", "Bronze Brown (VGC)"],
 		"type": "M",
 		"mainColor": "#db9a3a",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10092,
 		"barcode": 5060951920944
@@ -1138,7 +1075,6 @@
 		"alternativeNames": ["Ungor Flesh (GW)", "Barbarian Flesh (AP)", "N/A (VMC)"],
 		"type": "H",
 		"mainColor": "#e4b351",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10093,
 		"barcode": 5060951920951
@@ -1148,24 +1084,27 @@
 		"alternativeNames": ["Thondia Brown (GW)", "Bootstrap Brown (AP)", "Leather Brown (VMC)"],
 		"type": "S",
 		"mainColor": "#846145",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10154,
+		"barcode": 5060951921606
 	},
 	{
 		"name": "Boot Strap Brown",
 		"alternativeNames": ["Gorthor Brown (GW)", "Leather Brown (AP)", "Saddle Brown (VMC)"],
 		"type": "M",
 		"mainColor": "#8c6342",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10155,
+		"barcode": 5060951921613
 	},
 	{
 		"name": "Vambrace Brown",
 		"alternativeNames": ["Baneblade Brown (GW)", "Paratrooper Tan (AP)", "Cork Brown (VMC)"],
 		"type": "H",
 		"mainColor": "#a57859",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"sku": 10156,
+		"barcode": 5060951921620
 	},
 	{
 		"name": "Oblivion Black Wash",
@@ -1263,7 +1202,9 @@
 		"type": "W",
 		"mainColor": "#ffffff",
 		"secondaryColor": "#b8b1a4",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10175,
+		"barcode": 5060951921811
 	},
 	{
 		"name": "Hazard Yellow Wash",
@@ -1271,7 +1212,9 @@
 		"type": "W",
 		"mainColor": "#ffffff",
 		"secondaryColor": "#bb5830",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10176,
+		"barcode": 5060951921828
 	},
 	{
 		"name": "Aztec Turquoise Wash",
@@ -1279,7 +1222,9 @@
 		"type": "W",
 		"mainColor": "#f6f6f7",
 		"secondaryColor": "#405453",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10177,
+		"barcode": 5060951921835
 	},
 	{
 		"name": "Bone Wash",
@@ -1287,7 +1232,9 @@
 		"type": "S",
 		"mainColor": "#fefdfd",
 		"secondaryColor": "#5d392e",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10178,
+		"barcode": 5060951921842
 	},
 	{
 		"name": "Matt Varnish",
@@ -1295,7 +1242,9 @@
 		"type": "E",
 		"mainColor": "#2f2c29",
 		"secondaryColor": "#ffffff",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10510,
+		"barcode": 5060951921903
 	},
 	{
 		"name": "Gloss Varnish",
@@ -1303,7 +1252,9 @@
 		"type": "E",
 		"mainColor": "#fbfafb",
 		"secondaryColor": "#403837",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10512,
+		"barcode": 5060951921927
 	},
 	{
 		"name": "Red Glaze",
@@ -1311,7 +1262,9 @@
 		"type": "g",
 		"mainColor": "#f8bca2",
 		"secondaryColor": "#eb5e3b",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10115,
+		"barcode": 5060951921170
 	},
 	{
 		"name": "Yellow Glaze",
@@ -1319,7 +1272,9 @@
 		"type": "G",
 		"mainColor": "#fff6b5",
 		"secondaryColor": "#fdec44",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10116,
+		"barcode": 5060951921187
 	},
 	{
 		"name": "Blue Glaze",
@@ -1327,7 +1282,9 @@
 		"type": "G",
 		"mainColor": "#b2b6dd",
 		"secondaryColor": "#576bb1",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10117,
+		"barcode": 5060951921194
 	},
 	{
 		"name": "Orange Glaze",
@@ -1335,7 +1292,9 @@
 		"type": "G",
 		"mainColor": "#fbcc9e",
 		"secondaryColor": "#f28926",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10118,
+		"barcode": 5060951921200
 	},
 	{
 		"name": "Green Glaze",
@@ -1343,7 +1302,9 @@
 		"type": "G",
 		"mainColor": "#e2edcf",
 		"secondaryColor": "#8fc14d",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10119,
+		"barcode": 5060951921217
 	},
 	{
 		"name": "Purple Glaze",
@@ -1351,14 +1312,15 @@
 		"type": "G",
 		"mainColor": "#ead5e6",
 		"secondaryColor": "#c887b1",
-		"wave": "2"
+		"wave": "2",
+		"suk": 10120,
+		"barcode": 5060951921224
 	},
 	{
 		"name": "Hellspawn Red",
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "B",
 		"mainColor": "#bd3222",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10100,
 		"barcode": 5060951921026
@@ -1368,7 +1330,6 @@
 		"alternativeNames": ["N/A (GW)", "Moondust (AP)", "Toxic Yellow (VGC)"],
 		"type": "B",
 		"mainColor": "#f3e95e",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10101,
 		"barcode": 5060951921033
@@ -1378,7 +1339,6 @@
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "Sunrise Blue (VGC)"],
 		"type": "B",
 		"mainColor": "#66b9e8",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10102,
 		"barcode": 5060951921040
@@ -1388,7 +1348,6 @@
 		"alternativeNames": ["N/A (GW)", "Phoenix Flames (AP)", "N/A (VMC)"],
 		"type": "B",
 		"mainColor": "#eba739",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10103,
 		"barcode": 5060951921057
@@ -1398,7 +1357,6 @@
 		"alternativeNames": ["N/A (GW)", "Poisonous Cloud (AP)", "N/A (VMC)"],
 		"type": "B",
 		"mainColor": "#81bb27",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10104,
 		"barcode": 5060951921064
@@ -1408,7 +1366,6 @@
 		"alternativeNames": ["Dechala Lilac (GW)", "Oozing Purple (AP)", "Lustful Purple (VGC)"],
 		"type": "B",
 		"mainColor": "#cab5d9",
-		"secondaryColor": "",
 		"wave": "2",
 		"sku": 10105,
 		"barcode": 5060951921071
@@ -1418,48 +1375,54 @@
 		"alternativeNames": ["Fulgrim Pink (GW)", "Impish Rogue (AP)", "N/A (VMC)"],
 		"type": "B",
 		"mainColor": "#c84384",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10157,
+		"barcode": 5060951921637
 	},
 	{
 		"name": "Elixir Green",
 		"alternativeNames": ["Gauss Blaster Green (GW)", "Mossy Green (AP)", "Green Sky (VMC)"],
 		"type": "B",
 		"mainColor": "#88c48a",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10158,
+		"barcode": 5060951921644
 	},
 	{
 		"name": "Solar Flare",
 		"alternativeNames": ["Lugganath Orange (GW)", "Inner Light (AP)", "N/A (VMC)"],
 		"type": "B",
 		"mainColor": "#ec7a02",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10159,
+		"barcode": 5060951921651
 	},
 	{
 		"name": "Ion Blue",
 		"alternativeNames": ["Blue Horror (GW)", "Frost Blue (AP)", "Glacier Blue (VGC)"],
 		"type": "B",
 		"mainColor": "#c5dde0",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10160,
+		"barcode": 5060951921668
 	},
 	{
 		"name": "Septic Green",
 		"alternativeNames": ["N/A (GW)", "Vivid Volt (AP)", "Yellow Green (VMC)"],
 		"type": "B",
 		"mainColor": "#b4b319",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10161,
+		"barcode": 5060951921675
 	},
 	{
 		"name": "Pale Skin",
 		"alternativeNames": ["Flayed One Flesh (GW)", "Pearl Skin (AP)", "Light Flesh (VMC)"],
 		"type": "B",
 		"mainColor": "#d1b07a",
-		"secondaryColor": "",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10162,
+		"barcode": 5060951921682
 	},
 	{
 		"name": "Overlord Brass",
@@ -1487,7 +1450,9 @@
 		"type": "H-ME",
 		"mainColor": "#eebc4c",
 		"secondaryColor": "#2a2723",
-		"wave": "1"
+		"wave": "1",
+		"suk": 10044,
+		"barcode": 5060951920432
 	},
 	{
 		"name": "Heirloom Gold",
@@ -1495,7 +1460,9 @@
 		"type": "S-ME",
 		"mainColor": "#d3a751",
 		"secondaryColor": "#2d2a24",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10112,
+		"barcode": 5060951921149
 	},
 	{
 		"name": "Ancient Gold",
@@ -1503,7 +1470,9 @@
 		"type": "M-ME",
 		"mainColor": "#876f3e",
 		"secondaryColor": "#2b2723",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10169,
+		"barcode": 5060951921750
 	},
 	{
 		"name": "Glistening Gold",
@@ -1521,7 +1490,9 @@
 		"type": "S-ME",
 		"mainColor": "#a68c76",
 		"secondaryColor": "#312d28",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10174,
+		"barcode": 5060951921804
 	},
 	{
 		"name": "Chaos Bronze",
@@ -1529,7 +1500,9 @@
 		"type": "M-ME",
 		"mainColor": "#b79770",
 		"secondaryColor": "#302c27",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10171,
+		"barcode": 5060951921774
 	},
 	{
 		"name": "Steampunk Copper",
@@ -1577,7 +1550,9 @@
 		"type": "ME",
 		"mainColor": "#746c5c",
 		"secondaryColor": "#2f2c26",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10170,
+		"barcode": 5060951921767
 	},
 	{
 		"name": "Dwarven Iron",
@@ -1605,7 +1580,9 @@
 		"type": "ME",
 		"mainColor": "#8b9694",
 		"secondaryColor": "#2f2c28",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10172,
+		"barcode": 5060951921781
 	},
 	{
 		"name": "Plate Armour",
@@ -1633,7 +1610,9 @@
 		"type": "ME",
 		"mainColor": "#bb3c3e",
 		"secondaryColor": "#302a25",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10163,
+		"barcode": 5060951921699
 	},
 	{
 		"name": "Omega Blue",
@@ -1641,7 +1620,9 @@
 		"type": "ME",
 		"mainColor": "#63bbbd",
 		"secondaryColor": "#2d2c27",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10164,
+		"barcode": 5060951921705
 	},
 	{
 		"name": "Enchantment Blue",
@@ -1649,7 +1630,9 @@
 		"type": "ME",
 		"mainColor": "#327eb0",
 		"secondaryColor": "#2c2a26",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10165,
+		"barcode": 5060951921712
 	},
 	{
 		"name": "Emperor's Purple",
@@ -1657,7 +1640,9 @@
 		"type": "ME",
 		"mainColor": "#865f8e",
 		"secondaryColor": "#2a2723",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10166,
+		"barcode": 5060951921729
 	},
 	{
 		"name": "Carapace Green",
@@ -1665,7 +1650,9 @@
 		"type": "ME",
 		"mainColor": "#4f954e",
 		"secondaryColor": "#2c2a24",
-		"wave": "3"
+		"wave": "3",
+		"suk": 10167,
+		"barcode": 5060951921736
 	},
 	{
 		"name": "Fire Opal",
@@ -1676,5 +1663,284 @@
 		"wave": "3",
 		"sku": 10114,
 		"barcode": 5060951921163
+	},
+	{
+		"name": "Blood Red Sky",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#593f32",
+		"wave": "4",
+		"sku": 36001,
+		"barcode": 5060951922061
+	},
+	{
+		"name": "Flayer Red",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#d93f46",
+		"wave": "4",
+		"sku": 36002,
+		"barcode": 5060951922078
+	},
+	{
+		"name": "Diablo Red",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#e74d26",
+		"wave": "4",
+		"sku": 36003,
+		"barcode": 5060951922085
+	},
+	{
+		"name": "Archon Orange",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#ed8435",
+		"wave": "4",
+		"sku": 36004,
+		"barcode": 5060951922092
+	},
+	{
+		"name": "Pustule Orche",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#e7b230",
+		"wave": "4",
+		"sku": 36005,
+		"barcode": 5060951922108
+	},
+	{
+		"name": "Abhorrent Rhodes",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#cba634",
+		"wave": "4",
+		"sku": 36006,
+		"barcode": 5060951922115
+	},
+	{
+		"name": "Malign Yellow",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#d2b650",
+		"wave": "4",
+		"sku": 36007,
+		"barcode": 5060951922122
+	},
+	{
+		"name": "Cultmaster Green",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#47605c",
+		"wave": "4",
+		"sku": 36008,
+		"barcode": 5060951922139
+	},
+	{
+		"name": "Betrayer Green",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#557966",
+		"wave": "4",
+		"sku": 36009,
+		"barcode": 5060951922146
+	},
+	{
+		"name": "Diabolical Green",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#3d4225",
+		"wave": "4",
+		"sku": 36010,
+		"barcode": 5060951922153
+	},
+	{
+		"name": "Crypt Green",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#98a189",
+		"wave": "4",
+		"sku": 36011,
+		"barcode": 5060951922160
+	},
+	{
+		"name": "Altar Ivory",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#ebe9da",
+		"wave": "4",
+		"sku": 36012,
+		"barcode": 5060951922177
+	},
+	{
+		"name": "Grindhouse Orange",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#b46649",
+		"wave": "4",
+		"sku": 36013,
+		"barcode": 5060951922184
+	},
+	{
+		"name": "Masque Flesh",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#c4866d",
+		"wave": "4",
+		"sku": 36014,
+		"barcode": 5060951922191
+	},
+	{
+		"name": "Noir Brown",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#5a4b37",
+		"wave": "4",
+		"sku": 36015,
+		"barcode": 5060951922207
+	},
+	{
+		"name": "Cinderborn Brown",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#997464",
+		"wave": "4",
+		"sku": 36016,
+		"barcode": 5060951922214
+	},
+	{
+		"name": "Dystopian Dust",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#bda599",
+		"wave": "4",
+		"sku": 36017,
+		"barcode": 5060951922221
+	},
+	{
+		"name": "Blight Cream",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#dfc8b0",
+		"wave": "4",
+		"sku": 36018,
+		"barcode": 5060951922238
+	},
+	{
+		"name": "Divination White",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#f1e6d0",
+		"wave": "4",
+		"sku": 36019,
+		"barcode": 5060951922245
+	},
+	{
+		"name": "Animus Black",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#222922",
+		"wave": "4",
+		"sku": 36020,
+		"barcode": 5060951922252
+	},
+	{
+		"name": "Cherubic White",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "DA",
+		"mainColor": "#ffffff",
+		"wave": "4",
+		"sku": 36021,
+		"barcode": 5060951922269
+	},
+	{
+		"name": "Old Brown Metal",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "ME",
+		"mainColor": "#968570",
+		"secondaryColor": "#2a2723",
+		"wave": "4",
+		"sku": 36022,
+		"barcode": 5060951922276
+	},
+	{
+		"name": "Ancient Iron",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "ME",
+		"mainColor": "#a68668",
+		"secondaryColor": "#2a2723",
+		"wave": "4",
+		"sku": 36023,
+		"barcode": 5060951922283
+	},
+	{
+		"name": "Iron Clad Silver",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "ME",
+		"mainColor": "#ad9d81",
+		"secondaryColor": "#2a2723",
+		"wave": "4",
+		"sku": 36024,
+		"barcode": 5060951922290
+	},
+	{
+		"name": "Brown Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#2a1d15",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36025,
+		"barcode": 5060951922306
+	},
+	{
+		"name": "Warm Brown Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#9b2e29",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36026,
+		"barcode": 5060951922313
+	},
+	{
+		"name": "Deep Red Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#67271f",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36027,
+		"barcode": 5060951922320
+	},
+	{
+		"name": "Tobacco Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#a08053",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36028,
+		"barcode": 5060951922337
+	},
+	{
+		"name": "Black Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#060708",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36029,
+		"barcode": 5060951922344
+	},
+	{
+		"name": "White Ink",
+		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
+		"type": "I",
+		"mainColor": "#f0f0f0",
+		"secondaryColor": "#f2f1ef",
+		"wave": "4",
+		"sku": 36030,
+		"barcode": 5060951922351
 	}
 ]
