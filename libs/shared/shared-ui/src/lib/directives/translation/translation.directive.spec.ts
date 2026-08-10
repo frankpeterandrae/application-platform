@@ -24,7 +24,7 @@ vi.mock('@jsverse/transloco', async () => {
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { TranslocoScope, TRANSLOCO_SCOPE } from '@jsverse/transloco';
+import { TRANSLOCO_SCOPE, TranslocoScope } from '@jsverse/transloco';
 
 import { setupTestingModule } from '../../../test-setup';
 

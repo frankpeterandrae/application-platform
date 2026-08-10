@@ -6,7 +6,8 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"moduleResolution": "bundler",
-		"allowJs": true
+		"allowJs": true,
+		"ignoreDeprecations": "6.0"
 	},
 	"files": [],
 	"include": ["src/**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],

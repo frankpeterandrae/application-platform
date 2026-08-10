@@ -8,7 +8,8 @@
 		"noFallthroughCasesInSwitch": true,
 		"resolveJsonModule": true,
 		"moduleResolution": "bundler",
-		"allowJs": true
+		"allowJs": true,
+		"ignoreDeprecations": "6.0"
 	},
 	"files": [],
 	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],

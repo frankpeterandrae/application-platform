@@ -9,7 +9,7 @@
 		[disabled]="disabled()"
 		[ariaExpanded]="isOpen()"
 		[ariaHaspopup]="'listbox'"
-		[icon]="$any(selectedOption())?.icon"
+		[icon]="$safeNavigationMigration($any(selectedOption())?.icon)"
 		(buttonClick)="toggle()"
 		(keydownEvent)="onButtonKeydown($event)"
 	>
