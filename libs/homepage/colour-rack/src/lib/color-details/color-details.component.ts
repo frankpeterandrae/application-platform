@@ -5,7 +5,7 @@
 
 import { Component, inject } from '@angular/core';
 import type { DialogConfigModel } from '@application-platform/shared/ui-theme';
-import { DialogComponent, DIALOG_DATA } from '@application-platform/shared/ui-theme';
+import { DIALOG_DATA, DialogComponent } from '@application-platform/shared/ui-theme';
 import { BaseComponent, LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope } from '@jsverse/transloco';
 

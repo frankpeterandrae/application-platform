@@ -6,7 +6,7 @@
 // Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
 import '@angular/compiler';
 
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { ModuleWithProviders } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -91,7 +91,7 @@ export async function sharedSetupTestingModule(
 	providers = [
 		{ provide: translateSignal, useValue: TranslateSignalMock },
 		{ provide: ScopedTranslationServiceInterface, useClass: ScopedTranslationServiceMock },
-		provideHttpClient(),
+		provideHttpClient(withXhr()),
 		provideHttpClientTesting(),
 		{ provide: PlatformLocation, useValue: platformLocationStub },
 		{ provide: Location, useValue: locationStub },

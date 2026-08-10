@@ -5,7 +5,7 @@
 import { Component } from '@angular/core';
 
 /**
- *MOCK of the LanguageToggleComponent.
+ * MOCK of the LanguageToggleComponent.
  */
 @Component({
 	selector: 'theme-language-toggle',

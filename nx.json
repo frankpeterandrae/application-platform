@@ -12,7 +12,7 @@
 		},
 		"@nx/eslint:lint": {
 			"cache": true,
-			"inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
+			"inputs": ["default", "^default", "{workspaceRoot}/eslint.config.mjs", "{workspaceRoot}/tools/eslint-rules/**/*"]
 		},
 		"@angular-devkit/build-angular:application": {
 			"cache": true,

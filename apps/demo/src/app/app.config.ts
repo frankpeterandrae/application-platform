@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -30,7 +30,7 @@ export const appConfig: ApplicationConfig = {
 		/**
 		 * Provides the HTTP client.
 		 */
-		provideHttpClient(),
+		provideHttpClient(withXhr()),
 
 		/**
 		 * Provides the FastSVG configuration.

@@ -9,10 +9,11 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite'),
 	test: {
+		projects: ['**/vite.config.{mjs,js,ts,mts}', '**/vitest.config.{mjs,js,ts,mts}'],
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./vitest.setup.ts'],
-		reporters: ['html', 'default', 'verbose'],
+		reporters: ['html', 'default', 'tree'],
 		outputFile: resolve(process.cwd(), 'test-result/index.html'),
 		include: ['**/*.spec.ts', '**/*.test.ts', '**/*.vi.ts', '**/*.d.ts'],
 		silent: false

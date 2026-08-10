@@ -12,7 +12,8 @@
 		"module": "NodeNext",
 		"types": ["node"],
 		"moduleResolution": "nodenext",
-		"allowImportingTsExtensions": true
+		"allowImportingTsExtensions": true,
+		"ignoreDeprecations": "6.0"
 	},
 	"include": [
 		"**/*.ts",
