@@ -11,10 +11,13 @@
 			"options": {
 				"tsConfig": "libs/homepage/config/tsconfig.spec.json",
 				"vitestConfig": "libs/homepage/config/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../../coverage/libs/homepage/config",
+				"reportsDirectory": "test-result/libs/homepage/config/coverage",
 				"passWithNoTests": true
-			},
-			"dependsOn": ["typecheck-test", "typecheck-lib"]
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

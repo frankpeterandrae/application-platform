@@ -10,8 +10,7 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import type { ModuleWithProviders } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { getTestBed, TestBed, TestModuleMetadata } from '@angular/core/testing';
-import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
 import type { Translation, TranslocoConfig } from '@jsverse/transloco';
 import { translateSignal, TranslocoTestingModule } from '@jsverse/transloco';
@@ -20,13 +19,6 @@ import { ScopedTranslationServiceMock, TranslateSignalMock } from './lib/mocks/s
 
 /** @internal HashMap type for transloco compatibility */
 type HashMap<T = unknown> = Record<string, T>;
-
-// Initialize TestBed environment for testing using non-deprecated APIs.
-// Use BrowserTestingModule instead of deprecated BrowserDynamicTestingModule.
-getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting(), {
-	errorOnUnknownElements: true,
-	errorOnUnknownProperties: true
-});
 
 /**
  * Sets up the Angular testing module with the provided metadata.

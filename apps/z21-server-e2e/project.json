@@ -7,14 +7,14 @@
 	"targets": {
 		"e2e": {
 			"executor": "@nx/vitest:test",
-			"outputs": ["{workspaceRoot}../../coverage/{e2eProjectRoot}"],
 			"options": {
 				"tsConfig": "apps/z21-server-e2e/tsconfig.spec.json",
 				"vitestConfig": "apps/z21-server-e2e/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}/coverage/z21-server-e2e",
+				"reportsDirectory": "test-result/apps/z21-server-e2e/coverage",
 				"passWithNoTests": true
 			},
-			"dependsOn": ["typecheck-test", "typecheck-e2e", "z21-server:build"],
+			"outputs": ["{options.reportsDirectory}"],
+			"dependsOn": ["z21-server:build"],
 			"configurations": {
 				"ci": {
 					"ci": true,
@@ -24,6 +24,10 @@
 					}
 				}
 			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-e2e", "typecheck-test"]
 		},
 		"typecheck-e2e": {
 			"executor": "nx:run-commands",

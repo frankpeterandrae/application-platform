@@ -221,20 +221,6 @@ export default [
 		}
 	},
 
-	// -----------------------------
-	// Ensure vitest.workspace.ts is parsed with the tools tsconfig (use absolute paths)
-	{
-		files: ['vitest.workspace.ts', './vitest.workspace.ts'],
-		languageOptions: {
-			parserOptions: {
-				projectService: true,
-				tsconfigRootDir: import.meta.dirname,
-				allowDefaultProject: ['./vitest.workspace.ts'],
-				createDefaultProgram: true
-			}
-		}
-	},
-
 	// Disable JSDoc rules for HTML/template files (Angular templates can confuse jsdoc parser)
 	{
 		files: ['**/*.html', '**/*.template.html', '**/*component.html'],
@@ -256,12 +242,12 @@ export default [
 	// -----------------------------
 	// Shared TS rules (non-type-aware, fast)
 	{
-		files: ['**/*.ts', '!**/vitest.workspace.ts', '!**/vite*.workspace.ts'],
+		files: ['**/*.ts'],
 		languageOptions: {
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
+				allowDefaultProject: ['./global.d.ts'],
 				createDefaultProgram: true
 			}
 		},
@@ -346,7 +332,7 @@ export default [
 			parserOptions: {
 				projectService: true,
 				tsconfigRootDir: import.meta.dirname,
-				allowDefaultProject: ['./vitest.workspace.ts', './global.d.ts'],
+				allowDefaultProject: ['./global.d.ts'],
 				createDefaultProgram: true
 			}
 		},

@@ -11,11 +11,14 @@
 			"options": {
 				"tsConfig": "libs/shared/shared-ui/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/shared-ui/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/shared-ui",
+				"reportsDirectory": "test-result/libs/shared/shared-ui/coverage",
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"],
-			"dependsOn": ["typecheck-test", "typecheck-lib"]
+			"outputs": ["{options.reportsDirectory}"]
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

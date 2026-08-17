@@ -26,7 +26,8 @@ export default defineConfig({
 		// disable worker threads to make startup deterministic in CI
 		coverage: {
 			provider: 'v8',
-			reporter: ['html', 'text', 'lcov']
+			reporter: ['html', 'text', 'lcov'],
+			include: ['src/**/*.ts']
 		}
 	}
 });

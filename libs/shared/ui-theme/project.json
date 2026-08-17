@@ -20,11 +20,10 @@
 			"options": {
 				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
 				"vitestConfig": "libs/shared/ui-theme/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/ui-theme",
+				"reportsDirectory": "test-result/libs/shared/ui-theme/coverage",
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"],
-			"dependsOn": ["typecheck-test", "typecheck-lib"]
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"watch-css": {
 			"executor": "nx:run-commands",
@@ -36,6 +35,10 @@
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

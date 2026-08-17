@@ -7,6 +7,7 @@
 import '@angular/compiler';
 import type { TestModuleMetadata } from '@angular/core/testing';
 import { setupTestingModule as sharedSetup } from '@application-platform/testing';
+import '@application-platform/testing/analog';
 
 /**
  * Sets up the Angular testing module with the provided metadata.

@@ -10,7 +10,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
 	test: {
 		coverage: {
-			reportsDirectory: resolve(process.cwd(), 'test-result/apps/demo/coverage'),
+			reportsDirectory: resolve(process.cwd(), 'test-result/apps/z21-ui/coverage'),
 			include: ['src/**/*.ts'],
 			exclude: [
 				'libs/**/*.ts'

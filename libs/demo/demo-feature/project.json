@@ -11,14 +11,17 @@
 			"options": {
 				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json",
 				"vitestConfig": "libs/demo/demo-feature/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../../coverage/libs/demo/demo-feature",
+				"reportsDirectory": "test-result/libs/demo/demo-feature/coverage",
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"],
-			"dependsOn": ["typecheck-test", "typecheck-lib"]
+			"outputs": ["{options.reportsDirectory}"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

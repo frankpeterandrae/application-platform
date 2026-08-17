@@ -153,15 +153,16 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
+			"executor": "@angular/build:unit-test",
 			"options": {
 				"tsConfig": "apps/homepage/tsconfig.spec.json",
-				"vitestConfig": "apps/homepage/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../coverage/apps/homepage",
-				"passWithNoTests": true
-			},
-			"dependsOn": ["typecheck-test", "typecheck-app"]
+				"runnerConfig": "apps/homepage/vitest.config.mts",
+				"coverage": true,
+				"coverageInclude": ["src/**/*.ts"],
+				"coverageReporters": ["html", "text", "lcov"],
+				"reporters": ["html", "default", "verbose"],
+				"outputFile": "test-result/apps/homepage/index.html"
+			}
 		},
 		"serve-static": {
 			"continuous": true,
@@ -175,6 +176,10 @@
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",
