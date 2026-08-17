@@ -6,22 +6,9 @@
 	"projectType": "library",
 	"tags": ["type:testing", "scope:shared", "platform:browser"],
 	"targets": {
-		"test": {
-			"executor": "@nx/vitest:test",
-			"options": {
-				"tsConfig": "libs/shared/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../../coverage/libs/shared/testing",
-				"passWithNoTests": true
-			},
-			"outputs": ["{options.reportsDirectory}"],
-			"dependsOn": ["typecheck-test", "typecheck-lib"]
-		},
-		"typecheck-test": {
-			"executor": "nx:run-commands",
-			"options": {
-				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
-			}
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib"]
 		},
 		"typecheck-lib": {
 			"executor": "nx:run-commands",

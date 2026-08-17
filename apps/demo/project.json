@@ -7,7 +7,7 @@
 	"tags": ["type:app", "scope:demo", "platform:browser"],
 	"targets": {
 		"build": {
-			"executor": "@angular-devkit/build-angular:application",
+			"executor": "@angular/build:application",
 			"outputs": ["{options.outputPath}"],
 			"options": {
 				"outputPath": "dist/apps/demo",
@@ -71,7 +71,7 @@
 			"defaultConfiguration": "production"
 		},
 		"serve": {
-			"executor": "@angular-devkit/build-angular:dev-server",
+			"executor": "@angular/build:dev-server",
 			"options": {
 				"host": "127.0.0.1",
 				"port": 4250
@@ -87,25 +87,24 @@
 			"defaultConfiguration": "development",
 			"continuous": true
 		},
-		"extract-i18n": {
-			"executor": "@angular-devkit/build-angular:extract-i18n",
-			"options": {
-				"buildTarget": "demo:build"
-			}
-		},
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
+			"executor": "@angular/build:unit-test",
 			"options": {
 				"tsConfig": "apps/demo/tsconfig.spec.json",
-				"vitestConfig": "apps/demo/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../coverage/apps/demo",
-				"passWithNoTests": true
-			},
-			"dependsOn": ["typecheck-test", "typecheck-app"]
+				"runnerConfig": "apps/demo/vitest.config.mts",
+				"coverage": true,
+				"coverageInclude": ["src/**/*.ts"],
+				"coverageReporters": ["html", "text", "lcov"],
+				"reporters": ["html", "default", "verbose"],
+				"outputFile": "test-result/apps/demo/index.html"
+			}
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

@@ -57,6 +57,14 @@ jobs:
             npx nx affected --target=lint --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
           fi
 
+      - name: Typecheck
+        run: |
+          if [ "${{ inputs.mode }}" = "main" ]; then
+            npx nx run-many --target=typecheck --all
+          else
+            npx nx affected --target=typecheck --base='${{ inputs.base }}' --head='${{ inputs.head }}'
+          fi
+
       - name: Test (with coverage)
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
@@ -115,5 +123,5 @@ jobs:
             -Dsonar.sources=apps,libs
             -Dsonar.tests=apps,libs
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.test-setup.ts
-            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php
-            -Dsonar.javascript.lcov.reportPaths=**/coverage/**/lcov.info
+            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php,libs/shared/testing/**,libs/shared/shared-node-test/**
+            -Dsonar.javascript.lcov.reportPaths=**/test-result/**/lcov.info

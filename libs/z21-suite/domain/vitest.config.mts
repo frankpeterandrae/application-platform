@@ -5,13 +5,12 @@
 
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
 	root: __dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/domain'),
-	plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+	plugins: [tsconfigPaths()],
 	test: {
 		outputFile: resolve(process.cwd(), 'test-result/libs/z21-suite/domain/index.html'),
 		environment: 'jsdom',
@@ -21,7 +20,8 @@ export default defineConfig({
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['html', 'text', 'lcov']
+			reporter: ['html', 'text', 'lcov'],
+			include: ['src/**/*.ts']
 		}
 	}
 });

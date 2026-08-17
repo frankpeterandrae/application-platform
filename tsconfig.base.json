@@ -20,7 +20,6 @@
 		"esModuleInterop": true,
 		"baseUrl": ".",
 		"ignoreDeprecations": "6.0",
-		"types": ["vitest", "vitest/globals"],
 		"paths": {
 			"@application-platform/colour-rack": ["libs/homepage/colour-rack/src/index.ts"],
 			"@application-platform/config": ["libs/homepage/config/src/index.ts"],
@@ -30,6 +29,7 @@
 			"@application-platform/shared-ui": ["libs/shared/shared-ui/src/index.ts"],
 			"@application-platform/shared/ui-theme": ["libs/shared/ui-theme/src/index.ts"],
 			"@application-platform/testing": ["libs/shared/testing/src/index.ts"],
+			"@application-platform/testing/analog": ["libs/shared/testing/src/analog.ts"],
 			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],
 			"@application-platform/protocol": ["libs/z21-suite/protocol/src/index.ts"],
 			"@application-platform/z21": ["libs/z21-suite/z21/src/index.ts"],
@@ -44,14 +44,5 @@
 		"noUncheckedSideEffectImports": false
 	},
 	"exclude": ["node_modules", "tmp"],
-	"include": [
-		"global.d.ts",
-		"tools/**/*",
-		"libs/**/*",
-		"apps/**/*",
-		"scripts/**/*",
-		"vitest.workspace.ts",
-		"vitest.setup.ts",
-		"types/**/*"
-	]
+	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "scripts/**/*", "vitest.setup.ts", "types/**/*"]
 }

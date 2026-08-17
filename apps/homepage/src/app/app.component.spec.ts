@@ -10,6 +10,7 @@ import { environment } from '@application-platform/config';
 import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { MockedLanguageToggleComponent } from '@application-platform/testing';
 import { of } from 'rxjs';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { setupTestingModule } from '../test-setup';
 

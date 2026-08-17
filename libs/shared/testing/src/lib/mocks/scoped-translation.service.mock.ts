@@ -6,7 +6,7 @@
 // eslint-disable *
 import { signal, type Injector, type Signal } from '@angular/core';
 import type { TranslocoScope } from '@jsverse/transloco';
-import * as jestMock from 'jest-mock';
+import { vi } from 'vitest';
 
 /** @internal HashMap type for transloco compatibility */
 type HashMap<T = unknown> = Record<string, T>;
@@ -22,7 +22,7 @@ type TranslateSignalRef<T> = T extends unknown[] | Signal<string[]> ? Signal<str
  */
 export class ScopedTranslationServiceMock {
 	public currentLang = signal('en'); // Mock `currentLang` as a signal
-	public toggleLanguage = jestMock.fn(); // Mock toggleLanguage method
+	public toggleLanguage = vi.fn(); // Mock toggleLanguage method
 }
 
 /**

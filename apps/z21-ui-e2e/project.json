@@ -12,6 +12,16 @@
 			"options": {
 				"config": "apps/z21-ui-e2e/playwright.config.ts"
 			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-e2e"]
+		},
+		"typecheck-e2e": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.json --noEmit"
+			}
 		}
 	}
 }

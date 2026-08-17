@@ -64,15 +64,16 @@
 			"defaultConfiguration": "development"
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"executor": "@angular/build:unit-test",
 			"options": {
 				"tsConfig": "apps/z21-ui/tsconfig.spec.json",
-				"vitestConfig": "apps/z21-ui/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../coverage/apps/z21-ui",
-				"passWithNoTests": true
-			},
-			"dependsOn": ["typecheck-test", "typecheck-app"]
+				"runnerConfig": "apps/z21-ui/vitest.config.mts",
+				"coverage": true,
+				"coverageInclude": ["src/**/*.ts"],
+				"coverageReporters": ["html", "text", "lcov"],
+				"reporters": ["html", "default", "verbose"],
+				"outputFile": "test-result/apps/z21-ui/index.html"
+			}
 		},
 		"serve-static": {
 			"continuous": true,
@@ -86,6 +87,10 @@
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",

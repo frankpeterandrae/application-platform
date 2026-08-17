@@ -22,7 +22,8 @@ export default defineConfig({
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
-			reporter: ['html', 'text', 'lcov']
+			reporter: ['html', 'text', 'lcov'],
+			include: ['src/**/*.ts']
 		}
 	}
 });

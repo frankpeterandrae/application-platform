@@ -79,14 +79,17 @@
 		},
 		"test": {
 			"executor": "@nx/vitest:test",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
 			"options": {
 				"tsConfig": "apps/z21-server/tsconfig.spec.json",
 				"vitestConfig": "apps/z21-server/vitest.config.mts",
-				"reportsDirectory": "{projectRoot}../../coverage/apps/z21-server",
+				"reportsDirectory": "test-result/apps/z21-server/coverage",
 				"passWithNoTests": true
 			},
-			"dependsOn": ["typecheck-test", "typecheck-app"]
+			"outputs": ["{options.reportsDirectory}"]
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
 		},
 		"typecheck-test": {
 			"executor": "nx:run-commands",
