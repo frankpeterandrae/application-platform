@@ -1,0 +1,35 @@
+{
+	"name": "stream-overlay-data-access",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/stream-overlay/data-access/src",
+	"prefix": "stream-data-access",
+	"projectType": "library",
+	"tags": ["platform:agnostic", "scope:stream", "type:data-access"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "libs/stream-overlay/data-access/tsconfig.spec.json",
+				"vitestConfig": "libs/stream-overlay/data-access/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/stream-overlay/data-access/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

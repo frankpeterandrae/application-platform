@@ -6,7 +6,7 @@
 <button
 	class="fpa-button fpa-px-1 fpa-py-05"
 	[type]="type()"
-	[ngClass]="buttonClasses"
+	[ngClass]="[...buttonClasses, disabled() ? 'fpa-disabled' : '']"
 	[attr.aria-expanded]="ariaExpanded()"
 	[attr.aria-haspopup]="ariaHaspopup()"
 	(click)="callback()"

@@ -6,94 +6,182 @@
 @use '../../theme/base/prefix';
 @use '../../theme/base/variables';
 
-select {
-	color: variables.$light-text;
-
-	&.#{prefix.$prefix}dark-text {
-		color: variables.$dark-text;
-	}
-}
-
 .#{prefix.$prefix}select-group {
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: stretch;
 	width: 100%;
-	border-radius: 0;
-
-	> :not(:first-child) {
-		margin-left: -1px;
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-	}
-
-	> .#{prefix.$prefix}select {
-		position: relative;
-		flex: 1 1 auto;
-		width: 1%;
-		min-width: 0;
-	}
 
 	.#{prefix.$prefix}select-label {
 		position: absolute;
-		top: 0.6125rem;
+		top: 0.25rem;
+		left: 0;
 		margin-left: 0;
 		transition: all 0.2s ease;
+		pointer-events: none;
+		z-index: 1;
 	}
-
-	&.#{prefix.$prefix}select-group-dynamic {
-		.#{prefix.$prefix}select {
-			@extend %background-image;
-
-			&.#{prefix.$prefix}dark-text {
-				@extend %background-image-dark;
-			}
-
-			background:
-				no-repeat bottom,
-				50% calc(100% - 1px);
-			background-size:
-				0 100%,
-				100% 100%;
-			transition: 0.2s ease;
-
-			&:focus {
-				@extend %background-image;
-
-				background-size:
-					100% 100%,
-					100% 100%;
-			}
-		}
-	}
-
-	.#{prefix.$prefix}select-icon {
-		@extend %#{prefix.$prefix}select-icon-base;
-
-		position: absolute;
-		padding: 0.75rem 0;
-		right: 0;
-		border-right: 0 !important;
+	&.#{prefix.$prefix}select-group-disabled {
+		opacity: 0.6;
 	}
 }
 
 .#{prefix.$prefix}select {
-	display: block;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
 	width: 100%;
-	padding: 0.5rem 1.5rem 0.5rem 0;
+	min-width: 0;
+	height: 3rem;
+	padding: 1.125rem 1.5rem 0.375rem 0;
+	font-family: inherit;
 	font-size: 0.875rem;
 	font-weight: 400;
-	line-height: 1.5rem;
-	appearance: none;
-	border: none;
-	border-radius: 0.375rem;
-	transition: 0.2s ease;
+	line-height: 1.25rem;
+	color: variables.$light-text;
+	text-align: left;
+	background-color: transparent;
+	border: 0;
+	border-radius: 0;
+	cursor: pointer;
+
+	&.#{prefix.$prefix}dark-text {
+		color: variables.$dark-text;
+	}
 
 	&:focus {
 		outline: none;
 		box-shadow: none;
 	}
+}
+
+.#{prefix.$prefix}select-group-dynamic {
+	.#{prefix.$prefix}select {
+		background-image:
+			linear-gradient(0deg, variables.$main-band 2px, transparent 0),
+			linear-gradient(0deg, variables.$light-shades 1px, transparent 0);
+		background-repeat: no-repeat, no-repeat;
+		background-position: bottom, bottom;
+		background-size:
+			0 100%,
+			100% 100%;
+		transition: background-size 0.2s ease;
+	}
+
+	&.#{prefix.$prefix}dark-text {
+		.#{prefix.$prefix}select {
+			background-image:
+				linear-gradient(0deg, variables.$main-band 2px, transparent 0),
+				linear-gradient(0deg, variables.$dark-shades 1px, transparent 0);
+		}
+	}
+
+	&.#{prefix.$prefix}select-group-open,
+	&:focus-within {
+		.#{prefix.$prefix}select {
+			background-size:
+				100% 100%,
+				100% 100%;
+		}
+	}
+}
+
+.#{prefix.$prefix}select-value {
+	display: block;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.#{prefix.$prefix}select-icon {
+	position: absolute;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	transition: transform 0.2s ease;
+
+	&-open {
+		transform: rotate(180deg);
+	}
+}
+
+.#{prefix.$prefix}select-panel {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+	max-height: 16rem;
+	overflow-y: auto;
+	background-color: variables.$dark-shades;
+	border-radius: 0.25rem;
+	box-shadow:
+		0 2px 4px rgb(0 0 0 / 20%),
+		0 4px 8px rgb(0 0 0 / 14%);
+	padding: 0.25rem 0;
+
+	&.#{prefix.$prefix}dark-text {
+		background-color: variables.$light-shades;
+	}
+}
+
+.#{prefix.$prefix}select-option {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	padding: 0.625rem 1rem;
+	font-family: inherit;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: variables.$light-text;
+	text-align: left;
+	background-color: transparent;
+	border: 0;
+	cursor: pointer;
+
+	&:hover,
+	&:focus {
+		background-color: rgb(255 255 255 / 8%);
+		outline: none;
+	}
+
+	&-selected {
+		background-color: rgb(255 255 255 / 12%);
+	}
+
+	&-empty {
+		min-height: 2rem;
+	}
+}
+
+.#{prefix.$prefix}select-panel.#{prefix.$prefix}dark-text {
+	.#{prefix.$prefix}select-option {
+		color: variables.$dark-text;
+
+		&:hover,
+		&:focus {
+			background-color: rgb(0 0 0 / 8%);
+		}
+
+		&-selected {
+			background-color: rgb(0 0 0 / 12%);
+		}
+	}
+}
+
+.#{prefix.$prefix}select-option-check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1rem;
+	min-width: 1rem;
+	font-weight: 700;
+	color: variables.$main-band;
 }
 
 %background-image {
@@ -108,21 +196,4 @@ select {
 		linear-gradient(0deg, variables.$main-band 2px, rgb(156 39 176 / 0%) 0),
 		linear-gradient(0deg, variables.$dark-shades 1px, hsl(0deg 0% 82% / 0%) 0);
 	border-radius: 0 !important;
-}
-
-// common select-icon styles
-%#{prefix.$prefix}select-icon-base {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem 0;
-	font-size: 0.875rem;
-	font-weight: 400;
-	line-height: 1.5rem;
-	color: variables.$dark-shades;
-	text-align: center;
-	white-space: nowrap;
-	background-color: transparent;
-	border-radius: 0.375rem;
-	transition: 0.2s ease;
-	border: none;
 }

@@ -65,6 +65,10 @@ export default [
 							sourceTag: 'platform:node',
 							onlyDependOnLibsWithTags: ['platform:node', 'platform:agnostic']
 						},
+						{
+							sourceTag: 'platform:nestJS',
+							onlyDependOnLibsWithTags: ['platform:nestJS', 'platform:agnostic']
+						},
 
 						// -------------------------
 						// Scope barriers (pro Thema)
@@ -82,6 +86,10 @@ export default [
 							onlyDependOnLibsWithTags: ['scope:demo', 'scope:shared']
 						},
 						{
+							sourceTag: 'scope:stream',
+							onlyDependOnLibsWithTags: ['scope:stream', 'scope:shared']
+						},
+						{
 							sourceTag: 'scope:shared',
 							onlyDependOnLibsWithTags: ['scope:shared']
 						},
@@ -90,19 +98,16 @@ export default [
 						// Type / Layering
 						// -------------------------
 						{
-							sourceTag: 'type:app',
+							sourceTag: 'type:ui-app',
 							onlyDependOnLibsWithTags: [
 								'type:feature',
 								'type:ui',
-								'type:data-access',
-								'type:domain',
 								'type:protocol',
 								'type:shared',
 								'type:util',
-								'type:server',
-								'type:server-utils',
 								'type:integration',
-								'type:testing'
+								'type:testing',
+								'type:data-access'
 							]
 						},
 						{
@@ -110,12 +115,11 @@ export default [
 							onlyDependOnLibsWithTags: [
 								'type:feature',
 								'type:ui',
-								'type:data-access',
-								'type:domain',
 								'type:protocol',
 								'type:shared',
 								'type:util',
-								'type:testing'
+								'type:testing',
+								'type:data-access'
 							]
 						},
 						{
@@ -143,16 +147,18 @@ export default [
 
 						// server side
 						{
-							sourceTag: 'type:server',
+							sourceTag: 'type:server-app',
 							onlyDependOnLibsWithTags: [
-								'type:server',
+								'type:server-app',
 								'type:server-utils',
 								'type:integration',
+								'type:data-access',
 								'type:domain',
 								'type:protocol',
 								'type:shared',
 								'type:util',
-								'type:testing'
+								'type:testing',
+								'type:data-access'
 							]
 						},
 						{
@@ -206,8 +212,8 @@ export default [
 							sourceTag: 'type:e2e',
 							onlyDependOnLibsWithTags: [
 								'type:e2e',
-								'type:app',
-								'type:server',
+								'type:ui-app',
+								'type:server-app',
 								'type:ui',
 								'type:protocol',
 								'type:shared',
@@ -290,6 +296,8 @@ export default [
 					]
 				}
 			],
+			'jsdoc/no-blank-blocks': 'error',
+			'jsdoc/require-description': 'error',
 			// Turned off because it crashes on non-JS file types (HTML/config) in current plugin version
 			'jsdoc/require-description-complete-sentence': 'off',
 

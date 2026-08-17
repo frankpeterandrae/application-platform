@@ -1,0 +1,68 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+@use '../../styles' as mixins;
+
+.logo-container {
+	display: flex;
+	justify-content: center;
+	width: 6rem;
+	height: 6rem;
+
+	@include mixins.segmented-border(
+		$segments: right bottom top left top-left bottom-right,
+		$corner: 15px,
+		$width: 2px,
+		$color: mixins.$sto-border
+	);
+
+	z-index: 2;
+}
+
+.logo-background {
+	z-index: -1;
+
+	@include mixins.clipped-background($corners: top-left bottom-right, $color: mixins.$sto-background);
+}
+
+.logo {
+	width: 50%;
+	max-height: 80%;
+	margin: auto;
+}
+
+h1 {
+	font-family: 'Cinzel Semibold', sans-serif;
+	font-size: 1.5rem;
+	margin: 0;
+	padding: 0;
+	color: mixins.$sto-font-highlight;
+	text-align: center;
+}
+
+h2 {
+	font-size: 1rem;
+	margin: 0;
+	padding: 0;
+	color: mixins.$sto-font-highlight;
+	text-align: center;
+}
+
+.title-container {
+	padding: 0.5rem 1rem;
+
+	@include mixins.segmented-border($segments: right bottom top bottom-right, $corner: 15px, $width: 2px, $color: mixins.$sto-border);
+}
+
+.title-background {
+	@include mixins.clipped-background($corners: bottom-right, $color: mixins.$sto-background);
+}
+
+.h2-border {
+	border-bottom: 1px solid transparent;
+	background: linear-gradient(90deg, mixins.$sto-border 0%, mixins.$sto-border-secondary 100%);
+	background-repeat: no-repeat;
+	background-position: bottom left;
+	background-size: 100% 1px;
+}

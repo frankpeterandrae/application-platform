@@ -1,0 +1,62 @@
+{
+	"name": "data-db",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/data-db/src",
+	"projectType": "library",
+	"tags": ["platform:nestJS", "scope:shared", "type:data-access"],
+	"targets": {
+		"build": {
+			"executor": "@nx/js:tsc",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/libs/data-db",
+				"main": "libs/data-db/src/index.ts",
+				"tsConfig": "libs/data-db/tsconfig.lib.json",
+				"assets": ["libs/data-db/*.md"]
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/data-db/tsconfig.spec.json",
+				"vitestConfig": "libs/data-db/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/data-db/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		},
+		"generate-assets": {
+			"executor": "nx:run-commands",
+			"inputs": ["default", "{workspaceRoot}/tools/paint/**/*"],
+			"outputs": ["{workspaceRoot}/tmp/generated/paints"],
+			"options": {
+				"command": "tsx tools/paint/generate-assets.ts"
+			}
+		},
+		"watch-assets": {
+			"executor": "nx:run-commands",
+			"continuous": true,
+			"cache": false,
+			"dependsOn": ["generate-assets"],
+			"options": {
+				"command": "nx watch --projects=paint -- nx run paint:generate-assets"
+			}
+		}
+	}
+}

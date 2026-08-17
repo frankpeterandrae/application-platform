@@ -22,10 +22,10 @@
 		[id]="id()"
 		[type]="type()"
 		[placeholder]="placeholder()"
-		[value]="value"
+		[value]="value()"
 		(focus)="onFocus()"
 		(blur)="onBlur()"
 		(input)="onInput($event)"
-		[disabled]="disabled()"
+		[disabled]="disabled() || formDisabled()"
 	/>
 </div>

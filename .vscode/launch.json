@@ -15,6 +15,21 @@
 			"skipFiles": ["<node_internals>/**"],
 			"sourceMaps": true,
 			"outFiles": ["${workspaceFolder}/apps/z21-server/dist/**/*.(m|c|)js", "!**/node_modules/**"]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug stream-overlay-server with Nx",
+			"runtimeExecutable": "npx",
+			"runtimeArgs": ["nx", "serve", "stream-overlay-server"],
+			"env": {
+				"NODE_OPTIONS": "--inspect=9230"
+			},
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"skipFiles": ["<node_internals>/**"],
+			"sourceMaps": true,
+			"outFiles": ["${workspaceFolder}/apps/stream-overlay-server/dist/**/*.(m|c|)js", "!**/node_modules/**"]
 		}
 	]
 }

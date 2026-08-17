@@ -8,6 +8,7 @@
 		<p>Choose an option from the dropdown:</p>
 		<form [formGroup]="selectForm">
 			<theme-select
+				[id]="'id1'"
 				[label]="'Select Country'"
 				[options]="countryOptions"
 				[formControl]="selectControl"
@@ -28,5 +29,18 @@
 			<li>Dynamic layout support</li>
 			<li>Floating label animation</li>
 		</ul>
+
+		<p>Choose an option from the dropdown:</p>
+		<theme-select
+			[id]="'id2'"
+			[label]="'Select Country'"
+			[options]="countryOptions"
+			[formControl]="selectControl"
+			(change)="onSelectChange($event)"
+			[darkText]="true"
+			[emptySelection]="false"
+			[multiple]="true"
+		>
+		</theme-select>
 	</div>
 </demo-theme>

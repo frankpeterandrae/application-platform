@@ -44,6 +44,8 @@ export class Z21Udp extends EventEmitter {
 	private started = false;
 
 	/**
+	 * Creates a new Z21Udp instance.
+	 *
 	 * @param host Z21 central hostname/IP to send commands to
 	 * @param port UDP port of the Z21 central
 	 * @param logger Logger instance for debug/info/warn/error logging

@@ -1,0 +1,118 @@
+{
+	"name": "stream-overlay-ui",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"prefix": "stream-overlay",
+	"sourceRoot": "apps/stream-overlay-ui/src",
+	"tags": ["platform:browser", "scope:stream", "type:ui-app"],
+	"targets": {
+		"build": {
+			"executor": "@angular/build:application",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/apps/stream-overlay-ui",
+				"browser": "apps/stream-overlay-ui/src/main.ts",
+				"tsConfig": "apps/stream-overlay-ui/tsconfig.app.json",
+				"inlineStyleLanguage": "scss",
+				"assets": [
+					{
+						"glob": "**/*",
+						"input": "apps/stream-overlay-ui/public"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/shared/ui-theme/src/assets",
+						"output": "assets/theme"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/stream-overlay/overlay/src/assets",
+						"output": "assets/stream-overlay"
+					}
+				],
+				"styles": ["apps/stream-overlay-ui/src/styles.scss", "libs/shared/ui-theme/src/lib/theme/themed/stream-overlay.scss"]
+			},
+			"configurations": {
+				"production": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "5mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumError": "6kb"
+						}
+					]
+				},
+				"development": {
+					"optimization": false,
+					"extractLicenses": false,
+					"sourceMap": true
+				}
+			},
+			"defaultConfiguration": "production"
+		},
+		"serve": {
+			"executor": "@angular/build:dev-server",
+			"options": {
+				"host": "127.0.0.1",
+				"port": 4220,
+				"proxyConfig": "apps/stream-overlay-ui/proxy.conf.json"
+			},
+			"configurations": {
+				"production": {
+					"buildTarget": "stream-overlay-ui:build:production"
+				},
+				"development": {
+					"buildTarget": "stream-overlay-ui:build:development"
+				}
+			},
+			"defaultConfiguration": "development",
+			"continuous": true,
+			"dependsOn": ["stream-overlay-server:serve"]
+		},
+		"test": {
+			"executor": "@angular/build:unit-test",
+			"options": {
+				"tsConfig": "apps/stream-overlay-ui/tsconfig.spec.json",
+				"runnerConfig": "apps/stream-overlay-ui/vitest.config.mts",
+				"coverage": true,
+				"coverageInclude": ["src/**/*.ts"],
+				"coverageReporters": ["html", "text", "lcov"],
+				"reporters": ["html", "default", "verbose"],
+				"outputFile": "test-result/apps/stream-overlay-ui/index.html"
+			}
+		},
+		"serve-static": {
+			"continuous": true,
+			"executor": "@nx/web:file-server",
+			"options": {
+				"buildTarget": "stream-overlay-ui:build",
+				"port": 4220,
+				"staticFilePath": "dist/apps/stream-overlay-ui/browser",
+				"spa": true
+			}
+		},
+		"stylelint": {
+			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
+			}
+		}
+	}
+}

@@ -48,6 +48,22 @@
 					"coverage": true
 				}
 			}
+		},
+		"@nx/webpack:webpack": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": [
+				"production",
+				"^production",
+				{
+					"json": "{workspaceRoot}/tsconfig.json",
+					"fields": ["extends", "files", "include"]
+				}
+			]
+		},
+		"@angular/build:unit-test": {
+			"cache": true,
+			"inputs": ["default", "^production"]
 		}
 	},
 	"namedInputs": {
@@ -90,6 +106,10 @@
 		},
 		"@nx/angular:component": {
 			"style": "scss"
+		},
+		"@nx/angular:library": {
+			"linter": "eslint",
+			"unitTestRunner": "vitest-analog"
 		}
 	},
 	"analytics": false

@@ -1,0 +1,22 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"importHelpers": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"moduleResolution": "bundler",
+		"allowJs": true,
+		"ignoreDeprecations": "6.0"
+	},
+	"files": [],
+	"include": ["src/**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
+	"references": [
+		{
+			"path": "./tsconfig.lib.json"
+		}
+	]
+}

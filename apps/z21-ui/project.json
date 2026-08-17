@@ -4,7 +4,7 @@
 	"projectType": "application",
 	"prefix": "z21",
 	"sourceRoot": "apps/z21-ui/src",
-	"tags": ["type:app", "scope:z21", "platform:browser"],
+	"tags": ["type:ui-app", "scope:z21", "platform:browser"],
 	"targets": {
 		"build": {
 			"executor": "@angular/build:application",

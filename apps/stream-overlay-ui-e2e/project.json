@@ -1,0 +1,27 @@
+{
+	"name": "stream-overlay-ui-e2e",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"sourceRoot": "apps/stream-overlay-ui-e2e/src",
+	"implicitDependencies": ["stream-overlay-ui"],
+	"tags": ["type:e2e", "scope:z21", "platform:browser"],
+	"targets": {
+		"e2e": {
+			"executor": "@nx/playwright:playwright",
+			"outputs": ["{workspaceRoot}/dist/.playwright/apps/stream-overlay-ui-e2e"],
+			"options": {
+				"config": "apps/stream-overlay-ui-e2e/playwright.config.mts"
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-e2e"]
+		},
+		"typecheck-e2e": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.json --noEmit"
+			}
+		}
+	}
+}

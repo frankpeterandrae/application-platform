@@ -15,5 +15,6 @@ export enum IconDefinition {
 	GERMAN_MONOCHROME = 'theme/svg/german_monochrome',
 	ENGLISH = 'theme/svg/english',
 	ENGLISH_MONOCHROME = 'theme/svg/english_monochrome',
-	CARET_DOWN = 'theme/svg/caret_down'
+	CARET_DOWN = 'theme/svg/caret_down',
+	ATTENTION = 'theme/svg/attention'
 }

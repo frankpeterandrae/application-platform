@@ -1,0 +1,140 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<stream-dashboard-container>
+	<div class="fpa-flex-grow-1 fpa-grid-12 fpa-grid-gutter fpa-light-text">
+		<aside class="fpa-flex fpa-flex-column fpa-height-100 fpa-grid-col-end-8">
+			<div class="fpa-flex fpa-flex-justify-space-between fpa-flex-align-items-center">
+				<h1>Paint Editor</h1>
+
+				<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="'Neue Farbe'" (click)="createPaint()"></theme-button>
+			</div>
+
+			<theme-select
+				[id]="'brand_selection'"
+				[label]="'Hersteller'"
+				[options]="brandOptions()"
+				[emptySelection]="true"
+				[ngModel]="selectedBrand()"
+				(ngModelChange)="selectedBrand.set($event)"
+			></theme-select>
+
+			<theme-select
+				[id]="'color_group_filter'"
+				[label]="'Farbgruppe'"
+				[options]="colorGroupFilterOptions"
+				[emptySelection]="true"
+				[ngModel]="selectedColorGroup()"
+				(ngModelChange)="selectedColorGroup.set($event)"
+			></theme-select>
+
+			<theme-input label="Suche" (valueChange)="searchTerm.set($event)" />
+
+			<div class="fpa-flex-1 fpa-grid-12 fpa-grid-gutter fpa-overflow-auto">
+				@for (paint of filteredPaints(); track paint.id) {
+					<button
+						type="button"
+						class="sto-paint-editor__item fpa-grid-col-end-2"
+						[class.sto-paint-editor__item--selected]="selectedPaint()?.id === paint.id"
+						(click)="editPaint(paint)"
+					>
+						@if (!paint.colorGroups?.length) {
+							<span
+								class="sto-paint-editor-warning"
+								title="Keine ColorGroup zugewiesen"
+								aria-label="Keine ColorGroup zugewiesen"
+							>
+								<fast-svg [name]="IconDefinition.ATTENTION" [size]="'16'"></fast-svg>
+							</span>
+						}
+						<span class="sto-paint-editor__color">
+							<fpa-shared-ui-paint-swatch [paint]="paint" />
+						</span>
+
+						<span>
+							<strong>
+								{{ paint.name }}
+							</strong>
+
+							<small>
+								{{ paint.sku }}
+							</small>
+						</span>
+					</button>
+				}
+			</div>
+		</aside>
+
+		<main class="fpa-grid-col-end-4">
+			<h2>
+				@if (isNew()) {
+					Neue Farbe
+				} @else {
+					{{ selectedPaint()?.name }}
+				}
+			</h2>
+
+			<form [formGroup]="paintForm" (ngSubmit)="save()">
+				<theme-select
+					formControlName="brand"
+					[id]="'brand_selection'"
+					[label]="'Hersteller'"
+					[options]="brandOptions()"
+					[emptySelection]="true"
+				></theme-select>
+
+				<theme-input label="SKU" formControlName="sku" />
+
+				<theme-input label="Name" formControlName="name" />
+
+				<theme-input label="Range" formControlName="range" />
+
+				<theme-input label="Kategorie" formControlName="category" />
+
+				<theme-select
+					formControlName="colorGroups"
+					[id]="'color_groups'"
+					[label]="'Farbgruppen'"
+					[options]="paintColorGroups"
+					[multiple]="true"
+				></theme-select>
+
+				<theme-input label="Main Color" formControlName="mainColor" />
+
+				<theme-input label="Secondary Color" formControlName="secondaryColor" />
+
+				<theme-input label="Barcode" formControlName="barcode" />
+
+				<div class="fpa-flex fpa-flex-column fpa-flex-justify-end fpa-pt-2">
+					<div class="fpa-flex fpa-flex-justify-end fpa-pt-2">
+						@if (!isNew()) {
+							<theme-button
+								class="fpa-pr-1"
+								[color]="ButtonColorDefinition.WARNING"
+								[buttonText]="'Löschen'"
+								(click)="deletePaint()"
+							></theme-button>
+						}
+
+						<theme-button
+							[color]="ButtonColorDefinition.PRIMARY"
+							[buttonText]="'Speichern'"
+							[type]="'submit'"
+							[disabled]="paintForm.invalid"
+						></theme-button>
+					</div>
+					@if (saveStatus() === 'success') {
+						<span class="fpa-flex-align-self-end fpa-pt-05 fpa-pr-2">Gespeichert</span>
+					}
+					@if (saveStatus() === 'error') {
+						<span class="fpa-flex-align-self-end fpa-pt-05 fpa-pr-2">Speichern fehlgeschlagen</span>
+					}
+					@if (saveStatus() === 'deleted') {
+						<span class="fpa-flex-align-self-end fpa-pt-05 fpa-pr-2">Erfolgreich gespeichert</span>
+					}
+				</div>
+			</form>
+		</main>
+	</div>
+</stream-dashboard-container>

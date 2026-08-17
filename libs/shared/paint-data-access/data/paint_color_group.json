@@ -1,0 +1,2326 @@
+[
+	{
+		"paint_id": "citadel:21-01",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:21-02",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:21-03",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:21-04",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:21-05",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:21-06",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:21-07",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:21-08",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:21-09",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:21-10",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-11",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-12",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-13",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-14",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-15",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-16",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:21-17",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-18",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:21-19",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:21-20",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-21",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-22",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-23",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-24",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-25",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-26",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-27",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:21-28",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-29",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-30",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-31",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-32",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-33",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:21-35",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-36",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:21-37",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-38",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:21-39",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:21-40",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-41",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:21-42",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:21-43",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-44",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-45",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-46",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-47",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-48",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-49",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:21-50",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:21-51",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:21-52",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-53",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:21-54",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:21-55",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:21-56",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:21-57",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:21-58",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-01",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:22-02",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:22-03",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:22-04",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:22-05",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:22-06",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:22-07",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:22-08",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:22-09",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:22-10",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:22-11",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-12",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-13",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-14",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-15",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-16",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-17",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-18",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-19",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-20",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-21",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-22",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-23",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-24",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-25",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-26",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-27",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-28",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-29",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-30",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-31",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-32",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:22-33",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:22-34",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-35",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:22-36",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-37",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-38",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-39",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-40",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-41",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-42",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-43",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-44",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-45",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-46",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-47",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-48",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:22-49",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-50",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-51",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-52",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-53",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-54",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-55",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-56",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-57",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-58",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-59",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-60",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-61",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-62",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-63",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-64",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-65",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-67",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-68",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:22-69",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:22-70",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:22-71",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-72",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-73",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-74",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-75",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-76",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-77",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-78",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-79",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-80",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:22-81",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:22-82",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:22-83",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:22-84",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:22-85",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:22-86",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:22-87",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-88",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:22-89",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:22-90",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:22-91",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:22-92",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-93",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:22-94",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:23-01",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:23-03",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:23-04",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:23-05",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:23-06",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:23-08",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:23-09",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:23-10",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:23-11",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:23-12",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:23-13",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:23-14",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:23-16",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:23-17",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:23-18",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:23-20",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:23-21",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:23-22",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:23-24",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:23-25",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:23-26",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:23-28",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:23-30",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "citadel:24-13",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:24-13",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-14",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:24-14",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-15",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:24-15",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-16",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:24-17",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:24-18",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-18",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:24-19",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:24-19",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-20",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:24-20",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-21",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:24-21",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-22",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:24-22",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-23",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:24-23",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-24",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:24-24",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-29",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:24-29",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-30",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:24-30",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-31",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:24-31",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-32",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-32",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:24-33",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:24-33",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-34",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:24-34",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:24-35",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:24-35",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:27-02",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-03",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-05",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:27-05",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-06",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:27-06",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-09",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:27-10",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-12",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:27-12",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-13",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:27-13",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-14",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:27-14",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-19",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:27-20",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:27-21",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:27-21",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-22",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:27-22",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-23",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:27-23",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-24",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:27-25",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:27-26",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:27-26",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-28",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:27-28",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-30",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:27-30",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-32",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:27-32",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-33",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-34",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:27-35",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:27-35",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "citadel:29-10",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:29-11",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "citadel:29-12",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:29-13",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:29-14",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:29-15",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-16",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-17",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-18",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-19",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-20",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-21",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:29-22",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:29-23",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-24",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-25",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-26",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "citadel:29-27",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-28",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-29",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-30",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-30",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "citadel:29-31",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:29-32",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:29-33",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:29-34",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-35",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-36",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-37",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-38",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-39",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-40",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-41",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-42",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "citadel:29-43",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-43",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-44",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-45",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "citadel:29-46",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "citadel:29-47",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-48",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-49",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-50",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-51",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-52",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:29-53",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:29-54",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "citadel:29-55",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-56",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "citadel:29-57",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-58",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-59",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-60",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-61",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "citadel:29-62",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-63",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-64",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-65",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "citadel:29-66",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "citadel:29-67",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "citadel:29-68",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10001",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10001",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10002",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10003",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10004",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10005",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10006",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10007",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10008",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10009",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10010",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10011",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10012",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10013",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10014",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10015",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10016",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10017",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10018",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10019",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10020",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10021",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10022",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10023",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10024",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10025",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10026",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10027",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10028",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10029",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10030",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10031",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10032",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10033",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10034",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10035",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10036",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10037",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10038",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10039",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10040",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10041",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10042",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10043",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10044",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10045",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10046",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10047",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10048",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10049",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10050",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10051",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10052",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10053",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10054",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10055",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10055",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10056",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10056",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10057",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10057",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10058",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10058",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10058",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10059",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10059",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10060",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10060",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10061",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10062",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10063",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10064",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10065",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10066",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10067",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10068",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10069",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10070",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10071",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10072",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10073",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10073",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10074",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10074",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10075",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10075",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10076",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10076",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10077",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10077",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10078",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10078",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10079",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10080",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10081",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10082",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10083",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10084",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10085",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10086",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10087",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10088",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10089",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10090",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10091",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10092",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10093",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10094",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10094",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10095",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10095",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10096",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10096",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10097",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10097",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10098",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10098",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10099",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10099",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10100",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10101",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10102",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10103",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10104",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10105",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10106",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10107",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10108",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10109",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10110",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10111",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10112",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10112",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10113",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10113",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10114",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10114",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10115",
+		"color_group": "glaze"
+	},
+	{
+		"paint_id": "two-thin-coats:10115",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10116",
+		"color_group": "glaze"
+	},
+	{
+		"paint_id": "two-thin-coats:10116",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10117",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10117",
+		"color_group": "glaze"
+	},
+	{
+		"paint_id": "two-thin-coats:10118",
+		"color_group": "glaze"
+	},
+	{
+		"paint_id": "two-thin-coats:10118",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10119",
+		"color_group": "glaze"
+	},
+	{
+		"paint_id": "two-thin-coats:10119",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10120",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10121",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10122",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10123",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10124",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10125",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10126",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10127",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10128",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10129",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10130",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10131",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10132",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10133",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10134",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10135",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10136",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10136",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10137",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10137",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10138",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10138",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10139",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10140",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10141",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10142",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10143",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10144",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10145",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10146",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10147",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10148",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10149",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10150",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10151",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10152",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10153",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10154",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10155",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10156",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10157",
+		"color_group": "pink"
+	},
+	{
+		"paint_id": "two-thin-coats:10158",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10159",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10160",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10161",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10162",
+		"color_group": "skintones"
+	},
+	{
+		"paint_id": "two-thin-coats:10163",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10163",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10164",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10164",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10165",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10165",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10166",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10166",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10167",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10167",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10168",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10168",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10169",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10170",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10171",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10172",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10173",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10174",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:10175",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:10175",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10176",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10176",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:10177",
+		"color_group": "blue"
+	},
+	{
+		"paint_id": "two-thin-coats:10177",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10178",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:10178",
+		"color_group": "washes"
+	},
+	{
+		"paint_id": "two-thin-coats:10501",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10501",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10502",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10502",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10503",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10504",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:10504",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:10504",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10505",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:10505",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10507",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10507",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10508",
+		"color_group": "purple"
+	},
+	{
+		"paint_id": "two-thin-coats:10508",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10509",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:10509",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10510",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:10512",
+		"color_group": "technical"
+	},
+	{
+		"paint_id": "two-thin-coats:36001",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:36002",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:36003",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:36004",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:36005",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:36006",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:36007",
+		"color_group": "yellow"
+	},
+	{
+		"paint_id": "two-thin-coats:36008",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:36009",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:36010",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:36011",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:36012",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:36013",
+		"color_group": "orange"
+	},
+	{
+		"paint_id": "two-thin-coats:36014",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36015",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36016",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36017",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36018",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:36019",
+		"color_group": "ivory"
+	},
+	{
+		"paint_id": "two-thin-coats:36020",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:36021",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:36022",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:36023",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:36024",
+		"color_group": "metallic"
+	},
+	{
+		"paint_id": "two-thin-coats:36025",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36025",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:36026",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:36026",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:36027",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:36027",
+		"color_group": "red"
+	},
+	{
+		"paint_id": "two-thin-coats:36028",
+		"color_group": "brown"
+	},
+	{
+		"paint_id": "two-thin-coats:36028",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:36029",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:36029",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:36030",
+		"color_group": "black-to-white"
+	},
+	{
+		"paint_id": "two-thin-coats:36030",
+		"color_group": "inks"
+	},
+	{
+		"paint_id": "two-thin-coats:Verd",
+		"color_group": "green"
+	},
+	{
+		"paint_id": "two-thin-coats:Verd",
+		"color_group": "technical"
+	}
+]

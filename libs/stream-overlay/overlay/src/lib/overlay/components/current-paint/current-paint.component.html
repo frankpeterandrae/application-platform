@@ -1,0 +1,22 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+@if (currentPaint(); as paint) {
+	<div class="paint-overlay" animate.enter="enter-animation" animate.leave="deleting">
+		<div class="paint-overlay-background">
+			<div class="paint-overlay-container">
+				<span class="paint-color">
+					<fpa-shared-ui-paint-swatch [paint]="paint" />
+				</span>
+
+				<div>
+					<small class="paint-header">Current Paint</small>
+					<strong class="current-paint">{{ paint.name }}</strong>
+					<sub class="paint-brand">{{ getBrandName(paint.brand) }}</sub>
+				</div>
+			</div>
+		</div>
+	</div>
+}

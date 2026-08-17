@@ -5,7 +5,7 @@
 
 import { CommonModule } from '@angular/common';
 import type { ElementRef } from '@angular/core';
-import { Component, forwardRef, input, output, viewChild } from '@angular/core';
+import { Component, forwardRef, input, output, signal, viewChild } from '@angular/core';
 import type { ControlValueAccessor } from '@angular/forms';
 import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
@@ -48,8 +48,10 @@ export class InputComponent implements ControlValueAccessor {
 	public valueChange = output<string>();
 	public inputFocused = false;
 
-	public value = '';
+	public readonly value = signal('');
 	public error?: string;
+
+	public readonly formDisabled = signal(false);
 
 	/**
 	 * Callback function to handle changes in the input value.
@@ -68,9 +70,9 @@ export class InputComponent implements ControlValueAccessor {
 	 */
 	public onInput(event: Event): void {
 		const input = event.target as HTMLInputElement;
-		this.value = input.value;
-		this.onChange(this.value);
-		this.valueChange.emit(this.value);
+		this.value.set(input.value);
+		this.onChange(input.value);
+		this.valueChange.emit(input.value);
 	}
 
 	/**
@@ -78,7 +80,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @returns {boolean} - True if the input field has a value, otherwise false.
 	 */
 	public isFilled(): boolean {
-		return this.value.length > 0 || !!this.placeholder();
+		return this.value().length > 0 || !!this.placeholder();
 	}
 
 	/**
@@ -101,7 +103,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @param {string} $event - The change event.
 	 */
 	public onChangeValue($event: string): void {
-		this.value = $event;
+		this.value.set($event);
 	}
 
 	/**
@@ -128,14 +130,23 @@ export class InputComponent implements ControlValueAccessor {
 	 * @param {string} value - The new value.
 	 */
 	public writeValue(value: string): void {
-		this.value = value;
+		this.value.set(value ?? '');
 	}
 
 	/**
-	 * Sets the disabled state of the input field.
+	 * Sets the floating state of the input field.
 	 * @returns {boolean} - The disabled state.
 	 */
 	protected isFloating(): boolean {
 		return this.isDynamic() && this.inputFocused;
+	}
+
+	/**
+	 * Sets the disabled state of the input field.
+	 * @internal
+	 * @param {boolean} isDisabled - The disabled state.
+	 */
+	public setDisabledState(isDisabled: boolean): void {
+		this.formDisabled.set(isDisabled);
 	}
 }

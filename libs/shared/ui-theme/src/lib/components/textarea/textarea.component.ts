@@ -4,7 +4,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, forwardRef, input, output, viewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, input, output, signal, viewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { FloatingLabelDirective } from '../../directives/floating-lable';
@@ -35,13 +35,17 @@ export class TextareaComponent implements ControlValueAccessor {
 	public isDynamic = input<boolean>(true);
 	/** When true, applies dark text color for light backgrounds. */
 	public darkText = input<boolean>(false);
+	public disabled = input<boolean>(false);
 
 	// Define output using the `output` function
 	public valueChange = output<string>();
 	public textareaFocused = false;
 
-	public value = '';
+	public readonly value = signal('');
 	public error?: string;
+
+	public readonly formDisabled = signal(false);
+
 	/**
 	 * Callback function to handle changes in the textarea value.
 	 */
@@ -59,16 +63,16 @@ export class TextareaComponent implements ControlValueAccessor {
 	 */
 	public onInput(event: Event): void {
 		const input = event.target as HTMLInputElement;
-		this.value = input.value;
-		this.onChange(this.value);
-		this.valueChange.emit(this.value);
+		this.value.set(input.value);
+		this.onChange(input.value);
+		this.valueChange.emit(input.value);
 	}
 	/**
 	 * Checks if the textarea field is filled.
 	 * @returns {boolean} - True if the textarea field has a value, otherwise false.
 	 */
 	public isFilled(): boolean {
-		return this.value.length > 0 || !!this.placeholder();
+		return this.value().length > 0 || !!this.placeholder();
 	}
 	/**
 	 * Handles the focus event on the textarea field.
@@ -90,7 +94,7 @@ export class TextareaComponent implements ControlValueAccessor {
 	 * @param {string} $event - The change event.
 	 */
 	public onChangeValue($event: string): void {
-		this.value = $event;
+		this.value.set($event);
 	}
 
 	/**
@@ -117,7 +121,7 @@ export class TextareaComponent implements ControlValueAccessor {
 	 * @param {string} value - The new value.
 	 */
 	public writeValue(value: string): void {
-		this.value = value;
+		this.value.set(value ?? '');
 	}
 
 	/**
@@ -126,5 +130,14 @@ export class TextareaComponent implements ControlValueAccessor {
 	 */
 	protected isFloating(): boolean {
 		return this.isDynamic() && this.textareaFocused;
+	}
+
+	/**
+	 * Sets the disabled state of the textarea field.
+	 * @internal
+	 * @param {boolean} isDisabled - The disabled state.
+	 */
+	public setDisabledState(isDisabled: boolean): void {
+		this.formDisabled.set(isDisabled);
 	}
 }

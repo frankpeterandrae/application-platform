@@ -46,17 +46,17 @@ describe('InputComponent', () => {
 		const inputEvent = new Event('input');
 		Object.defineProperty(inputEvent, 'target', { value: inputElement });
 		component.onInput(inputEvent);
-		expect(component.value).toBe('new value');
+		expect(component.value()).toBe('new value');
 		expect(valueChangeSpy).toHaveBeenCalledWith('new value');
 	});
 
 	it('should return true if input field is filled', () => {
-		component.value = 'filled';
+		component.value.set('filled');
 		expect(component.isFilled()).toBe(true);
 	});
 
 	it('should return false if input field is empty', () => {
-		component.value = '';
+		component.value.set('');
 		expect(component.isFilled()).toBe(false);
 	});
 
@@ -74,7 +74,7 @@ describe('InputComponent', () => {
 
 	it('should update value on change event', () => {
 		component.onChangeValue('changed value');
-		expect(component.value).toBe('changed value');
+		expect(component.value()).toBe('changed value');
 	});
 
 	it('should register onChange callback', () => {
@@ -93,6 +93,6 @@ describe('InputComponent', () => {
 
 	it('should write new value to input field', () => {
 		component.writeValue('written value');
-		expect(component.value).toBe('written value');
+		expect(component.value()).toBe('written value');
 	});
 });

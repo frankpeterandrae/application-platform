@@ -1,0 +1,126 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<stream-dashboard-container>
+	<section class="fpa-flex fpa-flex-column fpa-flex-grow-1 fpa-height-100 fpa-light-text">
+		<header>
+			<h1>Farbauswahl</h1>
+
+			<p>Wähle die Farbe aus, die aktuell im Stream angezeigt werden soll.</p>
+		</header>
+
+		<div class="fpa-grid-column-8 fpa-grid-row-4 fpa-gap-075 fpa-flex-1">
+			@for (slot of slots(); track slot.index) {
+				@switch (slot.button.type) {
+					@case ('paint') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-flex-column"
+							(click)="press(slot.index)"
+						>
+							<span class="sto-paint-selection__color">
+								<fpa-shared-ui-paint-swatch [paint]="slot.button.paint" />
+							</span>
+
+							<span>
+								{{ slot.button.label }}
+							</span>
+						</button>
+					}
+
+					@case ('brand') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('home') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-font-weight-bold"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('clear') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-font-weight-bold"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('back') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-font-weight-bold"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('next') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-font-weight-bold"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('empty') {
+						<div
+							class="fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer fpa-visibility-hidden"
+						></div>
+					}
+
+					@case ('color') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer"
+							(click)="press(slot.index)"
+						>
+							<span class="sto-paint-selection__color">
+								<fpa-shared-ui-paint-swatch [color]="slot.button.color" />
+							</span>
+
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('range') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+
+					@case ('category') {
+						<button
+							type="button"
+							class="fpa-bg-light-shades fpa-flex fpa-flex-justify-center fpa-flex-align-items-center fpa-gap-05 fpa-p-075 fpa-text-center fpa-cursor-pointer"
+							(click)="press(slot.index)"
+						>
+							{{ slot.button.label }}
+						</button>
+					}
+				}
+			}
+		</div>
+	</section>
+</stream-dashboard-container>

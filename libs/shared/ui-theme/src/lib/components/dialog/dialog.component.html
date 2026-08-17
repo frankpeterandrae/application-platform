@@ -8,12 +8,25 @@
 <div class="fpa-flex fpa-flex-column fpa-bg-light-shades fpa-box-shadow fpa-dark-text fpa-p-1 dialog-container">
 	<header class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-border-bottom fpa-border-themed-info fpa-mb-05 fpa-p-05">
 		<h2>{{ data.settings?.title }}</h2>
-		<theme-button (buttonClick)="close()" [color]="undefined" [icon]="IconDefinition.CLOSE"></theme-button>
+
+		<theme-button (buttonClick)="close()" [color]="undefined" [icon]="IconDefinition.CLOSE" />
 	</header>
-	<div class="fpa-p-05">
-		<ng-content></ng-content>
+
+	<div class="fpa-p-05 dialog-content">
+		{{ data.settings?.content }}
 	</div>
+
 	<footer class="fpa-flex fpa-flex-row fpa-flex-justify-flex-end fpa-border-top fpa-border-themed-info fpa-mt-05 fpa-p-05">
-		<theme-button (buttonClick)="close()" [color]="ButtonColorDefinition.SUCCESS" [buttonText]="'Schließen'"></theme-button>
+		<theme-button
+			(buttonClick)="decline()"
+			[color]="ButtonColorDefinition.DEFAULT"
+			[buttonText]="data.settings?.declineText ?? 'Abbrechen'"
+		/>
+
+		<theme-button
+			(buttonClick)="accept()"
+			[color]="ButtonColorDefinition.DANGER"
+			[buttonText]="data.settings?.acceptText ?? 'Bestätigen'"
+		/>
 	</footer>
 </div>

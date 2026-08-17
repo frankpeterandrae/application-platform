@@ -4,7 +4,7 @@
 	"projectType": "application",
 	"prefix": "fpa",
 	"sourceRoot": "apps/homepage/src",
-	"tags": ["type:app", "scope:homepage", "platform:browser"],
+	"tags": ["type:ui-app", "scope:homepage", "platform:browser"],
 	"targets": {
 		"build": {
 			"executor": "@angular/build:application",
@@ -38,6 +38,11 @@
 						"glob": "**/*",
 						"input": "libs/homepage/homepage-feature/src/assets",
 						"output": "assets/homepage-feature"
+					},
+					{
+						"glob": "**/*.json",
+						"input": "tmp/generated/paints",
+						"output": "assets/paints"
 					}
 				],
 				"styles": [

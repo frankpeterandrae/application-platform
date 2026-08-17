@@ -3,9 +3,9 @@
  * All rights reserved.
  */
 
-import { CommonModule } from '@angular/common';
-import { Component, forwardRef, input } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
+import { Component, computed, forwardRef, input, signal } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { FloatingLabelDirective } from '../../directives/floating-lable';
@@ -27,7 +27,7 @@ export type SelectValue<T = unknown> = T | T[] | undefined;
  */
 @Component({
 	selector: 'theme-select',
-	imports: [CommonModule, FormsModule, ReactiveFormsModule, FloatingLabelDirective, FastSvgComponent],
+	imports: [OverlayModule, FloatingLabelDirective, FastSvgComponent],
 	templateUrl: './select.component.html',
 	styleUrls: ['./select.component.scss'],
 	providers: [
@@ -39,65 +39,78 @@ export type SelectValue<T = unknown> = T | T[] | undefined;
 	]
 })
 export class SelectComponent<T = unknown> implements ControlValueAccessor {
-	/** Unique id for the select element. */
-	public id = input<string>('');
-	/** Label displayed above select. */
-	public label = input<string>('');
-	/** List of options to render. */
-	public options = input<SelectOption<T>[]>([]);
-	/** Placeholder when no selection. */
-	public emptySelection = input<boolean>(true);
-	/** Enable multiple selection. */
-	public multiple = input<boolean>(false);
-	public isDynamic = input<boolean>(true);
-	/** When true, applies dark text color for light backgrounds. */
-	public darkText = input<boolean>(false);
+	public readonly id = input<string>('');
+	public readonly label = input<string>('');
+	public readonly options = input<SelectOption<T>[]>([]);
+	public readonly emptySelection = input<boolean>(true);
+	public readonly multiple = input<boolean>(false);
+	public readonly isDynamic = input<boolean>(true);
+	public readonly darkText = input<boolean>(false);
 
-	/** Current selected value(s). */
-	public value: SelectValue<T>;
-	public selectFocused = false;
+	public readonly value = signal<SelectValue<T>>(undefined);
 
-	/**
-	 * Callback when value changes.
-	 * @internal
-	 */
+	public readonly open = signal(false);
+	public readonly formDisabled = signal(false);
+	public readonly selectFocused = signal(false);
+
+	protected readonly IconDefinition = IconDefinition;
+
+	protected readonly positions: ConnectedPosition[] = [
+		{
+			originX: 'start',
+			originY: 'bottom',
+			overlayX: 'start',
+			overlayY: 'top',
+			offsetY: 4
+		},
+		{
+			originX: 'start',
+			originY: 'top',
+			overlayX: 'start',
+			overlayY: 'bottom',
+			offsetY: -4
+		}
+	];
+
+	protected readonly displayValue = computed(() => {
+		const current = this.value();
+		const options = this.options();
+
+		if (Array.isArray(current)) {
+			return options
+				.filter((option) => current.includes(option.value))
+				.map((option) => option.label)
+				.join(', ');
+		}
+
+		return options.find((option) => option.value === current)?.label ?? '';
+	});
+
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private onChange: (value: SelectValue) => void = () => {};
+	private onChange: (value: SelectValue<T>) => void = () => {};
 
-	/**
-	 * Callback when control is touched.
-	 * @internal
-	 */
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	protected onTouched: () => void = () => {};
+	private onTouched: () => void = () => {};
 
-	/**
-	 * Handles the focus event on the input field.
-	 */
-	protected onFocus(): void {
-		this.selectFocused = true;
-	}
-
-	/**
-	 * Handles the blur event on the select field.
-	 */
-	public onBlur(): void {
-		this.selectFocused = false;
-		this.onTouched();
-	}
 	/**
 	 * Writes a new value to the select component.
-	 * @param {unknown} value - The value to set.
+	 * @param {(value:  SelectValue<T>) => void} fn - The new value to be written (single, multiple, or undefined).
 	 */
-	public writeValue(value: unknown): void {
-		this.value = value as SelectValue<T>;
+	public writeValue(value: SelectValue<T>): void {
+		if (this.multiple()) {
+			this.value.set(Array.isArray(value) ? [...value] : []);
+
+			return;
+		}
+
+		this.value.set(value);
 	}
 
 	/**
 	 * Registers a callback function that should be called when the value changes.
-	 * @param {(value: unknown) => void} fn - The change callback.
+	 * @param {(value:  SelectValue<T>) => void} fn - The change callback.
 	 */
-	public registerOnChange(fn: (value: unknown) => void): void {
+	public registerOnChange(fn: (value: SelectValue<T>) => void): void {
 		this.onChange = fn;
 	}
 
@@ -110,32 +123,97 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 	}
 
 	/**
-	 * Handles change event from the native select element.
-	 * @param {Event} event - The change event.
+	 * Sets the disabled state of the select component.
+	 * @param {boolean} isDisabled - Whether the component should be disabled.
 	 */
-	public onSelectChange(event: Event): void {
-		const select = event.target as HTMLSelectElement;
-		const selected = Array.from(select.selectedOptions).map((o) => o.value) as unknown as T[];
-		this.value = this.multiple() ? selected : selected[0];
-		this.onChange(this.value as SelectValue<T>);
+	public setDisabledState(isDisabled: boolean): void {
+		this.formDisabled.set(isDisabled);
+
+		if (isDisabled) {
+			this.close();
+		}
+	}
+
+	protected toggle(): void {
+		if (this.formDisabled()) {
+			return;
+		}
+
+		this.open.update((open) => !open);
+	}
+
+	protected close(): void {
+		if (!this.open()) {
+			return;
+		}
+
+		this.open.set(false);
 		this.onTouched();
 	}
 
-	/**
-	 * Checks if the input field is filled.
-	 * @returns {boolean} - True if the input field has a value, otherwise false.
-	 */
-	public isFilled(): boolean {
-		return Array.isArray(this.value) ? this.value.length > 0 : !!this.value;
+	protected selectOption(optionValue: T): void {
+		if (this.formDisabled()) {
+			return;
+		}
+
+		if (!this.multiple()) {
+			this.value.set(optionValue);
+			this.onChange(optionValue);
+			this.close();
+			return;
+		}
+
+		const current = this.value();
+
+		const selected = Array.isArray(current) ? [...current] : [];
+
+		const index = selected.indexOf(optionValue);
+
+		if (index >= 0) {
+			selected.splice(index, 1);
+		} else {
+			selected.push(optionValue);
+		}
+
+		this.value.set(selected);
+		this.onChange(selected);
 	}
 
-	/**
-	 * Determines if the select component should be in a floating state.
-	 * @returns {boolean} - True if the component is dynamic and focused, otherwise false.
-	 */
-	public isFloating(): boolean {
-		return this.isDynamic() && this.selectFocused;
+	protected clearSelection(): void {
+		if (this.formDisabled() || this.multiple()) {
+			return;
+		}
+
+		this.value.set(undefined);
+		this.onChange(undefined);
+		this.close();
 	}
 
-	protected readonly IconDefinition = IconDefinition;
+	protected isSelected(optionValue: T): boolean {
+		const current = this.value();
+
+		if (Array.isArray(current)) {
+			return current.includes(optionValue);
+		}
+
+		return current === optionValue;
+	}
+
+	protected isFilled(): boolean {
+		const current = this.value();
+
+		return Array.isArray(current) ? current.length > 0 : current !== undefined && current !== null && current !== '';
+	}
+
+	protected isFloating(): boolean {
+		return this.open() || this.selectFocused() || this.isFilled();
+	}
+
+	protected onFocus(): void {
+		this.selectFocused.set(true);
+	}
+
+	protected onBlur(): void {
+		this.selectFocused.set(false);
+	}
 }

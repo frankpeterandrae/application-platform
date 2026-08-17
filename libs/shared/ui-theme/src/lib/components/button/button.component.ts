@@ -67,10 +67,6 @@ export class ButtonComponent implements OnInit {
 		if (this.iconEnd()) {
 			this.contentClasses.push('fpa-flex-row-reverse');
 		}
-
-		if (this.disabled()) {
-			this.buttonClasses.push('fpa-disabled');
-		}
 	}
 
 	/**

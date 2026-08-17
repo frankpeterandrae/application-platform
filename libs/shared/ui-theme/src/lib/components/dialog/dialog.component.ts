@@ -26,6 +26,16 @@ export class DialogComponent {
 	private readonly overlayRef = inject(OverlayRef);
 	public data = inject<DialogConfigModel<unknown>>(DIALOG_DATA);
 
+	protected accept(): void {
+		this.data.settings?.onAccept?.();
+		this.overlayRef.dispose();
+	}
+
+	protected decline(): void {
+		this.data.settings?.onDecline?.();
+		this.overlayRef.dispose();
+	}
+
 	/**
 	 * Closes the dialog by disposing of the overlay reference.
 	 */
