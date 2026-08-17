@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 @use 'sass:meta';
@@ -44,6 +44,14 @@
 	@each $name, $margin in $map {
 		.#{prefix.$prefix}mr#{$breakpoint-prefix}-#{$name} {
 			margin-right: $margin;
+		}
+	}
+}
+
+@mixin margin-block($breakpoint-prefix, $map) {
+	@each $name, $margin in $map {
+		.#{prefix.$prefix}mbl#{$breakpoint-prefix}-#{$name} {
+			margin-block: $margin;
 		}
 	}
 }
@@ -124,9 +132,18 @@
 	}
 }
 
+@mixin gap($breakpoint-prefix, $map) {
+	@each $name, $gap in $map {
+		.#{prefix.$prefix}gap#{$breakpoint-prefix}-#{$name} {
+			gap: $gap;
+		}
+	}
+}
+
 $values: (
 	'0': 0,
 	'05': 0.5rem,
+	'075': 0.75rem,
 	'1': 1rem,
 	'15': 1.5rem,
 	'2': 2rem,
@@ -156,6 +173,7 @@ $values: (
 		@include margin-right($breakpoint-prefix, $values);
 		@include margin-x($breakpoint-prefix, $values);
 		@include margin-y($breakpoint-prefix, $values);
+		@include margin-block($breakpoint-prefix, $values);
 		@include padding($breakpoint-prefix, $values);
 		@include padding-top($breakpoint-prefix, $values);
 		@include padding-bottom($breakpoint-prefix, $values);
@@ -163,5 +181,6 @@ $values: (
 		@include padding-right($breakpoint-prefix, $values);
 		@include padding-x($breakpoint-prefix, $values);
 		@include padding-y($breakpoint-prefix, $values);
+		@include gap($breakpoint-prefix, $values);
 	}
 }

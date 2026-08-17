@@ -3,7 +3,7 @@
 	"$schema": "../../node_modules/nx/schemas/project-schema.json",
 	"sourceRoot": "apps/z21-server/src",
 	"projectType": "application",
-	"tags": ["type:app", "scope:z21", "platform:node"],
+	"tags": ["type:server-app", "scope:z21", "platform:node"],
 	"targets": {
 		"build": {
 			"executor": "@nx/esbuild:esbuild",

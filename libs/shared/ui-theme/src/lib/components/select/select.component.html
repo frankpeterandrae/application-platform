@@ -3,35 +3,83 @@
   ~ All rights reserved.
   -->
 
-<!--
-  A dropdown component for single or multi-select.
--->
-<div class="fpa-select-group fpa-mt-1" [ngClass]="{ 'fpa-select-group-dynamic': isDynamic() }">
+<div
+	class="fpa-select-group fpa-mt-1"
+	[class.fpa-select-group-dynamic]="isDynamic()"
+	[class.fpa-select-group-open]="open()"
+	[class.fpa-select-group-disabled]="formDisabled()"
+	[class.fpa-dark-text]="darkText()"
+	cdkOverlayOrigin
+	#origin="cdkOverlayOrigin"
+>
 	@if (label()) {
-		<label themeFloatingLabel [floating]="isFloating() || isFilled() || selectFocused" class="fpa-select-label" [for]="id()">{{
-			label()
-		}}</label>
+		<label themeFloatingLabel [floating]="isFloating()" class="fpa-select-label" [for]="id()">
+			{{ label() }}
+		</label>
 	}
-	<span class="fpa-select-icon">
-		<fast-svg [ngClass]="{ 'fpa-color-main-band': selectFocused }" [name]="IconDefinition.CARET_DOWN" [size]="'16'"></fast-svg>
-	</span>
 
-	<select
+	<button
+		type="button"
 		class="fpa-select"
-		[ngClass]="{ 'fpa-dark-text': darkText() }"
+		[class.fpa-dark-text]="darkText()"
 		[id]="id()"
-		[attr.multiple]="multiple() ? '' : null"
-		(change)="onSelectChange($event)"
+		[disabled]="formDisabled()"
+		[attr.aria-expanded]="open()"
+		aria-haspopup="listbox"
+		(click)="toggle()"
 		(focus)="onFocus()"
 		(blur)="onBlur()"
 	>
-		@if (emptySelection()) {
-			<option [ngClass]="{ 'fpa-dark-text': darkText() }" value="" disabled selected></option>
-		}
-		@for (opt of options(); track opt.value) {
-			<option [ngClass]="{ 'fpa-dark-text': darkText() }" [value]="opt.value">
-				{{ opt.label }}
-			</option>
-		}
-	</select>
+		<span class="fpa-select-value">
+			{{ displayValue() }}
+		</span>
+
+		<span class="fpa-select-icon" [class.fpa-select-icon-open]="open()">
+			<fast-svg [class.fpa-color-main-band]="open()" [name]="IconDefinition.CARET_DOWN" [size]="'16'"></fast-svg>
+		</span>
+	</button>
 </div>
+
+<ng-template
+	cdkConnectedOverlay
+	[cdkConnectedOverlayOrigin]="origin"
+	[cdkConnectedOverlayOpen]="open()"
+	[cdkConnectedOverlayPositions]="positions"
+	[cdkConnectedOverlayHasBackdrop]="true"
+	[cdkConnectedOverlayBackdropClass]="'cdk-overlay-transparent-backdrop'"
+	[cdkConnectedOverlayPush]="true"
+	[cdkConnectedOverlayFlexibleDimensions]="true"
+	[cdkConnectedOverlayGrowAfterOpen]="true"
+	[cdkConnectedOverlayWidth]="origin.elementRef.nativeElement.offsetWidth"
+	(backdropClick)="close()"
+	(detach)="close()"
+	(overlayKeydown)="$event.key === 'Escape' && close()"
+>
+	<div class="fpa-select-panel" [class.fpa-dark-text]="darkText()" role="listbox" [attr.aria-multiselectable]="multiple() ? true : null">
+		@if (emptySelection() && !multiple()) {
+			<button type="button" class="fpa-select-option fpa-select-option-empty" (click)="clearSelection()">&nbsp;</button>
+		}
+
+		@for (opt of options(); track opt.value) {
+			<button
+				type="button"
+				class="fpa-select-option"
+				[class.fpa-select-option-selected]="isSelected(opt.value)"
+				[attr.aria-selected]="isSelected(opt.value)"
+				(click)="selectOption(opt.value)"
+			>
+				@if (multiple()) {
+					<span class="fpa-select-option-check" aria-hidden="true">
+						@if (isSelected(opt.value)) {
+							✓
+						}
+					</span>
+				}
+
+				<span>
+					{{ opt.label }}
+				</span>
+			</button>
+		}
+	</div>
+</ng-template>

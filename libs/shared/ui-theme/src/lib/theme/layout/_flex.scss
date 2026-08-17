@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -9,6 +9,7 @@
 .#{prefix.$prefix}flex,
 %#{prefix.$prefix}flex {
 	display: flex;
+	min-height: 0;
 }
 
 @each $name, $width in variables.$breakpoints {
@@ -220,7 +221,7 @@
 			}
 
 			.#{prefix.$prefix}flex-#{ $i } {
-				flex: $i;
+				flex: $i $i auto;
 			}
 
 			.#{prefix.$prefix}flex-grow-#{ $i } {

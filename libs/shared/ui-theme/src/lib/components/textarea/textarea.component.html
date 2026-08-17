@@ -21,10 +21,11 @@
 		[ngClass]="{ 'fpa-dark-text': darkText() }"
 		[id]="id()"
 		[placeholder]="placeholder()"
-		[value]="value"
+		[value]="value()"
 		(focus)="onFocus()"
 		(blur)="onBlur()"
 		(input)="onInput($event)"
+		[disabled]="disabled() || formDisabled()"
 	>
 	</textarea>
 </div>

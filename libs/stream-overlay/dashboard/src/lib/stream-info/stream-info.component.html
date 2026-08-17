@@ -1,0 +1,19 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<stream-dashboard-container>
+	<section class="stream-info fpa-flex fpa-flex-column fpa-flex-grow-1 fpa-height-100 fpa-light-text">
+		<h1>Stream-Informationen</h1>
+
+		<form [formGroup]="form" (ngSubmit)="apply()">
+			<div class="fpa-flex fpa-flex-column fpa-gap-1">
+				<theme-input label="Titel" placeholder="Miniaturen bemalen" formControlName="title"></theme-input>
+
+				<theme-input label="Untertitel" placeholder="Grand Cathay - Sky Lantern" formControlName="subtitle"></theme-input>
+
+				<theme-button [color]="ButtonColorDefinition.PRIMARY" [type]="'submit'" [buttonText]="'Übernehmen'"></theme-button>
+			</div>
+		</form>
+	</section>
+</stream-dashboard-container>

@@ -5,6 +5,9 @@
 
 interface DialogSettings {
 	title?: string;
+	content?: string;
+	acceptText?: string;
+	declineText?: string;
 	onClose?: () => void;
 	onAccept?: () => void;
 	onDecline?: () => void;

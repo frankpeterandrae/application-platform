@@ -10,7 +10,7 @@
 			"executor": "@nx/playwright:playwright",
 			"outputs": ["{workspaceRoot}/dist/.playwright/apps/z21-ui-e2e"],
 			"options": {
-				"config": "apps/z21-ui-e2e/playwright.config.ts"
+				"config": "apps/z21-ui-e2e/playwright.config.mts"
 			}
 		},
 		"typecheck": {

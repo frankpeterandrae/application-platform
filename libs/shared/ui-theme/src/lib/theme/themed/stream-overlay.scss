@@ -1,0 +1,13 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use './palettes/stream-overlay' as *;
+@use '../styles';
+@use '../../theme/base/variables';
+
+html,
+body {
+	background: transparent;
+}

@@ -6,7 +6,7 @@
 import type { Signal } from '@angular/core';
 
 /**
- *
+ * Contract for services that expose and switch the active translation language.
  */
 export abstract class ScopedTranslationServiceInterface {
 	public abstract currentLang: Signal<string>;

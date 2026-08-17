@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -17,6 +17,18 @@ $columns: 12;
 		display: grid;
 		grid-template-columns: repeat($i, 1fr);
 		grid-template-rows: 1fr;
+		min-height: 0;
+	}
+
+	.#{prefix.$prefix}grid-column-#{ $i } {
+		display: grid;
+		grid-template-columns: repeat($i, 1fr);
+		min-height: 0;
+	}
+	.#{prefix.$prefix}grid-row-#{ $i } {
+		display: grid;
+		grid-template-rows: repeat($i, 1fr);
+		min-height: 0;
 	}
 }
 
@@ -48,10 +60,6 @@ $columns: 12;
 
 		.#{prefix.$prefix}grid-col-start#{$breakpoint-prefix}-auto {
 			grid-column-start: auto;
-		}
-
-		.#{prefix.$prefix}grid#{$breakpoint-prefix}-gap {
-			gap: 0.5rem;
 		}
 	}
 }

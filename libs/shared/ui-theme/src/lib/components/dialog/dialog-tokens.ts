@@ -4,7 +4,7 @@
  */
 import { InjectionToken } from '@angular/core';
 
-import type { DialogConfigModel } from '../../model/dialog-config.model';
+import type { DialogConfigModel } from '../../model';
 
 // Define the DIALOG_DATA injection token
 export const DIALOG_DATA = new InjectionToken<DialogConfigModel<unknown>>('DialogData');

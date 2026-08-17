@@ -6,7 +6,7 @@
 import { Directive, input } from '@angular/core';
 
 /**
- *
+ * Adds floating-label styling to a label element when the input is active.
  */
 @Directive({
 	selector: 'label[themeFloatingLabel]',

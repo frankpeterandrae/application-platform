@@ -156,3 +156,23 @@ p {
 .#{prefix.$prefix}italic {
 	font-style: italic;
 }
+
+.#{prefix.$prefix}text-start {
+	text-align: start;
+}
+
+.#{prefix.$prefix}text-center {
+	text-align: center;
+}
+
+.#{prefix.$prefix}text-end {
+	text-align: end;
+}
+
+.#{prefix.$prefix}text-left {
+	text-align: left;
+}
+
+.#{prefix.$prefix}text-right {
+	text-align: right;
+}

@@ -12,7 +12,7 @@ import { Description } from '../../components/description';
 import { i18nTextModules } from '../../i18n/i18n';
 
 /**
- *
+ * Demo page for the button component.
  */
 @Component({
 	selector: 'demo-button',

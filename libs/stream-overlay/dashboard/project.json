@@ -1,0 +1,39 @@
+{
+	"name": "stream-overlay-dashboard",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/stream-overlay/dashboard/src",
+	"prefix": "lib",
+	"projectType": "library",
+	"tags": ["platform:browser", "scope:stream", "type:feature"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "libs/stream-overlay/dashboard/tsconfig.spec.json",
+				"vitestConfig": "libs/stream-overlay/dashboard/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/stream-overlay/dashboard/coverage",
+				"passWithNoTests": true
+			},
+			"outputs": ["{options.reportsDirectory}"]
+		},
+		"stylelint": {
+			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

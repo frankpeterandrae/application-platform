@@ -1,0 +1,66 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<svg class="paint-swatch" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+	<defs>
+		<clipPath [attr.id]="blobClipId">
+			<path [attr.d]="blobPath" />
+		</clipPath>
+
+		@if (baseVariant() === 'default') {
+			<linearGradient [attr.id]="baseGradientId" x1="0%" y1="50%" x2="100%" y2="50%">
+				<stop offset="0%" [attr.stop-color]="secondaryColor()" />
+				<stop offset="100%" [attr.stop-color]="mainColor()" />
+			</linearGradient>
+		}
+
+		@if (baseVariant() === 'metallic') {
+			<radialGradient [attr.id]="baseGradientId" cx="55%" cy="49%" r="70%">
+				<stop offset="0%" [attr.stop-color]="secondaryColor()" />
+				<stop offset="50%" [attr.stop-color]="mainColor()" />
+			</radialGradient>
+		}
+
+		@if (baseVariant() === 'ink-or-glaze') {
+			<linearGradient [attr.id]="baseGradientId" x1="50%" y1="100%" x2="50%" y2="0%">
+				<stop offset="0%" [attr.stop-color]="mainColor()" />
+				<stop offset="100%" [attr.stop-color]="secondaryColor()" />
+			</linearGradient>
+		}
+
+		@if (baseVariant() === 'wash') {
+			<radialGradient [attr.id]="baseGradientId" cx="55%" cy="49%" r="70%">
+				<stop offset="0%" [attr.stop-color]="mainColor()" />
+				<stop offset="100%" [attr.stop-color]="secondaryColor()" />
+			</radialGradient>
+		}
+
+		<linearGradient [attr.id]="technicalTopGradientId" x1="0%" y1="50%" x2="100%" y2="50%">
+			<stop offset="0%" [attr.stop-color]="technicalTopStartColor()" />
+			<stop offset="50%" [attr.stop-color]="technicalTopEndColor()" />
+		</linearGradient>
+	</defs>
+
+	@if (isTechnical()) {
+		<!-- Basis: gesamter Klecks in Main Color -->
+		<path [attr.d]="blobPath" [attr.fill]="mainColor()" />
+
+		<!-- Oberer Bereich: Secondary mit Verlauf, auf den Klecks geclippt -->
+		<g [attr.clip-path]="'url(#' + blobClipId + ')'">
+			<path
+				d="
+					M 0 0
+					H 100
+					V 48
+					C 84 57, 66 58, 48 53
+					C 32 49, 16 47, 0 53
+					Z
+				"
+				[attr.fill]="'url(#' + technicalTopGradientId + ')'"
+			/>
+		</g>
+	} @else {
+		<path [attr.d]="blobPath" [attr.fill]="'url(#' + baseGradientId + ')'" />
+	}
+</svg>

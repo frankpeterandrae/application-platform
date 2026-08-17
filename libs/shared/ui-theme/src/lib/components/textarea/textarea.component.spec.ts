@@ -35,22 +35,33 @@ describe('TextareaComponent', () => {
 
 		component.onInput({ target: { value: 'Hello' } } as unknown as Event);
 
-		expect(component.value).toBe('Hello');
+		expect(component.value()).toBe('Hello');
 		expect(onChange).toHaveBeenCalledWith('Hello');
 		expect(emitSpy).toHaveBeenCalledWith('Hello');
 	});
 
-	it('isFilled returns true when value or placeholder is present', () => {
-		component.value = '';
-		expect(component.isFilled()).toBe(false);
+	it('should return true when value is present', () => {
+		component.value.set('Some text');
 
-		fixture.componentRef.setInput('placeholder', 'hint');
-		fixture.detectChanges();
 		expect(component.isFilled()).toBe(true);
+	});
+
+	it('should return true when placeholder is present', () => {
+		fixture.componentRef.setInput('placeholder', 'hint');
+
+		fixture.detectChanges();
+
+		expect(component.isFilled()).toBe(true);
+	});
+
+	it('should return false when value and placeholder are empty', () => {
+		component.value.set('');
 
 		fixture.componentRef.setInput('placeholder', '');
-		component.value = 'text';
-		expect(component.isFilled()).toBe(true);
+
+		fixture.detectChanges();
+
+		expect(component.isFilled()).toBe(false);
 	});
 
 	it('onFocus and onBlur toggle focus and call onTouched', () => {

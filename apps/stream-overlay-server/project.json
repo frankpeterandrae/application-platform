@@ -1,0 +1,88 @@
+{
+	"name": "stream-overlay-server",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/stream-overlay-server/src",
+	"projectType": "application",
+	"tags": ["platform:nestJS", "scope:stream", "type:server-app"],
+	"targets": {
+		"build": {
+			"executor": "@nx/webpack:webpack",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"target": "node",
+				"compiler": "tsc",
+				"outputPath": "dist/apps/stream-overlay-server",
+				"main": "apps/stream-overlay-server/src/main.ts",
+				"tsConfig": "apps/stream-overlay-server/tsconfig.app.json",
+				"assets": ["apps/stream-overlay-server/src/assets"],
+				"webpackConfig": "apps/stream-overlay-server/webpack.config.js"
+			},
+			"configurations": {
+				"development": {
+					"outputHashing": "none"
+				},
+				"production": {}
+			}
+		},
+		"migrate-db": {
+			"executor": "nx:run-commands",
+			"cache": false,
+			"options": {
+				"command": "tsx tools/database/db-migrate.ts --db data/stream-overlay.db --namespace paint --migrations libs/shared/paint-data-access/src/lib/server/schema"
+			}
+		},
+		"import-db": {
+			"executor": "nx:run-commands",
+			"cache": false,
+			"dependsOn": ["migrate-db"],
+			"options": {
+				"command": "tsx tools/database/db-import.ts --db data/stream-overlay.db --data libs/shared/paint-data-access/data"
+			}
+		},
+		"serve": {
+			"continuous": true,
+			"executor": "@nx/js:node",
+			"defaultConfiguration": "development",
+			"dependsOn": ["typecheck", "import-db", "build"],
+			"options": {
+				"buildTarget": "stream-overlay-server:build",
+				"runBuildTargetDependencies": false
+			},
+			"configurations": {
+				"development": {
+					"buildTarget": "stream-overlay-server:build:development"
+				},
+				"production": {
+					"buildTarget": "stream-overlay-server:build:production"
+				}
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "apps/stream-overlay-serve/tsconfig.spec.json",
+				"vitestConfig": "apps/stream-overlay-serve/vitest.config.mts",
+				"reportsDirectory": "test-result/apps/stream-overlay-server/coverage",
+				"passWithNoTests": true
+			},
+			"outputs": ["{options.reportsDirectory}"]
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
+			}
+		}
+	}
+}

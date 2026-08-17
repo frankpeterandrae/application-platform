@@ -22,6 +22,7 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/z21-suite/server-utils/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/z21-suite/shared/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/demo/demo-feature/src/assets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/shared/paint/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.angular" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.husky" />

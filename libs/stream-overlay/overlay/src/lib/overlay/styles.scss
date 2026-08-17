@@ -1,0 +1,148 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+@use 'sass:list';
+@use 'sass:math';
+
+$sto-background: #0f1110;
+$sto-background-secondary: #1a1c19;
+
+// Hauptinformation
+$sto-font-highlight: #d6d1c1;
+
+// Labels / sekundäre Texte
+$sto-font-color: #9aa287;
+
+// Akzente und Linien
+$sto-accent: #55624a;
+$sto-border: #6a745d;
+$sto-border-secondary: #1a1c19;
+
+@function diagonal-border($angle, $color, $width) {
+	$half-width: math.div($width, 2);
+
+	@return linear-gradient(
+		$angle,
+		transparent calc(50% - #{$half-width}),
+		$color calc(50% - #{$half-width}),
+		$color calc(50% + #{$half-width}),
+		transparent calc(50% + #{$half-width})
+	);
+}
+
+@mixin segmented-border($segments, $corner: 15px, $width: 1px, $color: $sto-border) {
+	$images: ();
+	$positions: ();
+	$sizes: ();
+	$top-left-offset: 0px;
+	$top-right-offset: 0px;
+	$bottom-right-offset: 0px;
+	$bottom-left-offset: 0px;
+
+	@if list.index($segments, top-left) {
+		$top-left-offset: $corner;
+		$images: list.append($images, diagonal-border(135deg, $color, $width), comma);
+		$positions: list.append($positions, (0px 0px), comma);
+		$sizes: list.append($sizes, ($corner $corner), comma);
+	}
+
+	@if list.index($segments, top-right) {
+		$top-right-offset: $corner;
+		$images: list.append($images, diagonal-border(45deg, $color, $width), comma);
+		$positions: list.append($positions, (100% 0), comma);
+		$sizes: list.append($sizes, ($corner $corner), comma);
+	}
+
+	@if list.index($segments, bottom-right) {
+		$bottom-right-offset: $corner;
+		$images: list.append($images, diagonal-border(135deg, $color, $width), comma);
+		$positions: list.append($positions, (100% 100%), comma);
+		$sizes: list.append($sizes, ($corner $corner), comma);
+	}
+
+	@if list.index($segments, bottom-left) {
+		$bottom-left-offset: $corner;
+		$images: list.append($images, diagonal-border(45deg, $color, $width), comma);
+		$positions: list.append($positions, (0 100%), comma);
+		$sizes: list.append($sizes, ($corner $corner), comma);
+	}
+
+	@if list.index($segments, top) {
+		$images: list.append($images, linear-gradient($color, $color), comma);
+		$positions: list.append($positions, ($top-left-offset 0), comma);
+		$sizes: list.append($sizes, (calc(100% - #{$top-left-offset} - #{$top-right-offset}) $width), comma);
+	}
+
+	@if list.index($segments, right) {
+		$images: list.append($images, linear-gradient($color, $color), comma);
+		$positions: list.append($positions, (100% $top-right-offset), comma);
+		$sizes: list.append($sizes, ($width calc(100% - #{$top-right-offset} - #{$bottom-right-offset})), comma);
+	}
+
+	@if list.index($segments, bottom) {
+		$images: list.append($images, linear-gradient($color, $color), comma);
+		$positions: list.append($positions, ($bottom-left-offset 100%), comma);
+		$sizes: list.append($sizes, (calc(100% - #{$bottom-left-offset} - #{$bottom-right-offset}) $width), comma);
+	}
+
+	@if list.index($segments, left) {
+		$images: list.append($images, linear-gradient($color, $color), comma);
+		$positions: list.append($positions, (0 $top-left-offset), comma);
+		$sizes: list.append($sizes, ($width calc(100% - #{$top-left-offset} - #{$bottom-left-offset})), comma);
+	}
+
+	@if list.length($images) > 0 {
+		background-image: $images;
+		background-position: $positions;
+		background-size: $sizes;
+		background-repeat: no-repeat;
+	}
+}
+
+@mixin clipped-background($color: $sto-background, $corners: (), $corner: 15px) {
+	$tl: 0px;
+	$tr: 0px;
+	$br: 0px;
+	$bl: 0px;
+
+	@if list.index($corners, top-left) {
+		$tl: $corner;
+	}
+
+	@if list.index($corners, top-right) {
+		$tr: $corner;
+	}
+
+	@if list.index($corners, bottom-right) {
+		$br: $corner;
+	}
+
+	@if list.index($corners, bottom-left) {
+		$bl: $corner;
+	}
+
+	background-color: $color;
+	clip-path: polygon(
+		$tl 0,
+		calc(100% - #{$tr}) 0,
+
+		100% $tr,
+		100% calc(100% - #{$br}),
+		calc(100% - #{$br}) 100%,
+		$bl 100%,
+
+		0 calc(100% - #{$bl}),
+		0 $tl
+	);
+}
+
+@font-face {
+	font-family: 'Cinzel Semibold';
+	src: url('/assets/stream-overlay/font/Cinzel-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: Montserrat;
+	src: url('/assets/stream-overlay/font/Montserrat-Regular.ttf') format('truetype');
+}

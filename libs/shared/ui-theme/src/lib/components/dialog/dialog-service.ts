@@ -10,7 +10,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { inject, Injectable, Injector } from '@angular/core';
 import { tap } from 'rxjs/operators';
 
-import type { DialogConfigModel } from '../../model/dialog-config.model';
+import type { DialogConfigModel } from '../../model';
 
 import { DIALOG_DATA } from './dialog-tokens';
 

@@ -5,8 +5,9 @@
 
 import { defineConfig, devices } from '@playwright/test';
 
+const port = 4220;
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://127.0.0.1:4210';
+const baseURL = process.env['BASE_URL'] || `http://127.0.0.1:${port}`;
 
 const config = defineConfig({
 	timeout: 30_000,
@@ -21,7 +22,7 @@ const config = defineConfig({
 		trace: process.env['CI'] ? 'on-first-retry' : 'on'
 	},
 	webServer: {
-		command: 'cd ../.. && npx nx run z21-ui:serve-static --port=4210 --host=127.0.0.1',
+		command: `cd ../.. && npx nx run stream-overlay-ui:serve-static --port=${port} --host=127.0.0.1`,
 		url: baseURL,
 		reuseExistingServer: !process.env['CI'],
 		timeout: 150_000,

@@ -12,9 +12,7 @@ export default defineConfig({
 		coverage: {
 			reportsDirectory: resolve(process.cwd(), 'test-result/apps/demo/coverage'),
 			include: ['src/**/*.ts'],
-			exclude: [
-				'libs/**/*.ts'
-			]
+			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
 		}
 	}
 });

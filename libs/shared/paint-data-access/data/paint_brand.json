@@ -1,0 +1,46 @@
+[
+	{
+		"id": "ak-interactive",
+		"label": "AK Interactive"
+	},
+	{
+		"id": "army-painter",
+		"label": "The Army Painter"
+	},
+	{
+		"id": "citadel",
+		"label": "Citadel"
+	},
+	{
+		"id": "grimdark-compendium",
+		"label": "Grimdark Compendium"
+	},
+	{
+		"id": "monument-hobbies",
+		"label": "Monument Hobbies"
+	},
+	{
+		"id": "p3",
+		"label": "P3"
+	},
+	{
+		"id": "revell-aqua-color",
+		"label": "Revell Aqua Color"
+	},
+	{
+		"id": "tamiya",
+		"label": "Tamiya"
+	},
+	{
+		"id": "two-thin-coats",
+		"label": "Two Thin Coats"
+	},
+	{
+		"id": "vallejo-game-color",
+		"label": "Vallejo Game Color"
+	},
+	{
+		"id": "vallejo-model-air",
+		"label": "Vallejo Model Air"
+	}
+]

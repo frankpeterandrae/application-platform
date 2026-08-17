@@ -58,9 +58,13 @@ __screenshots__/
 /playwright-report/
 /test-results/
 **/config.json
+/data/z21.db
 
 .claude/worktrees
 .claude/settings.local.json
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+/data/
+/data.__staging/
+**/styles.css

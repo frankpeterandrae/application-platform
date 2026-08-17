@@ -9,7 +9,7 @@ import type { SafeUrl } from '@angular/platform-browser';
 import { DomSanitizer } from '@angular/platform-browser';
 
 /**
- *
+ * Lazily loads an image and swaps in a placeholder while it is not visible or fails to load.
  */
 @Component({
 	selector: 'theme-image-loader',

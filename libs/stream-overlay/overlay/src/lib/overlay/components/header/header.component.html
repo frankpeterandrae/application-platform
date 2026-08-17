@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<div class="fpa-flex">
+	<div class="logo-background">
+		<div class="logo-container">
+			<img class="logo" src="assets/stream-overlay/images/stream-overlay-header.png" alt="Stream Overlay Header" />
+		</div>
+	</div>
+	<div>
+		<div class="title-background">
+			<div class="title-container fpa-flex fpa-flex-column fpa-flex-align-items-star">
+				@if (title(); as title) {
+					<h1>Live: {{ title }}</h1>
+				}
+
+				@if (subtitle(); as subtitle) {
+					<h2 class="h2-border">{{ subtitle }}</h2>
+				}
+			</div>
+		</div>
+	</div>
+</div>

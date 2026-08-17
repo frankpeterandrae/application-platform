@@ -22,7 +22,8 @@ export default defineConfig({
 		coverage: {
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov'],
-			include: ['src/**/*.ts']
+			include: ['src/**/*.ts'],
+			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
 		}
 	}
 });

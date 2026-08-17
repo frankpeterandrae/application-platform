@@ -3,108 +3,108 @@
 		"name": "Berserker Red",
 		"alternativeNames": ["Word Bearers Red (GW)", "Chaotic Red (AP)", "Nocturnal Red (VGC)"],
 		"type": "S",
-		"mainColor": "#4d1c16",
+		"mainColor": "#4D1A15",
 		"wave": "1",
-		"sku": 10001,
+		"suk": 10001,
 		"barcode": 5060951920005
 	},
 	{
 		"name": "Sanguine Scarlet",
 		"alternativeNames": ["Mephiston Red (GW)", "Vampire Red (AP)", "Scarlet Blood (VGC)"],
 		"type": "M",
-		"mainColor": "#991915",
+		"mainColor": "#961714",
 		"wave": "1",
-		"sku": 10002,
+		"suk": 10002,
 		"barcode": 5060951920012
 	},
 	{
 		"name": "Demon Red",
 		"alternativeNames": ["Evil Sunz Scarlet (GW)", "Pure Red (AP)", "Bloody Red (VGC)"],
 		"type": "H",
-		"mainColor": "#d31217",
+		"mainColor": "#D21116",
 		"wave": "1",
-		"sku": 10003,
+		"suk": 10003,
 		"barcode": 5060951920029
 	},
 	{
 		"name": "Amphora Red",
 		"alternativeNames": ["Gal Vorbak Red (GW)", "N/A (AP)", "Evil Red (VGC)"],
 		"type": "S",
-		"mainColor": "#502626",
+		"mainColor": "#482124",
 		"wave": "3",
-		"sku": 10121,
+		"suk": 10121,
 		"barcode": 5060951921279
 	},
 	{
 		"name": "Emperor Red",
 		"alternativeNames": ["Wazdakka Red (GW)", "Wyvern Fury (AP)", "Gory Red (VGC)"],
 		"type": "M",
-		"mainColor": "#a42d39",
+		"mainColor": "#A03140",
 		"wave": "3",
-		"sku": 10122,
+		"suk": 10122,
 		"barcode": 5060951921286
 	},
 	{
 		"name": "Centurion Red",
 		"alternativeNames": ["Wild Rider Red (GW)", "Blood Chalice (AP)", "Bloody Red (VGC)"],
 		"type": "H",
-		"mainColor": "#e12626",
+		"mainColor": "#E63132",
 		"wave": "3",
-		"sku": 10123,
+		"suk": 10123,
 		"barcode": 5060951921293
 	},
 	{
 		"name": "Dread Red",
 		"alternativeNames": ["Gal Vorbak Red (GW)", "Crusted Sore (AP)", "Nocturnal Red (VGC)"],
 		"type": "S",
-		"mainColor": "#784241",
+		"mainColor": "#6E3E3E",
 		"wave": "2",
-		"sku": 10064,
+		"suk": 10064,
 		"barcode": 5060951920661
 	},
 	{
 		"name": "Asmodeus Red",
 		"alternativeNames": ["Khorne Red (GW)", "Chaotic Red (AP)", "Succubus Skin (VGC)"],
 		"type": "M",
-		"mainColor": "#964844",
+		"mainColor": "#8E4847",
 		"wave": "2",
-		"sku": 10065,
+		"suk": 10065,
 		"barcode": 5060951920678
 	},
 	{
 		"name": "Evil Eye Red",
 		"alternativeNames": ["Wazdakka Red (GW)", "Abomination Gore  (AP)", "Gory Red (VGC)"],
 		"type": "H",
-		"mainColor": "#c45948",
+		"mainColor": "#C15D4F",
 		"wave": "2",
-		"sku": 10066,
+		"suk": 10066,
 		"barcode": 5060951920685
 	},
 	{
 		"name": "Red Rage",
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "S",
-		"mainColor": "#733629",
+		"mainColor": "#6A342A",
 		"wave": "3",
-		"sku": 10124,
+		"suk": 10124,
 		"barcode": 5060951921309
 	},
 	{
 		"name": "Apocalypse Sky",
 		"alternativeNames": ["N/A (GW)", "N/A (AP)", "N/A (VMC)"],
 		"type": "M",
-		"mainColor": "#e04134",
+		"mainColor": "#E34E3F",
 		"wave": "3",
-		"sku": 10125,
+		"suk": 10125,
 		"barcode": 5060951921316
 	},
 	{
 		"name": "Inferno Orange",
 		"alternativeNames": ["N/A (GW)", "Molten Lava (AP)", "N/A (VMC)"],
 		"type": "H",
-		"mainColor": "#ce3f25",
+		"mainColor": "#CE4A32",
 		"wave": "3",
-		"sku": 10026,
+		"suk": 10126,
 		"barcode": 5060951921323
 	},
 	{
@@ -113,7 +113,7 @@
 		"type": "S",
 		"mainColor": "#bb4d38",
 		"wave": "1",
-		"sku": 10010,
+		"suk": 10010,
 		"barcode": 5060951920098
 	},
 	{
@@ -122,7 +122,7 @@
 		"type": "M",
 		"mainColor": "#d94b2e",
 		"wave": "1",
-		"sku": 10011,
+		"suk": 10011,
 		"barcode": 5060951920104
 	},
 	{
@@ -131,7 +131,7 @@
 		"type": "H",
 		"mainColor": "#ec7241",
 		"wave": "1",
-		"sku": 10012,
+		"suk": 10012,
 		"barcode": 5060951920111
 	},
 	{
@@ -140,7 +140,7 @@
 		"type": "S",
 		"mainColor": "#c4873a",
 		"wave": "1",
-		"sku": 10004,
+		"suk": 10004,
 		"barcode": 5060951920036
 	},
 	{
@@ -149,7 +149,7 @@
 		"type": "M",
 		"mainColor": "#f69f00",
 		"wave": "1",
-		"sku": 10005,
+		"suk": 10005,
 		"barcode": 5060951920043
 	},
 	{
@@ -158,7 +158,7 @@
 		"type": "H",
 		"mainColor": "#f9b22d",
 		"wave": "1",
-		"sku": 10006,
+		"suk": 10006,
 		"barcode": 5060951920050
 	},
 	{
@@ -167,7 +167,7 @@
 		"type": "S",
 		"mainColor": "#ad9137",
 		"wave": "3",
-		"sku": 10127,
+		"suk": 10127,
 		"barcode": 5060951921330
 	},
 	{
@@ -176,7 +176,7 @@
 		"type": "M",
 		"mainColor": "#cdaf52",
 		"wave": "3",
-		"sku": 10128,
+		"suk": 10128,
 		"barcode": 5060951921347
 	},
 	{
@@ -185,7 +185,7 @@
 		"type": "H",
 		"mainColor": "#ead06f",
 		"wave": "3",
-		"sku": 10129,
+		"suk": 10129,
 		"barcode": 5060951921354
 	},
 	{
@@ -194,7 +194,7 @@
 		"type": "S",
 		"mainColor": "#f9d400",
 		"wave": "3",
-		"sku": 10130,
+		"suk": 10130,
 		"barcode": 5060951921361
 	},
 	{
@@ -203,7 +203,7 @@
 		"type": "M",
 		"mainColor": "#fae544",
 		"wave": "3",
-		"sku": 10131,
+		"suk": 10131,
 		"barcode": 5060951921378
 	},
 	{
@@ -212,7 +212,7 @@
 		"type": "H",
 		"mainColor": "#edebb3",
 		"wave": "3",
-		"sku": 10132,
+		"suk": 10132,
 		"barcode": 5060951921385
 	},
 	{
@@ -221,7 +221,7 @@
 		"type": "S",
 		"mainColor": "#787760",
 		"wave": "2",
-		"sku": 10076,
+		"suk": 10076,
 		"barcode": 5060951920784
 	},
 	{
@@ -230,7 +230,7 @@
 		"type": "M",
 		"mainColor": "#88874e",
 		"wave": "2",
-		"sku": 10077,
+		"suk": 10077,
 		"barcode": 5060951920791
 	},
 	{
@@ -239,7 +239,7 @@
 		"type": "H",
 		"mainColor": "#919177",
 		"wave": "2",
-		"sku": 10078,
+		"suk": 10078,
 		"barcode": 5060951920807
 	},
 	{
@@ -248,7 +248,7 @@
 		"type": "S",
 		"mainColor": "#76714b",
 		"wave": "2",
-		"sku": 10079,
+		"suk": 10079,
 		"barcode": 5060951920814
 	},
 	{
@@ -257,7 +257,7 @@
 		"type": "M",
 		"mainColor": "#b1a75e",
 		"wave": "2",
-		"sku": 10080,
+		"suk": 10080,
 		"barcode": 5060951920821
 	},
 	{
@@ -266,7 +266,7 @@
 		"type": "H",
 		"mainColor": "#b5b289",
 		"wave": "2",
-		"sku": 10081,
+		"suk": 10081,
 		"barcode": 5060951920838
 	},
 	{
@@ -275,7 +275,7 @@
 		"type": "S",
 		"mainColor": "#96a27c",
 		"wave": "3",
-		"sku": 10136,
+		"suk": 10136,
 		"barcode": 5060951921422
 	},
 	{
@@ -284,7 +284,7 @@
 		"type": "M",
 		"mainColor": "#bcbb75",
 		"wave": "3",
-		"sku": 10137,
+		"suk": 10137,
 		"barcode": 5060951921439
 	},
 	{
@@ -293,7 +293,7 @@
 		"type": "H",
 		"mainColor": "#dde397",
 		"wave": "3",
-		"sku": 10138,
+		"suk": 10138,
 		"barcode": 5060951921446
 	},
 	{
@@ -302,7 +302,7 @@
 		"type": "S",
 		"mainColor": "#819d62",
 		"wave": "2",
-		"sku": 10073,
+		"suk": 10073,
 		"barcode": 5060951920753
 	},
 	{
@@ -311,7 +311,7 @@
 		"type": "M",
 		"mainColor": "#92b75f",
 		"wave": "2",
-		"sku": 10074,
+		"suk": 10074,
 		"barcode": 5060951920760
 	},
 	{
@@ -320,7 +320,7 @@
 		"type": "H",
 		"mainColor": "#a8c46c",
 		"wave": "2",
-		"sku": 10075,
+		"suk": 10075,
 		"barcode": 5060951920777
 	},
 	{
@@ -329,7 +329,7 @@
 		"type": "S",
 		"mainColor": "#404b43",
 		"wave": "1",
-		"sku": 10013,
+		"suk": 10013,
 		"barcode": 5060951920128
 	},
 	{
@@ -338,7 +338,7 @@
 		"type": "M",
 		"mainColor": "#3d5c43",
 		"wave": "1",
-		"sku": 10014,
+		"suk": 10014,
 		"barcode": 5060951920135
 	},
 	{
@@ -347,7 +347,7 @@
 		"type": "H",
 		"mainColor": "#587f30",
 		"wave": "1",
-		"sku": 10015,
+		"suk": 10015,
 		"barcode": 5060951920142
 	},
 	{
@@ -356,7 +356,7 @@
 		"type": "S",
 		"mainColor": "#404443",
 		"wave": "3",
-		"sku": 10133,
+		"suk": 10133,
 		"barcode": 5060951921392
 	},
 	{
@@ -365,7 +365,7 @@
 		"type": "M",
 		"mainColor": "#34544f",
 		"wave": "3",
-		"sku": 10134,
+		"suk": 10134,
 		"barcode": 5060951921408
 	},
 	{
@@ -374,7 +374,7 @@
 		"type": "H",
 		"mainColor": "#2c6b66",
 		"wave": "3",
-		"sku": 10135,
+		"suk": 10135,
 		"barcode": 5060951921415
 	},
 	{
@@ -383,7 +383,7 @@
 		"type": "S",
 		"mainColor": "#3c5051",
 		"wave": "2",
-		"sku": 10082,
+		"suk": 10082,
 		"barcode": 5060951920845
 	},
 	{
@@ -392,7 +392,7 @@
 		"type": "M",
 		"mainColor": "#327864",
 		"wave": "2",
-		"sku": 10083,
+		"suk": 10083,
 		"barcode": 5060951920852
 	},
 	{
@@ -401,7 +401,7 @@
 		"type": "H",
 		"mainColor": "#5bb892",
 		"wave": "2",
-		"sku": 10084,
+		"suk": 10084,
 		"barcode": 5060951920869
 	},
 	{
@@ -410,7 +410,7 @@
 		"type": "S",
 		"mainColor": "#3a464e",
 		"wave": "3",
-		"sku": 10139,
+		"suk": 10139,
 		"barcode": 5060951921453
 	},
 	{
@@ -419,7 +419,7 @@
 		"type": "M",
 		"mainColor": "#347c7d",
 		"wave": "3",
-		"sku": 10140,
+		"suk": 10140,
 		"barcode": 5060951921460
 	},
 	{
@@ -428,7 +428,7 @@
 		"type": "H",
 		"mainColor": "#5b9d9e",
 		"wave": "3",
-		"sku": 10141,
+		"suk": 10141,
 		"barcode": 5060951921477
 	},
 	{
@@ -437,7 +437,7 @@
 		"type": "S",
 		"mainColor": "#3b84a4",
 		"wave": "2",
-		"sku": 10067,
+		"suk": 10067,
 		"barcode": 5060951920692
 	},
 	{
@@ -446,7 +446,7 @@
 		"type": "M",
 		"mainColor": "#4498b7",
 		"wave": "2",
-		"sku": 10068,
+		"suk": 10068,
 		"barcode": 5060951920708
 	},
 	{
@@ -455,7 +455,7 @@
 		"type": "H",
 		"mainColor": "#52afc5",
 		"wave": "2",
-		"sku": 10069,
+		"suk": 10069,
 		"barcode": 5060951920715
 	},
 	{
@@ -464,7 +464,7 @@
 		"type": "S",
 		"mainColor": "#28509a",
 		"wave": "3",
-		"sku": 10142,
+		"suk": 10142,
 		"barcode": 5060951921484
 	},
 	{
@@ -473,7 +473,7 @@
 		"type": "M",
 		"mainColor": "#287cbc",
 		"wave": "3",
-		"sku": 10143,
+		"suk": 10143,
 		"barcode": 5060951921491
 	},
 	{
@@ -482,7 +482,7 @@
 		"type": "H",
 		"mainColor": "#4e9dca",
 		"wave": "3",
-		"sku": 10144,
+		"suk": 10144,
 		"barcode": 5060951921504
 	},
 	{
@@ -491,7 +491,7 @@
 		"type": "S",
 		"mainColor": "#394967",
 		"wave": "2",
-		"sku": 10070,
+		"suk": 10070,
 		"barcode": 5060951920722
 	},
 	{
@@ -500,7 +500,7 @@
 		"type": "M",
 		"mainColor": "#3764ad",
 		"wave": "2",
-		"sku": 10071,
+		"suk": 10071,
 		"barcode": 5060951920739
 	},
 	{
@@ -509,7 +509,7 @@
 		"type": "H",
 		"mainColor": "#417abe",
 		"wave": "2",
-		"sku": 10072,
+		"suk": 10072,
 		"barcode": 5060951920746
 	},
 	{
@@ -518,7 +518,7 @@
 		"type": "S",
 		"mainColor": "#444a70",
 		"wave": "1",
-		"sku": 10007,
+		"suk": 10007,
 		"barcode": 5060951920067
 	},
 	{
@@ -527,7 +527,7 @@
 		"type": "M",
 		"mainColor": "#537aac",
 		"wave": "1",
-		"sku": 10008,
+		"suk": 10008,
 		"barcode": 5060951920074
 	},
 	{
@@ -536,7 +536,7 @@
 		"type": "H",
 		"mainColor": "#6994c0",
 		"wave": "1",
-		"sku": 10009,
+		"suk": 10009,
 		"barcode": 5060951920081
 	},
 	{
@@ -545,7 +545,7 @@
 		"type": "S",
 		"mainColor": "#4c525c",
 		"wave": "3",
-		"sku": 10145,
+		"suk": 10145,
 		"barcode": 5060951921514
 	},
 	{
@@ -554,7 +554,7 @@
 		"type": "M",
 		"mainColor": "#52656d",
 		"wave": "3",
-		"sku": 10146,
+		"suk": 10146,
 		"barcode": 5060951921521
 	},
 	{
@@ -563,7 +563,7 @@
 		"type": "H",
 		"mainColor": "#7f9aa2",
 		"wave": "3",
-		"sku": 10147,
+		"suk": 10147,
 		"barcode": 5060951921538
 	},
 	{
@@ -572,7 +572,7 @@
 		"type": "S",
 		"mainColor": "#51575c",
 		"wave": "1",
-		"sku": 10049,
+		"suk": 10049,
 		"barcode": 5060951920487
 	},
 	{
@@ -581,7 +581,7 @@
 		"type": "M",
 		"mainColor": "#63768a",
 		"wave": "1",
-		"sku": 10050,
+		"suk": 10050,
 		"barcode": 5060951920494
 	},
 	{
@@ -590,7 +590,7 @@
 		"type": "H",
 		"mainColor": "#7b8b99",
 		"wave": "1",
-		"sku": 10051,
+		"suk": 10051,
 		"barcode": 5060951920500
 	},
 	{
@@ -599,7 +599,7 @@
 		"type": "S",
 		"mainColor": "#716c6e",
 		"wave": "3",
-		"sku": 10151,
+		"suk": 10151,
 		"barcode": 5060951921576
 	},
 	{
@@ -608,7 +608,7 @@
 		"type": "M",
 		"mainColor": "#877d8e",
 		"wave": "3",
-		"sku": 10152,
+		"suk": 10152,
 		"barcode": 5060951921583
 	},
 	{
@@ -617,7 +617,7 @@
 		"type": "H",
 		"mainColor": "#cdc7dc",
 		"wave": "3",
-		"sku": 10153,
+		"suk": 10153,
 		"barcode": 5060951921590
 	},
 	{
@@ -626,7 +626,7 @@
 		"type": "S",
 		"mainColor": "#534169",
 		"wave": "1",
-		"sku": 10016,
+		"suk": 10016,
 		"barcode": 5060951920159
 	},
 	{
@@ -635,7 +635,7 @@
 		"type": "M",
 		"mainColor": "#7a598e",
 		"wave": "1",
-		"sku": 10117,
+		"suk": 10017,
 		"barcode": 5060951920166
 	},
 	{
@@ -644,7 +644,7 @@
 		"type": "H",
 		"mainColor": "#9d8eb4",
 		"wave": "1",
-		"sku": 10018,
+		"suk": 10018,
 		"barcode": 5060951920173
 	},
 	{
@@ -653,7 +653,7 @@
 		"type": "S",
 		"mainColor": "#2b182c",
 		"wave": "3",
-		"sku": 10148,
+		"suk": 10148,
 		"barcode": 5060951921545
 	},
 	{
@@ -662,7 +662,7 @@
 		"type": "M",
 		"mainColor": "#5c335f",
 		"wave": "3",
-		"sku": 10149,
+		"suk": 10149,
 		"barcode": 5060951921552
 	},
 	{
@@ -671,7 +671,7 @@
 		"type": "H",
 		"mainColor": "#a05495",
 		"wave": "3",
-		"sku": 10150,
+		"suk": 10150,
 		"barcode": 5060951921569
 	},
 	{
@@ -680,7 +680,7 @@
 		"type": "S",
 		"mainColor": "#5b444b",
 		"wave": "1",
-		"sku": 10046,
+		"suk": 10046,
 		"barcode": 5060951920456
 	},
 	{
@@ -689,7 +689,7 @@
 		"type": "M",
 		"mainColor": "#995878",
 		"wave": "1",
-		"sku": 10047,
+		"suk": 10047,
 		"barcode": 5060951920463
 	},
 	{
@@ -698,7 +698,7 @@
 		"type": "H",
 		"mainColor": "#995878",
 		"wave": "1",
-		"sku": 10048,
+		"suk": 10048,
 		"barcode": 5060951920470
 	},
 	{
@@ -707,7 +707,7 @@
 		"type": "S",
 		"mainColor": "#bf6066",
 		"wave": "2",
-		"sku": 10061,
+		"suk": 10061,
 		"barcode": 5060951920630
 	},
 	{
@@ -716,7 +716,7 @@
 		"type": "M",
 		"mainColor": "#e485a9",
 		"wave": "2",
-		"sku": 10062,
+		"suk": 10062,
 		"barcode": 5060951920647
 	},
 	{
@@ -725,7 +725,7 @@
 		"type": "H",
 		"mainColor": "#f4c4dd",
 		"wave": "2",
-		"sku": 10063,
+		"suk": 10063,
 		"barcode": 5060951920654
 	},
 	{
@@ -734,7 +734,7 @@
 		"type": "S",
 		"mainColor": "#5d4334",
 		"wave": "2",
-		"sku": 10097,
+		"suk": 10097,
 		"barcode": 5060951920999
 	},
 	{
@@ -743,7 +743,7 @@
 		"type": "M",
 		"mainColor": "#8a5f4a",
 		"wave": "2",
-		"sku": 10098,
+		"suk": 10098,
 		"barcode": 5060951921002
 	},
 	{
@@ -752,7 +752,7 @@
 		"type": "H",
 		"mainColor": "#9f7664",
 		"wave": "2",
-		"sku": 10099,
+		"suk": 10099,
 		"barcode": 5060951921019
 	},
 	{
@@ -761,7 +761,7 @@
 		"type": "S",
 		"mainColor": "#b1966f",
 		"wave": "2",
-		"sku": 10094,
+		"suk": 10094,
 		"barcode": 5060951920968
 	},
 	{
@@ -770,7 +770,7 @@
 		"type": "M",
 		"mainColor": "#c7a170",
 		"wave": "2",
-		"sku": 10095,
+		"suk": 10095,
 		"barcode": 5060951920975
 	},
 	{
@@ -779,7 +779,7 @@
 		"type": "H",
 		"mainColor": "#e4c889",
 		"wave": "2",
-		"sku": 10096,
+		"suk": 10096,
 		"barcode": 5060951920982
 	},
 	{
@@ -788,7 +788,7 @@
 		"type": "S",
 		"mainColor": "#906056",
 		"wave": "1",
-		"sku": 10025,
+		"suk": 10025,
 		"barcode": 5060951920241
 	},
 	{
@@ -797,7 +797,7 @@
 		"type": "M",
 		"mainColor": "#b27d63",
 		"wave": "1",
-		"sku": 10026,
+		"suk": 10026,
 		"barcode": 5060951920258
 	},
 	{
@@ -806,7 +806,7 @@
 		"type": "H",
 		"mainColor": "#c59974",
 		"wave": "1",
-		"sku": 10027,
+		"suk": 10027,
 		"barcode": 5060951920265
 	},
 	{
@@ -815,7 +815,7 @@
 		"type": "S",
 		"mainColor": "#3e3937",
 		"wave": "1",
-		"sku": 10019,
+		"suk": 10019,
 		"barcode": 5060951920180
 	},
 	{
@@ -824,7 +824,7 @@
 		"type": "M",
 		"mainColor": "#434142",
 		"wave": "1",
-		"sku": 10020,
+		"suk": 10020,
 		"barcode": 5060951920197
 	},
 	{
@@ -833,7 +833,7 @@
 		"type": "H",
 		"mainColor": "#5c5e61",
 		"wave": "1",
-		"sku": 10021,
+		"suk": 10021,
 		"barcode": 5060951920203
 	},
 	{
@@ -842,7 +842,7 @@
 		"type": "S",
 		"mainColor": "#6e6c6d",
 		"wave": "1",
-		"sku": 10022,
+		"suk": 10022,
 		"barcode": 5060951920210
 	},
 	{
@@ -851,7 +851,7 @@
 		"type": "M",
 		"mainColor": "#979798",
 		"wave": "1",
-		"sku": 10023,
+		"suk": 10023,
 		"barcode": 5060951920227
 	},
 	{
@@ -860,7 +860,7 @@
 		"type": "H",
 		"mainColor": "#f9faf9",
 		"wave": "1",
-		"sku": 10024,
+		"suk": 10024,
 		"barcode": 5060951920234
 	},
 	{
@@ -869,7 +869,7 @@
 		"type": "S",
 		"mainColor": "#9e8560",
 		"wave": "1",
-		"sku": 10031,
+		"suk": 10031,
 		"barcode": 5060951920302
 	},
 	{
@@ -878,7 +878,7 @@
 		"type": "M",
 		"mainColor": "#b2986d",
 		"wave": "1",
-		"sku": 10032,
+		"suk": 10032,
 		"barcode": 5060951920319
 	},
 	{
@@ -887,7 +887,7 @@
 		"type": "H",
 		"mainColor": "#cdba9b",
 		"wave": "1",
-		"sku": 10033,
+		"suk": 10033,
 		"barcode": 5060951920326
 	},
 	{
@@ -896,7 +896,7 @@
 		"type": "S",
 		"mainColor": "#a19186",
 		"wave": "1",
-		"sku": 10034,
+		"suk": 10034,
 		"barcode": 5060951920333
 	},
 	{
@@ -905,7 +905,7 @@
 		"type": "M",
 		"mainColor": "#d4cac1",
 		"wave": "1",
-		"sku": 10035,
+		"suk": 10035,
 		"barcode": 5060951920340
 	},
 	{
@@ -914,7 +914,7 @@
 		"type": "H",
 		"mainColor": "#efede2",
 		"wave": "1",
-		"sku": 10036,
+		"suk": 10036,
 		"barcode": 5060951920357
 	},
 	{
@@ -923,7 +923,7 @@
 		"type": "S",
 		"mainColor": "#58584c",
 		"wave": "2",
-		"sku": 10085,
+		"suk": 10085,
 		"barcode": 5060951920876
 	},
 	{
@@ -932,7 +932,7 @@
 		"type": "M",
 		"mainColor": "#5d5a4b",
 		"wave": "2",
-		"sku": 10086,
+		"suk": 10086,
 		"barcode": 5060951920883
 	},
 	{
@@ -941,7 +941,7 @@
 		"type": "H",
 		"mainColor": "#7b7867",
 		"wave": "2",
-		"sku": 10087,
+		"suk": 10087,
 		"barcode": 5060951920890
 	},
 	{
@@ -950,7 +950,7 @@
 		"type": "S",
 		"mainColor": "#5d4334",
 		"wave": "1",
-		"sku": 10037,
+		"suk": 10037,
 		"barcode": 5060951920364
 	},
 	{
@@ -959,7 +959,7 @@
 		"type": "M",
 		"mainColor": "#937c68",
 		"wave": "1",
-		"sku": 10038,
+		"suk": 10038,
 		"barcode": 5060951920371
 	},
 	{
@@ -968,7 +968,7 @@
 		"type": "H",
 		"mainColor": "#a49179",
 		"wave": "1",
-		"sku": 10039,
+		"suk": 10039,
 		"barcode": 5060951920388
 	},
 	{
@@ -977,7 +977,7 @@
 		"type": "S",
 		"mainColor": "#53433b",
 		"wave": "1",
-		"sku": 10028,
+		"suk": 10028,
 		"barcode": 5060951920272
 	},
 	{
@@ -986,7 +986,7 @@
 		"type": "M",
 		"mainColor": "#734539",
 		"wave": "1",
-		"sku": 10029,
+		"suk": 10029,
 		"barcode": 5060951920289
 	},
 	{
@@ -995,7 +995,7 @@
 		"type": "H",
 		"mainColor": "#93544e",
 		"wave": "1",
-		"sku": 10030,
+		"suk": 10030,
 		"barcode": 5060951920296
 	},
 	{
@@ -1004,7 +1004,7 @@
 		"type": "S",
 		"mainColor": "#5a4d4a",
 		"wave": "1",
-		"sku": 10052,
+		"suk": 10052,
 		"barcode": 5060951920517
 	},
 	{
@@ -1013,7 +1013,7 @@
 		"type": "M",
 		"mainColor": "#725b52",
 		"wave": "1",
-		"sku": 10053,
+		"suk": 10053,
 		"barcode": 5060951920524
 	},
 	{
@@ -1022,7 +1022,7 @@
 		"type": "H",
 		"mainColor": "#866c5c",
 		"wave": "1",
-		"sku": 10054,
+		"suk": 10054,
 		"barcode": 5060951920531
 	},
 	{
@@ -1031,7 +1031,7 @@
 		"type": "S",
 		"mainColor": "#815939",
 		"wave": "2",
-		"sku": 10088,
+		"suk": 10088,
 		"barcode": 5060951920906
 	},
 	{
@@ -1040,7 +1040,7 @@
 		"type": "M",
 		"mainColor": "#be7737",
 		"wave": "2",
-		"sku": 10089,
+		"suk": 10089,
 		"barcode": 5060951920913
 	},
 	{
@@ -1049,7 +1049,7 @@
 		"type": "H",
 		"mainColor": "#da9a52",
 		"wave": "2",
-		"sku": 10090,
+		"suk": 10090,
 		"barcode": 5060951920920
 	},
 	{
@@ -1058,7 +1058,7 @@
 		"type": "S",
 		"mainColor": "#d68b49",
 		"wave": "2",
-		"sku": 10091,
+		"suk": 10091,
 		"barcode": 5060951920937
 	},
 	{
@@ -1067,7 +1067,7 @@
 		"type": "M",
 		"mainColor": "#db9a3a",
 		"wave": "2",
-		"sku": 10092,
+		"suk": 10092,
 		"barcode": 5060951920944
 	},
 	{
@@ -1076,7 +1076,7 @@
 		"type": "H",
 		"mainColor": "#e4b351",
 		"wave": "2",
-		"sku": 10093,
+		"suk": 10093,
 		"barcode": 5060951920951
 	},
 	{
@@ -1085,7 +1085,7 @@
 		"type": "S",
 		"mainColor": "#846145",
 		"wave": "3",
-		"sku": 10154,
+		"suk": 10154,
 		"barcode": 5060951921606
 	},
 	{
@@ -1094,7 +1094,7 @@
 		"type": "M",
 		"mainColor": "#8c6342",
 		"wave": "3",
-		"sku": 10155,
+		"suk": 10155,
 		"barcode": 5060951921613
 	},
 	{
@@ -1103,7 +1103,7 @@
 		"type": "H",
 		"mainColor": "#a57859",
 		"wave": "3",
-		"sku": 10156,
+		"suk": 10156,
 		"barcode": 5060951921620
 	},
 	{
@@ -1113,7 +1113,7 @@
 		"mainColor": "#9c9593",
 		"secondaryColor": "#423c3a",
 		"wave": "1",
-		"sku": 10055,
+		"suk": 10055,
 		"barcode": 5060951920548
 	},
 	{
@@ -1123,7 +1123,7 @@
 		"mainColor": "#b9aca1",
 		"secondaryColor": "#67513e",
 		"wave": "1",
-		"sku": 10056,
+		"suk": 10056,
 		"barcode": 5060951920555
 	},
 	{
@@ -1133,7 +1133,7 @@
 		"mainColor": "#d2c0b1",
 		"secondaryColor": "#a37f63",
 		"wave": "1",
-		"sku": 10057,
+		"suk": 10057,
 		"barcode": 5060951920562
 	},
 	{
@@ -1143,7 +1143,7 @@
 		"mainColor": "#a7b89b",
 		"secondaryColor": "#3d7a40",
 		"wave": "1",
-		"sku": 10058,
+		"suk": 10058,
 		"barcode": 5060951920579
 	},
 	{
@@ -1153,7 +1153,7 @@
 		"mainColor": "#b8bda8",
 		"secondaryColor": "#70815a",
 		"wave": "1",
-		"sku": 10059,
+		"suk": 10059,
 		"barcode": 5060951920586
 	},
 	{
@@ -1163,7 +1163,7 @@
 		"mainColor": "#efe4d4",
 		"secondaryColor": "#c7a469",
 		"wave": "1",
-		"sku": 10060,
+		"suk": 10060,
 		"barcode": 5060951920593
 	},
 	{
@@ -1173,7 +1173,7 @@
 		"mainColor": "#7b3433",
 		"secondaryColor": "#e2d5d4",
 		"wave": "2",
-		"sku": 10112,
+		"suk": 10112,
 		"barcode": 5060951921149
 	},
 	{
@@ -1183,7 +1183,7 @@
 		"mainColor": "#36445a",
 		"secondaryColor": "#d6cdd1",
 		"wave": "2",
-		"sku": 10113,
+		"suk": 10113,
 		"barcode": 5060951921156
 	},
 	{
@@ -1193,7 +1193,7 @@
 		"mainColor": "#562e49",
 		"secondaryColor": "#e5dcdd",
 		"wave": "2",
-		"sku": 10114,
+		"suk": 10114,
 		"barcode": 5060951921163
 	},
 	{
@@ -1322,7 +1322,7 @@
 		"type": "B",
 		"mainColor": "#bd3222",
 		"wave": "2",
-		"sku": 10100,
+		"suk": 10100,
 		"barcode": 5060951921026
 	},
 	{
@@ -1331,7 +1331,7 @@
 		"type": "B",
 		"mainColor": "#f3e95e",
 		"wave": "2",
-		"sku": 10101,
+		"suk": 10101,
 		"barcode": 5060951921033
 	},
 	{
@@ -1340,7 +1340,7 @@
 		"type": "B",
 		"mainColor": "#66b9e8",
 		"wave": "2",
-		"sku": 10102,
+		"suk": 10102,
 		"barcode": 5060951921040
 	},
 	{
@@ -1349,7 +1349,7 @@
 		"type": "B",
 		"mainColor": "#eba739",
 		"wave": "2",
-		"sku": 10103,
+		"suk": 10103,
 		"barcode": 5060951921057
 	},
 	{
@@ -1358,7 +1358,7 @@
 		"type": "B",
 		"mainColor": "#81bb27",
 		"wave": "2",
-		"sku": 10104,
+		"suk": 10104,
 		"barcode": 5060951921064
 	},
 	{
@@ -1367,7 +1367,7 @@
 		"type": "B",
 		"mainColor": "#cab5d9",
 		"wave": "2",
-		"sku": 10105,
+		"suk": 10105,
 		"barcode": 5060951921071
 	},
 	{
@@ -1431,7 +1431,7 @@
 		"mainColor": "#e97238",
 		"secondaryColor": "#984e22",
 		"wave": "2",
-		"sku": 10109,
+		"suk": 10109,
 		"barcode": 5060951921118
 	},
 	{
@@ -1441,7 +1441,7 @@
 		"mainColor": "#815235",
 		"secondaryColor": "#2b2723",
 		"wave": "1",
-		"sku": 10043,
+		"suk": 10043,
 		"barcode": 5060951920425
 	},
 	{
@@ -1461,7 +1461,7 @@
 		"mainColor": "#d3a751",
 		"secondaryColor": "#2d2a24",
 		"wave": "3",
-		"suk": 10112,
+		"suk": 10173,
 		"barcode": 5060951921149
 	},
 	{
@@ -1481,7 +1481,7 @@
 		"mainColor": "#e8c793",
 		"secondaryColor": "#2d2924",
 		"wave": "1",
-		"sku": 10045,
+		"suk": 10045,
 		"barcode": 5060951920449
 	},
 	{
@@ -1511,7 +1511,7 @@
 		"mainColor": "#e8c391",
 		"secondaryColor": "#ae8f63",
 		"wave": "2",
-		"sku": 10108,
+		"suk": 10108,
 		"barcode": 5060951921101
 	},
 	{
@@ -1521,7 +1521,7 @@
 		"mainColor": "#f5c467",
 		"secondaryColor": "#b1893e",
 		"wave": "2",
-		"sku": 10110,
+		"suk": 10110,
 		"barcode": 5060951921125
 	},
 	{
@@ -1531,7 +1531,7 @@
 		"mainColor": "#e8bd88",
 		"secondaryColor": "#ab895a",
 		"wave": "2",
-		"sku": 10107,
+		"suk": 10107,
 		"barcode": 5060951921095
 	},
 	{
@@ -1541,7 +1541,7 @@
 		"mainColor": "#f8eede",
 		"secondaryColor": "#d9caa9",
 		"wave": "2",
-		"sku": 10111,
+		"suk": 10111,
 		"barcode": 5060951921132
 	},
 	{
@@ -1561,7 +1561,7 @@
 		"mainColor": "#746e60",
 		"secondaryColor": "#3d3e40",
 		"wave": "2",
-		"sku": 10106,
+		"suk": 10106,
 		"barcode": 5060951921088
 	},
 	{
@@ -1571,7 +1571,7 @@
 		"mainColor": "#6a6869",
 		"secondaryColor": "#2c2924",
 		"wave": "1",
-		"sku": 10040,
+		"suk": 10040,
 		"barcode": 5060951920395
 	},
 	{
@@ -1591,7 +1591,7 @@
 		"mainColor": "#969596",
 		"secondaryColor": "#2d2a25",
 		"wave": "1",
-		"sku": 10041,
+		"suk": 10041,
 		"barcode": 5060951920401
 	},
 	{
@@ -1601,7 +1601,7 @@
 		"mainColor": "#ccccce",
 		"secondaryColor": "#2d2925",
 		"wave": "1",
-		"sku": 10042,
+		"suk": 10042,
 		"barcode": 5060951920418
 	},
 	{
@@ -1661,7 +1661,7 @@
 		"mainColor": "#c96e44",
 		"secondaryColor": "#2a2723",
 		"wave": "3",
-		"sku": 10114,
+		"suk": 10168,
 		"barcode": 5060951921163
 	},
 	{
@@ -1670,7 +1670,7 @@
 		"type": "DA",
 		"mainColor": "#593f32",
 		"wave": "4",
-		"sku": 36001,
+		"suk": 36001,
 		"barcode": 5060951922061
 	},
 	{
@@ -1679,7 +1679,7 @@
 		"type": "DA",
 		"mainColor": "#d93f46",
 		"wave": "4",
-		"sku": 36002,
+		"suk": 36002,
 		"barcode": 5060951922078
 	},
 	{
@@ -1688,7 +1688,7 @@
 		"type": "DA",
 		"mainColor": "#e74d26",
 		"wave": "4",
-		"sku": 36003,
+		"suk": 36003,
 		"barcode": 5060951922085
 	},
 	{
@@ -1697,7 +1697,7 @@
 		"type": "DA",
 		"mainColor": "#ed8435",
 		"wave": "4",
-		"sku": 36004,
+		"suk": 36004,
 		"barcode": 5060951922092
 	},
 	{
@@ -1706,7 +1706,7 @@
 		"type": "DA",
 		"mainColor": "#e7b230",
 		"wave": "4",
-		"sku": 36005,
+		"suk": 36005,
 		"barcode": 5060951922108
 	},
 	{
@@ -1715,7 +1715,7 @@
 		"type": "DA",
 		"mainColor": "#cba634",
 		"wave": "4",
-		"sku": 36006,
+		"suk": 36006,
 		"barcode": 5060951922115
 	},
 	{
@@ -1724,7 +1724,7 @@
 		"type": "DA",
 		"mainColor": "#d2b650",
 		"wave": "4",
-		"sku": 36007,
+		"suk": 36007,
 		"barcode": 5060951922122
 	},
 	{
@@ -1733,7 +1733,7 @@
 		"type": "DA",
 		"mainColor": "#47605c",
 		"wave": "4",
-		"sku": 36008,
+		"suk": 36008,
 		"barcode": 5060951922139
 	},
 	{
@@ -1742,7 +1742,7 @@
 		"type": "DA",
 		"mainColor": "#557966",
 		"wave": "4",
-		"sku": 36009,
+		"suk": 36009,
 		"barcode": 5060951922146
 	},
 	{
@@ -1751,7 +1751,7 @@
 		"type": "DA",
 		"mainColor": "#3d4225",
 		"wave": "4",
-		"sku": 36010,
+		"suk": 36010,
 		"barcode": 5060951922153
 	},
 	{
@@ -1760,7 +1760,7 @@
 		"type": "DA",
 		"mainColor": "#98a189",
 		"wave": "4",
-		"sku": 36011,
+		"suk": 36011,
 		"barcode": 5060951922160
 	},
 	{
@@ -1769,7 +1769,7 @@
 		"type": "DA",
 		"mainColor": "#ebe9da",
 		"wave": "4",
-		"sku": 36012,
+		"suk": 36012,
 		"barcode": 5060951922177
 	},
 	{
@@ -1778,7 +1778,7 @@
 		"type": "DA",
 		"mainColor": "#b46649",
 		"wave": "4",
-		"sku": 36013,
+		"suk": 36013,
 		"barcode": 5060951922184
 	},
 	{
@@ -1787,7 +1787,7 @@
 		"type": "DA",
 		"mainColor": "#c4866d",
 		"wave": "4",
-		"sku": 36014,
+		"suk": 36014,
 		"barcode": 5060951922191
 	},
 	{
@@ -1796,7 +1796,7 @@
 		"type": "DA",
 		"mainColor": "#5a4b37",
 		"wave": "4",
-		"sku": 36015,
+		"suk": 36015,
 		"barcode": 5060951922207
 	},
 	{
@@ -1805,7 +1805,7 @@
 		"type": "DA",
 		"mainColor": "#997464",
 		"wave": "4",
-		"sku": 36016,
+		"suk": 36016,
 		"barcode": 5060951922214
 	},
 	{
@@ -1814,7 +1814,7 @@
 		"type": "DA",
 		"mainColor": "#bda599",
 		"wave": "4",
-		"sku": 36017,
+		"suk": 36017,
 		"barcode": 5060951922221
 	},
 	{
@@ -1823,7 +1823,7 @@
 		"type": "DA",
 		"mainColor": "#dfc8b0",
 		"wave": "4",
-		"sku": 36018,
+		"suk": 36018,
 		"barcode": 5060951922238
 	},
 	{
@@ -1832,7 +1832,7 @@
 		"type": "DA",
 		"mainColor": "#f1e6d0",
 		"wave": "4",
-		"sku": 36019,
+		"suk": 36019,
 		"barcode": 5060951922245
 	},
 	{
@@ -1841,7 +1841,7 @@
 		"type": "DA",
 		"mainColor": "#222922",
 		"wave": "4",
-		"sku": 36020,
+		"suk": 36020,
 		"barcode": 5060951922252
 	},
 	{
@@ -1850,7 +1850,7 @@
 		"type": "DA",
 		"mainColor": "#ffffff",
 		"wave": "4",
-		"sku": 36021,
+		"suk": 36021,
 		"barcode": 5060951922269
 	},
 	{
@@ -1860,7 +1860,7 @@
 		"mainColor": "#968570",
 		"secondaryColor": "#2a2723",
 		"wave": "4",
-		"sku": 36022,
+		"suk": 36022,
 		"barcode": 5060951922276
 	},
 	{
@@ -1870,7 +1870,7 @@
 		"mainColor": "#a68668",
 		"secondaryColor": "#2a2723",
 		"wave": "4",
-		"sku": 36023,
+		"suk": 36023,
 		"barcode": 5060951922283
 	},
 	{
@@ -1880,7 +1880,7 @@
 		"mainColor": "#ad9d81",
 		"secondaryColor": "#2a2723",
 		"wave": "4",
-		"sku": 36024,
+		"suk": 36024,
 		"barcode": 5060951922290
 	},
 	{
@@ -1890,7 +1890,7 @@
 		"mainColor": "#2a1d15",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36025,
+		"suk": 36025,
 		"barcode": 5060951922306
 	},
 	{
@@ -1900,7 +1900,7 @@
 		"mainColor": "#9b2e29",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36026,
+		"suk": 36026,
 		"barcode": 5060951922313
 	},
 	{
@@ -1910,7 +1910,7 @@
 		"mainColor": "#67271f",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36027,
+		"suk": 36027,
 		"barcode": 5060951922320
 	},
 	{
@@ -1920,7 +1920,7 @@
 		"mainColor": "#a08053",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36028,
+		"suk": 36028,
 		"barcode": 5060951922337
 	},
 	{
@@ -1930,7 +1930,7 @@
 		"mainColor": "#060708",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36029,
+		"suk": 36029,
 		"barcode": 5060951922344
 	},
 	{
@@ -1940,7 +1940,7 @@
 		"mainColor": "#f0f0f0",
 		"secondaryColor": "#f2f1ef",
 		"wave": "4",
-		"sku": 36030,
+		"suk": 36030,
 		"barcode": 5060951922351
 	}
 ]

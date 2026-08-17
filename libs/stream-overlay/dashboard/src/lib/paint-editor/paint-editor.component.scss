@@ -1,0 +1,50 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+@use '../styles';
+
+.sto-paint-editor {
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		width: 100%;
+		padding: 0.75rem;
+		border: 0;
+		text-align: left;
+		cursor: pointer;
+
+		span:last-child {
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+		}
+
+		&--selected {
+			font-weight: bold;
+		}
+	}
+
+	&__color {
+		display: block;
+		flex: 0 0 auto;
+		width: 3rem;
+		height: 3rem;
+	}
+}
+
+.sto-paint-editor-warning {
+	display: flex;
+	order: 5;
+	align-items: center;
+	justify-content: center;
+	justify-self: end;
+	color: #b22222;
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 50%;
+	font-weight: 700;
+	line-height: 1;
+}
