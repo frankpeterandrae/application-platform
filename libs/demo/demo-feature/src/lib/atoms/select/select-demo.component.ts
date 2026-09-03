@@ -38,9 +38,6 @@ export class SelectDemoComponent {
 		{ label: 'United States', value: 'us' },
 		{ label: 'United Kingdom', value: 'uk' },
 		{ label: 'France', value: 'fr' },
-		{ label: 'Spain', value: 'es' },
-		{ label: 'Spain', value: 'es' },
-		{ label: 'Spain', value: 'es' },
 		{ label: 'Spain', value: 'es' }
 	];
 

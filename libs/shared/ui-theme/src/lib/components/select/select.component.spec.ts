@@ -338,16 +338,263 @@ describe('SelectComponent', () => {
 			expect(onChange).toHaveBeenCalledWith('red');
 		});
 
-		it('should call onTouched when closing', () => {
+		it('should call onTouched on blur', () => {
 			const onTouched = vi.fn();
 
 			component.registerOnTouched(onTouched);
 
+			component['onBlur']();
+
+			expect(onTouched).toHaveBeenCalledOnce();
+		});
+
+		it('should not call onTouched when closing', () => {
+			const onTouched = vi.fn();
+
+			component.registerOnTouched(onTouched);
 			component.open.set(true);
 
 			component['close']();
 
-			expect(onTouched).toHaveBeenCalled();
+			expect(onTouched).not.toHaveBeenCalled();
+		});
+
+		it('should not activate an option when opening an empty select', () => {
+			fixture.componentRef.setInput('options', []);
+			fixture.componentRef.setInput('emptySelection', false);
+			fixture.detectChanges();
+
+			component['toggle']();
+
+			expect(component.open()).toBe(true);
+			expect(component['activeIndex']()).toBeNull();
+		});
+
+		it('should ignore an invalid active option index', () => {
+			const onChange = vi.fn();
+
+			component.registerOnChange(onChange);
+			component['activeIndex'].set(99);
+
+			component['onTriggerKeydown'](
+				new KeyboardEvent('keydown', {
+					key: 'Enter',
+					cancelable: true
+				})
+			);
+
+			expect(onChange).not.toHaveBeenCalled();
+			expect(component.value()).toBeUndefined();
+		});
+	});
+
+	describe('keyboard navigation', () => {
+		const keydown = (key: string): KeyboardEvent => {
+			const event = new KeyboardEvent('keydown', {
+				key,
+				cancelable: true
+			});
+
+			component['onTriggerKeydown'](event);
+
+			return event;
+		};
+
+		it.each([
+			['ArrowDown', 0, 1],
+			['ArrowUp', 0, 0],
+			['End', 0, 3],
+			['ArrowUp', 2, 1],
+			['ArrowDown', 3, 3],
+			['Home', 2, 0]
+		])('should navigate with %s from index %i to index %i', (key, startIndex, expectedIndex) => {
+			component['toggle']();
+			component['setActiveOption'](startIndex);
+
+			keydown(key);
+
+			expect(component['activeIndex']()).toBe(expectedIndex);
+		});
+
+		it('should select the active option with Enter', () => {
+			const onChange = vi.fn();
+
+			component.registerOnChange(onChange);
+			component['toggle']();
+			component['setActiveOption'](2);
+
+			keydown('Enter');
+
+			expect(component.value()).toBe('green');
+			expect(onChange).toHaveBeenCalledWith('green');
+			expect(component.open()).toBe(false);
+		});
+
+		it('should select the active option with Space', () => {
+			component['toggle']();
+			component['setActiveOption'](1);
+
+			keydown(' ');
+
+			expect(component.value()).toBe('red');
+		});
+
+		it('should clear the selection when the empty option is active', () => {
+			const onChange = vi.fn();
+
+			component.registerOnChange(onChange);
+			component.writeValue('red');
+			component['toggle']();
+			component['setActiveOption'](0);
+
+			keydown('Enter');
+
+			expect(component.value()).toBeUndefined();
+			expect(onChange).toHaveBeenCalledWith(undefined);
+		});
+
+		it('should close with Escape without changing the value', () => {
+			const onChange = vi.fn();
+
+			component.registerOnChange(onChange);
+			component.writeValue('green');
+			component['toggle']();
+
+			keydown('Escape');
+
+			expect(component.open()).toBe(false);
+			expect(component.value()).toBe('green');
+			expect(onChange).not.toHaveBeenCalled();
+		});
+
+		it('should close with Tab without preventing the default action', () => {
+			component['toggle']();
+
+			const event = keydown('Tab');
+
+			expect(component.open()).toBe(false);
+			expect(event.defaultPrevented).toBe(false);
+		});
+
+		it('should ignore keyboard interaction while disabled', () => {
+			component.setDisabledState(true);
+
+			keydown('ArrowDown');
+
+			expect(component.open()).toBe(false);
+		});
+	});
+
+	describe('multiple keyboard selection', () => {
+		it('should select an option and keep the list open', () => {
+			const onChange = vi.fn();
+
+			fixture.componentRef.setInput('multiple', true);
+			fixture.detectChanges();
+
+			component.registerOnChange(onChange);
+			component['toggle']();
+			component['setActiveOption'](1);
+
+			component['onTriggerKeydown'](
+				new KeyboardEvent('keydown', {
+					key: 'Enter',
+					cancelable: true
+				})
+			);
+
+			expect(component.value()).toEqual(['green']);
+			expect(onChange).toHaveBeenCalledWith(['green']);
+			expect(component.open()).toBe(true);
+		});
+
+		it('should deselect an active option', () => {
+			fixture.componentRef.setInput('multiple', true);
+			fixture.detectChanges();
+
+			component.writeValue(['green']);
+			component['toggle']();
+			component['setActiveOption'](1);
+
+			component['onTriggerKeydown'](
+				new KeyboardEvent('keydown', {
+					key: 'Enter',
+					cancelable: true
+				})
+			);
+
+			expect(component.value()).toEqual([]);
+		});
+	});
+
+	describe('accessibility', () => {
+		it('should render the trigger as a combobox', () => {
+			const trigger = fixture.nativeElement.querySelector('.fpa-select') as HTMLButtonElement;
+
+			expect(trigger.getAttribute('role')).toBe('combobox');
+			expect(trigger.getAttribute('aria-haspopup')).toBe('listbox');
+			expect(trigger.getAttribute('aria-expanded')).toBe('false');
+		});
+
+		it('should associate the combobox with its listbox', () => {
+			const trigger = fixture.nativeElement.querySelector('.fpa-select') as HTMLButtonElement;
+
+			expect(trigger.getAttribute('aria-controls')).toBe(`${trigger.id}-listbox`);
+		});
+
+		it('should update aria-expanded when opened', () => {
+			component['toggle']();
+			fixture.detectChanges();
+
+			const trigger = fixture.nativeElement.querySelector('.fpa-select') as HTMLButtonElement;
+
+			expect(trigger.getAttribute('aria-expanded')).toBe('true');
+		});
+
+		it('should set aria-activedescendant while open', () => {
+			component['toggle']();
+			fixture.detectChanges();
+
+			const trigger = fixture.nativeElement.querySelector('.fpa-select') as HTMLButtonElement;
+
+			expect(trigger.getAttribute('aria-activedescendant')).toBe(`${trigger.id}-listbox-option-0`);
+		});
+
+		it('should remove aria-activedescendant when closed', () => {
+			component['toggle']();
+			component['close']();
+
+			fixture.detectChanges();
+
+			const trigger = fixture.nativeElement.querySelector('.fpa-select') as HTMLButtonElement;
+
+			expect(trigger.hasAttribute('aria-activedescendant')).toBe(false);
+		});
+
+		it('should render listbox options with ARIA semantics', () => {
+			component['toggle']();
+			fixture.detectChanges();
+
+			const listbox = document.querySelector('[role="listbox"]');
+			const renderedOptions = Array.from(document.querySelectorAll('[role="option"]'));
+
+			expect(listbox).not.toBeNull();
+			expect(renderedOptions).toHaveLength(4);
+
+			expect(renderedOptions[0].getAttribute('aria-selected')).toBe('true');
+			expect(renderedOptions[1].getAttribute('aria-selected')).toBe('false');
+		});
+
+		it('should mark a multiple listbox as multiselectable', () => {
+			fixture.componentRef.setInput('multiple', true);
+			fixture.detectChanges();
+
+			component['toggle']();
+			fixture.detectChanges();
+
+			const listbox = document.querySelector('[role="listbox"]');
+
+			expect(listbox?.getAttribute('aria-multiselectable')).toBe('true');
 		});
 	});
 });

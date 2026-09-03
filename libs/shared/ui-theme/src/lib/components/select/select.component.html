@@ -13,7 +13,7 @@
 	#origin="cdkOverlayOrigin"
 >
 	@if (label()) {
-		<label themeFloatingLabel [floating]="isFloating()" class="fpa-select-label" [for]="id()">
+		<label themeFloatingLabel [floating]="isFloating()" class="fpa-select-label" [for]="controlId()">
 			{{ label() }}
 		</label>
 	}
@@ -22,11 +22,15 @@
 		type="button"
 		class="fpa-select"
 		[class.fpa-dark-text]="darkText()"
-		[id]="id()"
+		[id]="controlId()"
 		[disabled]="formDisabled()"
+		role="combobox"
 		[attr.aria-expanded]="open()"
-		aria-haspopup="listbox"
+		[attr.aria-controls]="listboxId()"
+		[attr.aria-activedescendant]="activeDescendant()"
+		[attr.aria-haspopup]="'listbox'"
 		(click)="toggle()"
+		(keydown)="onTriggerKeydown($event)"
 		(focus)="onFocus()"
 		(blur)="onBlur()"
 	>
@@ -54,31 +58,57 @@
 	(backdropClick)="close()"
 	(detach)="close()"
 	(overlayKeydown)="$event.key === 'Escape' && close()"
+	(attach)="onOverlayAttached()"
 >
-	<div class="fpa-select-panel" [class.fpa-dark-text]="darkText()" role="listbox" [attr.aria-multiselectable]="multiple() ? true : null">
+	<div
+		#selectPanel
+		[id]="listboxId()"
+		class="fpa-select-panel"
+		[class.fpa-dark-text]="darkText()"
+		role="listbox"
+		[attr.aria-multiselectable]="multiple() ? true : null"
+	>
 		@if (emptySelection() && !multiple()) {
-			<button type="button" class="fpa-select-option fpa-select-option-empty" (click)="clearSelection()">&nbsp;</button>
+			<button
+				#optionElement
+				type="button"
+				tabindex="-1"
+				role="option"
+				class="fpa-select-option fpa-select-option-empty"
+				[class.fpa-select-option-active]="activeIndex() === 0"
+				[id]="optionId(0)"
+				[attr.aria-selected]="!isFilled()"
+				(mouseenter)="setActiveOption(0)"
+				(click)="clearSelection()"
+			>
+				&nbsp;
+			</button>
 		}
 
-		@for (opt of options(); track opt.value) {
+		@for (opt of options(); track opt.value; let index = $index) {
+			@let optionIndex = index + (emptySelection() && !multiple() ? 1 : 0);
 			<button
+				#optionElement
 				type="button"
+				tabindex="-1"
+				role="option"
 				class="fpa-select-option"
 				[class.fpa-select-option-selected]="isSelected(opt.value)"
+				[class.fpa-select-option-active]="activeIndex() === optionIndex"
+				[id]="optionId(optionIndex)"
 				[attr.aria-selected]="isSelected(opt.value)"
+				(mouseenter)="setActiveOption(optionIndex)"
 				(click)="selectOption(opt.value)"
 			>
 				@if (multiple()) {
 					<span class="fpa-select-option-check" aria-hidden="true">
 						@if (isSelected(opt.value)) {
-							✓
+							<fast-svg [name]="IconDefinition.CHECK" [size]="'16'"></fast-svg>
 						}
 					</span>
 				}
 
-				<span>
-					{{ opt.label }}
-				</span>
+				<span>{{ opt.label }}</span>
 			</button>
 		}
 	</div>

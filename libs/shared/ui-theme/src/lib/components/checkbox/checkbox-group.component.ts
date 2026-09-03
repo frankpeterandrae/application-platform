@@ -4,7 +4,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { Component, effect, forwardRef, input, output } from '@angular/core';
+import { Component, forwardRef, input, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { CheckboxConfig } from './checkbox-config.model';
@@ -27,57 +27,28 @@ import { CheckboxConfig } from './checkbox-config.model';
 	templateUrl: './checkbox-group.component.html'
 })
 export class CheckboxGroupComponent implements ControlValueAccessor {
-	public label = input<string>('');
+	public readonly label = input<string>('');
+	public readonly checkboxes = input<CheckboxConfig[]>([]);
 
-	public checkboxes = input<CheckboxConfig[]>([]);
+	public readonly changeCheckbox = output<CheckboxConfig>();
 
-	public changeCheckbox = output<CheckboxConfig>();
+	protected readonly disabled = signal(false);
+	protected readonly value = signal<string[] | null>(null);
 
-	protected disabled = false;
-
-	private _data: CheckboxConfig[] = [];
-	private _value: string[] = [];
-
-	/**
-	 * Sets the value of the checkbox group.
-	 * @param {string[]} val - The new value to set.
-	 */
-	private set value(val: string[]) {
-		this._value = val;
-	}
-
-	/**
-	 * Callback function to propagate changes to the parent form.
-	 */
 	private propagateChange: (value: string[]) => void = () => {
-		/* noop */
+		/* empty */
 	};
-
-	/**
-	 * Callback function to propagate touch events to the parent form.
-	 */
-	protected propagateTouch: (_: string) => void = () => {
-		/* noop */
+	private propagateTouch: () => void = () => {
+		/* empty */
 	};
-
-	/**
-	 * Constructor for the CheckboxGroupComponent.
-	 * Uses the `effect` function to react to changes in the `checkboxes` input signal.
-	 */
-	constructor() {
-		effect(() => {
-			this._data = this.checkboxes();
-			this.value = this.setValueBasedOnCheckboxes(this._data);
-		});
-	}
 
 	/**
 	 * Writes a new value to the component.
 	 * This method is called by the Angular forms API to update the model value.
 	 * @param {string[]} value - The new value to write.
 	 */
-	public writeValue(value: string[]): void {
-		this.value = value;
+	public writeValue(value: string[] | null | undefined): void {
+		this.value.set(value ? [...value] : []);
 	}
 
 	/**
@@ -102,16 +73,17 @@ export class CheckboxGroupComponent implements ControlValueAccessor {
 	 * @param {boolean} isDisabled - A boolean indicating whether the component should be disabled.
 	 */
 	public setDisabledState(isDisabled: boolean): void {
-		this.disabled = isDisabled;
+		this.disabled.set(isDisabled);
 	}
 
-	/**
-	 * Sets the value based on the state of the checkboxes.
-	 * @param {CheckboxConfig[]} checkboxes - An array of CheckboxConfig objects.
-	 * @returns {string[]} - An array of values from the checked checkboxes.
-	 */
-	private setValueBasedOnCheckboxes(checkboxes: CheckboxConfig[]): string[] {
-		return checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+	protected isChecked(value: string): boolean {
+		const currentValue = this.value();
+
+		if (currentValue === null) {
+			return this.checkboxes().some((checkbox) => checkbox.value === value && checkbox.checked);
+		}
+
+		return currentValue.includes(value);
 	}
 
 	/**
@@ -120,11 +92,31 @@ export class CheckboxGroupComponent implements ControlValueAccessor {
 	 * @param {Event} $event - The event object containing the checkbox state and value.
 	 * @param {CheckboxConfig} checkbox - The checkbox configuration object.
 	 */
-	protected onCheckChange($event: Event, checkbox: CheckboxConfig): void {
-		const target = $event.target as HTMLInputElement;
-		this.value = target.checked ? [...this._value, target.value] : this._value.filter((value) => value !== target.value);
+	protected onCheckChange(event: Event, checkbox: CheckboxConfig): void {
+		const target = event.target as HTMLInputElement;
+		const currentValue = this.currentValue();
 
-		this.propagateChange(this._value);
-		this.changeCheckbox.emit({ ...checkbox, checked: target.checked });
+		const nextValue = target.checked ? [...currentValue, checkbox.value] : currentValue.filter((value) => value !== checkbox.value);
+
+		this.value.set(nextValue);
+		this.propagateChange(nextValue);
+
+		this.changeCheckbox.emit({
+			...checkbox,
+			checked: target.checked
+		});
+	}
+
+	private currentValue(): string[] {
+		return (
+			this.value() ??
+			this.checkboxes()
+				.filter((checkbox) => checkbox.checked)
+				.map((checkbox) => checkbox.value)
+		);
+	}
+
+	protected onBlur(): void {
+		this.propagateTouch();
 	}
 }

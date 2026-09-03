@@ -4,17 +4,18 @@
  */
 
 export enum IconDefinition {
-	HOUSE = 'theme/svg/home',
+	ATTENTION = 'theme/svg/attention',
 	BRUSH = 'theme/svg/paintbrush',
-	SEARCH = 'theme/svg/search',
-	NONE = '',
+	CARET_DOWN = 'theme/svg/caret_down',
+	CHECK = 'theme/svg/check',
 	CLOSE = 'theme/svg/close',
 	COMPUTER = 'theme/svg/computer',
-	Z21 = 'theme/svg/z21',
-	GERMAN = 'theme/svg/german',
-	GERMAN_MONOCHROME = 'theme/svg/german_monochrome',
 	ENGLISH = 'theme/svg/english',
 	ENGLISH_MONOCHROME = 'theme/svg/english_monochrome',
-	CARET_DOWN = 'theme/svg/caret_down',
-	ATTENTION = 'theme/svg/attention'
+	GERMAN = 'theme/svg/german',
+	GERMAN_MONOCHROME = 'theme/svg/german_monochrome',
+	HOUSE = 'theme/svg/home',
+	NONE = '',
+	SEARCH = 'theme/svg/search',
+	Z21 = 'theme/svg/z21'
 }
