@@ -166,7 +166,7 @@ describe('AppComponent', () => {
 		const comp = fixture.componentInstance;
 
 		// ensure mockWs captured a handler during component construction
-		expect(typeof mockWs._handler === 'function').toBe(true);
+		expect(typeof mockWs._handler).toBe('function');
 
 		// set selected address so updateFromServer will match
 		comp.store.selectedAddr.set(5);

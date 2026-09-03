@@ -36,12 +36,12 @@ describe('DropdownDemoComponent', () => {
 
 	it('should have options signal defined', () => {
 		expect(component.options).toBeDefined();
-		expect(component.options().length).toBe(4);
+		expect(component.options()).toHaveLength(4);
 	});
 
 	it('should have iconOptions signal defined', () => {
 		expect(component.iconOptions).toBeDefined();
-		expect(component.iconOptions().length).toBe(4);
+		expect(component.iconOptions()).toHaveLength(4);
 	});
 
 	it('should have selectedValue signal initialized to null', () => {

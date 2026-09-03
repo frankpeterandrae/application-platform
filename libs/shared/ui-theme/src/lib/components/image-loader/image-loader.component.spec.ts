@@ -63,7 +63,7 @@ describe('ImageLoaderComponent', () => {
 		expect(loadImageSpy).toHaveBeenCalled();
 	});
 
-	it('should set isLoaded to true on image load', () => {
+	it('should keep isLoaded false while loading image', () => {
 		component['loadImage']();
 		expect(component.isLoaded).toBe(false);
 	});
@@ -90,7 +90,7 @@ describe('ImageLoaderComponent', () => {
 	it('should not set srcset if src is no extension is provided', () => {
 		fixture.componentRef.setInput('src', '/image');
 		const srcSet = component.imageSrcSet();
-		expect(srcSet).toBe(undefined);
+		expect(srcSet).toBeUndefined();
 	});
 
 	it('should not set srcset if src is empty', () => {

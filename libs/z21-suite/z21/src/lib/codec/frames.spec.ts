@@ -98,7 +98,7 @@ describe('frames', () => {
 				const result = encodeLanX('LAN_X_SET_STOP');
 
 				expectValidLanXFrame(result);
-				expect(result.length).toBe(6); // len(2) + header(2) + xHeader(1) + xor(1)
+				expect(result).toHaveLength(6); // len(2) + header(2) + xHeader(1) + xor(1)
 			});
 
 			it('writes correct data length at start', () => {
@@ -200,7 +200,7 @@ describe('frames', () => {
 				const result = encodeLanX('LAN_X_SET_STOP', largeData);
 
 				expectValidLanXFrame(result);
-				expect(result.length).toBe(2 + 2 + 1 + largeData.length + 1);
+				expect(result).toHaveLength(2 + 2 + 1 + largeData.length + 1);
 			});
 
 			it('correctly encodes bytes with value 0x00', () => {

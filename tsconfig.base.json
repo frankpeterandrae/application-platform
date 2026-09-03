@@ -50,7 +50,7 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": false,
-		"types": ["vitest/globals"]
+		"types": ["vitest/globals", "node"]
 	},
 	"exclude": ["node_modules", "tmp"],
 	"include": ["global.d.ts", "tools/**/*", "libs/**/*", "apps/**/*", "scripts/**/*", "vitest.setup.ts", "types/**/*"]

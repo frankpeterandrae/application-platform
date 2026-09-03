@@ -85,34 +85,17 @@ describe('encodeLocoDrive128', () => {
 	});
 
 	describe('address encoding', () => {
-		it('encodes minimum valid address', () => {
-			const result = encodeLocoDrive128(1, 10, 'FWD');
+		it.each([
+			{ name: 'minimum', address: 1, speed: 10, expected: { high: 0x00, low: 0x01 } },
+			{ name: 'maximum', address: 9999, speed: 10, expected: { high: 0xe7, low: 0xf } },
+			{ name: 'short', address: 3, speed: 50, expected: { high: 0x00, low: 0x03 } },
+			{ name: 'long', address: 1000, speed: 50, expected: { high: 0xc3, low: 0xe8 } },
+			{ name: 'boundary 127', address: 127, speed: 50, expected: { high: 0x00, low: 0x7f } },
+			{ name: 'boundary 128', address: 128, speed: 50, expected: { high: 0xc0, low: 0x80 } }
+		])('encodes $name address correctly', ({ address, speed, expected }) => {
+			const result = encodeLocoDrive128(address, speed, 'FWD');
 
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x01 });
-		});
-
-		it('encodes maximum valid address', () => {
-			const result = encodeLocoDrive128(9999, 10, 'FWD');
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(9999);
-			expect(addr).toEqual(expected);
-		});
-
-		it('encodes shortCircuit address correctly', () => {
-			const result = encodeLocoDrive128(3, 50, 'FWD');
-
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x03 });
-		});
-
-		it('encodes long address with high byte correctly', () => {
-			const result = encodeLocoDrive128(1000, 50, 'FWD');
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(1000);
-			expect(addr).toEqual(expected);
+			expect(extractAddress(result)).toEqual(expected);
 		});
 
 		it('masks address high byte to 6 bits', () => {
@@ -120,21 +103,6 @@ describe('encodeLocoDrive128', () => {
 
 			const addrHigh = extractAddress(result).high;
 			expect(addrHigh).toBeLessThanOrEqual(0xe7);
-		});
-
-		it('handles boundary case with address 127', () => {
-			const result = encodeLocoDrive128(127, 50, 'FWD');
-
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x7f }); // 127 is still a shortCircuit address
-		});
-
-		it('handles boundary case with address 128', () => {
-			const result = encodeLocoDrive128(128, 50, 'FWD');
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(128);
-			expect(addr).toEqual(expected);
 		});
 	});
 

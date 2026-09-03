@@ -112,7 +112,7 @@ describe('Z21Udp', () => {
 
 			services.udp.start();
 
-			expect(services.socket.bind.mock.calls.length).toBe(bindCallCount);
+			expect(services.socket.bind.mock.calls).toHaveLength(bindCallCount);
 		});
 	});
 

@@ -23,7 +23,7 @@ describe('track-power encoding', () => {
 	// Helper function to verify frame length
 	function expectFrameLength(buffer: Buffer, expectedLength: number): void {
 		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
-		expect(buffer.length).toBe(expectedLength);
+		expect(buffer).toHaveLength(expectedLength);
 	}
 
 	describe('encodeLanXSetTrackPowerOff', () => {

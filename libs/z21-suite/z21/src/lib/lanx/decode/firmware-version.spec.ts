@@ -84,7 +84,7 @@ describe('decodeLanXFirmwareVersionPayload', () => {
 			const event = extractFirmwareVersion(makePayload(0x12, 0x34, 0x56, 0x78));
 
 			expectFirmwareVersion(event, 34, 56);
-			expect(event.payload.raw.length).toBe(4);
+			expect(event.payload.raw).toHaveLength(4);
 		});
 	});
 
