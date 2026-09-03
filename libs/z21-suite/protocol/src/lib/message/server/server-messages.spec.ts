@@ -121,7 +121,7 @@ describe('Server Message Types', () => {
 					estop: false
 				}
 			};
-			expect(Object.keys(msg.payload.fns).length).toBe(4);
+			expect(Object.keys(msg.payload.fns)).toHaveLength(4);
 		});
 	});
 
@@ -219,8 +219,8 @@ describe('Server Message Types', () => {
 				}
 			};
 			expect(msg.payload.rawHex).toBe('0x070040006101');
-			expect(msg.payload.datasets.length).toBe(1);
-			expect(msg.payload.events.length).toBe(1);
+			expect(msg.payload.datasets).toHaveLength(1);
+			expect(msg.payload.events).toHaveLength(1);
 		});
 	});
 

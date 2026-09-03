@@ -234,8 +234,8 @@ describe('server e2e', () => {
 		}, 20000);
 	});
 
-	describe('', () => {
-		it('sendsends LOCO_DRIVE to Z21 when UI sends loco.command.drive', async () => {
+	describe('UI commands to Z21', () => {
+		it('sends LOCO_DRIVE to Z21 when UI sends loco.command.drive', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 			const command: LocoDrive = {
@@ -382,7 +382,7 @@ describe('server e2e', () => {
 
 			// Before first WS client connects, session must be inactive => no UDP traffic
 			await delay(200);
-			expect(z21.rx.length).toBe(0);
+			expect(z21.rx).toHaveLength(0);
 
 			const ws = await connectWs(base.httpPort);
 

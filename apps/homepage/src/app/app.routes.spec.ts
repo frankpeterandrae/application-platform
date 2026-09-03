@@ -15,7 +15,7 @@ describe('appRoutes', () => {
 	it('should be of type Route[]', () => {
 		expect(appRoutes).toBeDefined();
 		appRoutes.forEach((route) => {
-			expect(typeof route === 'object').toBe(true);
+			expect(typeof route).toBe('object');
 		});
 	});
 

@@ -11,7 +11,7 @@ describe('encodeXBusLanFrame', () => {
 	// Helper function to verify frame structure (similar to helper functions in bootstrap.spec.ts)
 	function expectValidFrameStructure(buffer: Buffer, expectedLength: number, expectedHeader: number): void {
 		expect(Buffer.isBuffer(buffer)).toBe(true);
-		expect(buffer.length).toBe(expectedLength);
+		expect(buffer).toHaveLength(expectedLength);
 		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
 		expect(buffer.readUInt16LE(2)).toBe(expectedHeader);
 	}
@@ -54,7 +54,7 @@ describe('encodeXBusLanFrame', () => {
 			const bufWithEmpty = encodeXBusLanFrame(header, Buffer.alloc(0));
 			const bufWithout = encodeXBusLanFrame(header);
 
-			expect(bufWithEmpty.length).toBe(4);
+			expect(bufWithEmpty).toHaveLength(4);
 			expect(bufWithEmpty.equals(bufWithout)).toBe(true);
 		});
 

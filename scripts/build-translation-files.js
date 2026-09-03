@@ -75,7 +75,7 @@ filePaths.forEach((rawPath) => {
 function jsonToPathObject(obj, currentPath = '') {
 	const result = {};
 	for (const key in obj) {
-		if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+		if (!Object.hasOwn(obj, key)) continue;
 		const newPath = currentPath ? `${currentPath}.${key}` : key;
 		if (typeof obj[key] === 'object' && obj[key] !== null) {
 			result[key] = jsonToPathObject(obj[key], newPath);

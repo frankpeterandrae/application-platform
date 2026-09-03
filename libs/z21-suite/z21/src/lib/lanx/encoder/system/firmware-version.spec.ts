@@ -22,7 +22,7 @@ describe('encodeLanXGetFirmwareVersion', () => {
 	// Helper function to verify frame length
 	function expectFrameLength(buffer: Buffer, expectedLength: number): void {
 		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
-		expect(buffer.length).toBe(expectedLength);
+		expect(buffer).toHaveLength(expectedLength);
 	}
 
 	describe('frame structure', () => {
@@ -81,7 +81,7 @@ describe('encodeLanXGetFirmwareVersion', () => {
 			const result = encodeLanXGetFirmwareVersion();
 
 			// Frame should be: len(2) + header(2) + xHeader(1) + xBusCmd(1) + xor(1) = 7 bytes
-			expect(result.length).toBe(7);
+			expect(result).toHaveLength(7);
 		});
 	});
 });

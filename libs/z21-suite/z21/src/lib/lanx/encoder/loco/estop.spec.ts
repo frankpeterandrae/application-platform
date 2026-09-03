@@ -6,8 +6,6 @@
 import { expectValidXor } from '@application-platform/shared-node-test';
 import { LAN_X_COMMANDS, Z21LanHeader } from '@application-platform/z21-shared';
 
-import { AddessByteMask, FULL_BYTE_MASK } from '../../../constants';
-
 import { encodeLanXSetLocoEStop } from './estop';
 
 describe('encodeLanXSetLocoEStop', () => {
@@ -25,20 +23,10 @@ describe('encodeLanXSetLocoEStop', () => {
 		return { high: buffer[5], low: buffer[6] };
 	}
 
-	// Helper function to calculate expected address bytes
-	function calculateAddressBytes(address: number): { high: number; low: number } {
-		if (address <= 127) {
-			return { high: 0x00, low: address };
-		}
-		const high = 0xc0 | ((address >> 8) & AddessByteMask.MSB);
-		const low = address & FULL_BYTE_MASK;
-		return { high, low };
-	}
-
 	// Helper function to verify frame length
 	function expectFrameLength(buffer: Buffer, expectedLength: number): void {
 		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
-		expect(buffer.length).toBe(expectedLength);
+		expect(buffer).toHaveLength(expectedLength);
 	}
 
 	describe('frame structure', () => {
@@ -74,49 +62,17 @@ describe('encodeLanXSetLocoEStop', () => {
 	});
 
 	describe('address encoding', () => {
-		it('encodes minimum address correctly', () => {
-			const result = encodeLanXSetLocoEStop(1);
+		it.each([
+			{ name: 'minimum', address: 1, expected: { high: 0x00, low: 0x01 } },
+			{ name: 'maximum', address: 9999, expected: { high: 0xe7, low: 0xf } },
+			{ name: 'short', address: 50, expected: { high: 0x00, low: 0x32 } },
+			{ name: 'long', address: 500, expected: { high: 0xc1, low: 0xf4 } },
+			{ name: 'boundary 127', address: 127, expected: { high: 0x00, low: 0x7f } },
+			{ name: 'boundary 128', address: 128, expected: { high: 0xc0, low: 0x80 } }
+		])('encodes $name address correctly', ({ address, expected }) => {
+			const result = encodeLanXSetLocoEStop(address);
 
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x01 });
-		});
-
-		it('encodes maximum address correctly', () => {
-			const result = encodeLanXSetLocoEStop(9999);
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(9999);
-			expect(addr).toEqual(expected);
-		});
-
-		it('encodes shortCircuit address correctly', () => {
-			const result = encodeLanXSetLocoEStop(50);
-
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x32 });
-		});
-
-		it('encodes long address with prefix correctly', () => {
-			const result = encodeLanXSetLocoEStop(500);
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(500);
-			expect(addr).toEqual(expected);
-		});
-
-		it('handles boundary case with address 127', () => {
-			const result = encodeLanXSetLocoEStop(127);
-
-			const addr = extractAddress(result);
-			expect(addr).toEqual({ high: 0x00, low: 0x7f }); // 127 is still a shortCircuit address
-		});
-
-		it('handles boundary case with address 128', () => {
-			const result = encodeLanXSetLocoEStop(128);
-
-			const addr = extractAddress(result);
-			const expected = calculateAddressBytes(128);
-			expect(addr).toEqual(expected);
+			expect(extractAddress(result)).toEqual(expected);
 		});
 	});
 

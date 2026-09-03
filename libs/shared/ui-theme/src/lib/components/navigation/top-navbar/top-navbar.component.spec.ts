@@ -59,7 +59,7 @@ describe('TopnavbarComponent', () => {
 		fixture.componentRef.setInput('menuItems', []);
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems.length).toBe(0);
+		expect(menuItems).toHaveLength(0);
 	});
 
 	it('should toggle dropdown visibility', () => {
@@ -97,9 +97,9 @@ describe('TopnavbarComponent', () => {
 		fixture.detectChanges();
 
 		const menuItems = component.menuItems();
-		expect(menuItems.length).toBe(1);
+		expect(menuItems).toHaveLength(1);
 		expect(menuItems[0].children).toBeDefined();
-		expect(menuItems[0].children?.length).toBe(2);
+		expect(menuItems[0].children).toHaveLength(2);
 		expect(menuItems[0].children?.[0].route).toBe('/parent/child1');
 		expect(menuItems[0].children?.[1].route).toBe('/parent/child2');
 	});

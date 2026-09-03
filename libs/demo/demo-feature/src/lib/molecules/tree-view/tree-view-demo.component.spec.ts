@@ -153,7 +153,7 @@ describe('TreeViewDemoComponent', () => {
 
 		it('should handle null content selection', () => {
 			component.selectedItem(null);
-			expect(component.selectedItemContent()).toBe(null);
+			expect(component.selectedItemContent()).toBeNull();
 		});
 
 		it('should handle undefined content selection', () => {

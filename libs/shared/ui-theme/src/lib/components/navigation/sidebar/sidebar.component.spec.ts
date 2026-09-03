@@ -61,7 +61,7 @@ describe('SidebarComponent', () => {
 		]);
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems.length).toBe(2);
+		expect(menuItems).toHaveLength(2);
 		expect(menuItems[0].textContent).toContain('Dashboard');
 		expect(menuItems[1].textContent).toContain('Settings');
 	});
@@ -70,13 +70,13 @@ describe('SidebarComponent', () => {
 		fixture.componentRef.setInput('menuItems', []);
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems.length).toBe(0);
+		expect(menuItems).toHaveLength(0);
 	});
 
 	it('should handle null menu items gracefully', () => {
 		fixture.componentRef.setInput('menuItems', null);
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems.length).toBe(0);
+		expect(menuItems).toHaveLength(0);
 	});
 });

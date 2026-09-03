@@ -21,7 +21,7 @@ describe('encodeLanXSetStop', () => {
 	// Helper function to verify frame length
 	function expectFrameLength(buffer: Buffer, expectedLength: number): void {
 		expect(buffer.readUInt16LE(0)).toBe(expectedLength);
-		expect(buffer.length).toBe(expectedLength);
+		expect(buffer).toHaveLength(expectedLength);
 	}
 
 	// Helper function to verify complete frame as hex string
@@ -91,7 +91,7 @@ describe('encodeLanXSetStop', () => {
 			const result = encodeLanXSetStop();
 
 			// Frame should be: len(2) + header(2) + xHeader(1) + xor(1) = 6 bytes
-			expect(result.length).toBe(6);
+			expect(result).toHaveLength(6);
 		});
 	});
 

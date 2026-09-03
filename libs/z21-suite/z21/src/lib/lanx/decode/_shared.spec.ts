@@ -89,24 +89,14 @@ describe('payload decode helpers', () => {
 
 	describe('decodeSpeed', () => {
 		describe('speed step detection', () => {
-			it('decodes 14 speed steps when step code is 0', () => {
-				const result = decodeSpeed(0b00, 0b00000010);
+			it.each([
+				{ stepCode: 0b00, speedSteps: 14 },
+				{ stepCode: 0b10, speedSteps: 28 },
+				{ stepCode: 0b100, speedSteps: 128 }
+			])('decodes $speedSteps speed steps', ({ stepCode, speedSteps }) => {
+				const result = decodeSpeed(stepCode, 0b00000010);
 
-				expect(result.speedSteps).toBe(14);
-				expect(result.speed).toBe(1);
-			});
-
-			it('decodes 28 speed steps when step code is 2', () => {
-				const result = decodeSpeed(0b10, 0b00000010);
-
-				expect(result.speedSteps).toBe(28);
-				expect(result.speed).toBe(1);
-			});
-
-			it('decodes 128 speed steps when step code is 4', () => {
-				const result = decodeSpeed(0b100, 0b00000010);
-
-				expect(result.speedSteps).toBe(128);
+				expect(result.speedSteps).toBe(speedSteps);
 				expect(result.speed).toBe(1);
 			});
 		});

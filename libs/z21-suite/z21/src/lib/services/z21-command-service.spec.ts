@@ -225,24 +225,12 @@ describe('Z21CommandService', () => {
 			expect(Buffer.isBuffer(buffer)).toBe(true);
 		});
 
-		it('encodes function OFF type', () => {
-			services.service.setLocoFunction(100, 5, 0b00);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = services.udp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBeGreaterThan(0);
-		});
-
-		it('encodes function ON type', () => {
-			services.service.setLocoFunction(100, 10, 0b01);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
-			const buffer = services.udp.sendRaw.mock.calls[0][0];
-			expect(buffer.length).toBeGreaterThan(0);
-		});
-
-		it('encodes function TOGGLE type', () => {
-			services.service.setLocoFunction(100, 15, 0b10);
+		it.each([
+			{ name: 'OFF', functionNumber: 5, type: 0b00 },
+			{ name: 'ON', functionNumber: 10, type: 0b01 },
+			{ name: 'TOGGLE', functionNumber: 15, type: 0b10 }
+		])('encodes function $name type', ({ functionNumber, type }) => {
+			services.service.setLocoFunction(100, functionNumber, type);
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 			const buffer = services.udp.sendRaw.mock.calls[0][0];
@@ -372,22 +360,14 @@ describe('Z21CommandService', () => {
 			expect(buffer1).not.toEqual(buffer2);
 		});
 
-		it('handles minimum accessory address', () => {
-			services.service.getTurnoutInfo(0);
+		it.each([
+			{ name: 'handles minimum accessory address', adresse: 0, expected: 1 },
+			{ name: 'handles maximum accessory address', adresse: 16383, expected: 1 },
+			{ name: 'handles mid-range accessory address', adresse: 500, expected: 1 }
+		])('$name', ({ adresse, expected }) => {
+			services.service.getTurnoutInfo(adresse);
 
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
-		});
-
-		it('handles maximum accessory address', () => {
-			services.service.getTurnoutInfo(16383);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
-		});
-
-		it('handles mid-range accessory address', () => {
-			services.service.getTurnoutInfo(500);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(expected);
 		});
 
 		it('sends buffer with non-zero length', () => {
@@ -482,6 +462,15 @@ describe('Z21CommandService', () => {
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
+		it.each([
+			{ name: 'minimum', address: 0 },
+			{ name: 'maximum', address: 16383 }
+		])('handles $name accessory address', ({ address }) => {
+			services.service.setTurnout(address, 0);
+
+			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
+		});
+
 		it('respects custom queue flag', () => {
 			services.service.setTurnout(100, 0, { queue: false });
 
@@ -511,18 +500,6 @@ describe('Z21CommandService', () => {
 			vi.advanceTimersByTime(200);
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(4);
-		});
-
-		it('handles minimum accessory address', () => {
-			services.service.setTurnout(0, 0);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
-		});
-
-		it('handles maximum accessory address', () => {
-			services.service.setTurnout(16383, 0);
-
-			expect(services.udp.sendRaw).toHaveBeenCalledTimes(1);
 		});
 
 		it('sends both activation and deactivation for complete cycle', () => {

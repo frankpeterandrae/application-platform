@@ -120,74 +120,55 @@ describe('createStaticFileServer', () => {
 	});
 
 	describe('content type handling', () => {
-		it('serves JavaScript file with correct content type', () => {
-			mockReq = makeMockRequest({ url: '/app.js' });
+		it.each([
+			{
+				name: 'JavaScript',
+				url: '/app.js',
+				content: 'console.log("test")',
+				contentType: 'application/javascript; charset=utf-8'
+			},
+			{
+				name: 'CSS',
+				url: '/styles.css',
+				content: 'body { margin: 0; }',
+				contentType: 'text/css; charset=utf-8'
+			},
+			{
+				name: 'JSON',
+				url: '/data.json',
+				content: '{"key":"value"}',
+				contentType: 'application/json; charset=utf-8'
+			},
+			{
+				name: 'other',
+				url: '/image.png',
+				content: 'binary data',
+				contentType: 'application/octet-stream'
+			},
+			{
+				name: 'uppercase',
+				url: '/style.CSS',
+				content: 'body { margin: 0; }',
+				contentType: 'application/octet-stream'
+			},
+			{
+				name: 'without extension',
+				url: '/LICENSE',
+				content: 'MIT License',
+				contentType: 'application/octet-stream'
+			}
+		])('serves $name file with correct content type', ({ url, content, contentType }) => {
+			mockReq = makeMockRequest({ url });
 			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('console.log("test")');
+			const fileContent = Buffer.from(content);
 			mockFileRead(fileContent);
 
 			handler(mockReq as any, mockRes as any);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
+			expect(mockRes.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': contentType
+			});
 			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('serves CSS file with correct content type', () => {
-			mockReq = makeMockRequest({ url: '/styles.css' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('body { margin: 0; }');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/css; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('serves JSON file with correct content type', () => {
-			mockReq = makeMockRequest({ url: '/data.json' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('{"key":"value"}');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/json; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('serves other files with octet-stream content type', () => {
-			mockReq = makeMockRequest({ url: '/image.png' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('binary data');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/octet-stream' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('serves files with uppercase extensions', () => {
-			mockReq = makeMockRequest({ url: '/style.CSS' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('body { margin: 0; }');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/octet-stream' });
-		});
-
-		it('serves files without extension with octet-stream', () => {
-			mockReq = makeMockRequest({ url: '/LICENSE' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('MIT License');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/octet-stream' });
 		});
 	});
 
