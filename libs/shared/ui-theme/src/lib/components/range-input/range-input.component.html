@@ -3,5 +3,24 @@
   ~ All rights reserved.
   -->
 
-<theme-input class="fpa-grid-col-start-8 fpa-grid-col-end-2" [id]="'useFrom'" [label]="'form'" [darkText]="true" />
-<theme-input class="fpa-grid-col-start-11 fpa-grid-col-end-2" [id]="'to'" [label]="'to'" [darkText]="true" />
+<theme-input
+	class="fpa-grid-col-start-8 fpa-grid-col-end-2"
+	id="useFrom"
+	[label]="'from'"
+	[darkText]="true"
+	[disabled]="formDisabled()"
+	[ngModel]="value().from"
+	(valueChange)="onFromChange($event)"
+	(blur)="onBlur()"
+/>
+
+<theme-input
+	class="fpa-grid-col-start-11 fpa-grid-col-end-2"
+	id="to"
+	[label]="'to'"
+	[darkText]="true"
+	[disabled]="formDisabled()"
+	[ngModel]="value().to"
+	(valueChange)="onToChange($event)"
+	(blur)="onBlur()"
+/>

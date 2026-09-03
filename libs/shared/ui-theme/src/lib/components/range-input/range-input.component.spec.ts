@@ -31,20 +31,20 @@ describe('RangeInputComponent', () => {
 	it('writeValue updates value', () => {
 		const value = { from: '1', to: '10' };
 		component.writeValue(value);
-		expect(component.value).toEqual(value);
+		expect(component.value()).toEqual(value);
 	});
 
 	it('registerOnChange stores callback', () => {
 		const onChange = vi.fn();
 		component.registerOnChange(onChange);
-		component.onChange({ from: '2', to: '3' });
+		component['onChange']({ from: '2', to: '3' });
 		expect(onChange).toHaveBeenCalledWith({ from: '2', to: '3' });
 	});
 
 	it('registerOnTouched stores callback', () => {
 		const onTouched = vi.fn();
 		component.registerOnTouched(onTouched);
-		component.onTouched();
+		component['onTouched']();
 		expect(onTouched).toHaveBeenCalled();
 	});
 });

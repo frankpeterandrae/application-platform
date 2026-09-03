@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import type { ElementRef } from '@angular/core';
 import { Component, forwardRef, input, output, signal, viewChild } from '@angular/core';
 import type { ControlValueAccessor } from '@angular/forms';
-import { FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { FloatingLabelDirective } from '../../directives/floating-lable';
@@ -19,7 +19,7 @@ import { IconDefinition } from '../../enums';
  */
 @Component({
 	selector: 'theme-input',
-	imports: [CommonModule, FastSvgComponent, FloatingLabelDirective, FormsModule, ReactiveFormsModule],
+	imports: [CommonModule, FastSvgComponent, FloatingLabelDirective],
 	templateUrl: './input.component.html',
 	styleUrls: ['./input.component.scss'],
 	providers: [
@@ -32,37 +32,33 @@ import { IconDefinition } from '../../enums';
 })
 export class InputComponent implements ControlValueAccessor {
 	/** Optional id for the input element. */
-	public id = input<string>('');
+	public readonly id = input<string>('');
 	/** Reference to the input element. */
-	public readonly inputElement = viewChild.required<ElementRef>('input');
-	public label = input.required<string>();
-	public type = input<string>('text');
-	public placeholder = input<string>('');
-	public icon = input<IconDefinition>(IconDefinition.NONE);
-	public isDynamic = input<boolean>(true);
+	public readonly inputElement = viewChild.required<ElementRef<HTMLInputElement>>('input');
+	public readonly label = input.required<string>();
+	public readonly type = input<string>('text');
+	public readonly placeholder = input<string>('');
+	public readonly icon = input<IconDefinition>(IconDefinition.NONE);
+	public readonly isDynamic = input<boolean>(true);
 	/** When true, applies dark text color for light backgrounds. */
-	public darkText = input<boolean>(false);
-	public disabled = input<boolean>(false);
+	public readonly darkText = input<boolean>(false);
+	public readonly disabled = input<boolean>(false);
 
 	// Define output using the `output` function
-	public valueChange = output<string>();
-	public inputFocused = false;
+	public readonly valueChange = output<string>();
 
 	public readonly value = signal('');
-	public error?: string;
-
 	public readonly formDisabled = signal(false);
 
-	/**
-	 * Callback function to handle changes in the input value.
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onChange: (value: string) => void = () => {};
-	/**
-	 * Callback function to handle touch events on the input.
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onTouched: () => void = () => {};
+	public inputFocused = false;
+	public error?: string;
+
+	private onChange: (value: string) => void = () => {
+		/* empty */
+	};
+	private onTouched: () => void = () => {
+		/* empty */
+	};
 
 	/**
 	 * Handles the input event and updates the component's value.
@@ -70,6 +66,7 @@ export class InputComponent implements ControlValueAccessor {
 	 */
 	public onInput(event: Event): void {
 		const input = event.target as HTMLInputElement;
+
 		this.value.set(input.value);
 		this.onChange(input.value);
 		this.valueChange.emit(input.value);
@@ -99,14 +96,6 @@ export class InputComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Handles the change event on the input field.
-	 * @param {string} $event - The change event.
-	 */
-	public onChangeValue($event: string): void {
-		this.value.set($event);
-	}
-
-	/**
 	 * Registers a callback function to be called when the input value changes.
 	 * @internal
 	 * @param {any} fn - The callback function.
@@ -129,7 +118,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @internal
 	 * @param {string} value - The new value.
 	 */
-	public writeValue(value: string): void {
+	public writeValue(value: string | null | undefined): void {
 		this.value.set(value ?? '');
 	}
 

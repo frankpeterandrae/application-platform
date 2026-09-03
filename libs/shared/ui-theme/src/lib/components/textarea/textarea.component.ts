@@ -49,13 +49,15 @@ export class TextareaComponent implements ControlValueAccessor {
 	/**
 	 * Callback function to handle changes in the textarea value.
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onChange: (value: string) => void = () => {};
+	private onChange: (value: string) => void = () => {
+		/* empty */
+	};
 	/**
 	 * Callback function to handle touch events on the textarea.
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onTouched: () => void = () => {};
+	private onTouched: () => void = () => {
+		/* empty */
+	};
 
 	/**
 	 * Handles the textarea event and updates the component's value.
@@ -90,14 +92,6 @@ export class TextareaComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Handles the change event on the textarea field.
-	 * @param {string} $event - The change event.
-	 */
-	public onChangeValue($event: string): void {
-		this.value.set($event);
-	}
-
-	/**
 	 * Registers a callback function to be called when the textarea value changes.
 	 * @internal
 	 * @param {(value: string) => void} fn - The callback function.
@@ -120,7 +114,7 @@ export class TextareaComponent implements ControlValueAccessor {
 	 * @internal
 	 * @param {string} value - The new value.
 	 */
-	public writeValue(value: string): void {
+	public writeValue(value: string | null | undefined): void {
 		this.value.set(value ?? '');
 	}
 

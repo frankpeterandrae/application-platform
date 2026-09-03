@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import { Component, forwardRef, input, output } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
+import { Component, forwardRef, input, output, signal } from '@angular/core';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { InputComponent } from '../input/input.component';
 
@@ -19,7 +19,7 @@ export interface RangeInput {
  */
 @Component({
 	selector: 'theme-range-input',
-	imports: [InputComponent, ReactiveFormsModule],
+	imports: [InputComponent, FormsModule],
 	templateUrl: './range-input.component.html',
 	providers: [
 		{
@@ -30,32 +30,38 @@ export interface RangeInput {
 	]
 })
 export class RangeInputComponent implements ControlValueAccessor {
-	public label = input.required<string>();
+	public readonly label = input.required<string>();
 
-	// Define output using the `output` function
-	public valueChange = output<RangeInput>();
+	public readonly valueChange = output<RangeInput>();
 
-	public inputFocused = false;
-	public value: RangeInput = { from: '', to: '' };
+	public readonly value = signal<RangeInput>({
+		from: '',
+		to: ''
+	});
+
+	public readonly formDisabled = signal(false);
 
 	/**
 	 * Callback function to handle changes in the input value.
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onChange: (value: RangeInput) => void = () => {};
+	private onChange: (value: RangeInput) => void = () => {};
 	/**
 	 * Callback function to handle touch events on the input.
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	public onTouched: () => void = () => {};
+	private onTouched: () => void = () => {};
 
 	/**
 	 * Writes a new value to the input field.
 	 * @internal
 	 * @param {RangeInput} value - The new value.
 	 */
-	public writeValue(value: RangeInput): void {
-		this.value = value;
+	public writeValue(value: RangeInput | null | undefined): void {
+		this.value.set({
+			from: value?.from ?? '',
+			to: value?.to ?? ''
+		});
 	}
 
 	/**
@@ -74,5 +80,37 @@ export class RangeInputComponent implements ControlValueAccessor {
 	 */
 	public registerOnTouched(fn: () => void): void {
 		this.onTouched = fn;
+	}
+
+	/**
+	 * Sets the disabled state of the input field.
+	 * @param {boolean} isDisabled - Whether the input should be disabled.
+	 */
+	public setDisabledState(isDisabled: boolean): void {
+		this.formDisabled.set(isDisabled);
+	}
+
+	protected onFromChange(from: string): void {
+		this.updateValue({
+			...this.value(),
+			from
+		});
+	}
+
+	protected onToChange(to: string): void {
+		this.updateValue({
+			...this.value(),
+			to
+		});
+	}
+
+	protected onBlur(): void {
+		this.onTouched();
+	}
+
+	private updateValue(value: RangeInput): void {
+		this.value.set(value);
+		this.onChange(value);
+		this.valueChange.emit(value);
 	}
 }

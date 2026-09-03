@@ -28,6 +28,16 @@ describe('TextareaComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
+	it('should render a value written by the form without user interaction', () => {
+		component.writeValue('written value');
+
+		fixture.detectChanges();
+
+		const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+
+		expect(textarea.value).toBe('written value');
+	});
+
 	it('onInput updates value, calls onChange, and emits valueChange', () => {
 		const onChange = vi.fn();
 		const emitSpy = vi.spyOn(component.valueChange, 'emit');
