@@ -5,7 +5,7 @@
 
 import type * as http from 'node:http';
 
-import { WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
+import { RawData, WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
 
 import type { AliveWebsocket, ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
 
@@ -54,7 +54,7 @@ export class WsServer {
 				onConnect(ws);
 			}
 
-			ws.on('message', (data) => {
+			ws.on('message', (data: RawData) => {
 				onMessage(data.toString(), ws);
 			});
 
