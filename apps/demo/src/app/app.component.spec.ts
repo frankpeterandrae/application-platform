@@ -64,7 +64,7 @@ describe('AppComponent', () => {
 		fixture.detectChanges();
 		const opts = app.opts();
 		expect(Array.isArray(opts)).toBeTruthy();
-		expect(opts.length).toEqual(2);
+		expect(opts).toHaveLength(2);
 		expect(opts[0].value).toEqual('homepage');
 		expect(opts[1].value).toEqual('z21');
 	});
@@ -83,7 +83,7 @@ describe('AppComponent', () => {
 		document.querySelectorAll('#homepage-theme').forEach((n) => n.remove());
 		app.setTheme('homepage');
 		app.setTheme('z21');
-		expect(document.querySelectorAll('#homepage-theme').length).toEqual(1);
+		expect(document.querySelectorAll('#homepage-theme')).toHaveLength(1);
 		const link = document.getElementById('homepage-theme') as HTMLLinkElement | null;
 		expect(link?.getAttribute('href')).toEqual('z21-theme.css');
 	});

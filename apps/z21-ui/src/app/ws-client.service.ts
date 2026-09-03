@@ -78,7 +78,7 @@ export class WsClientService {
 	 * @param msg - The ClientToServer message to send
 	 */
 	public send(msg: ClientToServer): void {
-		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+		if (this.ws?.readyState !== WebSocket.OPEN) {
 			return;
 		}
 		this.ws.send(JSON.stringify(msg));
