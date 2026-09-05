@@ -6,12 +6,12 @@
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { environment } from '@application-platform/config';
 import { LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { MockedLanguageToggleComponent } from '@application-platform/testing';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { environment } from '../environments/environment';
 import { setupTestingModule } from '../test-setup';
 
 import { AppComponent } from './app.component';

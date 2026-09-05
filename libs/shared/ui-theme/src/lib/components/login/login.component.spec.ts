@@ -5,6 +5,7 @@
 
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
+import { APP_ENVIRONMENT } from '@application-platform/shared-ui';
 import { EMPTY } from 'rxjs';
 
 import { setupTestingModule } from '../../../test-setup';
@@ -17,7 +18,16 @@ describe('LoginComponent', () => {
 
 	beforeEach(async () => {
 		await setupTestingModule({
-			imports: [LoginComponent]
+			imports: [LoginComponent],
+			providers: [
+				{
+					provide: APP_ENVIRONMENT,
+					useValue: {
+						production: false,
+						baseUrl: 'http://localhost'
+					}
+				}
+			]
 		});
 
 		fixture = TestBed.createComponent(LoginComponent);

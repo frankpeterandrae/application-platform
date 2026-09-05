@@ -8,9 +8,10 @@
  */
 import type { Type } from '@angular/core';
 import type { Route } from '@angular/router';
-import { environment } from '@application-platform/config';
 import { EnvGuard, Scopes } from '@application-platform/shared-ui';
 import { provideTranslocoScope } from '@jsverse/transloco';
+
+import { environment } from '../environments/environment';
 
 /**
  * Development-specific routes.

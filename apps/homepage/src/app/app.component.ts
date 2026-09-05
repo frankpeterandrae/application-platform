@@ -7,11 +7,13 @@ import type { OnInit } from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
-import { BUILD_DATE, environment } from '@application-platform/config';
 import type { MenuItem } from '@application-platform/shared/ui-theme';
 import { FooterComponent, HeaderComponent, IconDefinition, LanguageToggleComponent } from '@application-platform/shared/ui-theme';
 import { Logger } from '@application-platform/shared-ui';
 import { translateSignal } from '@jsverse/transloco';
+
+import { BUILD_DATE } from '../config/build-date';
+import { environment } from '../environments/environment';
 
 import { i18nTextModules } from './i18n/i18n';
 

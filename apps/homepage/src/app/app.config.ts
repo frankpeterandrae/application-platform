@@ -9,9 +9,11 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { translocoConfigFactory } from '@application-platform/config';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/shared-ui';
+import { APP_ENVIRONMENT, ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/shared-ui';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
+
+import { environment } from '../environments/environment';
 
 import { appRoutes } from './app.routes';
 
@@ -48,7 +50,7 @@ export const appConfig: ApplicationConfig = {
 			 * @param {string} path - The path/name of the SVG file.
 			 * @returns {string} The URL to the SVG file.
 			 */
-			url: (path: string) => {
+			url: (path: string): string => {
 				// If path contains a slash, it's already a library-specific path (e.g., 'libA/icon-name')
 				// Otherwise, assume default svg assets location (e.g., 'icon-name' -> 'svg/icon-name')
 				return path.includes('/') ? `/assets/${path}.svg` : `/assets/svg/${path}.svg`;
@@ -64,6 +66,10 @@ export const appConfig: ApplicationConfig = {
 		{
 			provide: ScopedTranslationServiceInterface,
 			useClass: ScopedTranslationService
+		},
+		{
+			provide: APP_ENVIRONMENT,
+			useValue: environment
 		}
 	]
 };

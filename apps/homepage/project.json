@@ -65,8 +65,8 @@
 					"baseHref": "/",
 					"fileReplacements": [
 						{
-							"replace": "libs/homepage/config/src/lib/config/environments/environment.ts",
-							"with": "libs/homepage/config/src/lib/config/environments/environment.prod.ts"
+							"replace": "apps/homepage/src/environments/environment.ts",
+							"with": "apps/homepage/src/environments/environment.prod.ts"
 						}
 					],
 					"budgets": [
