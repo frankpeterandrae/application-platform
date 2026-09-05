@@ -5,7 +5,7 @@
 
 import path from 'node:path';
 
-import { openDb } from '../../libs/data-db/src';
+import { openDb } from '../../libs/shared/data-db/src';
 
 const db = openDb(path.join(process.cwd(), 'data', 'stream-overlay.db'));
 

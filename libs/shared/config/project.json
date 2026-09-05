@@ -1,7 +1,7 @@
 {
 	"name": "config",
 	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "libs/homepage/config/src",
+	"sourceRoot": "libs/shared/config/src",
 	"prefix": "lib",
 	"projectType": "library",
 	"tags": ["type:util", "scope:shared", "platform:agnostic"],
@@ -9,9 +9,9 @@
 		"test": {
 			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/homepage/config/tsconfig.spec.json",
-				"vitestConfig": "libs/homepage/config/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/homepage/config/coverage",
+				"tsConfig": "libs/shared/config/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/config/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/shared/config/coverage",
 				"passWithNoTests": true
 			}
 		},

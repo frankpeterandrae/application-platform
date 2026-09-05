@@ -7,11 +7,13 @@ import { provideHttpClient, withXhr } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { translocoConfigFactory } from '@application-platform/config';
+import { createTranslocoConfig } from '@application-platform/config';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import { ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/shared-ui';
+import { APP_ENVIRONMENT, ScopedTranslationService, TranslocoHttpLoader } from '@application-platform/shared-ui';
 import { provideTransloco } from '@jsverse/transloco';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
+
+import { environment } from '../environments/environment';
 
 import { appRoutes } from './app.routes';
 
@@ -57,12 +59,16 @@ export const appConfig: ApplicationConfig = {
 		 * Registers the Transloco configuration and translation loader.
 		 */
 		provideTransloco({
-			config: translocoConfigFactory,
+			config: createTranslocoConfig(environment.production),
 			loader: TranslocoHttpLoader
 		}),
 		{
 			provide: ScopedTranslationServiceInterface,
 			useClass: ScopedTranslationService
+		},
+		{
+			provide: APP_ENVIRONMENT,
+			useValue: environment
 		}
 	]
 };

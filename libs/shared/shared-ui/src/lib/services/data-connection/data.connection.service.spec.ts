@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
+import { APP_ENVIRONMENT } from '../../config/app-environment';
 
 import { DataConnectionService } from './data.connection.service';
 
@@ -21,7 +22,17 @@ describe('DataConnectionService', () => {
 
 	beforeEach(async () => {
 		await setupTestingModule({
-			providers: [DataConnectionService, { provide: HttpClient, useValue: { get: vi.fn(), post: vi.fn() } }]
+			providers: [
+				DataConnectionService,
+				{ provide: HttpClient, useValue: { get: vi.fn(), post: vi.fn() } },
+				{
+					provide: APP_ENVIRONMENT,
+					useValue: {
+						production: false,
+						baseUrl: 'http://localhost'
+					}
+				}
+			]
 		});
 		httpClient = TestBed.inject(HttpClient);
 		service = TestBed.inject(DataConnectionService);

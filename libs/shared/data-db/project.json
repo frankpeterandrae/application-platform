@@ -1,7 +1,7 @@
 {
 	"name": "data-db",
-	"$schema": "../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "libs/data-db/src",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/shared/data-db/src",
 	"projectType": "library",
 	"tags": ["platform:nestJS", "scope:shared", "type:data-access"],
 	"targets": {
@@ -9,19 +9,19 @@
 			"executor": "@nx/js:tsc",
 			"outputs": ["{options.outputPath}"],
 			"options": {
-				"outputPath": "dist/libs/data-db",
-				"main": "libs/data-db/src/index.ts",
-				"tsConfig": "libs/data-db/tsconfig.lib.json",
-				"assets": ["libs/data-db/*.md"]
+				"outputPath": "dist/libs/shared/data-db",
+				"main": "libs/shared/data-db/src/index.ts",
+				"tsConfig": "libs/shared/data-db/tsconfig.lib.json",
+				"assets": ["libs/shared/data-db/*.md"]
 			}
 		},
 		"test": {
 			"executor": "@nx/vitest:test",
 			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/data-db/tsconfig.spec.json",
-				"vitestConfig": "libs/data-db/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/data-db/coverage",
+				"tsConfig": "libs/shared/data-db/tsconfig.spec.json",
+				"vitestConfig": "libs/shared/data-db/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/shared/data-db/coverage",
 				"passWithNoTests": true
 			}
 		},

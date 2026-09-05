@@ -4,7 +4,7 @@
  */
 
 import * as path from 'node:path';
-import { migrate, openDb } from '../../libs/data-db/src';
+import { migrate, openDb } from '../../libs/shared/data-db/src';
 
 const args = process.argv.slice(2);
 

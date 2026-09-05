@@ -11,14 +11,19 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/homepage/config'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/data-db'),
+	server: {
+		fs: {
+			allow: [resolve(process.cwd(), '.')]
+		}
+	},
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: ['./src/test-setup.ts', resolve(__dirname, '../../../vitest.setup.ts')],
+		setupFiles: ['./src/test-setup.ts', resolve(process.cwd(), 'vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/libs/homepage/config/index.html'),
+		outputFile: resolve(process.cwd(), 'test-result/libs/shared/data-db/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',
