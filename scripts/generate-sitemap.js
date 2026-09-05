@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Frank-Peter Andrä
+ * Copyright (c) 2024-2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -50,6 +50,6 @@ routes.forEach((route) => {
 
 sitemapContent += `</urlset>`;
 
-fs.mkdirSync('./libs/homepage/config/src/lib/sitemap', { recursive: true });
-fs.writeFileSync('./libs/homepage/config/src/lib/sitemap/sitemap.xml', sitemapContent.trim());
+fs.mkdirSync('./libs/shared/config/src/lib/sitemap', { recursive: true });
+fs.writeFileSync('./libs/shared/config/src/lib/sitemap/sitemap.xml', sitemapContent.trim());
 console.log('sitemap.xml has been generated.');

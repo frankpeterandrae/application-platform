@@ -22,8 +22,8 @@
 		"ignoreDeprecations": "6.0",
 		"paths": {
 			"@application-platform/colour-rack": ["libs/homepage/colour-rack/src/index.ts"],
-			"@application-platform/config": ["libs/homepage/config/src/index.ts"],
-			"@application-platform/data-db": ["libs/data-db/src/index.ts"],
+			"@application-platform/config": ["libs/shared/config/src/index.ts"],
+			"@application-platform/data-db": ["libs/shared/data-db/src/index.ts"],
 			"@application-platform/demo-feature": ["libs/demo/demo-feature/src/index.ts"],
 			"@application-platform/domain": ["libs/z21-suite/domain/src/index.ts"],
 			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],

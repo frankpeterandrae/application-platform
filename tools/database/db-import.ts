@@ -5,7 +5,7 @@
 
 import path from 'node:path';
 
-import { importDatabaseSnapshot, openDb } from '../../libs/data-db/src';
+import { importDatabaseSnapshot, openDb } from '../../libs/shared/data-db/src';
 
 import { paintSnapshotConfig } from '../../libs/shared/paint-data-access/src/lib/server/service/paint-snapshot.config';
 

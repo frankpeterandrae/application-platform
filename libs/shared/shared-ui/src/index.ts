@@ -5,6 +5,7 @@
 
 export * from './lib/components/base/base.component';
 export * from './lib/components/paint-swatch/paint-swatch.component';
+export * from './lib/config/app-environment';
 export * from './lib/directives/translation/translation.directive';
 export * from './lib/directives/translation/translation.pipe';
 export * from './lib/guards/env.guard';
