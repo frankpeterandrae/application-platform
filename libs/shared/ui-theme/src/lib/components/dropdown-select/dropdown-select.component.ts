@@ -71,6 +71,7 @@ export class DropdownSelectComponent<T> {
 	public readonly options = input.required<ReadonlyArray<DropdownOption<T>>>();
 
 	public readonly placeholder = input<string>('Select');
+	public readonly ariaLabel = input<string>();
 	public readonly disabled = input<boolean>(false);
 
 	/**
