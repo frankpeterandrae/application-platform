@@ -10,7 +10,7 @@ import type { WebSocket as WsWebSocket } from 'ws';
  * @param msg - The parsed message data (typically a string)
  * @param ws - The WebSocket connection that sent the message
  */
-export type MessageHandler = (msg: unknown, ws: WsWebSocket) => void;
+export type MessageHandler = (msg: string, ws: WsWebSocket) => void;
 
 /**
  * Callback signature for handling WebSocket disconnections.

@@ -19,7 +19,11 @@
 	<div class="fpa-dropdown-select-list-container" [class.open]="isOpen()">
 		<!-- Native select for accessibility; visually hidden but available to AT.
          Uses index as option value and syncs selection with the component model. -->
-		<select class="fpa-dropdown-select-native-select" (change)="onNativeSelectChange($event)">
+		<select
+			class="fpa-dropdown-select-native-select"
+			[attr.aria-label]="ariaLabel() ?? placeholder()"
+			(change)="onNativeSelectChange($event)"
+		>
 			@for (opt of options(); track opt) {
 				<option [value]="$index" [selected]="selectedOption()?.value === opt.value">{{ opt.label }}</option>
 			}

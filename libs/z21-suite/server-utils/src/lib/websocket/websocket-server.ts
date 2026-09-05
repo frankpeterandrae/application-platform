@@ -55,7 +55,17 @@ export class WsServer {
 			}
 
 			ws.on('message', (data: RawData) => {
-				onMessage(data.toString(), ws);
+				let message: string;
+
+				if (Array.isArray(data)) {
+					message = Buffer.concat(data).toString('utf8');
+				} else if (data instanceof ArrayBuffer) {
+					message = Buffer.from(data).toString('utf8');
+				} else {
+					message = data.toString('utf8');
+				}
+
+				onMessage(message, ws);
 			});
 
 			ws.on('close', () => {
