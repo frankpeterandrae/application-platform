@@ -5,7 +5,7 @@
 
 import { inject, Injectable, signal } from '@angular/core';
 import { Paint } from '@application-platform/paint';
-import { PaintEvent } from '@application-platform/paint-data-access/client';
+import { PaintEvent } from '@application-platform/paint-protocol';
 
 import { WebSocketService } from './websocket.service';
 

@@ -10,7 +10,7 @@ import {
 	PaintRecentSelectionRepository,
 	PaintRepository,
 	PaintSnapshotService
-} from '@application-platform/paint-data-access/server';
+} from '@application-platform/paint-data-access';
 import { Module } from '@nestjs/common';
 
 import { DatabaseModule } from '../database/database.module';
@@ -32,7 +32,7 @@ import { PaintController } from './paint.controller';
 			provide: PaintSnapshotService,
 			inject: [DatabaseService],
 			useFactory: (databaseService: DatabaseService): PaintSnapshotService =>
-				new PaintSnapshotService(databaseService.db, path.join(process.cwd(), 'libs', 'shared', 'paint-data-access', 'data'))
+				new PaintSnapshotService(databaseService.db, path.join(process.cwd(), 'libs', 'shared', 'paint-data-access-old', 'data'))
 		},
 		{
 			provide: PaintRepository,

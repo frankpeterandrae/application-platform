@@ -6,10 +6,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { PaintId } from '@application-platform/paint';
-import { PaintApiService } from '@application-platform/paint-data-access/client';
 import { PaintSelector, PaintSelectorSlot } from '@application-platform/paint-selector';
 import { PaintSwatchComponent } from '@application-platform/shared-ui';
 import { PaintService } from '@application-platform/stream-overlay-data-access';
+import { PaintApiService } from '@application-platform/stream-overlay-paint-api';
 import { forkJoin } from 'rxjs';
 
 import { DashboardContainerComponent } from '../dashboard-container/dashboard-container.component';

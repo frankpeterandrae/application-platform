@@ -29,8 +29,6 @@
 			"@application-platform/homepage-feature": ["libs/homepage/homepage-feature/src/index.ts"],
 			"@application-platform/interfaces": ["libs/shared/interfaces/src/index.ts"],
 			"@application-platform/paint": ["./libs/shared/paint/src/index.ts"],
-			"@application-platform/paint-data-access/client": ["./libs/shared/paint-data-access/src/client.ts"],
-			"@application-platform/paint-data-access/server": ["./libs/shared/paint-data-access/src/server.ts"],
 			"@application-platform/paint-selector": ["./libs/stream-overlay/paint-selector/src/index.ts"],
 			"@application-platform/protocol": ["libs/z21-suite/protocol/src/index.ts"],
 			"@application-platform/server-utils": ["libs/z21-suite/server-utils/src/index.ts"],
@@ -43,7 +41,10 @@
 			"@application-platform/z21-shared": ["libs/z21-suite/shared/src/index.ts"],
 			"@application-platform/stream-overlay-dashboard": ["./libs/stream-overlay/dashboard/src/index.ts"],
 			"@application-platform/stream-overlay": ["./libs/stream-overlay/overlay/src/index.ts"],
-			"@application-platform/stream-overlay-data-access": ["./libs/stream-overlay/data-access/src/index.ts"]
+			"@application-platform/stream-overlay-data-access": ["./libs/stream-overlay/data-access/src/index.ts"],
+			"@application-platform/paint-protocol": ["./libs/stream-overlay/paint-protocol/src/index.ts"],
+			"@application-platform/stream-overlay-paint-api": ["./libs/stream-overlay/paint-api/src/index.ts"],
+			"@application-platform/paint-data-access": ["./libs/stream-overlay/paint-data-access/src/index.ts"]
 		},
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,

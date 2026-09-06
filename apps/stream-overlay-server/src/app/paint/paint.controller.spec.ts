@@ -4,7 +4,7 @@
  */
 
 import { Paint, PaintBrandDefinition, PaintId } from '@application-platform/paint';
-import { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access/server';
+import { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PaintController } from './paint.controller';

@@ -6,7 +6,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Paint, PaintBrandDefinition, PaintColorGroup, paintColorGroups, PaintId } from '@application-platform/paint';
-import { PaintApiService } from '@application-platform/paint-data-access/client';
+import { PaintSwatchComponent } from '@application-platform/shared-ui';
 import {
 	ButtonColorDefinition,
 	ButtonComponent,
@@ -16,7 +16,7 @@ import {
 	InputComponent,
 	SelectComponent
 } from '@application-platform/shared/ui-theme';
-import { PaintSwatchComponent } from '@application-platform/shared-ui';
+import { PaintApiService } from '@application-platform/stream-overlay-paint-api';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { DashboardContainerComponent } from '../dashboard-container/dashboard-container.component';

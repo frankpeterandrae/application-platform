@@ -4,7 +4,7 @@
  */
 
 import { Paint, PaintBrandDefinition, PaintId } from '@application-platform/paint';
-import { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access/server';
+import { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access';
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 
 /**

@@ -3,9 +3,6 @@
  * All rights reserved.
  */
 
-/**
- * WebSocket event names used for paint synchronization.
- */
 export const PaintEvent = {
 	Select: 'paint.select',
 	GetCurrent: 'paint.get-current',

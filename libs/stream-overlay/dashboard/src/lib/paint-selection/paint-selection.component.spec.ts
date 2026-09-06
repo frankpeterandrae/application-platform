@@ -6,8 +6,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Paint, PaintBrandDefinition } from '@application-platform/paint';
-import { PaintApiService } from '@application-platform/paint-data-access/client';
 import { PaintService } from '@application-platform/stream-overlay-data-access';
+import { PaintApiService } from '@application-platform/stream-overlay-paint-api';
 import { of } from 'rxjs';
 import { vi } from 'vitest';
 

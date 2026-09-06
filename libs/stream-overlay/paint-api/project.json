@@ -1,0 +1,35 @@
+{
+	"name": "stream-overlay-paint-api",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/stream-overlay/paint-api/src",
+	"prefix": "stream-overlay-paint-api",
+	"projectType": "library",
+	"tags": ["platform:browser", "scope:stream", "type:data-access"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "libs/stream-overlay/paint-api/tsconfig.spec.json",
+				"vitestConfig": "libs/stream-overlay/paint-api/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/stream-overlay/paint-api/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

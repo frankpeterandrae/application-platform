@@ -29,7 +29,7 @@
 			"executor": "nx:run-commands",
 			"cache": false,
 			"options": {
-				"command": "tsx tools/database/db-migrate.ts --db data/stream-overlay.db --namespace paint --migrations libs/shared/paint-data-access/src/lib/server/schema"
+				"command": "tsx --tsconfig tsconfig.base.json tools/database/db-migrate.ts --db data/stream-overlay.db --namespace paint --migrations libs/stream-overlay/paint-data-access/src/lib/schema"
 			}
 		},
 		"import-db": {
@@ -37,7 +37,7 @@
 			"cache": false,
 			"dependsOn": ["migrate-db"],
 			"options": {
-				"command": "tsx tools/database/db-import.ts --db data/stream-overlay.db --data libs/shared/paint-data-access/data"
+				"command": "tsx --tsconfig tsconfig.base.json tools/database/db-import.ts --db data/stream-overlay.db --data libs/stream-overlay/paint-data-access/data"
 			}
 		},
 		"serve": {
