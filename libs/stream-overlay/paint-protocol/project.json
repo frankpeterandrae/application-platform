@@ -1,0 +1,29 @@
+{
+	"name": "paint-protocol",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/stream-overlay/paint-protocol/src",
+	"projectType": "library",
+	"tags": ["platform:agnostic", "scope:stream", "type:protocol"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/stream-overlay/paint-protocol/tsconfig.spec.json",
+				"vitestConfig": "libs/stream-overlay/paint-protocol/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/stream-overlay/paint-protocol/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

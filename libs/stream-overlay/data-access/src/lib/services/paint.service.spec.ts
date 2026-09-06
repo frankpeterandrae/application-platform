@@ -5,7 +5,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { Paint } from '@application-platform/paint';
-import { PaintEvent } from '@application-platform/paint-data-access/client';
+import { PaintEvent } from '@application-platform/paint-protocol';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -11,14 +11,14 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: __dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/stream-overlay/data-access/config'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/stream-overlay/paint-protocol'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts', resolve(__dirname, '../../../vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/libs/stream-overlay/data-access/config/index.html'),
+		outputFile: resolve(process.cwd(), 'test-result/libs/stream-overlay/paint-protocol/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',

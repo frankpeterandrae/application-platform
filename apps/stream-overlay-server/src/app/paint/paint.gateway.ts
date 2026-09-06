@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 import { Paint } from '@application-platform/paint';
-import { PaintEvent, PaintRecentSelectionRepository } from '@application-platform/paint-data-access/server';
+import { PaintRecentSelectionRepository } from '@application-platform/paint-data-access';
+import { PaintEvent } from '@application-platform/paint-protocol';
 import { Logger } from '@nestjs/common';
 import {
 	ConnectedSocket,

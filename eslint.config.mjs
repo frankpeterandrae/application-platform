@@ -157,8 +157,7 @@ export default [
 								'type:protocol',
 								'type:shared',
 								'type:util',
-								'type:testing',
-								'type:data-access'
+								'type:testing'
 							]
 						},
 						{

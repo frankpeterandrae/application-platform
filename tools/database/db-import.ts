@@ -7,7 +7,7 @@ import path from 'node:path';
 
 import { importDatabaseSnapshot, openDb } from '../../libs/shared/data-db/src';
 
-import { paintSnapshotConfig } from '../../libs/shared/paint-data-access/src/lib/server/service/paint-snapshot.config';
+import { paintSnapshotConfig } from '../../libs/stream-overlay/paint-data-access/src';
 
 type JsonRow = Record<string, unknown>;
 
@@ -48,6 +48,7 @@ function getArg(name: string): string {
 }
 
 try {
+	db.prepare('DELETE FROM paint_recent_selection').run();
 	importDatabaseSnapshot(db, dataDir, paintSnapshotConfig);
 
 	console.log(`Datenbankimport erfolgreich: ${dbPath}`);

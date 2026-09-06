@@ -46,7 +46,7 @@
 			"inputs": ["default", "{workspaceRoot}/tools/paint/**/*"],
 			"outputs": ["{workspaceRoot}/tmp/generated/paints"],
 			"options": {
-				"command": "tsx tools/paint/generate-assets.ts"
+				"command": "tsx --tsconfig tsconfig.base.json tools/paint/generate-assets.ts"
 			}
 		},
 		"watch-assets": {

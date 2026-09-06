@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../../dist/out-tsc",
+		"types": ["vitest/globals", "vitest/importMeta", "vite/client", "node", "vitest"],
+		"moduleResolution": "bundler",
+		"isolatedModules": true
+	},
+	"include": ["../../../global.d.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.d.ts"],
+	"angularCompilerOptions": { "strictTemplates": false }
+}
