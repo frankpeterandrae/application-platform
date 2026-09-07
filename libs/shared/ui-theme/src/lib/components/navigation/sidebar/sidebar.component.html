@@ -7,12 +7,27 @@
 	<ul class="menu fpa-m-0">
 		@for (item of menuItems(); track item.id) {
 			<li class="menu-item">
-				<a class="fpa-p-1 fpa-light-text fpa-link" [routerLink]="item.route">
-					@if (item.icon) {
-						<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'"></fast-svg>
-					}
-					<span>{{ item.label | themeUnwrapSignal }}</span>
-				</a>
+				@if (item.route) {
+					<a class="fpa-p-1 fpa-light-text fpa-link" [routerLink]="item.route">
+						@if (item.icon) {
+							<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'" />
+						}
+
+						<span>
+							{{ item.label | themeUnwrapSignal }}
+						</span>
+					</a>
+				} @else {
+					<button type="button" class="menu-action fpa-p-1 fpa-light-text fpa-link" (click)="menuItemSelected.emit(item)">
+						@if (item.icon) {
+							<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'" />
+						}
+
+						<span>
+							{{ item.label | themeUnwrapSignal }}
+						</span>
+					</button>
+				}
 			</li>
 		}
 	</ul>

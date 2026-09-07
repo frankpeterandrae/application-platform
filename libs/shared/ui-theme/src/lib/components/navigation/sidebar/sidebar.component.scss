@@ -14,9 +14,14 @@ nav {
 		list-style: none;
 
 		.menu-item {
-			a {
+			a,
+			.menu-action {
 				display: flex;
 				align-items: center;
+				width: 100%;
+				border: 0;
+				background: transparent;
+				text-align: left;
 				text-decoration: none;
 				color: inherit;
 

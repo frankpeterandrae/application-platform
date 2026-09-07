@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+import { resolve } from 'node:path';
+import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
+
+export default defineConfig({
+	root: __dirname,
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/starmap/domain'),
+	plugins: [tsconfigPaths()],
+	test: {
+		outputFile: resolve(process.cwd(), 'test-result/libs/starmap/domain/index.html'),
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./src/test-setup.ts'],
+		reporters: ['html', 'default', 'verbose'],
+		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+		coverage: {
+			provider: 'v8',
+			reporter: ['html', 'text', 'lcov'],
+			include: ['src/**/*.ts'],
+			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
+		}
+	}
+});

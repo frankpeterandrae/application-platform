@@ -44,7 +44,11 @@
 			"@application-platform/stream-overlay-data-access": ["./libs/stream-overlay/data-access/src/index.ts"],
 			"@application-platform/paint-protocol": ["./libs/stream-overlay/paint-protocol/src/index.ts"],
 			"@application-platform/stream-overlay-paint-api": ["./libs/stream-overlay/paint-api/src/index.ts"],
-			"@application-platform/paint-data-access": ["./libs/stream-overlay/paint-data-access/src/index.ts"]
+			"@application-platform/paint-data-access": ["./libs/stream-overlay/paint-data-access/src/index.ts"],
+			"@application-platform/starmap-domain": ["./libs/starmap/domain/src/index.ts"],
+			"@application-platform/starmap-data-access": ["./libs/starmap/data-access/src/index.ts"],
+			"@application-platform/starmap-editor": ["./libs/starmap/editor/src/index.ts"],
+			"@application-platform/starmap-map": ["./libs/starmap/map/src/index.ts"]
 		},
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,

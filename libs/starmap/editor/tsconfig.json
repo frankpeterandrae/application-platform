@@ -1,0 +1,19 @@
+{
+	"extends": "../../../tsconfig.base.json",
+	"compilerOptions": {
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"moduleResolution": "bundler",
+		"allowJs": true,
+		"ignoreDeprecations": "6.0"
+	},
+	"files": [],
+	"include": ["**/*.ts", "**/*.mjs", "**/*.js", "eslint.config.mjs"],
+	"references": [
+		{
+			"path": "./tsconfig.lib.json"
+		}
+	]
+}

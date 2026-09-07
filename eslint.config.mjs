@@ -90,6 +90,10 @@ export default [
 							onlyDependOnLibsWithTags: ['scope:stream', 'scope:shared']
 						},
 						{
+							sourceTag: 'scope:starmap',
+							onlyDependOnLibsWithTags: ['scope:starmap', 'scope:shared']
+						},
+						{
 							sourceTag: 'scope:shared',
 							onlyDependOnLibsWithTags: ['scope:shared']
 						},
@@ -100,26 +104,28 @@ export default [
 						{
 							sourceTag: 'type:ui-app',
 							onlyDependOnLibsWithTags: [
+								'type:data-access',
+								'type:domain',
 								'type:feature',
-								'type:ui',
+								'type:integration',
 								'type:protocol',
 								'type:shared',
-								'type:util',
-								'type:integration',
 								'type:testing',
-								'type:data-access'
+								'type:ui',
+								'type:util'
 							]
 						},
 						{
 							sourceTag: 'type:feature',
 							onlyDependOnLibsWithTags: [
+								'type:data-access',
+								'type:domain',
 								'type:feature',
-								'type:ui',
 								'type:protocol',
 								'type:shared',
-								'type:util',
 								'type:testing',
-								'type:data-access'
+								'type:ui',
+								'type:util'
 							]
 						},
 						{

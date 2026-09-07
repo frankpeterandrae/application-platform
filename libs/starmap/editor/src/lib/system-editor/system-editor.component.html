@@ -1,0 +1,161 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<form class="system-editor" [formGroup]="form" (ngSubmit)="save()">
+	<section class="editor-section">
+		<h2>System</h2>
+
+		<div class="editor-grid">
+			<theme-input label="Name" formControlName="name" [darkText]="true" />
+
+			<theme-input label="Fraktion" formControlName="faction" [darkText]="true" />
+		</div>
+	</section>
+
+	<section class="editor-section">
+		<h3>Position</h3>
+
+		<div class="coordinate-grid">
+			<theme-input label="X" type="number" formControlName="x" [darkText]="true" />
+
+			<theme-input label="Y" type="number" formControlName="y" [darkText]="true" />
+
+			<theme-input label="Z" type="number" formControlName="z" [darkText]="true" />
+		</div>
+	</section>
+
+	<section class="editor-section">
+		<div class="section-header">
+			<h3>Sterne</h3>
+
+			<theme-button buttonText="Stern hinzufügen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="addStar()" />
+		</div>
+
+		<div class="editor-list" formArrayName="stars">
+			@for (star of stars.controls; track $index; let index = $index) {
+				<div class="editor-list-item">
+					<theme-input label="Spektraltyp" [formControlName]="index" [darkText]="true" />
+
+					<div class="item-actions">
+						<theme-button buttonText="Zufällig" [color]="ButtonColorDefinition.INFO" (buttonClick)="randomizeStar(index)" />
+
+						<theme-button buttonText="Entfernen" [color]="ButtonColorDefinition.DANGER" (buttonClick)="removeStar(index)" />
+					</div>
+				</div>
+			}
+		</div>
+	</section>
+
+	<section class="editor-section">
+		<div class="section-header">
+			<h3>Planeten</h3>
+
+			<theme-button buttonText="Planet hinzufügen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="addPlanet()" />
+		</div>
+
+		<div class="editor-list" formArrayName="planets">
+			@for (planet of planets.controls; track planet.controls.id.value; let index = $index) {
+				<div class="editor-list-item" [formGroupName]="index">
+					<div class="editor-grid">
+						<theme-input label="Name" formControlName="name" [darkText]="true" />
+
+						<theme-select
+							label="Typ"
+							[options]="planetTypeOptions"
+							[emptySelection]="false"
+							formControlName="type"
+							[darkText]="true"
+						/>
+
+						<theme-input label="Klassifikation" formControlName="classification" [darkText]="true" />
+					</div>
+
+					<div class="item-actions">
+						<theme-button
+							buttonText="Planet entfernen"
+							[color]="ButtonColorDefinition.DANGER"
+							(buttonClick)="removePlanet(index)"
+						/>
+					</div>
+				</div>
+			}
+		</div>
+	</section>
+
+	<section class="editor-section">
+		<h3>Sprungverbindungen</h3>
+
+		<div class="editor-list">
+			@for (link of systemJumpLinks(); track link.id) {
+				<div class="editor-list-item">
+					<div class="editor-grid">
+						<theme-select
+							label="Zielsystem"
+							[options]="availableTargetOptionsFor(link)"
+							[emptySelection]="false"
+							[ngModel]="otherSystemId(link)"
+							(ngModelChange)="updateJumpLinkTarget(link, $event)"
+							[ngModelOptions]="{ standalone: true }"
+							[darkText]="true"
+						/>
+
+						<theme-select
+							label="Status"
+							[options]="statusOptions"
+							[emptySelection]="false"
+							[ngModel]="link.status"
+							(ngModelChange)="updateJumpLinkStatus(link, $event)"
+							[ngModelOptions]="{ standalone: true }"
+							[darkText]="true"
+						/>
+					</div>
+
+					<div class="item-actions">
+						<theme-button
+							buttonText="Entfernen"
+							[color]="ButtonColorDefinition.DANGER"
+							(buttonClick)="jumpLinkDeleted.emit(link.id)"
+						/>
+					</div>
+				</div>
+			}
+		</div>
+
+		<div class="new-jump-link" [formGroup]="jumpLinkForm">
+			<h4>Sprungverbindung hinzufügen</h4>
+
+			<div class="editor-grid">
+				<theme-select
+					label="Zielsystem"
+					[options]="availableJumpTargetOptions()"
+					[emptySelection]="false"
+					formControlName="targetSystemId"
+					[darkText]="true"
+				/>
+
+				<theme-select
+					label="Status"
+					[options]="statusOptions"
+					[emptySelection]="false"
+					formControlName="status"
+					[darkText]="true"
+				/>
+			</div>
+
+			<theme-button
+				buttonText="Verbindung hinzufügen"
+				[color]="ButtonColorDefinition.PRIMARY"
+				[disabled]="jumpLinkForm.invalid"
+				(buttonClick)="addJumpLink()"
+			/>
+		</div>
+	</section>
+
+	<div class="editor-actions">
+		<theme-button buttonText="Speichern" type="submit" [color]="ButtonColorDefinition.PRIMARY" [disabled]="form.invalid" />
+
+		<theme-button buttonText="System löschen" [color]="ButtonColorDefinition.DANGER" (buttonClick)="systemDeleted.emit(system().id)" />
+	</div>
+</form>
