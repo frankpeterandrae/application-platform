@@ -1,0 +1,116 @@
+{
+	"name": "starmap",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"prefix": "starmap",
+	"sourceRoot": "apps/starmap/src",
+	"tags": ["type:ui-app", "scope:starmap", "platform:browser"],
+	"targets": {
+		"build": {
+			"executor": "@angular/build:application",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/apps/starmap",
+				"browser": "apps/starmap/src/main.ts",
+				"tsConfig": "apps/starmap/tsconfig.app.json",
+				"inlineStyleLanguage": "scss",
+				"assets": [
+					{
+						"glob": "**/*",
+						"input": "apps/starmap/public"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/shared/ui-theme/src/assets",
+						"output": "assets/theme"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/starmap/feature-map/src/assets",
+						"output": "assets/feature-map"
+					}
+				],
+				"styles": ["apps/starmap/src/styles.scss", "libs/shared/ui-theme/src/lib/theme/themed/starmap-theme.scss"]
+			},
+			"configurations": {
+				"production": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "5mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumError": "6kb"
+						}
+					]
+				},
+				"development": {
+					"optimization": false,
+					"extractLicenses": false,
+					"sourceMap": true
+				}
+			},
+			"defaultConfiguration": "production"
+		},
+		"serve": {
+			"executor": "@angular/build:dev-server",
+			"options": {
+				"host": "127.0.0.1",
+				"port": 4230
+			},
+			"configurations": {
+				"production": {
+					"buildTarget": "starmap:build:production"
+				},
+				"development": {
+					"buildTarget": "starmap:build:development"
+				}
+			},
+			"defaultConfiguration": "development",
+			"continuous": true
+		},
+		"test": {
+			"executor": "@angular/build:unit-test",
+			"options": {
+				"tsConfig": "apps/starmap/tsconfig.spec.json",
+				"runnerConfig": "apps/starmap/vitest.config.mts",
+				"coverage": true,
+				"coverageInclude": ["src/**/*.ts"],
+				"coverageReporters": ["html", "text", "lcov"],
+				"reporters": ["html", "default", "verbose"],
+				"outputFile": "test-result/apps/starmap/index.html"
+			}
+		},
+		"serve-static": {
+			"continuous": true,
+			"executor": "@nx/web:file-server",
+			"options": {
+				"buildTarget": "starmap:build",
+				"port": 4230,
+				"staticFilePath": "dist/apps/starmap/browser",
+				"spa": true
+			}
+		},
+		"stylelint": {
+			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
+			}
+		}
+	}
+}

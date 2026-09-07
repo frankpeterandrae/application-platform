@@ -1,0 +1,81 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<theme-card [inverted]="true">
+	<aside class="system-details">
+		<header class="system-details-header">
+			<div>
+				<span class="system-details-type"> Sternsystem </span>
+
+				<h2>
+					{{ system().name }}
+				</h2>
+			</div>
+
+			<span class="coordinates">
+				{{ system().position.x }}, {{ system().position.y }},
+				{{ system().position.z }}
+			</span>
+		</header>
+
+		@if (system().faction) {
+			<div class="detail-row">
+				<span class="detail-label"> Fraktion </span>
+
+				<span>
+					{{ system().faction }}
+				</span>
+			</div>
+		}
+
+		<section class="detail-section">
+			<h3>Sterne</h3>
+
+			<ul class="detail-list">
+				@for (star of system().stars; track $index) {
+					<li>
+						<span class="detail-index">
+							{{ $index + 1 }}
+						</span>
+
+						<span>
+							{{ star.spectralType }}
+						</span>
+					</li>
+				}
+			</ul>
+		</section>
+
+		<section class="detail-section">
+			<h3>Planeten</h3>
+
+			@if (system().planets.length > 0) {
+				<ul class="detail-list planet-list">
+					@for (planet of system().planets; track planet.id) {
+						<li>
+							<div>
+								<strong>
+									{{ planet.name }}
+								</strong>
+
+								<span class="planet-type">
+									{{ planet.type }}
+								</span>
+							</div>
+
+							@if (planet.classification) {
+								<span class="classification">
+									{{ planet.classification }}
+								</span>
+							}
+						</li>
+					}
+				</ul>
+			} @else {
+				<p class="empty-state">Keine Planeten</p>
+			}
+		</section>
+	</aside>
+</theme-card>

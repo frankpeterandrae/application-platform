@@ -1,0 +1,76 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<section class="nebula-editor">
+	<div class="section-header">
+		<h2>Nebel</h2>
+	</div>
+
+	<form class="nebula-form" [formGroup]="form" (ngSubmit)="save()">
+		<section class="editor-section">
+			<h3>Eigenschaften</h3>
+
+			<div class="editor-grid">
+				<theme-input label="Name" [darkText]="true" formControlName="name" />
+
+				<theme-select
+					label="Darstellung"
+					[darkText]="true"
+					[options]="styleOptions"
+					[emptySelection]="false"
+					formControlName="style"
+				/>
+
+				<theme-input label="Farbe" type="color" [darkText]="true" formControlName="color" />
+
+				<theme-input label="Deckkraft" type="number" [darkText]="true" formControlName="opacity" />
+			</div>
+		</section>
+
+		<section class="editor-section">
+			<div class="section-header">
+				<h3>Grenzpunkte</h3>
+
+				<theme-button buttonText="Punkt hinzufügen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="addPoint()" />
+			</div>
+
+			<div class="point-list" formArrayName="points">
+				@for (point of points.controls; track $index; let index = $index) {
+					<div class="point-row" [formGroupName]="index">
+						<div class="coordinate-grid">
+							<theme-input label="X" type="number" [darkText]="true" formControlName="x" />
+
+							<theme-input label="Y" type="number" [darkText]="true" formControlName="y" />
+
+							<theme-input label="Z" type="number" [darkText]="true" formControlName="z" />
+						</div>
+
+						<theme-button
+							buttonText="Punkt entfernen"
+							[color]="ButtonColorDefinition.DANGER"
+							[disabled]="points.length <= 3"
+							(buttonClick)="removePoint(index)"
+						/>
+					</div>
+				}
+			</div>
+		</section>
+
+		<div class="editor-actions">
+			<theme-button
+				buttonText="Speichern"
+				type="submit"
+				[color]="ButtonColorDefinition.PRIMARY"
+				[disabled]="form.invalid || points.length < 3"
+			/>
+
+			<theme-button
+				buttonText="Nebel löschen"
+				[color]="ButtonColorDefinition.DANGER"
+				(buttonClick)="nebulaDeleted.emit(nebula().id)"
+			/>
+		</div>
+	</form>
+</section>

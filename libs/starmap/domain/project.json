@@ -1,0 +1,35 @@
+{
+	"name": "starmap-domain",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/starmap/domain/src",
+	"projectType": "library",
+	"tags": ["type:domain", "scope:starmap", "platform:agnostic"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/starmap/domain/tsconfig.spec.json",
+				"vitestConfig": "libs/starmap/domain/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/starmap/domain/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

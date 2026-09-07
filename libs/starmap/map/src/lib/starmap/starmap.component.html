@@ -1,0 +1,23 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<div
+	#mapViewport
+	class="starmap-viewport"
+	(wheel)="zoom($event)"
+	(pointerdown)="startPan($event)"
+	(pointermove)="pan($event)"
+	(pointerup)="stopPan($event)"
+	(pointercancel)="stopPan($event)"
+>
+	<div #mapCanvas class="starmap-canvas">
+		<div #mapContainer class="starmap-container"></div>
+	</div>
+</div>
+
+@if (selectedSystem(); as system) {
+	<div class="system-details-overlay">
+		<starmap-system-details [system]="system" />
+	</div>
+}

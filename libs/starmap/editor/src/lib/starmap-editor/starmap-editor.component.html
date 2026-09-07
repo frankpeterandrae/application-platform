@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+@if (store.map(); as map) {
+	<theme-button-bar [buttons]="toolbarButtons" />
+	<div class="starmap-workspace" [class.editor-collapsed]="!editorOpen()">
+		<theme-sidebar [menuItems]="menuItems()" (menuItemSelected)="selectMenuItem($event)" />
+
+		@if (editorOpen()) {
+			<section class="editor-panel">
+				<div class="editor-content">
+					@if (selectedSystem(); as system) {
+						<theme-card>
+							<starmap-editor-system-editor
+								[system]="system"
+								[systems]="map.systems"
+								[jumpLinks]="map.jumpLinks"
+								(systemSaved)="saveSystem($event)"
+								(systemDeleted)="deleteSystem($event)"
+								(jumpLinkCreated)="store.addJumpLink($event)"
+								(jumpLinkChanged)="store.updateJumpLink($event)"
+								(jumpLinkDeleted)="store.deleteJumpLink($event)"
+							/>
+						</theme-card>
+					} @else if (selectedNebula(); as nebula) {
+						<theme-card>
+							<starmap-editor-nebula-editor
+								[nebula]="nebula"
+								(nebulaChanged)="store.updateNebula($event)"
+								(nebulaDeleted)="deleteNebula($event)"
+							/>
+						</theme-card>
+					} @else {
+						<theme-card>
+							<p>Bitte ein Sternensystem oder einen Nebel auswählen.</p>
+						</theme-card>
+					}
+				</div>
+			</section>
+		}
+
+		<main class="map-area">
+			<button
+				type="button"
+				class="editor-toggle"
+				[attr.aria-expanded]="editorOpen()"
+				[attr.aria-label]="editorOpen() ? 'Editor schließen' : 'Editor öffnen'"
+				(click)="toggleEditor()"
+			>
+				<fast-svg [name]="editorOpen() ? iconDefinition.CARET_LEFT : iconDefinition.CARET_RIGHT" size="24" />
+			</button>
+
+			<starmap-container />
+		</main>
+	</div>
+}

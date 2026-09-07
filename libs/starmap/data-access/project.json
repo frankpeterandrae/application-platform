@@ -1,0 +1,35 @@
+{
+	"name": "starmap-data-access",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/starmap/data-access/src",
+	"projectType": "library",
+	"tags": ["type:data-access", "scope:starmap", "platform:agnostic"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/starmap/data-access/tsconfig.spec.json",
+				"vitestConfig": "libs/starmap/data-access/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/starmap/data-access/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

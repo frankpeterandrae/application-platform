@@ -1,0 +1,61 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+:host {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.starmap-workspace {
+	display: grid;
+	grid-template-columns:
+		minmax(14rem, 18rem)
+		minmax(20rem, 28rem)
+		minmax(0, 1fr);
+	flex: 1 1 auto;
+	min-height: 0;
+
+	&.editor-collapsed {
+		grid-template-columns:
+			minmax(14rem, 18rem)
+			auto
+			minmax(0, 1fr);
+	}
+}
+
+.editor-panel,
+.map-area {
+	min-width: 0;
+	min-height: 0;
+}
+
+.map-area {
+	overflow: hidden;
+}
+
+.editor-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	overflow: auto;
+}
+
+.editor-panel-collapsed {
+	width: max-content;
+}
+
+.editor-content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.sidebar-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}

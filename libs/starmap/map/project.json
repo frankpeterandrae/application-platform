@@ -1,0 +1,39 @@
+{
+	"name": "starmap-map",
+	"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "libs/starmap/map/src",
+	"prefix": "starmap-map",
+	"projectType": "library",
+	"tags": ["type:feature", "scope:starmap", "platform:browser"],
+	"targets": {
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"tsConfig": "libs/starmap/map/tsconfig.spec.json",
+				"vitestConfig": "libs/starmap/map/vitest.config.mts",
+				"reportsDirectory": "test-result/libs/starmap/map/coverage",
+				"passWithNoTests": true
+			}
+		},
+		"stylelint": {
+			"executor": "nx-stylelint:lint"
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-lib", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-lib": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.lib.json --noEmit"
+			}
+		}
+	}
+}

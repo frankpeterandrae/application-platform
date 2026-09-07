@@ -1,0 +1,57 @@
+/*!
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+:host {
+	display: block;
+}
+
+.nebula-editor,
+.nebula-form,
+.editor-section,
+.point-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.editor-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.point-row {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 1rem;
+	background: rgb(0 0 0 / 4%);
+}
+
+.coordinate-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.editor-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+@media (width <= 900px) {
+	.editor-grid,
+	.coordinate-grid {
+		grid-template-columns: 1fr;
+	}
+}

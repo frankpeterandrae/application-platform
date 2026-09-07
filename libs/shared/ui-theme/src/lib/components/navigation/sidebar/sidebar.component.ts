@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
@@ -25,4 +25,6 @@ export class SidebarComponent {
 	 * An array of menu items to be displayed in the sidebar.
 	 */
 	public menuItems = input.required<MenuItem[]>();
+
+	public menuItemSelected = output<MenuItem>();
 }

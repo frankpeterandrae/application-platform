@@ -47,7 +47,7 @@ export class InputComponent implements ControlValueAccessor {
 	// Define output using the `output` function
 	public readonly valueChange = output<string>();
 
-	public readonly value = signal('');
+	public readonly value = signal<string | number>('');
 	public readonly formDisabled = signal(false);
 
 	public inputFocused = false;
@@ -77,7 +77,9 @@ export class InputComponent implements ControlValueAccessor {
 	 * @returns {boolean} - True if the input field has a value, otherwise false.
 	 */
 	public isFilled(): boolean {
-		return this.value().length > 0 || !!this.placeholder();
+		const value = this.value();
+
+		return (value !== null && value !== undefined && String(value).length > 0) || !!this.placeholder();
 	}
 
 	/**
@@ -118,7 +120,7 @@ export class InputComponent implements ControlValueAccessor {
 	 * @internal
 	 * @param {string} value - The new value.
 	 */
-	public writeValue(value: string | null | undefined): void {
+	public writeValue(value: string | number | null | undefined): void {
 		this.value.set(value ?? '');
 	}
 

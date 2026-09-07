@@ -7,6 +7,8 @@ export enum IconDefinition {
 	ATTENTION = 'theme/svg/attention',
 	BRUSH = 'theme/svg/paintbrush',
 	CARET_DOWN = 'theme/svg/caret_down',
+	CARET_LEFT = 'theme/svg/caret_left',
+	CARET_RIGHT = 'theme/svg/caret_right',
 	CHECK = 'theme/svg/check',
 	CLOSE = 'theme/svg/close',
 	COMPUTER = 'theme/svg/computer',

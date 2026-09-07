@@ -80,7 +80,7 @@
 			"executor": "@nx/web:file-server",
 			"options": {
 				"buildTarget": "z21-ui:build",
-				"port": 4200,
+				"port": 4210,
 				"staticFilePath": "dist/apps/z21-ui/browser",
 				"spa": true
 			}
