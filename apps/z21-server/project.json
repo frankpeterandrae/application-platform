@@ -17,7 +17,6 @@
 				"main": "apps/z21-server/src/main.ts",
 				"tsConfig": "apps/z21-server/tsconfig.app.json",
 				"assets": ["apps/z21-server/src/assets"],
-				"generatePackageJson": true,
 				"esbuildOptions": {
 					"sourcemap": true,
 					"outExtension": {
@@ -36,28 +35,6 @@
 					}
 				}
 			}
-		},
-		"prune-lockfile": {
-			"dependsOn": ["build"],
-			"cache": true,
-			"executor": "@nx/js:prune-lockfile",
-			"outputs": ["{workspaceRoot}/dist/apps/z21-server/package.json", "{workspaceRoot}/dist/apps/z21-server/package-lock.json"],
-			"options": {
-				"buildTarget": "build"
-			}
-		},
-		"copy-workspace-modules": {
-			"dependsOn": ["build"],
-			"cache": true,
-			"outputs": ["{workspaceRoot}/dist/apps/z21-server/workspace_modules"],
-			"executor": "@nx/js:copy-workspace-modules",
-			"options": {
-				"buildTarget": "build"
-			}
-		},
-		"prune": {
-			"dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-			"executor": "nx:noop"
 		},
 		"serve": {
 			"continuous": true,
