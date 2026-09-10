@@ -10,13 +10,13 @@ import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-	root: __dirname,
+	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/demo/demo-feature'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
-		setupFiles: [resolve(__dirname, '../../../vitest.setup.ts')],
+		setupFiles: [resolve(import.meta.dirname, '../../../vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
 		outputFile: resolve(process.cwd(), 'test-result/libs/demo/demo-feature/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],

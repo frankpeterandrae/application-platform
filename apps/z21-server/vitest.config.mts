@@ -9,7 +9,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	root: __dirname,
+	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/z21-server'),
 	plugins: [tsconfigPaths()],
 	test: {

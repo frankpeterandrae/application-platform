@@ -9,7 +9,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	root: __dirname,
+	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/stream-overlay-server'),
 	plugins: [tsconfigPaths()],
 	test: {
