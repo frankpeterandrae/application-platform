@@ -18,6 +18,16 @@ on:
       run_sonar:
         required: true
         type: boolean
+    outputs:
+      z21_ui_affected:
+        description: "Whether z21-ui is affected"
+        value: ${{ jobs.ci.outputs.z21_ui_affected }}
+      z21_server_affected:
+        description: "Whether z21-server is affected"
+        value: ${{ jobs.ci.outputs.z21_server_affected }}
+      homepage_affected:
+        description: "Whether homepage is affected"
+        value: ${{ jobs.ci.outputs.homepage_affected }}
     secrets:
       SONAR_TOKEN:
         required: false
@@ -29,81 +39,185 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    outputs:
+      z21_ui_affected: ${{ steps.affected.outputs.z21_ui }}
+      z21_server_affected: ${{ steps.affected.outputs.z21_server }}
+      homepage_affected: ${{ steps.affected.outputs.homepage }}
+
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - name: Determine affected base
+        id: affected-base
+        shell: bash
+        run: |
+          if [ "${{ inputs.mode }}" = "pr" ]; then
+            base=$(git merge-base \
+              '${{ inputs.base }}' \
+              '${{ inputs.head }}')
+          else
+            if [ "${{ inputs.base }}" = "0000000000000000000000000000000000000000" ]; then
+              base="HEAD~1"
+            else
+              base="${{ inputs.base }}"
+            fi
+          fi
+
+          echo "Affected base: $base"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+
+      - name: Detect CI relevant changes
+        id: ci-changes
+        if: ${{ inputs.mode != 'main' }}
+        shell: bash
+        run: |
+          changed_files=$(git diff \
+            --name-only \
+            '${{ steps.affected-base.outputs.base }}' \
+            '${{ inputs.head }}')
+
+          echo "$changed_files"
+
+          if echo "$changed_files" | grep -Eq \
+            '^(apps/|libs/|tools/|scripts/|package\.json$|package-lock\.json$|nx\.json$|tsconfig.*\.json$|eslint\.config\.mjs$|vitest.*\.ts$|global\.d\.ts$|\.stylelintrc\.json$)'; then
+            echo "run_ci=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_ci=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v7
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
 
-      - name: Use npm 11
-        run: npm i -g npm@11.17.0
-
       - name: Install deps
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: npm ci --ignore-scripts
 
+      - name: Detect affected projects
+        id: affected
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
+        shell: bash
+        run: |
+          projects=$(npx nx show projects \
+            --affected \
+            --base='${{ steps.affected-base.outputs.base }}' \
+            --head='${{ inputs.head }}')
+
+          echo "$projects"
+
+          if [ -n "$projects" ]; then
+            echo "has_affected=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_affected=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$projects" | grep -Fxq 'z21-ui'; then
+            echo "z21_ui=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "z21_ui=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$projects" | grep -Fxq 'z21-server'; then
+            echo "z21_server=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "z21_server=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$projects" | grep -Fxq 'homepage'; then
+            echo "homepage=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "homepage=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Lint
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
             npx nx run-many --target=lint --all --configuration=ci
           else
-            npx nx affected --target=lint --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+            npx nx affected --target=lint --base='${{ steps.affected-base.outputs.base }}' --head='${{ inputs.head }}' --configuration=ci
           fi
 
       - name: Typecheck
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
             npx nx run-many --target=typecheck --all
           else
-            npx nx affected --target=typecheck --base='${{ inputs.base }}' --head='${{ inputs.head }}'
+            npx nx affected --target=typecheck --base='${{ steps.affected-base.outputs.base }}' --head='${{ inputs.head }}'
           fi
 
       - name: Test (with coverage)
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
             npx nx run-many --target=test --all --configuration=ci
           else
-            npx nx affected --target=test --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+            npx nx affected --target=test --base='${{ steps.affected-base.outputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+          fi
+
+      - name: Detect affected E2E projects
+        id: affected-e2e
+        if: ${{ inputs.mode != 'main' && steps.ci-changes.outputs.run_ci == 'true' }}
+        shell: bash
+        run: |
+          projects=$(npx nx show projects \
+            --affected \
+            --with-target=e2e \
+            --base='${{ steps.affected-base.outputs.base }}' \
+            --head='${{ inputs.head }}')
+
+          echo "$projects"
+
+          if [ -n "$projects" ]; then
+            echo "has_e2e=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_e2e=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        if: ${{ inputs.mode == 'main' || steps.affected-e2e.outputs.has_e2e == 'true' }}
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install Playwright OS deps
+        if: ${{ inputs.mode == 'main' || steps.affected-e2e.outputs.has_e2e == 'true' }}
         run: npx playwright install-deps
 
       - name: E2E
+        if: ${{ inputs.mode == 'main' || steps.affected-e2e.outputs.has_e2e == 'true' }}
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
             npx nx run-many --target=e2e --all --configuration=ci
           else
-            npx nx affected --target=e2e --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+            npx nx affected \
+              --target=e2e \
+              --base='${{ steps.affected-base.outputs.base }}' \
+              --head='${{ inputs.head }}' \
+              --configuration=ci
           fi
 
       - name: Build
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: |
           if [ "${{ inputs.mode }}" = "main" ]; then
             npx nx run-many --target=build --all --configuration=ci
           else
-            npx nx affected --target=build --base='${{ inputs.base }}' --head='${{ inputs.head }}' --configuration=ci
+            npx nx affected --target=build --base='${{ steps.affected-base.outputs.base }}' --head='${{ inputs.head }}' --configuration=ci
           fi
 
-      - name: Debug coverage files
-        run: |
-          ls -la coverage || true
-          find coverage -name lcov.info -maxdepth 6 -print || true
-
       - name: Validate Sonar secrets
-        if: ${{ inputs.run_sonar }}
+        if: ${{ inputs.run_sonar && (inputs.mode == 'main' || steps.affected.outputs.has_affected == 'true') }}
         run: |
           if [ -z "${{ secrets.PROJECT_KEY }}" ] || [ -z "${{ secrets.SONAR_ORG }}" ]; then
             echo "ERROR: missing Sonar secrets (PROJECT_KEY / SONAR_ORG)"
@@ -111,17 +225,11 @@ jobs:
           fi
 
       - name: SonarCloud Scan
-        if: ${{ inputs.run_sonar }}
-        uses: SonarSource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9
+        if: ${{ inputs.run_sonar && (inputs.mode == 'main' || steps.affected.outputs.has_affected == 'true') }}
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=${{ secrets.PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORG }}
-            -Dsonar.sources=apps,libs
-            -Dsonar.tests=apps,libs
-            -Dsonar.exclusions=**/*.woff,**/*.woff2,**/*.ttf,**/*.otf,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.ico
-            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts,**/*.test-setup.ts
-            -Dsonar.coverage.exclusions=**/*.js,**/main.ts,**/*environment*.ts,**/*.scss,**/*.css,**/*.json,**/*-e2e/**,**/*test-setup.ts,**/*app.config.ts,**/*app.routes.ts,**/*.php,libs/shared/testing/**,libs/shared/shared-node-test/**
-            -Dsonar.javascript.lcov.reportPaths=**/test-result/**/lcov.info
