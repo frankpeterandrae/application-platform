@@ -70,6 +70,7 @@
 				"runnerConfig": "apps/z21-ui/vitest.config.mts",
 				"coverage": true,
 				"coverageInclude": ["src/**/*.ts"],
+				"coverageExclude": ["libs/**/*.ts"],
 				"coverageReporters": ["html", "text", "lcov"],
 				"reporters": ["html", "default", "verbose"],
 				"outputFile": "test-result/apps/z21-ui/index.html"

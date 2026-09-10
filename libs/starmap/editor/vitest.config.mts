@@ -11,14 +11,14 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: import.meta.dirname,
-	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/starmap/map'),
+	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/starmap/editor'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts', resolve(import.meta.dirname, '../../../vitest.setup.ts')],
 		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/libs/starmap/map/index.html'),
+		outputFile: resolve(process.cwd(), 'test-result/libs/starmap/editor/index.html'),
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
 			provider: 'v8',

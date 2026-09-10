@@ -3,27 +3,12 @@
  * All rights reserved.
  */
 
-import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { StarMapStore } from '@application-platform/starmap-data-access';
-import { StarMap } from '@application-platform/starmap-domain';
-const demoMap: StarMap = {
-	id: 'demo-map',
-	name: 'Testsektor',
+import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
+import { firstValueFrom } from 'rxjs';
 
-	systems: [
-		{
-			id: 'sol',
-			name: 'Sol',
-			faction: 'Imperium',
-			position: { x: 10, y: 10, z: 0 },
-			stars: [{ spectralType: 'G2' }],
-			planets: []
-		}
-	],
-	jumpLinks: [],
-	nebulae: []
-};
 /**
  * The root component of the application.
  */
@@ -33,11 +18,26 @@ const demoMap: StarMap = {
 	templateUrl: './app.html',
 	styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
+	private readonly http = inject(HttpClient);
+	private readonly starMapFileService = inject(StarMapFileService);
 	private readonly store = inject(StarMapStore);
+
 	protected title = 'starmap';
 
-	constructor() {
-		this.store.setMap(demoMap);
+	ngOnInit(): void {
+		void this.loadMap();
+	}
+
+	private async loadMap(): Promise<void> {
+		const content = await firstValueFrom(
+			this.http.get('/assets/maps/starmap.json', {
+				responseType: 'text'
+			})
+		);
+
+		const map = this.starMapFileService.deserialize(content);
+
+		this.store.setMap(map);
 	}
 }
