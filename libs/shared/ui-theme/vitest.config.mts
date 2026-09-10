@@ -10,7 +10,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	root: __dirname,
+	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/ui-theme'),
 	plugins: [angular(), tsconfigPaths()],
 	test: {
