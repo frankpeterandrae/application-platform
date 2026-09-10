@@ -5,57 +5,12 @@ on:
     branches: [main]
 
 jobs:
-  decide:
-    runs-on: ubuntu-latest
-    outputs:
-      deploy_homepage: ${{ steps.flags.outputs.deploy_homepage }}
-      base: ${{ steps.shas.outputs.base }}
-      head: ${{ steps.shas.outputs.head }}
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Determine base/head SHAs
-        id: shas
-        run: |
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            echo "base=HEAD~1" >> $GITHUB_OUTPUT
-            echo "head=HEAD" >> $GITHUB_OUTPUT
-          else
-            echo "base=${{ github.event.before }}" >> $GITHUB_OUTPUT
-            echo "head=${{ github.event.after }}" >> $GITHUB_OUTPUT
-          fi
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-
-      - name: Use npm 11
-        run: npm i -g npm@11.17.0
-
-      - run: npm ci --ignore-scripts
-
-      - name: Decide deploy (only if homepage affected)
-        id: flags
-        run: |
-          npx nx show projects --affected --target=build --base=${{ steps.shas.outputs.base }} --head=${{ steps.shas.outputs.head }} > affected.txt || true
-          echo "Affected projects:"; cat affected.txt || true
-
-          if grep -E '(^|[^a-zA-Z0-9_-])homepage([^a-zA-Z0-9_-]|$)' affected.txt >/dev/null 2>&1; then
-            echo "deploy_homepage=true" >> $GITHUB_OUTPUT
-          else
-            echo "deploy_homepage=false" >> $GITHUB_OUTPUT
-          fi
-
   ci:
-    needs: [decide]
     uses: ./.github/workflows/_reusable-nx-ci.yml
     with:
       mode: main
+      base: ${{ github.event.before }}
+      head: ${{ github.event.after }}
       run_sonar: true
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -63,23 +18,20 @@ jobs:
       SONAR_ORG: ${{ secrets.SONAR_ORG }}
 
   deploy-homepage:
-    needs: [decide, ci]
-    if: needs.decide.outputs.deploy_homepage == 'true'
+    needs: [ ci ]
+    if: needs.ci.outputs.homepage_affected == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: "npm"
-
-      - name: Use npm 11
-        run: npm i -g npm@11.17.0
 
       - run: npm ci --ignore-scripts
 
@@ -110,7 +62,7 @@ jobs:
           echo "Deploy marker: $TAG"
 
       - name: Upload to FTP server
-        uses: SamKirkland/FTP-Deploy-Action@a51268f67f6605236975928ae28b0f7e9971d50a
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
