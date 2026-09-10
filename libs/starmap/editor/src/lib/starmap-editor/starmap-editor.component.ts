@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import {
 	ButtonBarComponent,
 	ButtonColorDefinition,
@@ -13,7 +13,8 @@ import {
 	MenuItem,
 	SidebarComponent
 } from '@application-platform/shared/ui-theme';
-import { StarMapStore } from '@application-platform/starmap-data-access';
+import { BrowserFileService, createFileName } from '@application-platform/shared-ui';
+import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
 import { Nebula, randomSpectralType, StarSystem } from '@application-platform/starmap-domain';
 import { StarmapComponent } from '@application-platform/starmap-map';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
@@ -51,11 +52,14 @@ type EditorSelection =
 })
 export class StarmapEditorComponent {
 	protected readonly store = inject(StarMapStore);
+	private readonly starMapFileService = inject(StarMapFileService);
+	private readonly browserFileService = inject(BrowserFileService);
 	protected readonly iconDefinition = IconDefinition;
 
 	protected readonly editorSelection = signal<EditorSelection | null>(null);
 	protected readonly editorOpen = signal(true);
 	private readonly starmap = viewChild<StarmapComponent>(StarmapComponent);
+	private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
 	protected readonly menuItems = computed<MenuItem[]>(() => {
 		const map = this.store.map();
@@ -144,15 +148,21 @@ export class StarmapEditorComponent {
 			callback: () => this.starmap()?.fitToViewport()
 		},
 		{
+			buttonText: 'Karte laden',
+			color: ButtonColorDefinition.PRIMARY,
+			callback: () => this.fileInput()?.nativeElement.click()
+		},
+		{
+			buttonText: 'Karte speichern',
+			color: ButtonColorDefinition.PRIMARY,
+			callback: () => this.saveMap()
+		},
+		{
 			buttonText: 'SVG exportieren',
 			color: ButtonColorDefinition.PRIMARY,
 			callback: () => this.starmap()?.exportSvg()
 		}
 	];
-
-	protected selectSystem(systemId: string): void {
-		this.store.selectSystem(systemId);
-	}
 
 	protected saveSystem(system: StarSystem): void {
 		this.store.updateSystem(system);
@@ -236,5 +246,35 @@ export class StarmapEditorComponent {
 	protected deleteNebula(nebulaId: string): void {
 		this.store.deleteNebula(nebulaId);
 		this.editorSelection.set(null);
+	}
+
+	protected async loadMap(event: Event): Promise<void> {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+
+		if (!file) {
+			return;
+		}
+
+		const content = await file.text();
+		const map = this.starMapFileService.deserialize(content);
+
+		this.store.setMap(map);
+		this.editorSelection.set(null);
+		this.store.selectSystem(null);
+
+		input.value = '';
+	}
+
+	private saveMap(): void {
+		const map = this.store.map();
+
+		if (!map) {
+			return;
+		}
+
+		const content = this.starMapFileService.serialize(map);
+
+		this.browserFileService.save(content, `${createFileName(map.name)}.json`, 'application/json;charset=utf-8');
 	}
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-
+import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-platform/starmap-map';
 
@@ -23,5 +23,11 @@ describe('appConfig', () => {
 		const browserPersistence = TestBed.inject(BrowserSvgPersistenceService);
 
 		expect(persistence).toBe(browserPersistence);
+	});
+
+	it('should provide HttpClient', () => {
+		const http = TestBed.inject(HttpClient);
+
+		expect(http).toBeTruthy();
 	});
 });

@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { BrowserFileService } from '@application-platform/shared-ui';
 
 import { SvgPersistence } from './svg-persistence';
 
@@ -14,25 +15,14 @@ import { SvgPersistence } from './svg-persistence';
 	providedIn: 'root'
 })
 export class BrowserSvgPersistenceService implements SvgPersistence {
+	private readonly browserFileService = inject(BrowserFileService);
+
 	/**
 	 * Saves the given SVG content to a file with the specified name.
 	 * @param content The SVG content to save.
 	 * @param fileName The name of the file to save the content as.
 	 */
 	public save(content: string, fileName: string): void {
-		const blob = new Blob([content], {
-			type: 'image/svg+xml;charset=utf-8'
-		});
-
-		const url = URL.createObjectURL(blob);
-
-		const link = document.createElement('a');
-
-		link.href = url;
-		link.download = fileName;
-
-		link.click();
-
-		URL.revokeObjectURL(url);
+		this.browserFileService.save(content, fileName, 'image/svg+xml;charset=utf-8');
 	}
 }

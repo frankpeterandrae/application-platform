@@ -78,6 +78,7 @@
 				"runnerConfig": "apps/starmap/vitest.config.mts",
 				"coverage": true,
 				"coverageInclude": ["src/**/*.ts"],
+				"coverageExclude": ["libs/**/*.ts"],
 				"coverageReporters": ["html", "text", "lcov"],
 				"reporters": ["html", "default", "verbose"],
 				"outputFile": "test-result/apps/starmap/index.html"

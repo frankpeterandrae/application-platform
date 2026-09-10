@@ -4,6 +4,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserFileService } from '@application-platform/shared-ui';
 import { StarMapStore } from '@application-platform/starmap-data-access';
 import { StarMap } from '@application-platform/starmap-domain';
 import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-platform/starmap-map';
@@ -270,9 +271,114 @@ describe('StarmapEditorComponent', () => {
 		expect((component as any).editorSelection()).toBeNull();
 	});
 
-	it('should select a system directly in the store', () => {
-		(component as any).selectSystem('S005');
+	it('should return no menu items when no map exists', () => {
+		store.clear();
 
-		expect(store.selectedSystemId()).toBe('S005');
+		expect((component as any).menuItems()).toEqual([]);
+	});
+
+	it('should load a map from a file', async () => {
+		const loadedMap: StarMap = {
+			id: 'loaded-map',
+			name: 'Loaded Map',
+			systems: [],
+			jumpLinks: [],
+			nebulae: []
+		};
+
+		const content = JSON.stringify({
+			version: 1,
+			map: loadedMap
+		});
+
+		const file = {
+			text: vi.fn().mockResolvedValue(content)
+		};
+
+		const input = {
+			files: [file],
+			value: 'starmap.json'
+		};
+
+		await (component as any).loadMap({
+			target: input
+		} as unknown as Event);
+
+		expect(store.map()).toEqual(loadedMap);
+		expect((component as any).editorSelection()).toBeNull();
+		expect(store.selectedSystemId()).toBeNull();
+		expect(input.value).toBe('');
+	});
+
+	it('should not load a map when no file is selected', async () => {
+		const originalMap = store.map();
+
+		const input = {
+			files: [],
+			value: ''
+		};
+
+		await (component as any).loadMap({
+			target: input
+		} as unknown as Event);
+
+		expect(store.map()).toEqual(originalMap);
+	});
+
+	it('should save the current map as json', () => {
+		const browserFileService = TestBed.inject(BrowserFileService);
+
+		const saveSpy = vi.spyOn(browserFileService, 'save').mockImplementation(() => undefined);
+
+		(component as any).saveMap();
+
+		expect(saveSpy).toHaveBeenCalledWith(expect.any(String), 'test-map.json', 'application/json;charset=utf-8');
+
+		const content = saveSpy.mock.calls[0][0];
+
+		expect(JSON.parse(content)).toEqual({
+			version: 1,
+			map
+		});
+	});
+
+	it('should not save when no map exists', () => {
+		const browserFileService = TestBed.inject(BrowserFileService);
+
+		const saveSpy = vi.spyOn(browserFileService, 'save').mockImplementation(() => undefined);
+
+		store.clear();
+
+		(component as any).saveMap();
+
+		expect(saveSpy).not.toHaveBeenCalled();
+	});
+
+	it('should execute the create system toolbar action', () => {
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Neues System');
+
+		button.callback();
+
+		expect(store.map()?.systems).toHaveLength(4);
+	});
+
+	it('should execute the create nebula toolbar action', () => {
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Neuer Nebel');
+
+		button.callback();
+
+		expect(store.map()?.nebulae).toHaveLength(2);
+	});
+
+	it('should execute the save map toolbar action', () => {
+		const browserFileService = TestBed.inject(BrowserFileService);
+
+		const saveSpy = vi.spyOn(browserFileService, 'save').mockImplementation(() => undefined);
+
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Karte speichern');
+
+		button.callback();
+
+		expect(saveSpy).toHaveBeenCalled();
 	});
 });

@@ -3,4 +3,6 @@
  * All rights reserved.
  */
 
+export * from './lib/persistence/star-map-file.model';
+export * from './lib/persistence/star-map-file.service';
 export * from './lib/store/star-map.store';

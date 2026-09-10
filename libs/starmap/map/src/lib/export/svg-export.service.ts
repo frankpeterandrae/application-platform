@@ -4,6 +4,7 @@
  */
 
 import { inject, Injectable } from '@angular/core';
+import { createFileName } from '@application-platform/shared-ui';
 
 import { SVG_PERSISTENCE } from './svg-persistence.token';
 
@@ -24,18 +25,8 @@ export class SvgExportService {
 	public export(svg: SVGSVGElement, mapName: string): void {
 		const content = new XMLSerializer().serializeToString(svg);
 
-		const fileName = `${this.createFileName(mapName)}.svg`;
+		const fileName = `${createFileName(mapName)}.svg`;
 
 		this.persistence.save(content, fileName);
-	}
-
-	private createFileName(mapName: string): string {
-		const normalized = mapName
-			.trim()
-			.toLowerCase()
-			.replace(/\s+/g, '-')
-			.replace(/[^a-z0-9-_]/g, '');
-
-		return normalized || 'starmap';
 	}
 }

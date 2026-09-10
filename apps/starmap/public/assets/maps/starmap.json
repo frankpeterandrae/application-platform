@@ -1,0 +1,2527 @@
+{
+	"version": 1,
+	"map": {
+		"id": "halo-stars",
+		"name": "Halo Stars",
+		"systems": [
+			{
+				"id": "S001",
+				"name": "Trinitas Obscura",
+				"position": {
+					"x": 0,
+					"y": -1,
+					"z": -2
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					},
+					{
+						"spectralType": "M0"
+					},
+					{
+						"spectralType": "K1"
+					}
+				],
+				"planets": [],
+				"faction": "trwrs"
+			},
+			{
+				"id": "S002",
+				"name": "Yankie",
+				"position": {
+					"x": 2,
+					"y": 0,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "M9"
+					}
+				],
+				"planets": [
+					{
+						"id": "P001",
+						"name": "Massilo",
+						"type": "volcanic",
+						"classification": "Bergwerksplanet"
+					}
+				]
+			},
+			{
+				"id": "S003",
+				"name": "Checkpoint Calidus",
+				"position": {
+					"x": 2,
+					"y": 1,
+					"z": 4
+				},
+				"stars": [
+					{
+						"spectralType": "K5"
+					},
+					{
+						"spectralType": "G6"
+					}
+				],
+				"planets": [
+					{
+						"id": "P002",
+						"name": "Calidus",
+						"type": "barren",
+						"classification": "Fabrikwelt"
+					}
+				]
+			},
+			{
+				"id": "S004",
+				"name": "Lionis",
+				"position": {
+					"x": 0,
+					"y": 2,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "A0"
+					}
+				],
+				"planets": [
+					{
+						"id": "P003",
+						"name": "Hedang VI",
+						"type": "terran",
+						"classification": "Agrarwelt"
+					}
+				]
+			},
+			{
+				"id": "S005",
+				"name": "Ritterswacht",
+				"position": {
+					"x": -2,
+					"y": 1,
+					"z": 7
+				},
+				"stars": [
+					{
+						"spectralType": "G7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S006",
+				"name": "Halos End",
+				"position": {
+					"x": -1,
+					"y": 0,
+					"z": -3
+				},
+				"stars": [
+					{
+						"spectralType": "A0"
+					}
+				],
+				"planets": [
+					{
+						"id": "P004",
+						"name": "Duaro",
+						"type": "barren",
+						"classification": "Makropolwelt"
+					}
+				]
+			},
+			{
+				"id": "S007",
+				"name": "S018",
+				"position": {
+					"x": -2,
+					"y": 7,
+					"z": 1
+				},
+				"stars": [
+					{
+						"spectralType": "K4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S008",
+				"name": "Wesd Schild",
+				"position": {
+					"x": -4,
+					"y": 3,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S009",
+				"name": "S008",
+				"position": {
+					"x": 0,
+					"y": 8,
+					"z": -3
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S010",
+				"name": "Lapsis",
+				"position": {
+					"x": -1,
+					"y": 4,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "O2"
+					}
+				],
+				"planets": [
+					{
+						"id": "P005",
+						"name": "Lapsi Prime",
+						"type": "barren",
+						"classification": "Kronwelt"
+					}
+				]
+			},
+			{
+				"id": "S011",
+				"name": "Taxany",
+				"position": {
+					"x": -2,
+					"y": 3,
+					"z": -3
+				},
+				"stars": [
+					{
+						"spectralType": "K5III"
+					}
+				],
+				"planets": [
+					{
+						"id": "P006",
+						"name": "Taxany Primus",
+						"type": "barren",
+						"classification": "Leblose Welt"
+					},
+					{
+						"id": "P007",
+						"name": "Taxany Secundus",
+						"type": "volcanic",
+						"classification": "Ozeanwelt"
+					},
+					{
+						"id": "P008",
+						"name": "Taxany Tertius (Nexuswelt)",
+						"type": "desert",
+						"classification": "Sonstige Welt"
+					}
+				]
+			},
+			{
+				"id": "S012",
+				"name": "Ost Schild",
+				"position": {
+					"x": 5,
+					"y": 0,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S013",
+				"name": "Herzogskreuz",
+				"position": {
+					"x": 5,
+					"y": 3,
+					"z": -1
+				},
+				"stars": [
+					{
+						"spectralType": "K5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S014",
+				"name": "Solars Fort",
+				"position": {
+					"x": 4,
+					"y": -3,
+					"z": -5
+				},
+				"stars": [
+					{
+						"spectralType": "K4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S015",
+				"name": "Basilis",
+				"position": {
+					"x": 2,
+					"y": -4,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "K5"
+					}
+				],
+				"planets": [
+					{
+						"id": "P009",
+						"name": "Basilis V",
+						"type": "ocean",
+						"classification": "Festungswelt"
+					}
+				]
+			},
+			{
+				"id": "S016",
+				"name": "Nord Schild",
+				"position": {
+					"x": 0,
+					"y": -4,
+					"z": -1
+				},
+				"stars": [
+					{
+						"spectralType": "K9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S017",
+				"name": "Orcus",
+				"position": {
+					"x": -4,
+					"y": -1,
+					"z": -1
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S018",
+				"name": "Magna",
+				"position": {
+					"x": -3,
+					"y": 4,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M5"
+					}
+				],
+				"planets": [
+					{
+						"id": "P010",
+						"name": "Magna IV",
+						"type": "terran",
+						"classification": "Fabrikwelt"
+					}
+				],
+				"faction": "Halo Gardians"
+			},
+			{
+				"id": "S019",
+				"name": "Pulsis",
+				"position": {
+					"x": -1,
+					"y": 5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M8"
+					}
+				],
+				"planets": [
+					{
+						"id": "P011",
+						"name": "Infitum Pulsis",
+						"type": "terran",
+						"classification": "Thronwelt"
+					}
+				]
+			},
+			{
+				"id": "S020",
+				"name": "Schneiße des Imperator",
+				"position": {
+					"x": 3,
+					"y": 13,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "F3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S021",
+				"name": "S016",
+				"position": {
+					"x": 6,
+					"y": -5,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S022",
+				"name": "Die Anomalie",
+				"position": {
+					"x": 18,
+					"y": 1,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S023",
+				"name": "Akpfeth",
+				"position": {
+					"x": 18,
+					"y": 5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S024",
+				"name": "Die Anomalie 2",
+				"position": {
+					"x": 17,
+					"y": 2,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S025",
+				"name": "Die Anomalie 3",
+				"position": {
+					"x": 19,
+					"y": 0,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S026",
+				"name": "Die Anomalie 4",
+				"position": {
+					"x": 19,
+					"y": 2,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S027",
+				"name": "Runlax",
+				"position": {
+					"x": 22,
+					"y": -2,
+					"z": 4
+				},
+				"stars": [
+					{
+						"spectralType": "G3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S028",
+				"name": "Laonpetk",
+				"position": {
+					"x": 18,
+					"y": -6,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S029",
+				"name": "Vjaeokh",
+				"position": {
+					"x": 19,
+					"y": -5,
+					"z": 1
+				},
+				"stars": [
+					{
+						"spectralType": "M1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S030",
+				"name": "Naocar",
+				"position": {
+					"x": 17,
+					"y": -7,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "M0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S031",
+				"name": "Pcarris",
+				"position": {
+					"x": 17,
+					"y": -5,
+					"z": 1
+				},
+				"stars": [
+					{
+						"spectralType": "K4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S032",
+				"name": "Karzhak",
+				"position": {
+					"x": 16,
+					"y": -2,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S033",
+				"name": "S019",
+				"position": {
+					"x": 23,
+					"y": 2,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S034",
+				"name": "S020",
+				"position": {
+					"x": 15,
+					"y": 1,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S035",
+				"name": "S021",
+				"position": {
+					"x": 22,
+					"y": 5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S036",
+				"name": "S022",
+				"position": {
+					"x": 16,
+					"y": 4,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S037",
+				"name": "S023",
+				"position": {
+					"x": 16,
+					"y": -4,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S038",
+				"name": "S024",
+				"position": {
+					"x": 14,
+					"y": -6,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S039",
+				"name": "S025",
+				"position": {
+					"x": 18,
+					"y": -8,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S040",
+				"name": "S026",
+				"position": {
+					"x": 21,
+					"y": -6,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S041",
+				"name": "Die Ewige Bastion",
+				"position": {
+					"x": 23,
+					"y": -10,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "M8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S042",
+				"name": "S027",
+				"position": {
+					"x": 13,
+					"y": 3,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S043",
+				"name": "S028",
+				"position": {
+					"x": 8,
+					"y": 1,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S044",
+				"name": "Helios",
+				"position": {
+					"x": 9,
+					"y": -4,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "A7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S045",
+				"name": "Frontwelt 4",
+				"position": {
+					"x": -9,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "B3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S046",
+				"name": "Adramis",
+				"position": {
+					"x": -18,
+					"y": 7,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S047",
+				"name": "S029",
+				"position": {
+					"x": -19,
+					"y": 8,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "M9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S048",
+				"name": "S030",
+				"position": {
+					"x": -17,
+					"y": 6,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "F5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S049",
+				"name": "S031",
+				"position": {
+					"x": -20,
+					"y": 5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S050",
+				"name": "S032",
+				"position": {
+					"x": -17,
+					"y": 9,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S051",
+				"name": "Hellas",
+				"position": {
+					"x": -16,
+					"y": -1,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S052",
+				"name": "S033",
+				"position": {
+					"x": -10,
+					"y": -3,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S053",
+				"name": "S034",
+				"position": {
+					"x": -13,
+					"y": -4,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "F2"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S054",
+				"name": "S035",
+				"position": {
+					"x": -9,
+					"y": -5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S055",
+				"name": "S036",
+				"position": {
+					"x": -6,
+					"y": -5,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S056",
+				"name": "S037",
+				"position": {
+					"x": -14,
+					"y": 2,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S057",
+				"name": "Eros",
+				"position": {
+					"x": -12,
+					"y": 3,
+					"z": 2
+				},
+				"stars": [
+					{
+						"spectralType": "K8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S058",
+				"name": "S039",
+				"position": {
+					"x": -9,
+					"y": 1,
+					"z": -3
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S059",
+				"name": "S040",
+				"position": {
+					"x": -16,
+					"y": 2,
+					"z": 3
+				},
+				"stars": [
+					{
+						"spectralType": "G0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S060",
+				"name": "S041",
+				"position": {
+					"x": -18,
+					"y": 0,
+					"z": -1
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S061",
+				"name": "Jai’ppan",
+				"position": {
+					"x": -20,
+					"y": -3,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S062",
+				"name": "S042",
+				"position": {
+					"x": -18,
+					"y": -2,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S063",
+				"name": "S043",
+				"position": {
+					"x": -17,
+					"y": -4,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S064",
+				"name": "S044",
+				"position": {
+					"x": -19,
+					"y": -6,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S065",
+				"name": "S045",
+				"position": {
+					"x": -16,
+					"y": -7,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "A6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S066",
+				"name": "S046",
+				"position": {
+					"x": -22,
+					"y": -6,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "F9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S067",
+				"name": "S047",
+				"position": {
+					"x": -21,
+					"y": -8,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S068",
+				"name": "Frontwelt 1",
+				"position": {
+					"x": -17,
+					"y": -10,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S069",
+				"name": "Frontwelt 2",
+				"position": {
+					"x": -20,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S070",
+				"name": "Frontwelt 3",
+				"position": {
+					"x": -13,
+					"y": -9,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G9"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S071",
+				"name": "Frontwelt 5",
+				"position": {
+					"x": -6,
+					"y": -13,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G2"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S072",
+				"name": "Frontwelt 6",
+				"position": {
+					"x": 0,
+					"y": -8,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S073",
+				"name": "S048",
+				"position": {
+					"x": -5,
+					"y": -7,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S074",
+				"name": "Frontwelt 7",
+				"position": {
+					"x": -3,
+					"y": -12,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M5"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S075",
+				"name": "Frontwelt 8",
+				"position": {
+					"x": 3,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S076",
+				"name": "Frontwelt 9",
+				"position": {
+					"x": 7,
+					"y": -14,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "A1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S077",
+				"name": "Frontwelt 10",
+				"position": {
+					"x": 10,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S078",
+				"name": "Frontwelt 11",
+				"position": {
+					"x": 14,
+					"y": -13,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S079",
+				"name": "Frontwelt 12",
+				"position": {
+					"x": 18,
+					"y": -12,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "K2"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S080",
+				"name": "Frontwelt 13",
+				"position": {
+					"x": 21,
+					"y": -10,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "A0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S081",
+				"name": "Occulus",
+				"position": {
+					"x": 25,
+					"y": -12,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "F0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S082",
+				"name": "Ewige Bastion 1",
+				"position": {
+					"x": 27,
+					"y": -14,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M8"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S083",
+				"name": "Ewige Bastion 2",
+				"position": {
+					"x": 23,
+					"y": -12,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S084",
+				"name": "Ewige Bastion 3",
+				"position": {
+					"x": 26,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "A6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S085",
+				"name": "Ewige Bastion 4",
+				"position": {
+					"x": 25,
+					"y": -13,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S086",
+				"name": "Ewige Bastion 5",
+				"position": {
+					"x": 27,
+					"y": -12,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S087",
+				"name": "Ewige Bastion 6",
+				"position": {
+					"x": 24,
+					"y": -11,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "G2"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S088",
+				"name": "Ewige Bastion 7",
+				"position": {
+					"x": 29,
+					"y": -13,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S089",
+				"name": "Ewige Bastion 8",
+				"position": {
+					"x": 29,
+					"y": -15,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "F3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S090",
+				"name": "Werdra",
+				"position": {
+					"x": 9,
+					"y": 6,
+					"z": -9
+				},
+				"stars": [
+					{
+						"spectralType": "K7"
+					}
+				],
+				"planets": [],
+				"faction": "Imperial"
+			},
+			{
+				"id": "S091",
+				"name": "Kharos",
+				"position": {
+					"x": 10,
+					"y": 7,
+					"z": -9
+				},
+				"stars": [
+					{
+						"spectralType": "G7"
+					}
+				],
+				"planets": [
+					{
+						"id": "P012",
+						"name": "Kharos Beta",
+						"type": "volcanic",
+						"classification": "Bergwerksplanet"
+					}
+				],
+				"faction": "Imperial"
+			},
+			{
+				"id": "S092",
+				"name": "Veltrion",
+				"position": {
+					"x": 9,
+					"y": 9,
+					"z": 0
+				},
+				"stars": [
+					{
+						"spectralType": "M2"
+					}
+				],
+				"planets": [
+					{
+						"id": "P013",
+						"name": "Veltrion III",
+						"type": "terran",
+						"classification": "Sonstige Welt"
+					}
+				],
+				"faction": "Imperial"
+			},
+			{
+				"id": "S093",
+				"name": "Nemeris",
+				"position": {
+					"x": 8,
+					"y": 8,
+					"z": -6
+				},
+				"stars": [
+					{
+						"spectralType": "M7"
+					}
+				],
+				"planets": [
+					{
+						"id": "P014",
+						"name": "Nemeris IV",
+						"type": "ocean",
+						"classification": "Ozeanwelt"
+					},
+					{
+						"id": "P015",
+						"name": "Nemeris III",
+						"type": "terran",
+						"classification": "Agrarwelt"
+					}
+				],
+				"faction": "Imperial"
+			},
+			{
+				"id": "S094",
+				"name": "Mordane",
+				"position": {
+					"x": 12,
+					"y": 10,
+					"z": -2
+				},
+				"stars": [
+					{
+						"spectralType": "F4"
+					}
+				],
+				"planets": [
+					{
+						"id": "P016",
+						"name": "Mordane",
+						"type": "barren",
+						"classification": "Höhlenwelt"
+					}
+				]
+			},
+			{
+				"id": "S095",
+				"name": "Thessara",
+				"position": {
+					"x": 13,
+					"y": 9,
+					"z": -8
+				},
+				"stars": [
+					{
+						"spectralType": "F2"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S096",
+				"name": "Elyndra",
+				"position": {
+					"x": 14,
+					"y": 8,
+					"z": 7
+				},
+				"stars": [
+					{
+						"spectralType": "G6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S097",
+				"name": "Korvax",
+				"position": {
+					"x": 14,
+					"y": 12,
+					"z": 7
+				},
+				"stars": [
+					{
+						"spectralType": "K7"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S098",
+				"name": "Avarn",
+				"position": {
+					"x": 15,
+					"y": 10,
+					"z": -5
+				},
+				"stars": [
+					{
+						"spectralType": "G6"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S099",
+				"name": "Veyron",
+				"position": {
+					"x": 12,
+					"y": 12,
+					"z": -3
+				},
+				"stars": [
+					{
+						"spectralType": "M3"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S100",
+				"name": "Caldris",
+				"position": {
+					"x": 18,
+					"y": 10,
+					"z": -8
+				},
+				"stars": [
+					{
+						"spectralType": "M1"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S101",
+				"name": "Zerath",
+				"position": {
+					"x": 19,
+					"y": 11,
+					"z": -5
+				},
+				"stars": [
+					{
+						"spectralType": "K4"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S102",
+				"name": "S049",
+				"position": {
+					"x": 5,
+					"y": 4,
+					"z": -4
+				},
+				"stars": [
+					{
+						"spectralType": "A0"
+					}
+				],
+				"planets": []
+			},
+			{
+				"id": "S103",
+				"name": "S050",
+				"position": {
+					"x": 4,
+					"y": 5,
+					"z": -8
+				},
+				"stars": [
+					{
+						"spectralType": "K8"
+					}
+				],
+				"planets": []
+			}
+		],
+		"jumpLinks": [
+			{
+				"id": "J001",
+				"startSystemId": "S001",
+				"endSystemId": "S002",
+				"status": "dangerous"
+			},
+			{
+				"id": "J002",
+				"startSystemId": "S002",
+				"endSystemId": "S003",
+				"status": "normal"
+			},
+			{
+				"id": "J003",
+				"startSystemId": "S001",
+				"endSystemId": "S006",
+				"status": "dangerous"
+			},
+			{
+				"id": "J004",
+				"startSystemId": "S005",
+				"endSystemId": "S006",
+				"status": "normal"
+			},
+			{
+				"id": "J005",
+				"startSystemId": "S005",
+				"endSystemId": "S004",
+				"status": "normal"
+			},
+			{
+				"id": "J006",
+				"startSystemId": "S003",
+				"endSystemId": "S004",
+				"status": "normal"
+			},
+			{
+				"id": "J007",
+				"startSystemId": "S008",
+				"endSystemId": "S005",
+				"status": "normal"
+			},
+			{
+				"id": "J008",
+				"startSystemId": "S011",
+				"endSystemId": "S010",
+				"status": "normal"
+			},
+			{
+				"id": "J009",
+				"startSystemId": "S019",
+				"endSystemId": "S013",
+				"status": "normal"
+			},
+			{
+				"id": "J010",
+				"startSystemId": "S013",
+				"endSystemId": "S012",
+				"status": "normal"
+			},
+			{
+				"id": "J011",
+				"startSystemId": "S014",
+				"endSystemId": "S012",
+				"status": "normal"
+			},
+			{
+				"id": "J012",
+				"startSystemId": "S015",
+				"endSystemId": "S014",
+				"status": "normal"
+			},
+			{
+				"id": "J013",
+				"startSystemId": "S016",
+				"endSystemId": "S015",
+				"status": "normal"
+			},
+			{
+				"id": "J014",
+				"startSystemId": "S016",
+				"endSystemId": "S017",
+				"status": "normal"
+			},
+			{
+				"id": "J015",
+				"startSystemId": "S008",
+				"endSystemId": "S017",
+				"status": "normal"
+			},
+			{
+				"id": "J016",
+				"startSystemId": "S008",
+				"endSystemId": "S018",
+				"status": "normal"
+			},
+			{
+				"id": "J017",
+				"startSystemId": "S018",
+				"endSystemId": "S019",
+				"status": "normal"
+			},
+			{
+				"id": "J018",
+				"startSystemId": "S007",
+				"endSystemId": "S019",
+				"status": "normal"
+			},
+			{
+				"id": "J019",
+				"startSystemId": "S003",
+				"endSystemId": "S012",
+				"status": "normal"
+			},
+			{
+				"id": "J020",
+				"startSystemId": "S014",
+				"endSystemId": "S003",
+				"status": "caution"
+			},
+			{
+				"id": "J021",
+				"startSystemId": "S001",
+				"endSystemId": "S016",
+				"status": "blocked"
+			},
+			{
+				"id": "J022",
+				"startSystemId": "S010",
+				"endSystemId": "S019",
+				"status": "caution"
+			},
+			{
+				"id": "J023",
+				"startSystemId": "S009",
+				"endSystemId": "S019",
+				"status": "normal"
+			},
+			{
+				"id": "J024",
+				"startSystemId": "S020",
+				"endSystemId": "S009",
+				"status": "blocked"
+			},
+			{
+				"id": "J025",
+				"startSystemId": "S021",
+				"endSystemId": "S014",
+				"status": "caution"
+			},
+			{
+				"id": "J026",
+				"startSystemId": "S034",
+				"endSystemId": "S033",
+				"status": "blocked"
+			},
+			{
+				"id": "J027",
+				"startSystemId": "S035",
+				"endSystemId": "S034",
+				"status": "blocked"
+			},
+			{
+				"id": "J028",
+				"startSystemId": "S033",
+				"endSystemId": "S027",
+				"status": "dangerous"
+			},
+			{
+				"id": "J029",
+				"startSystemId": "S036",
+				"endSystemId": "S035",
+				"status": "dangerous"
+			},
+			{
+				"id": "J030",
+				"startSystemId": "S034",
+				"endSystemId": "S036",
+				"status": "dangerous"
+			},
+			{
+				"id": "J031",
+				"startSystemId": "S034",
+				"endSystemId": "S027",
+				"status": "dangerous"
+			},
+			{
+				"id": "J032",
+				"startSystemId": "S037",
+				"endSystemId": "S027",
+				"status": "caution"
+			},
+			{
+				"id": "J033",
+				"startSystemId": "S038",
+				"endSystemId": "S037",
+				"status": "dangerous"
+			},
+			{
+				"id": "J034",
+				"startSystemId": "S039",
+				"endSystemId": "S038",
+				"status": "dangerous"
+			},
+			{
+				"id": "J035",
+				"startSystemId": "S040",
+				"endSystemId": "S039",
+				"status": "dangerous"
+			},
+			{
+				"id": "J036",
+				"startSystemId": "S040",
+				"endSystemId": "S037",
+				"status": "blocked"
+			},
+			{
+				"id": "J037",
+				"startSystemId": "S040",
+				"endSystemId": "S027",
+				"status": "dangerous"
+			},
+			{
+				"id": "J038",
+				"startSystemId": "S034",
+				"endSystemId": "S038",
+				"status": "blocked"
+			},
+			{
+				"id": "J039",
+				"startSystemId": "S042",
+				"endSystemId": "S043",
+				"status": "normal"
+			},
+			{
+				"id": "J040",
+				"startSystemId": "S043",
+				"endSystemId": "S012",
+				"status": "normal"
+			},
+			{
+				"id": "J041",
+				"startSystemId": "S042",
+				"endSystemId": "S036",
+				"status": "normal"
+			},
+			{
+				"id": "J042",
+				"startSystemId": "S044",
+				"endSystemId": "S021",
+				"status": "caution"
+			},
+			{
+				"id": "J043",
+				"startSystemId": "S044",
+				"endSystemId": "S038",
+				"status": "caution"
+			},
+			{
+				"id": "J044",
+				"startSystemId": "S039",
+				"endSystemId": "S041",
+				"status": "normal"
+			},
+			{
+				"id": "J045",
+				"startSystemId": "S046",
+				"endSystemId": "S050",
+				"status": "normal"
+			},
+			{
+				"id": "J046",
+				"startSystemId": "S046",
+				"endSystemId": "S048",
+				"status": "normal"
+			},
+			{
+				"id": "J047",
+				"startSystemId": "S046",
+				"endSystemId": "S047",
+				"status": "normal"
+			},
+			{
+				"id": "J048",
+				"startSystemId": "S046",
+				"endSystemId": "S049",
+				"status": "normal"
+			},
+			{
+				"id": "J049",
+				"startSystemId": "S050",
+				"endSystemId": "S048",
+				"status": "normal"
+			},
+			{
+				"id": "J050",
+				"startSystemId": "S050",
+				"endSystemId": "S047",
+				"status": "normal"
+			},
+			{
+				"id": "J051",
+				"startSystemId": "S048",
+				"endSystemId": "S049",
+				"status": "normal"
+			},
+			{
+				"id": "J052",
+				"startSystemId": "S056",
+				"endSystemId": "S051",
+				"status": "blocked"
+			},
+			{
+				"id": "J053",
+				"startSystemId": "S057",
+				"endSystemId": "S056",
+				"status": "dangerous"
+			},
+			{
+				"id": "J054",
+				"startSystemId": "S057",
+				"endSystemId": "S048",
+				"status": "normal"
+			},
+			{
+				"id": "J055",
+				"startSystemId": "S058",
+				"endSystemId": "S008",
+				"status": "normal"
+			},
+			{
+				"id": "J056",
+				"startSystemId": "S058",
+				"endSystemId": "S057",
+				"status": "normal"
+			},
+			{
+				"id": "J057",
+				"startSystemId": "S059",
+				"endSystemId": "S056",
+				"status": "dangerous"
+			},
+			{
+				"id": "J058",
+				"startSystemId": "S060",
+				"endSystemId": "S059",
+				"status": "dangerous"
+			},
+			{
+				"id": "J059",
+				"startSystemId": "S060",
+				"endSystemId": "S051",
+				"status": "dangerous"
+			},
+			{
+				"id": "J060",
+				"startSystemId": "S055",
+				"endSystemId": "S016",
+				"status": "caution"
+			},
+			{
+				"id": "J061",
+				"startSystemId": "S055",
+				"endSystemId": "S054",
+				"status": "caution"
+			},
+			{
+				"id": "J062",
+				"startSystemId": "S052",
+				"endSystemId": "S054",
+				"status": "caution"
+			},
+			{
+				"id": "J063",
+				"startSystemId": "S053",
+				"endSystemId": "S052",
+				"status": "dangerous"
+			},
+			{
+				"id": "J064",
+				"startSystemId": "S053",
+				"endSystemId": "S051",
+				"status": "blocked"
+			},
+			{
+				"id": "J065",
+				"startSystemId": "S052",
+				"endSystemId": "S058",
+				"status": "caution"
+			},
+			{
+				"id": "J066",
+				"startSystemId": "S062",
+				"endSystemId": "S061",
+				"status": "normal"
+			},
+			{
+				"id": "J067",
+				"startSystemId": "S060",
+				"endSystemId": "S062",
+				"status": "normal"
+			},
+			{
+				"id": "J068",
+				"startSystemId": "S063",
+				"endSystemId": "S061",
+				"status": "normal"
+			},
+			{
+				"id": "J069",
+				"startSystemId": "S064",
+				"endSystemId": "S063",
+				"status": "normal"
+			},
+			{
+				"id": "J070",
+				"startSystemId": "S065",
+				"endSystemId": "S063",
+				"status": "normal"
+			},
+			{
+				"id": "J071",
+				"startSystemId": "S066",
+				"endSystemId": "S064",
+				"status": "normal"
+			},
+			{
+				"id": "J072",
+				"startSystemId": "S067",
+				"endSystemId": "S066",
+				"status": "normal"
+			},
+			{
+				"id": "J073",
+				"startSystemId": "S067",
+				"endSystemId": "S064",
+				"status": "normal"
+			},
+			{
+				"id": "J074",
+				"startSystemId": "S068",
+				"endSystemId": "S065",
+				"status": "normal"
+			},
+			{
+				"id": "J075",
+				"startSystemId": "S069",
+				"endSystemId": "S068",
+				"status": "normal"
+			},
+			{
+				"id": "J076",
+				"startSystemId": "S070",
+				"endSystemId": "S068",
+				"status": "normal"
+			},
+			{
+				"id": "J077",
+				"startSystemId": "S070",
+				"endSystemId": "S045",
+				"status": "normal"
+			},
+			{
+				"id": "J078",
+				"startSystemId": "S071",
+				"endSystemId": "S045",
+				"status": "normal"
+			},
+			{
+				"id": "J079",
+				"startSystemId": "S072",
+				"endSystemId": "S071",
+				"status": "normal"
+			},
+			{
+				"id": "J080",
+				"startSystemId": "S073",
+				"endSystemId": "S055",
+				"status": "normal"
+			},
+			{
+				"id": "J081",
+				"startSystemId": "S073",
+				"endSystemId": "S045",
+				"status": "normal"
+			},
+			{
+				"id": "J082",
+				"startSystemId": "S073",
+				"endSystemId": "S072",
+				"status": "normal"
+			},
+			{
+				"id": "J083",
+				"startSystemId": "S074",
+				"endSystemId": "S071",
+				"status": "normal"
+			},
+			{
+				"id": "J084",
+				"startSystemId": "S075",
+				"endSystemId": "S072",
+				"status": "normal"
+			},
+			{
+				"id": "J085",
+				"startSystemId": "S074",
+				"endSystemId": "S075",
+				"status": "dangerous"
+			},
+			{
+				"id": "J086",
+				"startSystemId": "S076",
+				"endSystemId": "S075",
+				"status": "normal"
+			},
+			{
+				"id": "J087",
+				"startSystemId": "S077",
+				"endSystemId": "S076",
+				"status": "normal"
+			},
+			{
+				"id": "J088",
+				"startSystemId": "S078",
+				"endSystemId": "S076",
+				"status": "dangerous"
+			},
+			{
+				"id": "J089",
+				"startSystemId": "S078",
+				"endSystemId": "S077",
+				"status": "normal"
+			},
+			{
+				"id": "J090",
+				"startSystemId": "S079",
+				"endSystemId": "S078",
+				"status": "normal"
+			},
+			{
+				"id": "J091",
+				"startSystemId": "S080",
+				"endSystemId": "S079",
+				"status": "normal"
+			},
+			{
+				"id": "J092",
+				"startSystemId": "S080",
+				"endSystemId": "S041",
+				"status": "normal"
+			},
+			{
+				"id": "J093",
+				"startSystemId": "S081",
+				"endSystemId": "S085",
+				"status": "normal"
+			},
+			{
+				"id": "J094",
+				"startSystemId": "S081",
+				"endSystemId": "S086",
+				"status": "normal"
+			},
+			{
+				"id": "J095",
+				"startSystemId": "S081",
+				"endSystemId": "S082",
+				"status": "normal"
+			},
+			{
+				"id": "J096",
+				"startSystemId": "S081",
+				"endSystemId": "S083",
+				"status": "normal"
+			},
+			{
+				"id": "J097",
+				"startSystemId": "S081",
+				"endSystemId": "S084",
+				"status": "normal"
+			},
+			{
+				"id": "J098",
+				"startSystemId": "S081",
+				"endSystemId": "S087",
+				"status": "normal"
+			},
+			{
+				"id": "J099",
+				"startSystemId": "S081",
+				"endSystemId": "S041",
+				"status": "normal"
+			},
+			{
+				"id": "J100",
+				"startSystemId": "S086",
+				"endSystemId": "S088",
+				"status": "normal"
+			},
+			{
+				"id": "J101",
+				"startSystemId": "S089",
+				"endSystemId": "S088",
+				"status": "normal"
+			},
+			{
+				"id": "J102",
+				"startSystemId": "S082",
+				"endSystemId": "S089",
+				"status": "normal"
+			},
+			{
+				"id": "J103",
+				"startSystemId": "S082",
+				"endSystemId": "S085",
+				"status": "normal"
+			},
+			{
+				"id": "J104",
+				"startSystemId": "S082",
+				"endSystemId": "S088",
+				"status": "normal"
+			},
+			{
+				"id": "J105",
+				"startSystemId": "S087",
+				"endSystemId": "S084",
+				"status": "normal"
+			},
+			{
+				"id": "J106",
+				"startSystemId": "S084",
+				"endSystemId": "S086",
+				"status": "normal"
+			},
+			{
+				"id": "J107",
+				"startSystemId": "S086",
+				"endSystemId": "S082",
+				"status": "normal"
+			},
+			{
+				"id": "J108",
+				"startSystemId": "S083",
+				"endSystemId": "S085",
+				"status": "normal"
+			},
+			{
+				"id": "J109",
+				"startSystemId": "S083",
+				"endSystemId": "S087",
+				"status": "normal"
+			},
+			{
+				"id": "J110",
+				"startSystemId": "S090",
+				"endSystemId": "S043",
+				"status": "normal"
+			},
+			{
+				"id": "J111",
+				"startSystemId": "S090",
+				"endSystemId": "S042",
+				"status": "normal"
+			},
+			{
+				"id": "J112",
+				"startSystemId": "S093",
+				"endSystemId": "S091",
+				"status": "normal"
+			},
+			{
+				"id": "J113",
+				"startSystemId": "S093",
+				"endSystemId": "S092",
+				"status": "normal"
+			},
+			{
+				"id": "J114",
+				"startSystemId": "S091",
+				"endSystemId": "S090",
+				"status": "normal"
+			},
+			{
+				"id": "J115",
+				"startSystemId": "S091",
+				"endSystemId": "S094",
+				"status": "caution"
+			},
+			{
+				"id": "J116",
+				"startSystemId": "S094",
+				"endSystemId": "S092",
+				"status": "normal"
+			},
+			{
+				"id": "J117",
+				"startSystemId": "S100",
+				"endSystemId": "S098",
+				"status": "blocked"
+			},
+			{
+				"id": "J118",
+				"startSystemId": "S094",
+				"endSystemId": "S095",
+				"status": "blocked"
+			},
+			{
+				"id": "J119",
+				"startSystemId": "S094",
+				"endSystemId": "S099",
+				"status": "blocked"
+			},
+			{
+				"id": "J120",
+				"startSystemId": "S095",
+				"endSystemId": "S096",
+				"status": "blocked"
+			},
+			{
+				"id": "J121",
+				"startSystemId": "S095",
+				"endSystemId": "S098",
+				"status": "blocked"
+			},
+			{
+				"id": "J122",
+				"startSystemId": "S098",
+				"endSystemId": "S097",
+				"status": "blocked"
+			},
+			{
+				"id": "J123",
+				"startSystemId": "S100",
+				"endSystemId": "S101",
+				"status": "dangerous"
+			},
+			{
+				"id": "J124",
+				"startSystemId": "S011",
+				"endSystemId": "S004",
+				"status": "normal"
+			},
+			{
+				"id": "J125",
+				"startSystemId": "S102",
+				"endSystemId": "S103",
+				"status": "normal"
+			},
+			{
+				"id": "J126",
+				"startSystemId": "S102",
+				"endSystemId": "S013",
+				"status": "normal"
+			},
+			{
+				"id": "J127",
+				"startSystemId": "S013",
+				"endSystemId": "S003",
+				"status": "normal"
+			}
+		],
+		"nebulae": [
+			{
+				"id": "N001",
+				"name": "Warpsturm",
+				"style": "haze",
+				"color": "#7a2f8f",
+				"opacity": 0.5,
+				"points": [
+					{
+						"x": -17,
+						"y": -2,
+						"z": 0
+					},
+					{
+						"x": -15,
+						"y": -4,
+						"z": 0
+					},
+					{
+						"x": -11,
+						"y": -2,
+						"z": 0
+					},
+					{
+						"x": -11,
+						"y": 0,
+						"z": 0
+					},
+					{
+						"x": -15,
+						"y": 1,
+						"z": 0
+					},
+					{
+						"x": -16,
+						"y": 0,
+						"z": 0
+					},
+					{
+						"x": -15,
+						"y": -1,
+						"z": 0
+					}
+				]
+			},
+			{
+				"id": "N002",
+				"name": "Werdra Sterngruppe/Warpstorm",
+				"style": "haze",
+				"color": "#7a2f8f",
+				"opacity": 0.35,
+				"points": [
+					{
+						"x": 13,
+						"y": 11,
+						"z": 0
+					},
+					{
+						"x": 12,
+						"y": 11,
+						"z": 0
+					},
+					{
+						"x": 12,
+						"y": 13,
+						"z": 0
+					},
+					{
+						"x": 17,
+						"y": 11,
+						"z": 0
+					},
+					{
+						"x": 15,
+						"y": 8,
+						"z": 0
+					},
+					{
+						"x": 12,
+						"y": 8,
+						"z": 0
+					}
+				]
+			}
+		]
+	}
+}

@@ -5,6 +5,8 @@
 
 @if (store.map(); as map) {
 	<theme-button-bar [buttons]="toolbarButtons" />
+	<label for="starmap-file-input" hidden>Karte laden</label>
+	<input #fileInput id="starmap-file-input" type="file" accept=".json,application/json" hidden (change)="loadMap($event)" />
 	<div class="starmap-workspace" [class.editor-collapsed]="!editorOpen()">
 		<theme-sidebar [menuItems]="menuItems()" (menuItemSelected)="selectMenuItem($event)" />
 
