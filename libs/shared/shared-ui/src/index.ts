@@ -11,6 +11,8 @@ export * from './lib/directives/translation/translation.pipe';
 export * from './lib/guards/env.guard';
 export * from './lib/services/browser-file/browser-file.service';
 export * from './lib/services/data-connection/data.connection.service';
+export * from './lib/services/file-persistence/browser-file-persistence.service';
+export * from './lib/services/file-persistence/file-persistence';
 export * from './lib/services/logger/logger.service';
 export * from './lib/services/network-status-service/network-status-service.service';
 export * from './lib/services/translation/scoped-translation.service';

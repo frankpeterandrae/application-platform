@@ -4,17 +4,18 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 
 import { SvgExportService } from './svg-export.service';
-import { SVG_PERSISTENCE } from './svg-persistence.token';
 
 describe('SvgExportService', () => {
 	let service: SvgExportService;
 
 	const persistence = {
+		open: vi.fn(),
 		save: vi.fn()
 	};
 
@@ -24,7 +25,7 @@ describe('SvgExportService', () => {
 		await setupTestingModule({
 			providers: [
 				{
-					provide: SVG_PERSISTENCE,
+					provide: FILE_PERSISTENCE,
 					useValue: persistence
 				}
 			]
@@ -33,7 +34,7 @@ describe('SvgExportService', () => {
 		service = TestBed.inject(SvgExportService);
 	});
 
-	it('should serialize and save the svg', () => {
+	it('should serialize and save the svg', async () => {
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
 		const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -42,17 +43,21 @@ describe('SvgExportService', () => {
 
 		svg.append(circle);
 
-		service.export(svg, 'Test Map');
+		await service.export(svg, 'Test Map');
 
 		expect(persistence.save).toHaveBeenCalledOnce();
 
-		const [content, fileName] = persistence.save.mock.calls[0];
+		const [content, options] = persistence.save.mock.calls[0];
 
 		expect(content).toContain('<svg');
 		expect(content).toContain('<circle');
 		expect(content).toContain('r="10"');
 
-		expect(fileName).toBe('test-map.svg');
+		expect(options).toEqual({
+			fileName: 'test-map.svg',
+			extensions: ['svg'],
+			mimeType: 'image/svg+xml;charset=utf-8'
+		});
 	});
 
 	it.each([
@@ -62,19 +67,27 @@ describe('SvgExportService', () => {
 		['Map_01', 'map_01.svg'],
 		['Map-01', 'map-01.svg'],
 		['Map ÄÖÜ!', 'map-.svg']
-	])('should normalize "%s" to "%s"', (mapName, expected) => {
+	])('should normalize "%s" to "%s"', async (mapName, expected) => {
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-		service.export(svg, mapName);
+		await service.export(svg, mapName);
 
-		expect(persistence.save).toHaveBeenCalledWith(expect.any(String), expected);
+		expect(persistence.save).toHaveBeenCalledWith(expect.any(String), {
+			fileName: expected,
+			extensions: ['svg'],
+			mimeType: 'image/svg+xml;charset=utf-8'
+		});
 	});
 
-	it('should use starmap as fallback file name', () => {
+	it('should use starmap as fallback file name', async () => {
 		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-		service.export(svg, ' !!! ');
+		await service.export(svg, ' !!! ');
 
-		expect(persistence.save).toHaveBeenCalledWith(expect.any(String), 'starmap.svg');
+		expect(persistence.save).toHaveBeenCalledWith(expect.any(String), {
+			fileName: 'starmap.svg',
+			extensions: ['svg'],
+			mimeType: 'image/svg+xml;charset=utf-8'
+		});
 	});
 });

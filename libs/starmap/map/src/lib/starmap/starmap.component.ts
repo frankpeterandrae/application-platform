@@ -269,7 +269,7 @@ export class StarmapComponent {
 	/**
 	 * Exports the current star map as an SVG file.
 	 */
-	public exportSvg(): void {
+	public async exportSvg(): Promise<void> {
 		const map = this.store.map();
 
 		const svg = this.mapContainer()?.nativeElement.querySelector('svg');
@@ -278,7 +278,7 @@ export class StarmapComponent {
 			return;
 		}
 
-		this.svgExportService.export(svg, map.name);
+		await this.svgExportService.export(svg, map.name);
 	}
 
 	/**

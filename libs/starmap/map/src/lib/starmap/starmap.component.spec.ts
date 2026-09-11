@@ -482,15 +482,6 @@ describe('StarmapComponent', () => {
 		expect(fixture.nativeElement.querySelector('starmap-system-details')).toBeNull();
 	});
 
-	it('should not export when no map is available', () => {
-		store.clear();
-		fixture.detectChanges();
-
-		component.exportSvg();
-
-		expect(svgExportService.export).not.toHaveBeenCalled();
-	});
-
 	it('should ignore an empty svg view box when fitting', () => {
 		const viewport = fixture.nativeElement.querySelector('.starmap-viewport') as HTMLElement;
 

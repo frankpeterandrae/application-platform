@@ -68,3 +68,4 @@ __screenshots__/
 /data/
 /data.__staging/
 **/styles.css
+**/src-tauri/target/

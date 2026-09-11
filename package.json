@@ -32,7 +32,9 @@
 		"test:no-cache": "nx run-many -t test --all --skip-nx-cache",
 		"typecheck": "nx run-many -t typecheck",
 		"update": "nx migrate latest",
-		"watch:shared-styles": "node scripts/watch-css.js"
+		"watch:shared-styles": "node scripts/watch-css.js",
+		"desktop:starmap": "nx run starmap:desktop-dev",
+		"build:starmap:desktop": "nx run starmap:desktop-build"
 	},
 	"private": true,
 	"dependencies": {
@@ -51,6 +53,9 @@
 		"@nestjs/websockets": "^11.2.3",
 		"@ngrx/signals": "^22.0.1",
 		"@push-based/ngx-fast-svg": "^18.1.0",
+		"@tauri-apps/api": "^2.11.1",
+		"@tauri-apps/plugin-dialog": "^2.7.3",
+		"@tauri-apps/plugin-fs": "^2.5.2",
 		"better-sqlite3": "^13.0.3",
 		"prismjs": "^1.30.0",
 		"reflect-metadata": "^0.2.0",
@@ -87,6 +92,7 @@
 		"@prettier/plugin-php": "^0.25.0",
 		"@schematics/angular": "22.1.8",
 		"@swc/helpers": "~0.5.18",
+		"@tauri-apps/cli": "^2.11.4",
 		"@types/better-sqlite3": "^9.6.0",
 		"@types/node": "^26.4.1",
 		"@types/prismjs": "^1.26.6",

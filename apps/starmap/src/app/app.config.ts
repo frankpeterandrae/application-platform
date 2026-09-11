@@ -7,10 +7,12 @@ import { provideHttpClient } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
 import { provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-platform/starmap-map';
+import { BrowserFilePersistenceService, FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
+import { isTauri } from '@tauri-apps/api/core';
 
 import { appRoutes } from './app.routes';
+import { TauriFilePersistenceService } from './persistence/tauri-file-persistence.service';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
@@ -24,10 +26,17 @@ export const appConfig: ApplicationConfig = {
 			}
 		}),
 
-		BrowserSvgPersistenceService,
+		BrowserFilePersistenceService,
+		TauriFilePersistenceService,
 		{
-			provide: SVG_PERSISTENCE,
-			useExisting: BrowserSvgPersistenceService
+			provide: FILE_PERSISTENCE,
+			useFactory: (
+				browserPersistence: BrowserFilePersistenceService,
+				tauriPersistence: TauriFilePersistenceService
+			): BrowserFilePersistenceService | TauriFilePersistenceService => {
+				return isTauri() ? tauriPersistence : browserPersistence;
+			},
+			deps: [BrowserFilePersistenceService, TauriFilePersistenceService]
 		}
 	]
 };
