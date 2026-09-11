@@ -5,19 +5,23 @@
 
 <theme-card [inverted]="true">
 	<aside class="system-details">
-		<header class="system-details-header">
+		<header class="system-details-header fpa-flex fpa-flex-justify-space-between fpa-flex-align-items-flex-start fpa-gap-1">
 			<div>
-				<span class="system-details-type"> Sternsystem </span>
+				<span class="system-details-type">Sternsystem</span>
 
 				<h2>
 					{{ system().name }}
 				</h2>
 			</div>
 
-			<span class="coordinates">
-				{{ system().position.x }}, {{ system().position.y }},
-				{{ system().position.z }}
-			</span>
+			<div class="fpa-flex fpa-flex-align-items-center fpa-gap-1">
+				<span class="coordinates">
+					{{ system().position.x }}, {{ system().position.y }},
+					{{ system().position.z }}
+				</span>
+
+				<theme-button [icon]="IconDefinition.CLOSE" [color]="ButtonColorDefinition.DEFAULT" (buttonClick)="closed.emit()" />
+			</div>
 		</header>
 
 		@if (system().faction) {
@@ -61,7 +65,7 @@
 								</strong>
 
 								<span class="planet-type">
-									{{ planet.type }}
+									{{ planetTypeLabel(planet.type) }}
 								</span>
 							</div>
 

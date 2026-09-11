@@ -11,3 +11,17 @@ export interface Planet {
 	type: PlanetType;
 	classification: string;
 }
+
+export const PLANET_TYPES: ReadonlyArray<{
+	value: PlanetType;
+	label: string;
+}> = [
+	{ value: 'terran', label: 'Erdähnlich' },
+	{ value: 'barren', label: 'Ödland' },
+	{ value: 'gas_giant', label: 'Gasriese' },
+	{ value: 'ice', label: 'Eiswelt' },
+	{ value: 'ocean', label: 'Ozeanwelt' },
+	{ value: 'desert', label: 'Wüstenwelt' },
+	{ value: 'volcanic', label: 'Vulkanwelt' },
+	{ value: 'other', label: 'Sonstige' }
+];

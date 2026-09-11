@@ -7,7 +7,7 @@
 	<section class="editor-section">
 		<h2>System</h2>
 
-		<div class="editor-grid">
+		<div class="fpa-grid-2 fpa-gap-1">
 			<theme-input label="Name" formControlName="name" [darkText]="true" />
 
 			<theme-input label="Fraktion" formControlName="faction" [darkText]="true" />
@@ -17,7 +17,7 @@
 	<section class="editor-section">
 		<h3>Position</h3>
 
-		<div class="coordinate-grid">
+		<div class="fpa-grid-3 fpa-gap-1">
 			<theme-input label="X" type="number" formControlName="x" [darkText]="true" />
 
 			<theme-input label="Y" type="number" formControlName="y" [darkText]="true" />
@@ -35,13 +35,21 @@
 
 		<div class="editor-list" formArrayName="stars">
 			@for (star of stars.controls; track $index; let index = $index) {
-				<div class="editor-list-item">
-					<theme-input label="Spektraltyp" [formControlName]="index" [darkText]="true" />
+				<div class="editor-list-item fpa-flex fpa-flex-align-items-center">
+					<theme-input class="fpa-flex-grow-1" label="Spektraltyp" [formControlName]="index" [darkText]="true" />
 
 					<div class="item-actions">
-						<theme-button buttonText="Zufällig" [color]="ButtonColorDefinition.INFO" (buttonClick)="randomizeStar(index)" />
+						<theme-button
+							[icon]="IconDefinition.DICE_FIVE"
+							[color]="ButtonColorDefinition.INFO"
+							(buttonClick)="randomizeStar(index)"
+						/>
 
-						<theme-button buttonText="Entfernen" [color]="ButtonColorDefinition.DANGER" (buttonClick)="removeStar(index)" />
+						<theme-button
+							[icon]="IconDefinition.TRASH_CAN"
+							[color]="ButtonColorDefinition.DANGER"
+							(buttonClick)="removeStar(index)"
+						/>
 					</div>
 				</div>
 			}
@@ -57,24 +65,31 @@
 
 		<div class="editor-list" formArrayName="planets">
 			@for (planet of planets.controls; track planet.controls.id.value; let index = $index) {
-				<div class="editor-list-item" [formGroupName]="index">
-					<div class="editor-grid">
-						<theme-input label="Name" formControlName="name" [darkText]="true" />
+				<div class="editor-list-item fpa-flex fpa-flex-align-items-center" [formGroupName]="index">
+					<div class="fpa-flex fpa-flex-wrap fpa-gap-1">
+						<theme-input class="fpa-flex-grow-3" label="Name" formControlName="name" [darkText]="true" />
+						<div class="fpa-grid-4 fpa-gap-1">
+							<theme-select
+								class="fpa-grid-col-end-2"
+								label="Typ"
+								[options]="planetTypeOptions"
+								[emptySelection]="false"
+								formControlName="type"
+								[darkText]="true"
+							/>
 
-						<theme-select
-							label="Typ"
-							[options]="planetTypeOptions"
-							[emptySelection]="false"
-							formControlName="type"
-							[darkText]="true"
-						/>
-
-						<theme-input label="Klassifikation" formControlName="classification" [darkText]="true" />
+							<theme-input
+								class="fpa-grid-col-end-2"
+								label="Klassifikation"
+								formControlName="classification"
+								[darkText]="true"
+							/>
+						</div>
 					</div>
 
 					<div class="item-actions">
 						<theme-button
-							buttonText="Planet entfernen"
+							[icon]="IconDefinition.TRASH_CAN"
 							[color]="ButtonColorDefinition.DANGER"
 							(buttonClick)="removePlanet(index)"
 						/>
@@ -89,32 +104,32 @@
 
 		<div class="editor-list">
 			@for (link of systemJumpLinks(); track link.id) {
-				<div class="editor-list-item">
-					<div class="editor-grid">
-						<theme-select
-							label="Zielsystem"
-							[options]="availableTargetOptionsFor(link)"
-							[emptySelection]="false"
-							[ngModel]="otherSystemId(link)"
-							(ngModelChange)="updateJumpLinkTarget(link, $event)"
-							[ngModelOptions]="{ standalone: true }"
-							[darkText]="true"
-						/>
+				<div class="fpa-grid-5 fpa-gap-1">
+					<theme-select
+						class="fpa-grid-col-end-2"
+						label="Zielsystem"
+						[options]="availableTargetOptionsFor(link)"
+						[emptySelection]="false"
+						[ngModel]="otherSystemId(link)"
+						(ngModelChange)="updateJumpLinkTarget(link, $event)"
+						[ngModelOptions]="{ standalone: true }"
+						[darkText]="true"
+					/>
 
-						<theme-select
-							label="Status"
-							[options]="statusOptions"
-							[emptySelection]="false"
-							[ngModel]="link.status"
-							(ngModelChange)="updateJumpLinkStatus(link, $event)"
-							[ngModelOptions]="{ standalone: true }"
-							[darkText]="true"
-						/>
-					</div>
+					<theme-select
+						class="fpa-grid-col-end-2"
+						label="Status"
+						[options]="statusOptions"
+						[emptySelection]="false"
+						[ngModel]="link.status"
+						(ngModelChange)="updateJumpLinkStatus(link, $event)"
+						[ngModelOptions]="{ standalone: true }"
+						[darkText]="true"
+					/>
 
 					<div class="item-actions">
 						<theme-button
-							buttonText="Entfernen"
+							[icon]="IconDefinition.TRASH_CAN"
 							[color]="ButtonColorDefinition.DANGER"
 							(buttonClick)="jumpLinkDeleted.emit(link.id)"
 						/>
@@ -126,7 +141,7 @@
 		<div class="new-jump-link" [formGroup]="jumpLinkForm">
 			<h4>Sprungverbindung hinzufügen</h4>
 
-			<div class="editor-grid">
+			<div class="">
 				<theme-select
 					label="Zielsystem"
 					[options]="availableJumpTargetOptions()"

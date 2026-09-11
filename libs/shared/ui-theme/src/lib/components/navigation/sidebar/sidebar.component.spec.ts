@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+import { signal } from '@angular/core';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -78,5 +79,66 @@ describe('SidebarComponent', () => {
 		fixture.detectChanges();
 		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
 		expect(menuItems).toHaveLength(0);
+	});
+
+	it('should show the search input when searchable is enabled', () => {
+		fixture.componentRef.setInput('searchable', true);
+
+		fixture.detectChanges();
+
+		expect(fixture.nativeElement.querySelector('theme-input')).toBeTruthy();
+	});
+
+	it('should filter menu items by label', () => {
+		fixture.componentRef.setInput('searchable', true);
+		fixture.componentRef.setInput('menuItems', [
+			{ id: 'sol', label: 'Sol' },
+			{ id: 'alpha', label: 'Alpha Centauri' },
+			{ id: 'beta', label: 'Beta' }
+		]);
+
+		fixture.detectChanges();
+
+		(component as any).updateSearchTerm('alpha');
+
+		fixture.detectChanges();
+
+		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
+
+		expect(menuItems).toHaveLength(1);
+		expect(menuItems[0].textContent).toContain('Alpha Centauri');
+	});
+
+	it('should show all menu items when the search term is empty', () => {
+		fixture.componentRef.setInput('menuItems', [
+			{ id: 'sol', label: 'Sol' },
+			{ id: 'alpha', label: 'Alpha' }
+		]);
+
+		(component as any).updateSearchTerm('');
+
+		expect((component as any).filteredMenuItems()).toHaveLength(2);
+	});
+
+	it('should ignore non-string labels when filtering', () => {
+		fixture.componentRef.setInput('menuItems', [
+			{
+				id: 'dynamic',
+				label: signal('Dynamic')
+			},
+			{
+				id: 'sol',
+				label: 'Sol'
+			}
+		]);
+
+		(component as any).updateSearchTerm('sol');
+
+		expect((component as any).filteredMenuItems()).toEqual([
+			{
+				id: 'sol',
+				label: 'Sol'
+			}
+		]);
 	});
 });

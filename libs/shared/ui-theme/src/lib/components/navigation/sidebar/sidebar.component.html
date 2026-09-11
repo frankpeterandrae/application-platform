@@ -3,9 +3,20 @@
   ~ All rights reserved.
   -->
 
-<nav class="fpa-bg-dark-shades-t2 fpa-height-100 fpa-light-text">
-	<ul class="menu fpa-m-0">
-		@for (item of menuItems(); track item.id) {
+<nav class="fpa-flex fpa-flex-column fpa-height-100 fpa-bg-dark-shades-t2 fpa-light-text">
+	@if (searchable()) {
+		<div class="fpa-flex-0 fpa-p-1">
+			<theme-input
+				[label]="'Navigation durchsuchen'"
+				[placeholder]="'Suchen ...'"
+				[type]="'search'"
+				(valueChange)="updateSearchTerm($event)"
+			/>
+		</div>
+	}
+
+	<ul class="menu fpa-flex-1 fpa-overflow-y-auto fpa-m-0">
+		@for (item of filteredMenuItems(); track item.id) {
 			<li class="menu-item">
 				@if (item.route) {
 					<a class="fpa-p-1 fpa-light-text fpa-link" [routerLink]="item.route">
@@ -13,9 +24,7 @@
 							<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'" />
 						}
 
-						<span>
-							{{ item.label | themeUnwrapSignal }}
-						</span>
+						<span>{{ item.label | themeUnwrapSignal }}</span>
 					</a>
 				} @else {
 					<button type="button" class="menu-action fpa-p-1 fpa-light-text fpa-link" (click)="menuItemSelected.emit(item)">
@@ -23,9 +32,7 @@
 							<fast-svg class="fpa-color-main-band" [name]="item.icon" [size]="'32'" />
 						}
 
-						<span>
-							{{ item.label | themeUnwrapSignal }}
-						</span>
+						<span>{{ item.label | themeUnwrapSignal }}</span>
 					</button>
 				}
 			</li>

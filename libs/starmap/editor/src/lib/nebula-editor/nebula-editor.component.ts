@@ -8,6 +8,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Va
 import {
 	ButtonColorDefinition,
 	ButtonComponent,
+	IconDefinition,
 	InputComponent,
 	SelectComponent,
 	SelectOption
@@ -47,14 +48,22 @@ export class NebulaEditorComponent {
 	public readonly nebulaChanged = output<Nebula>();
 	public readonly nebulaDeleted = output<string>();
 
-	protected readonly styles: NebulaType[] = ['cloud', 'outline', 'haze'];
-
 	protected readonly form = this.createNebulaForm();
 
-	protected readonly styleOptions: SelectOption<NebulaType>[] = this.styles.map((style) => ({
-		label: style,
-		value: style
-	}));
+	protected readonly styleOptions: SelectOption<NebulaType>[] = [
+		{
+			label: 'Warpsorm',
+			value: 'cloud'
+		},
+		{
+			label: 'Region',
+			value: 'outline'
+		},
+		{
+			label: 'Wolke',
+			value: 'haze'
+		}
+	];
 
 	protected get points(): FormArray<NebulaPointForm> {
 		return this.form.controls.points;
@@ -125,4 +134,6 @@ export class NebulaEditorComponent {
 			}))
 		});
 	}
+
+	protected readonly IconDefinition = IconDefinition;
 }

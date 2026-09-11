@@ -12,20 +12,15 @@
 }
 
 .system-details-overlay {
-	position: absolute;
 	top: 1rem;
 	right: 1rem;
 	z-index: 10;
 	width: min(22rem, calc(100% - 2rem));
 	max-height: calc(100% - 2rem);
-	overflow: auto;
 }
 
 .starmap-viewport {
-	flex: 1 1 auto;
-	width: 100%;
 	min-height: 0;
-	overflow: auto;
 }
 
 .starmap-container {

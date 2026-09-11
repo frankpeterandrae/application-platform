@@ -26,8 +26,13 @@
 					},
 					{
 						"glob": "**/*",
-						"input": "libs/starmap/feature-map/src/assets",
-						"output": "assets/feature-map"
+						"input": "libs/starmap/map/src/assets",
+						"output": "assets/map"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/starmap/editor/src/assets",
+						"output": "assets/editor"
 					}
 				],
 				"styles": ["apps/starmap/src/styles.scss", "libs/shared/ui-theme/src/lib/theme/themed/starmap-theme.scss"]

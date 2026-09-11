@@ -43,6 +43,9 @@ export class InputComponent implements ControlValueAccessor {
 	/** When true, applies dark text color for light backgrounds. */
 	public readonly darkText = input<boolean>(false);
 	public readonly disabled = input<boolean>(false);
+	public readonly step = input<number>(1);
+	public readonly min = input<number | null>(null);
+	public readonly max = input<number | null>(null);
 
 	// Define output using the `output` function
 	public readonly valueChange = output<string>();

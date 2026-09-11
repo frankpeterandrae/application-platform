@@ -27,5 +27,8 @@
 		(blur)="onBlur()"
 		(input)="onInput($event)"
 		[disabled]="disabled() || formDisabled()"
+		[step]="type() === 'number' ? step() : null"
+		[min]="type() === 'number' ? min() : null"
+		[max]="type() === 'number' ? max() : null"
 	/>
 </div>

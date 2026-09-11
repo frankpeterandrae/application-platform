@@ -197,4 +197,15 @@ describe('NebulaEditorComponent', () => {
 
 		expect(emitted).toEqual(['N001']);
 	});
+
+	it('should create a nebula form with existing points', () => {
+		const form = (component as any).createNebulaForm(nebula);
+
+		expect(form.controls.points).toHaveLength(3);
+		expect(form.controls.points.at(1).getRawValue()).toEqual({
+			x: 1,
+			y: 0,
+			z: 0
+		});
+	});
 });

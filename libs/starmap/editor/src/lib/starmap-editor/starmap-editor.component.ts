@@ -3,10 +3,12 @@
  * All rights reserved.
  */
 
+import { NgClass } from '@angular/common';
 import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import {
 	ButtonBarComponent,
 	ButtonColorDefinition,
+	ButtonComponent,
 	ButtonConfigModel,
 	CardComponent,
 	IconDefinition,
@@ -17,10 +19,11 @@ import { BrowserFileService, createFileName } from '@application-platform/shared
 import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
 import { Nebula, randomSpectralType, StarSystem } from '@application-platform/starmap-domain';
 import { StarmapComponent } from '@application-platform/starmap-map';
-import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
 import { NebulaEditorComponent } from '../nebula-editor/nebula-editor.component';
 import { SystemEditorComponent } from '../system-editor/system-editor.component';
+
+import { StarmapIconDefinition } from './starmap-icon-definition';
 
 type EditorSelection =
 	| {
@@ -45,7 +48,8 @@ type EditorSelection =
 		StarmapComponent,
 		SidebarComponent,
 		ButtonBarComponent,
-		FastSvgComponent
+		ButtonComponent,
+		NgClass
 	],
 	templateUrl: './starmap-editor.component.html',
 	styleUrl: './starmap-editor.component.scss'
@@ -69,17 +73,34 @@ export class StarmapEditorComponent {
 		}
 
 		return [
-			...map.systems.map((system) => ({
-				id: `system:${system.id}`,
-				label: system.name
-			})),
-			...map.nebulae.map((nebula) => ({
-				id: `nebula:${nebula.id}`,
-				label: nebula.name
-			}))
+			...map.systems
+				.map((system) => ({
+					id: `system:${system.id}`,
+					label: system.name,
+					icon: StarmapIconDefinition.IMPERIAL_AQUILA
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label)),
+			...map.nebulae
+				.map((nebula) => ({
+					id: `nebula:${nebula.id}`,
+					label: nebula.name,
+					icon: this.getNebulaIcon(nebula.style)
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label))
 		];
 	});
 
+	private getNebulaIcon(style: string): StarmapIconDefinition | IconDefinition {
+		switch (style) {
+			case 'cloud':
+				return StarmapIconDefinition.CHAOS_STAR;
+			case 'outline':
+				return IconDefinition.LOCATION;
+			case 'haze':
+			default:
+				return IconDefinition.FOG;
+		}
+	}
 	protected readonly selectedSystem = computed(() => {
 		const selection = this.editorSelection();
 
@@ -277,4 +298,6 @@ export class StarmapEditorComponent {
 
 		this.browserFileService.save(content, `${createFileName(map.name)}.json`, 'application/json;charset=utf-8');
 	}
+
+	protected readonly ButtonColorDefinition = ButtonColorDefinition;
 }
