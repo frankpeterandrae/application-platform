@@ -5,10 +5,9 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IconDefinition } from '@application-platform/shared/ui-theme';
-import { BrowserFileService } from '@application-platform/shared-ui';
+import { BrowserFilePersistenceService, BrowserFileService, FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { StarMapStore } from '@application-platform/starmap-data-access';
 import { StarMap } from '@application-platform/starmap-domain';
-import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-platform/starmap-map';
 
 import { setupTestingModule } from '../../test-setup';
 
@@ -19,6 +18,7 @@ describe('StarmapEditorComponent', () => {
 	let component: StarmapEditorComponent;
 	let fixture: ComponentFixture<StarmapEditorComponent>;
 	let store: StarMapStore;
+	let filePersistence: BrowserFilePersistenceService;
 
 	const map: StarMap = {
 		id: 'map',
@@ -79,10 +79,10 @@ describe('StarmapEditorComponent', () => {
 		await setupTestingModule({
 			imports: [StarmapEditorComponent],
 			providers: [
-				BrowserSvgPersistenceService,
+				BrowserFilePersistenceService,
 				{
-					provide: SVG_PERSISTENCE,
-					useExisting: BrowserSvgPersistenceService
+					provide: FILE_PERSISTENCE,
+					useExisting: BrowserFilePersistenceService
 				}
 			]
 		});
@@ -90,7 +90,7 @@ describe('StarmapEditorComponent', () => {
 		store = TestBed.inject(StarMapStore);
 
 		store.setMap(structuredClone(map));
-
+		filePersistence = TestBed.inject(BrowserFilePersistenceService);
 		fixture = TestBed.createComponent(StarmapEditorComponent);
 
 		component = fixture.componentInstance;
@@ -297,36 +297,29 @@ describe('StarmapEditorComponent', () => {
 			map: loadedMap
 		});
 
-		const file = {
-			text: vi.fn().mockResolvedValue(content)
-		};
+		vi.spyOn(filePersistence, 'open').mockResolvedValue(content);
 
-		const input = {
-			files: [file],
-			value: 'starmap.json'
-		};
+		await (component as any).loadMap();
 
-		await (component as any).loadMap({
-			target: input
-		} as unknown as Event);
+		expect(filePersistence.open).toHaveBeenCalledWith({
+			extensions: ['json']
+		});
 
 		expect(store.map()).toEqual(loadedMap);
 		expect((component as any).editorSelection()).toBeNull();
 		expect(store.selectedSystemId()).toBeNull();
-		expect(input.value).toBe('');
 	});
 
 	it('should not load a map when no file is selected', async () => {
 		const originalMap = store.map();
 
-		const input = {
-			files: [],
-			value: ''
-		};
+		vi.spyOn(filePersistence, 'open').mockResolvedValue(null);
 
-		await (component as any).loadMap({
-			target: input
-		} as unknown as Event);
+		await (component as any).loadMap();
+
+		expect(filePersistence.open).toHaveBeenCalledWith({
+			extensions: ['json']
+		});
 
 		expect(store.map()).toEqual(originalMap);
 	});
@@ -409,16 +402,18 @@ describe('StarmapEditorComponent', () => {
 		expect(spy).toHaveBeenCalled();
 	});
 
-	it('should execute the load map toolbar action', () => {
-		const input = (component as any).fileInput().nativeElement;
-
-		const spy = vi.spyOn(input, 'click');
+	it('should execute the load map toolbar action', async () => {
+		const openSpy = vi.spyOn(filePersistence, 'open').mockResolvedValue(null);
 
 		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Karte laden');
 
 		button.callback();
 
-		expect(spy).toHaveBeenCalled();
+		await vi.waitFor(() => {
+			expect(openSpy).toHaveBeenCalledWith({
+				extensions: ['json']
+			});
+		});
 	});
 
 	it('should execute the svg export toolbar action', () => {

@@ -117,6 +117,18 @@
 			"options": {
 				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
 			}
+		},
+		"desktop-dev": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tauri dev"
+			}
+		},
+		"desktop-build": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tauri build"
+			}
 		}
 	}
 }

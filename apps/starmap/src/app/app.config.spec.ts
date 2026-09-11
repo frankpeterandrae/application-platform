@@ -4,7 +4,6 @@
  */
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-platform/starmap-map';
 
 import { setupTestingModule } from '../test-setup';
 
@@ -15,14 +14,6 @@ describe('appConfig', () => {
 		await setupTestingModule({
 			providers: [...(appConfig.providers ?? [])]
 		});
-	});
-
-	it('should provide browser SVG persistence', () => {
-		const persistence = TestBed.inject(SVG_PERSISTENCE);
-
-		const browserPersistence = TestBed.inject(BrowserSvgPersistenceService);
-
-		expect(persistence).toBe(browserPersistence);
 	});
 
 	it('should provide HttpClient', () => {

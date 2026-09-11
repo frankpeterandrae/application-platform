@@ -4,7 +4,7 @@
  */
 
 import { NgClass } from '@angular/common';
-import { Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import {
 	ButtonBarComponent,
 	ButtonColorDefinition,
@@ -15,7 +15,7 @@ import {
 	MenuItem,
 	SidebarComponent
 } from '@application-platform/shared/ui-theme';
-import { BrowserFileService, createFileName } from '@application-platform/shared-ui';
+import { createFileName, FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
 import { Nebula, randomSpectralType, StarSystem } from '@application-platform/starmap-domain';
 import { StarmapComponent } from '@application-platform/starmap-map';
@@ -57,13 +57,12 @@ type EditorSelection =
 export class StarmapEditorComponent {
 	protected readonly store = inject(StarMapStore);
 	private readonly starMapFileService = inject(StarMapFileService);
-	private readonly browserFileService = inject(BrowserFileService);
+	private readonly filePersistence = inject(FILE_PERSISTENCE);
 	protected readonly iconDefinition = IconDefinition;
 
 	protected readonly editorSelection = signal<EditorSelection | null>(null);
 	protected readonly editorOpen = signal(true);
 	private readonly starmap = viewChild<StarmapComponent>(StarmapComponent);
-	private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
 	protected readonly menuItems = computed<MenuItem[]>(() => {
 		const map = this.store.map();
@@ -171,17 +170,17 @@ export class StarmapEditorComponent {
 		{
 			buttonText: 'Karte laden',
 			color: ButtonColorDefinition.PRIMARY,
-			callback: () => this.fileInput()?.nativeElement.click()
+			callback: () => void this.loadMap()
 		},
 		{
 			buttonText: 'Karte speichern',
 			color: ButtonColorDefinition.PRIMARY,
-			callback: () => this.saveMap()
+			callback: () => void this.saveMap()
 		},
 		{
 			buttonText: 'SVG exportieren',
 			color: ButtonColorDefinition.PRIMARY,
-			callback: () => this.starmap()?.exportSvg()
+			callback: () => void this.starmap()?.exportSvg()
 		}
 	];
 
@@ -269,25 +268,23 @@ export class StarmapEditorComponent {
 		this.editorSelection.set(null);
 	}
 
-	protected async loadMap(event: Event): Promise<void> {
-		const input = event.target as HTMLInputElement;
-		const file = input.files?.[0];
+	protected async loadMap(): Promise<void> {
+		const content = await this.filePersistence.open({
+			extensions: ['json']
+		});
 
-		if (!file) {
+		if (!content) {
 			return;
 		}
 
-		const content = await file.text();
 		const map = this.starMapFileService.deserialize(content);
 
 		this.store.setMap(map);
 		this.editorSelection.set(null);
 		this.store.selectSystem(null);
-
-		input.value = '';
 	}
 
-	private saveMap(): void {
+	private async saveMap(): Promise<void> {
 		const map = this.store.map();
 
 		if (!map) {
@@ -296,7 +293,11 @@ export class StarmapEditorComponent {
 
 		const content = this.starMapFileService.serialize(map);
 
-		this.browserFileService.save(content, `${createFileName(map.name)}.json`, 'application/json;charset=utf-8');
+		await this.filePersistence.save(content, {
+			fileName: `${createFileName(map.name)}.json`,
+			extensions: ['json'],
+			mimeType: 'application/json;charset=utf-8'
+		});
 	}
 
 	protected readonly ButtonColorDefinition = ButtonColorDefinition;

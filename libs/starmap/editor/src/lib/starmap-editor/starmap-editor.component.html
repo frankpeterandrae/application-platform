@@ -4,9 +4,6 @@
   -->
 
 @if (store.map(); as map) {
-	<label for="starmap-file-input" hidden>Karte laden</label>
-	<input #fileInput id="starmap-file-input" type="file" accept=".json,application/json" hidden (change)="loadMap($event)" />
-
 	<div class="fpa-grid-12 fpa-height-100 fpa-overflow-hidden" [class.editor-collapsed]="!editorOpen()">
 		<theme-sidebar
 			class="fpa-grid-col-end-2 fpa-flex fpa-flex-column fpa-height-100"

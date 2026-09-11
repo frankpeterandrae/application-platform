@@ -34,7 +34,8 @@ export default [
 			'vite*.workspace.*',
 			'global.d.ts',
 			'**/global.d.ts',
-			'scripts/**'
+			'scripts/**',
+			'**/src-tauri/target/**'
 		]
 	},
 
