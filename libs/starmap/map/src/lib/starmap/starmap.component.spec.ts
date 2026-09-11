@@ -597,4 +597,28 @@ describe('StarmapComponent', () => {
 			component.fitToViewport();
 		}).not.toThrow();
 	});
+
+	it('should close the system details', () => {
+		(component as any).selectedSystem.set(map.systems[0]);
+
+		expect((component as any).selectedSystem()).toEqual(map.systems[0]);
+
+		(component as any).selectedSystem.set(null);
+
+		expect((component as any).selectedSystem()).toBeNull();
+	});
+
+	it('should ignore selection events without an Element target', () => {
+		expect(() =>
+			(component as any).selectSystem({
+				target: null
+			} as unknown as Event)
+		).not.toThrow();
+	});
+
+	it('should ignore canvas size updates when elements are missing', () => {
+		(component as any).mapCanvas = vi.fn(() => undefined);
+
+		expect(() => (component as any).updateCanvasSize(document.createElementNS('http://www.w3.org/2000/svg', 'svg'))).not.toThrow();
+	});
 });

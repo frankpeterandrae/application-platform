@@ -11,3 +11,14 @@ export interface JumpLink {
 	endSystemId: string;
 	status: JumpLinkStatus;
 }
+
+export const JUMP_LINK_TYPES: ReadonlyArray<{
+	value: JumpLinkStatus;
+	label: string;
+}> = [
+	{ label: 'Normal', value: 'normal' },
+	{ label: 'Vorsicht', value: 'caution' },
+	{ label: 'Gefährlich', value: 'dangerous' },
+	{ label: 'Blockiert', value: 'blocked' },
+	{ label: 'Verloren', value: 'lost' }
+];

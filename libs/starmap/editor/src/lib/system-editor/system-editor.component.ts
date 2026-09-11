@@ -8,11 +8,20 @@ import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFo
 import {
 	ButtonColorDefinition,
 	ButtonComponent,
+	IconDefinition,
 	InputComponent,
 	SelectComponent,
 	SelectOption
 } from '@application-platform/shared/ui-theme';
-import { JumpLink, JumpLinkStatus, PlanetType, randomSpectralType, StarSystem } from '@application-platform/starmap-domain';
+import {
+	JUMP_LINK_TYPES,
+	JumpLink,
+	JumpLinkStatus,
+	PLANET_TYPES,
+	PlanetType,
+	randomSpectralType,
+	StarSystem
+} from '@application-platform/starmap-domain';
 
 type PlanetForm = FormGroup<{
 	id: FormControl<string>;
@@ -45,31 +54,32 @@ export class SystemEditorComponent {
 	public readonly jumpLinkChanged = output<JumpLink>();
 	public readonly jumpLinkDeleted = output<string>();
 
-	protected readonly planetTypes: PlanetType[] = ['terran', 'barren', 'gas_giant', 'ice', 'ocean', 'desert', 'volcanic', 'other'];
-	protected readonly statuses: JumpLinkStatus[] = ['normal', 'caution', 'dangerous', 'blocked', 'lost'];
-
-	protected readonly planetTypeOptions: SelectOption<PlanetType>[] = this.planetTypes.map((type) => ({
-		label: type,
-		value: type
+	protected readonly planetTypeOptions: SelectOption<PlanetType>[] = PLANET_TYPES.map((type) => ({
+		label: type.label,
+		value: type.value
 	}));
 
-	protected readonly statusOptions: SelectOption<JumpLinkStatus>[] = this.statuses.map((status) => ({
-		label: status,
-		value: status
+	protected readonly statusOptions: SelectOption<JumpLinkStatus>[] = JUMP_LINK_TYPES.map((type) => ({
+		label: type.label,
+		value: type.value
 	}));
 
 	protected readonly availableJumpTargetOptions = computed<SelectOption<string>[]>(() =>
-		this.availableJumpTargets().map((system) => ({
-			label: system.name,
-			value: system.id
-		}))
+		this.availableJumpTargets()
+			.map((system) => ({
+				label: system.name,
+				value: system.id
+			}))
+			.sort((a, b) => a.label.localeCompare(b.label))
 	);
 
 	protected availableTargetOptionsFor(link: JumpLink): SelectOption<string>[] {
-		return this.availableTargetsFor(link).map((system) => ({
-			label: system.name,
-			value: system.id
-		}));
+		return this.availableTargetsFor(link)
+			.map((system) => ({
+				label: system.name,
+				value: system.id
+			}))
+			.sort((a, b) => a.label.localeCompare(b.label));
 	}
 
 	protected readonly form = this.formBuilder.nonNullable.group({
@@ -248,4 +258,6 @@ export class SystemEditorComponent {
 			(system) => system.id !== currentSystemId && (system.id === currentTargetId || !connectedIds.has(system.id))
 		);
 	}
+
+	protected readonly IconDefinition = IconDefinition;
 }

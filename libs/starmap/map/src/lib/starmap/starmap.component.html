@@ -4,7 +4,7 @@
   -->
 <div
 	#mapViewport
-	class="starmap-viewport"
+	class="starmap-viewport fpa-flex-1 fpa-width-100 fpa-overflow-auto"
 	(wheel)="zoom($event)"
 	(pointerdown)="startPan($event)"
 	(pointermove)="pan($event)"
@@ -17,7 +17,7 @@
 </div>
 
 @if (selectedSystem(); as system) {
-	<div class="system-details-overlay">
-		<starmap-system-details [system]="system" />
+	<div class="system-details-overlay fpa-pos-abs fpa-overflow-auto">
+		<starmap-system-details [system]="system" (closed)="selectedSystem.set(null)" />
 	</div>
 }

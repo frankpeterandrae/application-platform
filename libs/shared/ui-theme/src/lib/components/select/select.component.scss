@@ -12,40 +12,48 @@
 	flex-wrap: wrap;
 	align-items: stretch;
 	width: 100%;
+	border-radius: 0;
+
+	> :not(:first-child) {
+		margin-left: -1px;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	> .#{prefix.$prefix}select {
+		position: relative;
+		flex: 1 1 auto;
+		width: 1%;
+		min-width: 0;
+	}
 
 	.#{prefix.$prefix}select-label {
 		position: absolute;
-		top: 0.25rem;
-		left: 0;
+		top: 0.6125rem;
 		margin-left: 0;
 		transition: all 0.2s ease;
-		pointer-events: none;
-		z-index: 1;
 	}
+
 	&.#{prefix.$prefix}select-group-disabled {
 		opacity: 0.6;
 	}
 }
 
 .#{prefix.$prefix}select {
-	position: relative;
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
 	width: 100%;
-	min-width: 0;
-	height: 3rem;
-	padding: 1.125rem 1.5rem 0.375rem 0;
-	font-family: inherit;
+	padding: 0.5rem 0;
 	font-size: 0.875rem;
 	font-weight: 400;
-	line-height: 1.25rem;
-	color: variables.$light-text;
-	text-align: left;
+	line-height: 1.5rem;
+	appearance: none;
+	border: none;
+	border-radius: 0.375rem;
+	transition: 0.2s ease;
 	background-color: transparent;
-	border: 0;
-	border-radius: 0;
-	cursor: pointer;
+	text-align: left;
 
 	&.#{prefix.$prefix}dark-text {
 		color: variables.$dark-text;
@@ -94,6 +102,8 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	flex: 1 1 auto;
+	min-height: 1.5rem;
 }
 
 .#{prefix.$prefix}select-icon {

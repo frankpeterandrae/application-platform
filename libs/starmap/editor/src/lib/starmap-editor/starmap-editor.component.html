@@ -4,15 +4,20 @@
   -->
 
 @if (store.map(); as map) {
-	<theme-button-bar [buttons]="toolbarButtons" />
 	<label for="starmap-file-input" hidden>Karte laden</label>
 	<input #fileInput id="starmap-file-input" type="file" accept=".json,application/json" hidden (change)="loadMap($event)" />
-	<div class="starmap-workspace" [class.editor-collapsed]="!editorOpen()">
-		<theme-sidebar [menuItems]="menuItems()" (menuItemSelected)="selectMenuItem($event)" />
+
+	<div class="fpa-grid-12 fpa-height-100 fpa-overflow-hidden" [class.editor-collapsed]="!editorOpen()">
+		<theme-sidebar
+			class="fpa-grid-col-end-2 fpa-flex fpa-flex-column fpa-height-100"
+			[menuItems]="menuItems()"
+			[searchable]="true"
+			(menuItemSelected)="selectMenuItem($event)"
+		/>
 
 		@if (editorOpen()) {
-			<section class="editor-panel">
-				<div class="editor-content">
+			<section class="fpa-grid-col-end-3 fpa-flex fpa-flex-column fpa-overflow-y-auto">
+				<div class="fpa-flex fpa-flex-column fpa-gap-1">
 					@if (selectedSystem(); as system) {
 						<theme-card>
 							<starmap-editor-system-editor
@@ -43,16 +48,15 @@
 			</section>
 		}
 
-		<main class="map-area">
-			<button
-				type="button"
-				class="editor-toggle"
-				[attr.aria-expanded]="editorOpen()"
-				[attr.aria-label]="editorOpen() ? 'Editor schließen' : 'Editor öffnen'"
-				(click)="toggleEditor()"
-			>
-				<fast-svg [name]="editorOpen() ? iconDefinition.CARET_LEFT : iconDefinition.CARET_RIGHT" size="24" />
-			</button>
+		<main class="map-area fpa-overflow-hidden" [ngClass]="{ 'fpa-grid-col-end-7': editorOpen(), 'fpa-grid-col-end-10': !editorOpen() }">
+			<div class="fpa-flex fpa-gap-1">
+				<theme-button
+					(buttonClick)="toggleEditor()"
+					[icon]="editorOpen() ? iconDefinition.CARET_LEFT : iconDefinition.CARET_RIGHT"
+					[color]="ButtonColorDefinition.DEFAULT"
+				></theme-button>
+				<theme-button-bar [buttons]="toolbarButtons" />
+			</div>
 
 			<starmap-container />
 		</main>

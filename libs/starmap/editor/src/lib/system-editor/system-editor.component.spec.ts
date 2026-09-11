@@ -334,4 +334,47 @@ describe('SystemEditorComponent', () => {
 
 		expect(targets.map((system: StarSystem) => system.id)).toEqual(['S002', 'S003']);
 	});
+
+	it('should sort available jump target options by label', () => {
+		fixture.componentRef.setInput('systems', [
+			systems[0],
+			{
+				...systems[2],
+				id: 'S003',
+				name: 'Zulu'
+			},
+			{
+				...systems[2],
+				id: 'S004',
+				name: 'Alpha'
+			}
+		]);
+
+		fixture.componentRef.setInput('jumpLinks', []);
+
+		fixture.detectChanges();
+
+		const options = (component as any).availableJumpTargetOptions();
+
+		expect(options.map((option: any) => option.label)).toEqual(['Alpha', 'Zulu']);
+	});
+
+	it('should exclude targets already connected by another jump link', () => {
+		const links: JumpLink[] = [
+			jumpLinks[0],
+			{
+				id: 'J002',
+				startSystemId: 'S001',
+				endSystemId: 'S003',
+				status: 'normal'
+			}
+		];
+
+		fixture.componentRef.setInput('jumpLinks', links);
+		fixture.detectChanges();
+
+		const targets = (component as any).availableTargetsFor(jumpLinks[0]);
+
+		expect(targets.map((system: StarSystem) => system.id)).toEqual(['S002']);
+	});
 });

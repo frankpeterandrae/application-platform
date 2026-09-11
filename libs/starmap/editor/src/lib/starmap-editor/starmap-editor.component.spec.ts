@@ -4,6 +4,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IconDefinition } from '@application-platform/shared/ui-theme';
 import { BrowserFileService } from '@application-platform/shared-ui';
 import { StarMapStore } from '@application-platform/starmap-data-access';
 import { StarMap } from '@application-platform/starmap-domain';
@@ -12,6 +13,7 @@ import { BrowserSvgPersistenceService, SVG_PERSISTENCE } from '@application-plat
 import { setupTestingModule } from '../../test-setup';
 
 import { StarmapEditorComponent } from './starmap-editor.component';
+import { StarmapIconDefinition } from './starmap-icon-definition';
 
 describe('StarmapEditorComponent', () => {
 	let component: StarmapEditorComponent;
@@ -104,20 +106,24 @@ describe('StarmapEditorComponent', () => {
 	it('should build menu items from systems and nebulae', () => {
 		expect((component as any).menuItems()).toEqual([
 			{
-				id: 'system:S001',
-				label: 'Sol'
-			},
-			{
 				id: 'system:S005',
-				label: 'Alpha'
+				label: 'Alpha',
+				icon: StarmapIconDefinition.IMPERIAL_AQUILA
 			},
 			{
 				id: 'system:custom',
-				label: 'Custom'
+				label: 'Custom',
+				icon: StarmapIconDefinition.IMPERIAL_AQUILA
+			},
+			{
+				id: 'system:S001',
+				label: 'Sol',
+				icon: StarmapIconDefinition.IMPERIAL_AQUILA
 			},
 			{
 				id: 'nebula:N001',
-				label: 'Purple Cloud'
+				label: 'Purple Cloud',
+				icon: StarmapIconDefinition.CHAOS_STAR
 			}
 		]);
 	});
@@ -380,5 +386,50 @@ describe('StarmapEditorComponent', () => {
 		button.callback();
 
 		expect(saveSpy).toHaveBeenCalled();
+	});
+
+	it('should use the correct nebula icons', () => {
+		const getNebulaIcon = (component as any).getNebulaIcon.bind(component);
+
+		expect(getNebulaIcon('cloud')).toBe(StarmapIconDefinition.CHAOS_STAR);
+		expect(getNebulaIcon('outline')).toBe(IconDefinition.LOCATION);
+		expect(getNebulaIcon('haze')).toBe(IconDefinition.FOG);
+		expect(getNebulaIcon('unknown')).toBe(IconDefinition.FOG);
+	});
+
+	it('should execute the fit to viewport toolbar action', () => {
+		const starmap = (component as any).starmap();
+
+		const spy = vi.spyOn(starmap, 'fitToViewport');
+
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Karte einpassen');
+
+		button.callback();
+
+		expect(spy).toHaveBeenCalled();
+	});
+
+	it('should execute the load map toolbar action', () => {
+		const input = (component as any).fileInput().nativeElement;
+
+		const spy = vi.spyOn(input, 'click');
+
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'Karte laden');
+
+		button.callback();
+
+		expect(spy).toHaveBeenCalled();
+	});
+
+	it('should execute the svg export toolbar action', () => {
+		const starmap = (component as any).starmap();
+
+		const spy = vi.spyOn(starmap, 'exportSvg');
+
+		const button = (component as any).toolbarButtons.find((button: any) => button.buttonText === 'SVG exportieren');
+
+		button.callback();
+
+		expect(spy).toHaveBeenCalled();
 	});
 });

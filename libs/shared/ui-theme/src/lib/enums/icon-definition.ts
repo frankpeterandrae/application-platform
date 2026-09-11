@@ -12,12 +12,16 @@ export enum IconDefinition {
 	CHECK = 'theme/svg/check',
 	CLOSE = 'theme/svg/close',
 	COMPUTER = 'theme/svg/computer',
+	DICE_FIVE = 'theme/svg/dice_five',
 	ENGLISH = 'theme/svg/english',
 	ENGLISH_MONOCHROME = 'theme/svg/english_monochrome',
+	FOG = 'theme/svg/fog',
 	GERMAN = 'theme/svg/german',
 	GERMAN_MONOCHROME = 'theme/svg/german_monochrome',
 	HOUSE = 'theme/svg/home',
+	LOCATION = 'theme/svg/location',
 	NONE = '',
 	SEARCH = 'theme/svg/search',
+	TRASH_CAN = 'theme/svg/trash_can',
 	Z21 = 'theme/svg/z21'
 }

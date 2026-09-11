@@ -95,4 +95,16 @@ describe('NebulaRendererService', () => {
 
 		expect(group.querySelector('path')).toBeNull();
 	});
+
+	it('should return an empty path for fewer than three points', () => {
+		expect(
+			(service as any).createSmoothClosedPath(
+				[
+					{ x: 0, y: 0 },
+					{ x: 1, y: 1 }
+				],
+				0.5
+			)
+		).toBe('');
+	});
 });
