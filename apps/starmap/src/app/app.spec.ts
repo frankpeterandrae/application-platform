@@ -3,22 +3,27 @@
  * All rights reserved.
  */
 
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { StarMapStore } from '@application-platform/starmap-data-access';
+import { STAR_MAP_WORKSPACE, StarMapStore, StarMapWorkspace } from '@application-platform/starmap-data-access';
 import { StarMap } from '@application-platform/starmap-domain';
 
 import { setupTestingModule } from '../test-setup';
 
 import { App } from './app';
+import { StarMapAutosaveService } from './persistence/star-map-autosave.service';
 
 describe('App', () => {
 	let fixture: ComponentFixture<App>;
 	let component: App;
 	let store: StarMapStore;
 	let httpTesting: HttpTestingController;
+
+	const workspace: StarMapWorkspace = {
+		load: vi.fn(),
+		save: vi.fn()
+	};
 
 	const map: StarMap = {
 		id: 'test-map',
@@ -28,10 +33,33 @@ describe('App', () => {
 		nebulae: []
 	};
 
+	const autosaveService = {
+		start: vi.fn()
+	};
+
 	beforeEach(async () => {
+		vi.clearAllMocks();
+
+		vi.mocked(workspace.load).mockResolvedValue(
+			JSON.stringify({
+				version: 1,
+				map
+			})
+		);
+
 		await setupTestingModule({
 			imports: [App],
-			providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+			providers: [
+				provideRouter([]),
+				{
+					provide: STAR_MAP_WORKSPACE,
+					useValue: workspace
+				},
+				{
+					provide: StarMapAutosaveService,
+					useValue: autosaveService
+				}
+			]
 		});
 
 		store = TestBed.inject(StarMapStore);
@@ -48,46 +76,18 @@ describe('App', () => {
 	});
 
 	it('should create', () => {
-		const request = httpTesting.expectOne('/assets/maps/starmap.json');
-
-		request.flush(
-			JSON.stringify({
-				version: 1,
-				map
-			})
-		);
-
 		expect(component).toBeTruthy();
 	});
 
 	it('should load the initial map', async () => {
-		const request = httpTesting.expectOne('/assets/maps/starmap.json');
-
-		expect(request.request.method).toBe('GET');
-		expect(request.request.responseType).toBe('text');
-
-		request.flush(
-			JSON.stringify({
-				version: 1,
-				map
-			})
-		);
-
 		await fixture.whenStable();
 
+		expect(workspace.load).toHaveBeenCalledOnce();
 		expect(store.map()).toEqual(map);
+		expect(autosaveService.start).toHaveBeenCalledOnce();
 	});
 
 	it('should render the router outlet', () => {
-		const request = httpTesting.expectOne('/assets/maps/starmap.json');
-
-		request.flush(
-			JSON.stringify({
-				version: 1,
-				map
-			})
-		);
-
 		const outlet = fixture.nativeElement.querySelector('router-outlet');
 
 		expect(outlet).toBeTruthy();
