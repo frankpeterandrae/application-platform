@@ -44,7 +44,7 @@ export class SystemEditorComponent {
 	protected readonly ButtonColorDefinition = ButtonColorDefinition;
 
 	public readonly system = input.required<StarSystem>();
-	public readonly systemSaved = output<StarSystem>();
+	public readonly systemChanged = output<StarSystem>();
 	public readonly systemDeleted = output<string>();
 
 	public readonly systems = input.required<StarSystem[]>();
@@ -133,17 +133,23 @@ export class SystemEditorComponent {
 				'stars',
 				this.formBuilder.array<FormControl<string>>(
 					system.stars.map((star) => this.formBuilder.nonNullable.control(star.spectralType))
-				)
+				),
+				{ emitEvent: false }
 			);
 
 			this.form.setControl(
 				'planets',
-				this.formBuilder.array<PlanetForm>(system.planets.map((planet) => this.createPlanetForm(planet)))
+				this.formBuilder.array<PlanetForm>(system.planets.map((planet) => this.createPlanetForm(planet))),
+				{ emitEvent: false }
 			);
+		});
+
+		this.form.valueChanges.subscribe(() => {
+			this.emitSystem();
 		});
 	}
 
-	protected save(): void {
+	private emitSystem(): void {
 		if (this.form.invalid) {
 			return;
 		}
@@ -151,7 +157,7 @@ export class SystemEditorComponent {
 		const system = this.system();
 		const value = this.form.getRawValue();
 
-		this.systemSaved.emit({
+		this.systemChanged.emit({
 			...system,
 			name: value.name,
 			faction: value.faction || undefined,

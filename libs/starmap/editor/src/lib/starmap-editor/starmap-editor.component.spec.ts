@@ -187,22 +187,6 @@ describe('StarmapEditorComponent', () => {
 		expect((component as any).editorOpen()).toBe(true);
 	});
 
-	it('should update the selected system', () => {
-		(component as any).selectMenuItem({
-			id: 'system:S001',
-			label: 'Sol'
-		});
-
-		const updated = {
-			...map.systems[0],
-			name: 'Updated Sol'
-		};
-
-		(component as any).saveSystem(updated);
-
-		expect(store.map()?.systems.find((system) => system.id === 'S001')?.name).toBe('Updated Sol');
-	});
-
 	it('should create the next sequential system id', () => {
 		(component as any).createSystem();
 

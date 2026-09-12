@@ -80,6 +80,10 @@ export class NebulaEditorComponent {
 			this.form.controls.opacity.setValue(nebula.opacity);
 
 			this.form.setControl('points', this.formBuilder.array(nebula.points.map((point) => this.createPointForm(point))));
+
+			this.form.valueChanges.subscribe(() => {
+				this.emitNebula();
+			});
 		});
 	}
 
@@ -114,7 +118,7 @@ export class NebulaEditorComponent {
 		this.points.removeAt(index);
 	}
 
-	protected save(): void {
+	private emitNebula(): void {
 		if (this.form.invalid || this.points.length < 3) {
 			return;
 		}

@@ -3,11 +3,11 @@
  * All rights reserved.
  */
 
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
-import { firstValueFrom } from 'rxjs';
+import { STAR_MAP_WORKSPACE, StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
+
+import { StarMapAutosaveService } from './persistence/star-map-autosave.service';
 
 /**
  * The root component of the application.
@@ -19,9 +19,10 @@ import { firstValueFrom } from 'rxjs';
 	styleUrl: './app.scss'
 })
 export class App implements OnInit {
-	private readonly http = inject(HttpClient);
+	private readonly workspace = inject(STAR_MAP_WORKSPACE);
 	private readonly starMapFileService = inject(StarMapFileService);
 	private readonly store = inject(StarMapStore);
+	private readonly autosaveService = inject(StarMapAutosaveService);
 
 	protected title = 'starmap';
 
@@ -30,14 +31,10 @@ export class App implements OnInit {
 	}
 
 	private async loadMap(): Promise<void> {
-		const content = await firstValueFrom(
-			this.http.get('/assets/maps/starmap.json', {
-				responseType: 'text'
-			})
-		);
-
+		const content = await this.workspace.load();
 		const map = this.starMapFileService.deserialize(content);
 
 		this.store.setMap(map);
+		this.autosaveService.start();
 	}
 }

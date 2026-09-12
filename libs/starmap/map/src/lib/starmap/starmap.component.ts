@@ -2,10 +2,9 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { Logger } from '@application-platform/shared-ui';
 import { StarMapStore } from '@application-platform/starmap-data-access';
-import { StarSystem } from '@application-platform/starmap-domain';
 
 import { SvgExportService } from '../export/svg-export.service';
 import { StarMapSvgRendererService } from '../rendering/star-map-svg-renderer.service';
@@ -33,7 +32,7 @@ export class StarmapComponent {
 
 	private readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
-	protected readonly selectedSystem = signal<StarSystem | null>(null);
+	private readonly selectedSystemId = signal<string | null>(null);
 
 	private readonly mapCanvas = viewChild<ElementRef<HTMLDivElement>>('mapCanvas');
 
@@ -61,6 +60,16 @@ export class StarmapComponent {
 	private hasDragged = false;
 
 	private suppressClick = false;
+
+	protected readonly selectedSystem = computed(() => {
+		const systemId = this.selectedSystemId();
+
+		if (!systemId) {
+			return null;
+		}
+
+		return this.store.map()?.systems.find((system) => system.id === systemId) ?? null;
+	});
 
 	constructor() {
 		effect(() => {
@@ -122,11 +131,7 @@ export class StarmapComponent {
 		}
 		this.logger.debug('Found systemId:', systemId);
 
-		const map = this.store.map();
-
-		const system = map?.systems.find((candidate) => candidate.id === systemId) ?? null;
-
-		this.selectedSystem.set(system);
+		this.selectedSystemId.set(systemId);
 	}
 
 	protected selectSystemByKeyboard(event: KeyboardEvent): void {
@@ -322,5 +327,9 @@ export class StarmapComponent {
 
 		viewport.scrollLeft = 0;
 		viewport.scrollTop = 0;
+	}
+
+	protected closeSystemDetails(): void {
+		this.selectedSystemId.set(null);
 	}
 }
