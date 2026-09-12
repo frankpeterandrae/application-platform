@@ -3,7 +3,7 @@
   ~ All rights reserved.
   -->
 
-<form class="system-editor" [formGroup]="form" (ngSubmit)="save()">
+<form class="system-editor" [formGroup]="form">
 	<section class="editor-section">
 		<h2>System</h2>
 
@@ -169,8 +169,6 @@
 	</section>
 
 	<div class="editor-actions">
-		<theme-button buttonText="Speichern" type="submit" [color]="ButtonColorDefinition.PRIMARY" [disabled]="form.invalid" />
-
 		<theme-button buttonText="System löschen" [color]="ButtonColorDefinition.DANGER" (buttonClick)="systemDeleted.emit(system().id)" />
 	</div>
 </form>

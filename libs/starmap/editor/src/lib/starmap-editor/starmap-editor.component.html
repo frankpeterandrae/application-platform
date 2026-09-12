@@ -21,7 +21,7 @@
 								[system]="system"
 								[systems]="map.systems"
 								[jumpLinks]="map.jumpLinks"
-								(systemSaved)="saveSystem($event)"
+								(systemChanged)="store.updateSystem($event)"
 								(systemDeleted)="deleteSystem($event)"
 								(jumpLinkCreated)="store.addJumpLink($event)"
 								(jumpLinkChanged)="store.updateJumpLink($event)"
