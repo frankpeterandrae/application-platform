@@ -184,10 +184,6 @@ export class StarmapEditorComponent {
 		}
 	];
 
-	protected saveSystem(system: StarSystem): void {
-		this.store.updateSystem(system);
-	}
-
 	protected createSystem(): void {
 		const map = this.store.map();
 

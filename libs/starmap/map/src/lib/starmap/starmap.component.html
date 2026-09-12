@@ -18,6 +18,6 @@
 
 @if (selectedSystem(); as system) {
 	<div class="system-details-overlay fpa-pos-abs fpa-overflow-auto">
-		<starmap-system-details [system]="system" (closed)="selectedSystem.set(null)" />
+		<starmap-system-details [system]="system" (closed)="closeSystemDetails()" />
 	</div>
 }

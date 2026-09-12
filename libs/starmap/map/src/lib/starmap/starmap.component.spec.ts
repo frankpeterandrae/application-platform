@@ -590,11 +590,11 @@ describe('StarmapComponent', () => {
 	});
 
 	it('should close the system details', () => {
-		(component as any).selectedSystem.set(map.systems[0]);
+		(component as any).selectedSystemId.set(map.systems[0].id);
 
 		expect((component as any).selectedSystem()).toEqual(map.systems[0]);
 
-		(component as any).selectedSystem.set(null);
+		(component as any).selectedSystemId.set(null);
 
 		expect((component as any).selectedSystem()).toBeNull();
 	});

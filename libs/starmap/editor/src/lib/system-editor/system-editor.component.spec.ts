@@ -126,10 +126,10 @@ describe('SystemEditorComponent', () => {
 		expect((component as any).planets).toHaveLength(0);
 	});
 
-	it('should save the edited system', () => {
+	it('should emit the changed system when the form changes', () => {
 		const emitted: StarSystem[] = [];
 
-		component.systemSaved.subscribe((value) => emitted.push(value));
+		component.systemChanged.subscribe((value) => emitted.push(value));
 
 		const form = (component as any).form;
 
@@ -141,11 +141,7 @@ describe('SystemEditorComponent', () => {
 			z: -5
 		});
 
-		(component as any).save();
-
-		expect(emitted).toHaveLength(1);
-
-		expect(emitted[0]).toMatchObject({
+		expect(emitted.at(-1)).toMatchObject({
 			id: 'S001',
 			name: 'New Sol',
 			faction: 'Mechanicus',
@@ -160,11 +156,11 @@ describe('SystemEditorComponent', () => {
 	it('should convert an empty faction to undefined when saving', () => {
 		const emitted: StarSystem[] = [];
 
-		component.systemSaved.subscribe((value) => emitted.push(value));
+		component.systemChanged.subscribe((value) => emitted.push(value));
 
 		(component as any).form.controls.faction.setValue('');
 
-		(component as any).save();
+		(component as any).emitSystem();
 
 		expect(emitted[0].faction).toBeUndefined();
 	});
@@ -172,11 +168,11 @@ describe('SystemEditorComponent', () => {
 	it('should not save an invalid form', () => {
 		const emitted: StarSystem[] = [];
 
-		component.systemSaved.subscribe((value) => emitted.push(value));
+		component.systemChanged.subscribe((value) => emitted.push(value));
 
 		(component as any).form.controls.name.setValue('');
 
-		(component as any).save();
+		(component as any).emitSystem();
 
 		expect(emitted).toHaveLength(0);
 	});

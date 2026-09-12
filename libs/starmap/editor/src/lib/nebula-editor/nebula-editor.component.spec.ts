@@ -138,7 +138,7 @@ describe('NebulaEditorComponent', () => {
 
 		(component as any).form.controls.name.setValue('');
 
-		(component as any).save();
+		(component as any).emitNebula();
 
 		expect(emitted).toHaveLength(0);
 	});
@@ -152,12 +152,12 @@ describe('NebulaEditorComponent', () => {
 
 		points.removeAt(0);
 
-		(component as any).save();
+		(component as any).emitNebula();
 
 		expect(emitted).toHaveLength(0);
 	});
 
-	it('should emit the changed nebula when saving', () => {
+	it('should emit the changed nebula when the form changes', () => {
 		const emitted: Nebula[] = [];
 
 		component.nebulaChanged.subscribe((value) => emitted.push(value));
@@ -170,22 +170,18 @@ describe('NebulaEditorComponent', () => {
 
 		form.controls.opacity.setValue(0.8);
 
-		(component as any).save();
-
-		expect(emitted).toEqual([
-			{
-				id: 'N001',
-				name: 'Changed Nebula',
-				style: 'outline',
-				color: '#123456',
-				opacity: 0.8,
-				points: [
-					{ x: 0, y: 0, z: 0 },
-					{ x: 1, y: 0, z: 0 },
-					{ x: 0, y: 1, z: 0 }
-				]
-			}
-		]);
+		expect(emitted.at(-1)).toEqual({
+			id: 'N001',
+			name: 'Changed Nebula',
+			style: 'outline',
+			color: '#123456',
+			opacity: 0.8,
+			points: [
+				{ x: 0, y: 0, z: 0 },
+				{ x: 1, y: 0, z: 0 },
+				{ x: 0, y: 1, z: 0 }
+			]
+		});
 	});
 
 	it('should emit the nebula id when deleting', () => {
