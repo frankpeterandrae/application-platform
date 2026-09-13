@@ -66,10 +66,10 @@ describe('SystemRendererService', () => {
 		const secondSystem = systemRendererGroup.children[1] as Group;
 
 		expect(firstSystem).toBeInstanceOf(Group);
-		expect(firstSystem.position.toArray()).toEqual([3, 6, 9]);
+		expect(firstSystem.position.toArray()).toEqual([3, -6, 9]);
 
 		expect(secondSystem).toBeInstanceOf(Group);
-		expect(secondSystem.position.toArray()).toEqual([-12, 15, -18]);
+		expect(secondSystem.position.toArray()).toEqual([-12, -15, -18]);
 
 		expect(firstSystem.children).toHaveLength(1);
 		expect(secondSystem.children).toHaveLength(1);

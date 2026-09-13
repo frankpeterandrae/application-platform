@@ -3,11 +3,11 @@
  * All rights reserved.
  */
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Position3d, StarSystem } from '@application-platform/starmap-domain';
 import { Box3, MathUtils, PerspectiveCamera, Vector3 } from 'three';
 
-import { STARMAP_3D_SCALE } from '../rendering/starmap-3d-scale';
+import { Starmap3dPositionService } from '../util/starmap-3d-position.service';
 /**
  * Manages the perspective camera of the 3D star map.
  */
@@ -15,6 +15,7 @@ import { STARMAP_3D_SCALE } from '../rendering/starmap-3d-scale';
 	providedIn: 'root'
 })
 export class CameraService {
+	private readonly positionService = inject(Starmap3dPositionService);
 	private readonly camera = new PerspectiveCamera(60, 1, 0.1, 10_000);
 
 	constructor() {
@@ -51,13 +52,7 @@ export class CameraService {
 		const box = new Box3();
 
 		for (const system of systems) {
-			box.expandByPoint(
-				new Vector3(
-					system.position.x * STARMAP_3D_SCALE.systemDistance,
-					system.position.y * STARMAP_3D_SCALE.systemDistance,
-					system.position.z * STARMAP_3D_SCALE.systemDistance
-				)
-			);
+			box.expandByPoint(this.positionService.toVector3(system.position));
 		}
 
 		const center = box.getCenter(new Vector3());
