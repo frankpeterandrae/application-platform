@@ -56,7 +56,7 @@ describe('JumpRendererService', () => {
 	});
 
 	it.each([
-		['normal', '#ffffff', '5', null],
+		['normal', '#464646', '5', null],
 		['caution', '#ffd43b', '5', '12,8'],
 		['dangerous', '#ff7a00', '7', null],
 		['blocked', '#ff3b30', '6', '4,7'],

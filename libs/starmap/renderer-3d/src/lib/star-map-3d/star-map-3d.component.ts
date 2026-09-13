@@ -4,10 +4,11 @@
  */
 
 import { AfterViewInit, Component, DestroyRef, ElementRef, effect, inject, input, viewChild } from '@angular/core';
-import { StarSystem } from '@application-platform/starmap-domain';
+import { JumpLink, StarSystem } from '@application-platform/starmap-domain';
 import { WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
+import { JumpLinkRendererService } from '../jump-links/jump-link-renderer.service';
 import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
 import { CameraService } from '../scene/camera.service';
 import { ControlsService } from '../scene/controls.service';
@@ -27,8 +28,6 @@ import { SystemRendererService } from '../systems/system-renderer.service';
 	styleUrl: './star-map-3d.component.scss'
 })
 export class StarMap3dComponent implements AfterViewInit {
-	public readonly systems = input.required<StarSystem[]>();
-
 	private readonly rendererFactory = inject(WebglRendererFactory);
 	private readonly systemRenderer = inject(SystemRendererService);
 	private readonly destroyRef = inject(DestroyRef);
@@ -38,6 +37,10 @@ export class StarMap3dComponent implements AfterViewInit {
 	private readonly systemLabelRenderer = inject(SystemLabelRendererService);
 	private readonly systemLabelVisibilityService = inject(SystemLabelVisibilityService);
 	private readonly systemLabelCollisionService = inject(SystemLabelCollisionService);
+	private readonly jumpLinkRenderer = inject(JumpLinkRendererService);
+
+	public readonly systems = input.required<StarSystem[]>();
+	public readonly jumpLinks = input.required<JumpLink[]>();
 
 	private readonly viewport = viewChild.required<ElementRef<HTMLDivElement>>('viewport');
 
@@ -50,13 +53,17 @@ export class StarMap3dComponent implements AfterViewInit {
 	constructor() {
 		effect(() => {
 			const systems = this.systems();
+			const jumpLinks = this.jumpLinks();
 
 			if (!this.renderer) {
 				return;
 			}
 
-			this.systemRenderer.render(this.sceneService.getScene(), systems);
-			this.systemLabelRenderer.render(this.sceneService.getScene(), systems);
+			const scene = this.sceneService.getScene();
+
+			this.jumpLinkRenderer.render(scene, systems, jumpLinks);
+			this.systemRenderer.render(scene, systems);
+			this.systemLabelRenderer.render(scene, systems);
 
 			this.render();
 		});
@@ -87,8 +94,12 @@ export class StarMap3dComponent implements AfterViewInit {
 
 		this.resize();
 
-		this.systemRenderer.render(this.sceneService.getScene(), this.systems());
-		this.systemLabelRenderer.render(this.sceneService.getScene(), this.systems());
+		const scene = this.sceneService.getScene();
+
+		this.jumpLinkRenderer.render(scene, this.systems(), this.jumpLinks());
+
+		this.systemRenderer.render(scene, this.systems());
+		this.systemLabelRenderer.render(scene, this.systems());
 
 		this.fitToViewport();
 
@@ -168,6 +179,7 @@ export class StarMap3dComponent implements AfterViewInit {
 		this.resizeObserver = null;
 
 		this.controlsService.destroy();
+		this.jumpLinkRenderer.clear();
 		this.systemRenderer.clear();
 		this.systemLabelRenderer.clear();
 

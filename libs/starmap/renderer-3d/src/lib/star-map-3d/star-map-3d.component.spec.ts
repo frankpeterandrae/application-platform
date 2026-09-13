@@ -4,11 +4,12 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { StarSystem } from '@application-platform/starmap-domain';
+import { JumpLink, StarSystem } from '@application-platform/starmap-domain';
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
+import { JumpLinkRendererService } from '../jump-links/jump-link-renderer.service';
 import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
 import { CameraService } from '../scene/camera.service';
 import { ControlsService } from '../scene/controls.service';
@@ -72,10 +73,24 @@ describe('StarMap3dComponent', () => {
 		}
 	];
 
+	const jumpLinks: JumpLink[] = [
+		{
+			id: 'JL001',
+			startSystemId: 'S001',
+			endSystemId: 'S002',
+			status: 'normal'
+		}
+	];
+
 	const controlsService = {
 		initialize: vi.fn(),
 		destroy: vi.fn(),
 		setTarget: vi.fn()
+	};
+
+	const jumpLinkRendererService = {
+		render: vi.fn(),
+		clear: vi.fn()
 	};
 
 	const observe = vi.fn();
@@ -116,6 +131,10 @@ describe('StarMap3dComponent', () => {
 				{
 					provide: ControlsService,
 					useValue: controlsService
+				},
+				{
+					provide: JumpLinkRendererService,
+					useValue: jumpLinkRendererService
 				}
 			]
 		});
@@ -124,6 +143,7 @@ describe('StarMap3dComponent', () => {
 		component = fixture.componentInstance;
 
 		fixture.componentRef.setInput('systems', systems);
+		fixture.componentRef.setInput('jumpLinks', jumpLinks);
 	});
 
 	it('should create', () => {
@@ -231,6 +251,7 @@ describe('StarMap3dComponent', () => {
 
 		expect(disconnect).toHaveBeenCalledOnce();
 		expect(systemRenderer.clear).toHaveBeenCalledOnce();
+		expect(jumpLinkRendererService.clear).toHaveBeenCalledOnce();
 		expect(renderer.dispose).toHaveBeenCalledOnce();
 		expect(viewport.contains(canvas)).toBe(false);
 	});
@@ -269,5 +290,60 @@ describe('StarMap3dComponent', () => {
 			y: 20,
 			z: 30
 		});
+	});
+
+	it('should render the jump links', () => {
+		fixture.detectChanges();
+
+		expect(jumpLinkRendererService.render).toHaveBeenCalledWith(scene, systems, jumpLinks);
+	});
+
+	it('should update jump links when the systems change', () => {
+		fixture.detectChanges();
+
+		jumpLinkRendererService.render.mockClear();
+
+		const updatedSystems: StarSystem[] = [
+			...systems,
+			{
+				id: 'S003',
+				name: 'Gamma',
+				position: {
+					x: 10,
+					y: 20,
+					z: 30
+				},
+				stars: [],
+				planets: []
+			}
+		];
+
+		fixture.componentRef.setInput('systems', updatedSystems);
+
+		fixture.detectChanges();
+
+		expect(jumpLinkRendererService.render).toHaveBeenCalledWith(scene, updatedSystems, jumpLinks);
+	});
+
+	it('should update jump links when the jump links change', () => {
+		fixture.detectChanges();
+
+		jumpLinkRendererService.render.mockClear();
+
+		const updatedJumpLinks: JumpLink[] = [
+			...jumpLinks,
+			{
+				id: 'J002',
+				startSystemId: 'S002',
+				endSystemId: 'S001',
+				status: 'dangerous'
+			}
+		];
+
+		fixture.componentRef.setInput('jumpLinks', updatedJumpLinks);
+
+		fixture.detectChanges();
+
+		expect(jumpLinkRendererService.render).toHaveBeenCalledWith(scene, systems, updatedJumpLinks);
 	});
 });
