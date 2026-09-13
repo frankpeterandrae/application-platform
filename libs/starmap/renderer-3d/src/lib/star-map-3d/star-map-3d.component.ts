@@ -3,10 +3,15 @@
  * All rights reserved.
  */
 
-import { AfterViewInit, Component, DestroyRef, ElementRef, inject, viewChild } from '@angular/core';
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { AfterViewInit, Component, DestroyRef, ElementRef, effect, inject, input, viewChild } from '@angular/core';
+import { StarSystem } from '@application-platform/starmap-domain';
+import { WebGLRenderer } from 'three';
 
 import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
+import { CameraService } from '../scene/camera.service';
+import { ControlsService } from '../scene/controls.service';
+import { StarMapSceneService } from '../scene/star-map-scene.service';
+import { SystemRendererService } from '../systems/system-renderer.service';
 
 /**
  * Displays the interactive three-dimensional star map.
@@ -18,18 +23,34 @@ import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
 	styleUrl: './star-map-3d.component.scss'
 })
 export class StarMap3dComponent implements AfterViewInit {
+	public readonly systems = input.required<StarSystem[]>();
+
 	private readonly rendererFactory = inject(WebglRendererFactory);
+	private readonly systemRenderer = inject(SystemRendererService);
 	private readonly destroyRef = inject(DestroyRef);
+	private readonly sceneService = inject(StarMapSceneService);
+	private readonly cameraService = inject(CameraService);
+	private readonly controlsService = inject(ControlsService);
 
 	private readonly viewport = viewChild.required<ElementRef<HTMLDivElement>>('viewport');
-
-	private readonly scene = new Scene();
-
-	private readonly camera = new PerspectiveCamera(60, 1, 0.1, 10_000);
 
 	private renderer: WebGLRenderer | null = null;
 
 	private resizeObserver: ResizeObserver | null = null;
+
+	constructor() {
+		effect(() => {
+			const systems = this.systems();
+
+			if (!this.renderer) {
+				return;
+			}
+
+			this.systemRenderer.render(this.sceneService.getScene(), systems);
+
+			this.render();
+		});
+	}
 
 	ngAfterViewInit(): void {
 		const viewport = this.viewport().nativeElement;
@@ -38,7 +59,7 @@ export class StarMap3dComponent implements AfterViewInit {
 
 		viewport.append(this.renderer.domElement);
 
-		this.camera.position.set(0, 0, 10);
+		this.controlsService.initialize(this.renderer.domElement, () => this.render());
 
 		this.resizeObserver = new ResizeObserver(() => {
 			this.resize();
@@ -48,11 +69,27 @@ export class StarMap3dComponent implements AfterViewInit {
 
 		this.resize();
 
-		this.renderer.render(this.scene, this.camera);
+		this.systemRenderer.render(this.sceneService.getScene(), this.systems());
+
+		this.fitToViewport();
 
 		this.destroyRef.onDestroy(() => {
 			this.destroyRenderer();
 		});
+	}
+
+	/**
+	 * Adjusts the camera position and orientation to fit all star systems within the view.
+	 */
+	public fitToViewport(): void {
+		const target = this.cameraService.fitToSystems(this.systems());
+
+		if (!target) {
+			return;
+		}
+
+		this.controlsService.setTarget(target);
+		this.render();
 	}
 
 	private resize(): void {
@@ -71,16 +108,27 @@ export class StarMap3dComponent implements AfterViewInit {
 			return;
 		}
 
-		this.camera.aspect = width / height;
-		this.camera.updateProjectionMatrix();
+		this.cameraService.resize(width, height);
 
 		renderer.setSize(width, height, false);
-		renderer.render(this.scene, this.camera);
+
+		this.render();
+	}
+
+	private render(): void {
+		if (!this.renderer) {
+			return;
+		}
+
+		this.renderer.render(this.sceneService.getScene(), this.cameraService.getCamera());
 	}
 
 	private destroyRenderer(): void {
 		this.resizeObserver?.disconnect();
 		this.resizeObserver = null;
+
+		this.controlsService.destroy();
+		this.systemRenderer.clear();
 
 		if (!this.renderer) {
 			return;

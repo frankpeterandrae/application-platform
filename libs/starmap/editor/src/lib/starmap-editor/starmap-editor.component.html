@@ -70,13 +70,15 @@
 				}
 				@if (mapView() === '2d') {
 					<theme-button-bar [buttons]="toolbarButtons" />
+				} @else {
+					<theme-button buttonText="Karte einpassen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="fitToViewport()" />
 				}
 			</div>
 
 			@if (mapView() === '2d') {
 				<starmap-container />
 			} @else {
-				<starmap-3d-container />
+				<starmap-3d-container [systems]="map.systems" />
 			}
 		</main>
 	</div>
