@@ -3,11 +3,12 @@
  * All rights reserved.
  */
 
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { StarSystem } from '@application-platform/starmap-domain';
 import { AdditiveBlending, Color, Group, Mesh, MeshBasicMaterial, Object3D, Scene, SphereGeometry, Vector3 } from 'three';
 
 import { STARMAP_3D_SCALE } from '../rendering/starmap-3d-scale';
+import { Starmap3dPositionService } from '../util/starmap-3d-position.service';
 
 interface StarRenderData {
 	size: number;
@@ -21,6 +22,7 @@ interface StarRenderData {
 	providedIn: 'root'
 })
 export class SystemRendererService {
+	private readonly positionService = inject(Starmap3dPositionService);
 	private readonly group = new Group();
 	private readonly starGap = 0.25;
 
@@ -67,12 +69,8 @@ export class SystemRendererService {
 
 	private createSystem(system: StarSystem): Group {
 		const group = new Group();
-
-		group.position.set(
-			system.position.x * STARMAP_3D_SCALE.systemDistance,
-			system.position.y * STARMAP_3D_SCALE.systemDistance,
-			system.position.z * STARMAP_3D_SCALE.systemDistance
-		);
+		const position = this.positionService.toVector3(system.position);
+		group.position.set(position.x, position.y, position.z);
 
 		if (system.stars.length === 0) {
 			group.add(this.createStar(''));
