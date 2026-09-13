@@ -45,7 +45,13 @@
 			</section>
 		}
 
-		<main class="map-area fpa-overflow-hidden" [ngClass]="{ 'fpa-grid-col-end-7': editorOpen(), 'fpa-grid-col-end-12': !editorOpen() }">
+		<main
+			class="map-area fpa-overflow-hidden"
+			[ngClass]="{
+				'fpa-grid-col-end-7': editorOpen() && mapView() === '2d',
+				'fpa-grid-col-end-12': !editorOpen() || mapView() === '3d'
+			}"
+		>
 			<div class="fpa-flex fpa-gap-1">
 				@if (mapView() === '2d') {
 					<theme-button
