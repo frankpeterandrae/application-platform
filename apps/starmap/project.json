@@ -49,6 +49,12 @@
 							"type": "anyComponentStyle",
 							"maximumError": "6kb"
 						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/starmap/src/environments/environment.ts",
+							"with": "apps/starmap/src/environments/environment.prod.ts"
+						}
 					]
 				},
 				"development": {

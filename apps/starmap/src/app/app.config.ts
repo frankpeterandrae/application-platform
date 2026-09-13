@@ -7,10 +7,13 @@ import { provideHttpClient } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
 import { provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { FEATURE_TOGGLES } from '@application-platform/config';
 import { BrowserFilePersistenceService, FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { STAR_MAP_WORKSPACE } from '@application-platform/starmap-data-access';
 import { provideFastSVG } from '@push-based/ngx-fast-svg';
 import { isTauri } from '@tauri-apps/api/core';
+
+import { environment } from '../environments/environment';
 
 import { appRoutes } from './app.routes';
 import { BrowserStarMapWorkspaceService } from './persistence/browser-star-map-workspace.service';
@@ -54,6 +57,10 @@ export const appConfig: ApplicationConfig = {
 				return isTauri() ? tauriWorkspace : browserWorkspace;
 			},
 			deps: [BrowserStarMapWorkspaceService, TauriStarMapWorkspaceService]
+		},
+		{
+			provide: FEATURE_TOGGLES,
+			useValue: environment.features
 		}
 	]
 };

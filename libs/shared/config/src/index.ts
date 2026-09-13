@@ -4,3 +4,6 @@
  */
 
 export * from './lib/config/transloco/transloco.config';
+export * from './lib/feature-toggle/feature-toggle.model';
+export * from './lib/feature-toggle/feature-toggle.service';
+export * from './lib/feature-toggle/feature-toggle.token';

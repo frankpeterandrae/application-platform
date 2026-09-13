@@ -39,8 +39,7 @@ describe('ButtonComponent', () => {
 	});
 
 	it('should apply correct classes based on color input', () => {
-		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS);
-		component.ngOnInit(); // Call ngOnInit to initialize classes
+		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS); // Call ngOnInit to initialize classes
 		fixture.detectChanges();
 
 		const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
@@ -79,8 +78,7 @@ describe('ButtonComponent', () => {
 
 	it('should add "fpa-df-direction-row-reverse" class when iconEnd is true', () => {
 		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS);
-		fixture.componentRef.setInput('iconEnd', true);
-		component.ngOnInit(); // Apply classes
+		fixture.componentRef.setInput('iconEnd', true); // Apply classes
 		fixture.detectChanges();
 
 		const contentDiv = fixture.nativeElement.querySelector('button .fpa-flex');
@@ -90,7 +88,6 @@ describe('ButtonComponent', () => {
 	it('should add "fpa-disabled" class when disabled is true', () => {
 		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS);
 		fixture.componentRef.setInput('disabled', true);
-		component.ngOnInit();
 		fixture.detectChanges();
 
 		const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
@@ -101,11 +98,39 @@ describe('ButtonComponent', () => {
 	it('should not add "fpa-disabled" class when disabled is false', () => {
 		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS);
 		fixture.componentRef.setInput('disabled', false);
-		component.ngOnInit();
 		fixture.detectChanges();
 
 		const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
 		expect(buttonElement.classList).not.toContain('fpa-disabled');
 		expect(buttonElement.disabled).toBe(false);
+	});
+
+	it('should update the color class when the color input changes', () => {
+		fixture.componentRef.setInput('color', ButtonColorDefinition.PRIMARY);
+		fixture.detectChanges();
+
+		const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+		expect(buttonElement.classList).toContain('fpa-primary');
+
+		fixture.componentRef.setInput('color', ButtonColorDefinition.SUCCESS);
+		fixture.detectChanges();
+
+		expect(buttonElement.classList).not.toContain('fpa-primary');
+		expect(buttonElement.classList).toContain('fpa-success');
+	});
+
+	it('should update the icon position when iconEnd changes', () => {
+		fixture.componentRef.setInput('iconEnd', false);
+		fixture.detectChanges();
+
+		const contentDiv = fixture.nativeElement.querySelector('button .fpa-flex');
+
+		expect(contentDiv.classList).not.toContain('fpa-flex-row-reverse');
+
+		fixture.componentRef.setInput('iconEnd', true);
+		fixture.detectChanges();
+
+		expect(contentDiv.classList).toContain('fpa-flex-row-reverse');
 	});
 });

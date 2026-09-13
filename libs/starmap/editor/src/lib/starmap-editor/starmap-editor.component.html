@@ -5,14 +5,14 @@
 
 @if (store.map(); as map) {
 	<div class="fpa-grid-12 fpa-height-100 fpa-overflow-hidden" [class.editor-collapsed]="!editorOpen()">
-		<theme-sidebar
-			class="fpa-grid-col-end-2 fpa-flex fpa-flex-column fpa-height-100"
-			[menuItems]="menuItems()"
-			[searchable]="true"
-			(menuItemSelected)="selectMenuItem($event)"
-		/>
+		@if (editorOpen() && mapView() === '2d') {
+			<theme-sidebar
+				class="fpa-grid-col-end-2 fpa-flex fpa-flex-column fpa-height-100"
+				[menuItems]="menuItems()"
+				[searchable]="true"
+				(menuItemSelected)="selectMenuItem($event)"
+			/>
 
-		@if (editorOpen()) {
 			<section class="fpa-grid-col-end-3 fpa-flex fpa-flex-column fpa-overflow-y-auto">
 				<div class="fpa-flex fpa-flex-column fpa-gap-1">
 					@if (selectedSystem(); as system) {
@@ -45,17 +45,39 @@
 			</section>
 		}
 
-		<main class="map-area fpa-overflow-hidden" [ngClass]="{ 'fpa-grid-col-end-7': editorOpen(), 'fpa-grid-col-end-10': !editorOpen() }">
+		<main class="map-area fpa-overflow-hidden" [ngClass]="{ 'fpa-grid-col-end-7': editorOpen(), 'fpa-grid-col-end-12': !editorOpen() }">
 			<div class="fpa-flex fpa-gap-1">
-				<theme-button
-					(buttonClick)="toggleEditor()"
-					[icon]="editorOpen() ? iconDefinition.CARET_LEFT : iconDefinition.CARET_RIGHT"
-					[color]="ButtonColorDefinition.DEFAULT"
-				></theme-button>
-				<theme-button-bar [buttons]="toolbarButtons" />
+				@if (mapView() === '2d') {
+					<theme-button
+						(buttonClick)="toggleEditor()"
+						[icon]="editorOpen() ? iconDefinition.CARET_LEFT : iconDefinition.CARET_RIGHT"
+						[color]="ButtonColorDefinition.DEFAULT"
+					></theme-button>
+				}
+
+				@if (renderer3dEnabled) {
+					<theme-button
+						buttonText="2D"
+						[color]="mapView() === '2d' ? ButtonColorDefinition.PRIMARY : ButtonColorDefinition.DEFAULT"
+						(buttonClick)="show2d()"
+					/>
+
+					<theme-button
+						buttonText="3D"
+						[color]="mapView() === '3d' ? ButtonColorDefinition.PRIMARY : ButtonColorDefinition.DEFAULT"
+						(buttonClick)="show3d()"
+					/>
+				}
+				@if (mapView() === '2d') {
+					<theme-button-bar [buttons]="toolbarButtons" />
+				}
 			</div>
 
-			<starmap-container />
+			@if (mapView() === '2d') {
+				<starmap-container />
+			} @else {
+				<starmap-3d-container />
+			}
 		</main>
 	</div>
 }

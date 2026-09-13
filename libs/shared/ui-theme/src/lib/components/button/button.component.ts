@@ -4,7 +4,6 @@
  */
 
 import { CommonModule } from '@angular/common';
-import type { OnInit } from '@angular/core';
 import { Component, input, output } from '@angular/core';
 import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 
@@ -19,7 +18,7 @@ import { ButtonColorDefinition, IconDefinition } from '../../enums';
 	templateUrl: './button.component.html',
 	styleUrls: ['./button.base.scss', './button.variants.scss']
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent {
 	/** Event emitter for button click events. */
 	public buttonClick = output();
 
@@ -53,21 +52,6 @@ export class ButtonComponent implements OnInit {
 
 	/** CSS classes for the content inside the button. */
 	public contentClasses: string[] = [];
-
-	/**
-	 * Lifecycle hook that is called after data-bound properties are initialized.
-	 */
-	ngOnInit(): void {
-		if (this.color()) {
-			this.buttonClasses.push(`fpa-${this.color()}`);
-		} else {
-			this.buttonClasses.push('fpa-no-color');
-		}
-
-		if (this.iconEnd()) {
-			this.contentClasses.push('fpa-flex-row-reverse');
-		}
-	}
 
 	/**
 	 * Callback function to emit the click event.
