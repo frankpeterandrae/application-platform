@@ -4,10 +4,13 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FEATURE_TOGGLES } from '@application-platform/config';
 import { IconDefinition } from '@application-platform/shared/ui-theme';
 import { BrowserFilePersistenceService, BrowserFileService, FILE_PERSISTENCE } from '@application-platform/shared-ui';
 import { StarMapStore } from '@application-platform/starmap-data-access';
 import { StarMap } from '@application-platform/starmap-domain';
+import { WebglRendererFactory } from '@application-platform/starmap-renderer-3d';
+import { WebGLRenderer } from 'three';
 
 import { setupTestingModule } from '../../test-setup';
 
@@ -75,7 +78,32 @@ describe('StarmapEditorComponent', () => {
 		]
 	};
 
+	const rendererCanvas = document.createElement('canvas');
+
+	const webglRenderer = {
+		domElement: rendererCanvas,
+		setSize: vi.fn(),
+		render: vi.fn(),
+		dispose: vi.fn()
+	} as unknown as WebGLRenderer;
+
+	const webglRendererFactory = {
+		create: vi.fn(() => webglRenderer)
+	};
+
 	beforeEach(async () => {
+		globalThis.ResizeObserver = class implements ResizeObserver {
+			public observe(): void {
+				/* empty */
+			}
+			public unobserve(): void {
+				/* empty */
+			}
+			public disconnect(): void {
+				/* empty */
+			}
+		};
+
 		await setupTestingModule({
 			imports: [StarmapEditorComponent],
 			providers: [
@@ -83,6 +111,16 @@ describe('StarmapEditorComponent', () => {
 				{
 					provide: FILE_PERSISTENCE,
 					useExisting: BrowserFilePersistenceService
+				},
+				{
+					provide: FEATURE_TOGGLES,
+					useValue: {
+						'starmap.renderer3d': true
+					}
+				},
+				{
+					provide: WebglRendererFactory,
+					useValue: webglRendererFactory
 				}
 			]
 		});
@@ -410,5 +448,76 @@ describe('StarmapEditorComponent', () => {
 		button.callback();
 
 		expect(spy).toHaveBeenCalled();
+	});
+
+	it('should start in 2d view', () => {
+		expect((component as any).mapView()).toBe('2d');
+
+		expect(fixture.nativeElement.querySelector('starmap-container')).toBeTruthy();
+		expect(fixture.nativeElement.querySelector('starmap-3d-container')).toBeNull();
+	});
+
+	it('should switch to 3d view', () => {
+		(component as any).show3d();
+
+		fixture.detectChanges();
+
+		expect((component as any).mapView()).toBe('3d');
+
+		expect(fixture.nativeElement.querySelector('starmap-container')).toBeNull();
+		expect(fixture.nativeElement.querySelector('starmap-3d-container')).toBeTruthy();
+	});
+
+	it('should switch back to 2d view', () => {
+		(component as any).show3d();
+		fixture.detectChanges();
+
+		(component as any).show2d();
+		fixture.detectChanges();
+
+		expect((component as any).mapView()).toBe('2d');
+
+		expect(fixture.nativeElement.querySelector('starmap-container')).toBeTruthy();
+		expect(fixture.nativeElement.querySelector('starmap-3d-container')).toBeNull();
+	});
+
+	it('should keep 3d disabled when the feature toggle is off', async () => {
+		TestBed.resetTestingModule();
+
+		await setupTestingModule({
+			imports: [StarmapEditorComponent],
+			providers: [
+				BrowserFilePersistenceService,
+				{
+					provide: FILE_PERSISTENCE,
+					useExisting: BrowserFilePersistenceService
+				},
+				{
+					provide: FEATURE_TOGGLES,
+					useValue: {
+						'starmap.renderer3d': false
+					}
+				}
+			]
+		});
+
+		const disabledStore = TestBed.inject(StarMapStore);
+		disabledStore.setMap(structuredClone(map));
+
+		const disabledFixture = TestBed.createComponent(StarmapEditorComponent);
+		const disabledComponent = disabledFixture.componentInstance;
+
+		disabledFixture.detectChanges();
+		await disabledFixture.whenStable();
+
+		(disabledComponent as any).show3d();
+		disabledFixture.detectChanges();
+
+		expect((disabledComponent as any).renderer3dEnabled).toBe(false);
+		expect((disabledComponent as any).mapView()).toBe('2d');
+
+		expect(disabledFixture.nativeElement.querySelector('starmap-3d-container')).toBeNull();
+
+		disabledFixture.destroy();
 	});
 });

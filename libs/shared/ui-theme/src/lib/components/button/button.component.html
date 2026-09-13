@@ -6,14 +6,14 @@
 <button
 	class="fpa-button fpa-px-1 fpa-py-05"
 	[type]="type()"
-	[ngClass]="[...buttonClasses, disabled() ? 'fpa-disabled' : '']"
+	[ngClass]="[color() ? 'fpa-' + color() : 'fpa-no-color', ...buttonClasses, disabled() ? 'fpa-disabled' : '']"
 	[attr.aria-expanded]="ariaExpanded()"
 	[attr.aria-haspopup]="ariaHaspopup()"
 	(click)="callback()"
 	(keydown)="keydownEvent.emit($event)"
 	[disabled]="disabled()"
 >
-	<div class="fpa-flex fpa-flex-row" [ngClass]="contentClasses">
+	<div class="fpa-flex fpa-flex-row" [ngClass]="contentClasses" [class.fpa-flex-row-reverse]="iconEnd()">
 		@if (icon()) {
 			<fast-svg [name]="icon()!" [size]="'16'" />
 		}

@@ -5,6 +5,7 @@
 
 import { NgClass } from '@angular/common';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { FeatureToggleService } from '@application-platform/config';
 import {
 	ButtonBarComponent,
 	ButtonColorDefinition,
@@ -19,6 +20,7 @@ import { createFileName, FILE_PERSISTENCE } from '@application-platform/shared-u
 import { StarMapFileService, StarMapStore } from '@application-platform/starmap-data-access';
 import { Nebula, randomSpectralType, StarSystem } from '@application-platform/starmap-domain';
 import { StarmapComponent } from '@application-platform/starmap-map';
+import { StarMap3dComponent } from '@application-platform/starmap-renderer-3d';
 
 import { NebulaEditorComponent } from '../nebula-editor/nebula-editor.component';
 import { SystemEditorComponent } from '../system-editor/system-editor.component';
@@ -35,6 +37,8 @@ type EditorSelection =
 			id: string;
 	  };
 
+type MapView = '2d' | '3d';
+
 /**
  * Manages the star map editing workspace, including system and nebula selection,
  * editor state, creation actions and map-level commands.
@@ -46,6 +50,7 @@ type EditorSelection =
 		SystemEditorComponent,
 		NebulaEditorComponent,
 		StarmapComponent,
+		StarMap3dComponent,
 		SidebarComponent,
 		ButtonBarComponent,
 		ButtonComponent,
@@ -58,10 +63,17 @@ export class StarmapEditorComponent {
 	protected readonly store = inject(StarMapStore);
 	private readonly starMapFileService = inject(StarMapFileService);
 	private readonly filePersistence = inject(FILE_PERSISTENCE);
+	private readonly featureToggles = inject(FeatureToggleService);
+
 	protected readonly iconDefinition = IconDefinition;
+	protected readonly ButtonColorDefinition = ButtonColorDefinition;
+
+	protected readonly renderer3dEnabled = this.featureToggles.isEnabled('starmap.renderer3d');
 
 	protected readonly editorSelection = signal<EditorSelection | null>(null);
 	protected readonly editorOpen = signal(true);
+	protected readonly mapView = signal<MapView>('2d');
+
 	private readonly starmap = viewChild<StarmapComponent>(StarmapComponent);
 
 	protected readonly menuItems = computed<MenuItem[]>(() => {
@@ -296,5 +308,15 @@ export class StarmapEditorComponent {
 		});
 	}
 
-	protected readonly ButtonColorDefinition = ButtonColorDefinition;
+	protected show2d(): void {
+		this.mapView.set('2d');
+	}
+
+	protected show3d(): void {
+		if (!this.renderer3dEnabled) {
+			return;
+		}
+
+		this.mapView.set('3d');
+	}
 }

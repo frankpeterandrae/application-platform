@@ -48,7 +48,8 @@
 			"@application-platform/starmap-domain": ["./libs/starmap/domain/src/index.ts"],
 			"@application-platform/starmap-data-access": ["./libs/starmap/data-access/src/index.ts"],
 			"@application-platform/starmap-editor": ["./libs/starmap/editor/src/index.ts"],
-			"@application-platform/starmap-map": ["./libs/starmap/map/src/index.ts"]
+			"@application-platform/starmap-map": ["./libs/starmap/map/src/index.ts"],
+			"@application-platform/starmap-renderer-3d": ["./libs/starmap/renderer-3d/src/index.ts"]
 		},
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
