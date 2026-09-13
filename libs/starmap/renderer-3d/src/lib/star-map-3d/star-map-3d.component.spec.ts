@@ -4,11 +4,16 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { StarSystem } from '@application-platform/starmap-domain';
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
+import { CameraService } from '../scene/camera.service';
+import { ControlsService } from '../scene/controls.service';
+import { StarMapSceneService } from '../scene/star-map-scene.service';
+import { SystemRendererService } from '../systems/system-renderer.service';
 
 import { StarMap3dComponent } from './star-map-3d.component';
 
@@ -29,6 +34,48 @@ describe('StarMap3dComponent', () => {
 
 	const rendererFactory = {
 		create: vi.fn(() => renderer)
+	};
+
+	const scene = new Scene();
+	const camera = new PerspectiveCamera();
+
+	const sceneService = {
+		getScene: vi.fn(() => scene)
+	};
+
+	const cameraService = {
+		getCamera: vi.fn(() => camera),
+		resize: vi.fn(),
+		fitToSystems: vi.fn(() => ({
+			x: 10,
+			y: 20,
+			z: 30
+		}))
+	};
+
+	const systemRenderer = {
+		render: vi.fn(),
+		clear: vi.fn()
+	};
+
+	const systems: StarSystem[] = [
+		{
+			id: 'S001',
+			name: 'Test System',
+			position: {
+				x: 1,
+				y: 2,
+				z: 3
+			},
+			stars: [],
+			planets: []
+		}
+	];
+
+	const controlsService = {
+		initialize: vi.fn(),
+		destroy: vi.fn(),
+		setTarget: vi.fn()
 	};
 
 	const observe = vi.fn();
@@ -53,12 +100,30 @@ describe('StarMap3dComponent', () => {
 				{
 					provide: WebglRendererFactory,
 					useValue: rendererFactory
+				},
+				{
+					provide: StarMapSceneService,
+					useValue: sceneService
+				},
+				{
+					provide: CameraService,
+					useValue: cameraService
+				},
+				{
+					provide: SystemRendererService,
+					useValue: systemRenderer
+				},
+				{
+					provide: ControlsService,
+					useValue: controlsService
 				}
 			]
 		});
 
 		fixture = TestBed.createComponent(StarMap3dComponent);
 		component = fixture.componentInstance;
+
+		fixture.componentRef.setInput('systems', systems);
 	});
 
 	it('should create', () => {
@@ -89,7 +154,7 @@ describe('StarMap3dComponent', () => {
 		expect(observe).toHaveBeenCalledWith(viewport);
 	});
 
-	it('should configure the renderer size and camera aspect', () => {
+	it('should configure the renderer size and camera', () => {
 		const viewport = fixture.nativeElement.querySelector('.star-map-3d-viewport') as HTMLElement;
 
 		Object.defineProperty(viewport, 'clientWidth', {
@@ -105,18 +170,15 @@ describe('StarMap3dComponent', () => {
 		fixture.detectChanges();
 
 		expect(renderer.setSize).toHaveBeenCalledWith(800, 600, false);
+		expect(cameraService.resize).toHaveBeenCalledWith(800, 600);
 
-		const renderCall = vi.mocked(renderer.render).mock.calls[0];
+		expect(renderer.render).toHaveBeenCalledWith(scene, camera);
+	});
 
-		expect(renderCall).toBeDefined();
+	it('should render the star systems', () => {
+		fixture.detectChanges();
 
-		const [scene, camera] = renderCall;
-
-		expect(scene).toBeInstanceOf(Scene);
-		expect(camera).toBeInstanceOf(PerspectiveCamera);
-
-		expect((camera as PerspectiveCamera).aspect).toBe(800 / 600);
-		expect((camera as PerspectiveCamera).position.z).toBe(10);
+		expect(systemRenderer.render).toHaveBeenCalledWith(scene, systems);
 	});
 
 	it('should update the renderer when the viewport is resized', () => {
@@ -147,15 +209,18 @@ describe('StarMap3dComponent', () => {
 		resizeCallback([], {} as ResizeObserver);
 
 		expect(renderer.setSize).toHaveBeenLastCalledWith(1200, 800, false);
+
+		expect(cameraService.resize).toHaveBeenLastCalledWith(1200, 800);
 	});
 
 	it('should ignore resize when the viewport has no size', () => {
 		fixture.detectChanges();
 
 		expect(renderer.setSize).not.toHaveBeenCalled();
+		expect(cameraService.resize).not.toHaveBeenCalled();
 	});
 
-	it('should dispose renderer resources when destroyed', () => {
+	it('should dispose resources when destroyed', () => {
 		fixture.detectChanges();
 
 		const viewport = fixture.nativeElement.querySelector('.star-map-3d-viewport') as HTMLElement;
@@ -165,7 +230,44 @@ describe('StarMap3dComponent', () => {
 		fixture.destroy();
 
 		expect(disconnect).toHaveBeenCalledOnce();
+		expect(systemRenderer.clear).toHaveBeenCalledOnce();
 		expect(renderer.dispose).toHaveBeenCalledOnce();
 		expect(viewport.contains(canvas)).toBe(false);
+	});
+
+	it('should initialize camera controls', () => {
+		fixture.detectChanges();
+
+		expect(controlsService.initialize).toHaveBeenCalledOnce();
+
+		const [domElement, renderCallback] = controlsService.initialize.mock.calls[0];
+
+		expect(domElement).toBe(canvas);
+		expect(renderCallback).toEqual(expect.any(Function));
+	});
+
+	it('should destroy camera controls when destroyed', () => {
+		fixture.detectChanges();
+
+		fixture.destroy();
+
+		expect(controlsService.destroy).toHaveBeenCalledOnce();
+	});
+
+	it('should fit the camera to the systems', () => {
+		fixture.detectChanges();
+
+		cameraService.fitToSystems.mockClear();
+		controlsService.setTarget.mockClear();
+
+		component.fitToViewport();
+
+		expect(cameraService.fitToSystems).toHaveBeenCalledWith(systems);
+
+		expect(controlsService.setTarget).toHaveBeenCalledWith({
+			x: 10,
+			y: 20,
+			z: 30
+		});
 	});
 });

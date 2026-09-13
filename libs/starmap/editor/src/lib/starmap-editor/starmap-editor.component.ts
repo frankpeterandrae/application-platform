@@ -75,6 +75,7 @@ export class StarmapEditorComponent {
 	protected readonly mapView = signal<MapView>('2d');
 
 	private readonly starmap = viewChild<StarmapComponent>(StarmapComponent);
+	private readonly starmap3d = viewChild<StarMap3dComponent>(StarMap3dComponent);
 
 	protected readonly menuItems = computed<MenuItem[]>(() => {
 		const map = this.store.map();
@@ -177,7 +178,7 @@ export class StarmapEditorComponent {
 		{
 			buttonText: 'Karte einpassen',
 			color: ButtonColorDefinition.PRIMARY,
-			callback: () => this.starmap()?.fitToViewport()
+			callback: () => this.fitToViewport()
 		},
 		{
 			buttonText: 'Karte laden',
@@ -318,5 +319,14 @@ export class StarmapEditorComponent {
 		}
 
 		this.mapView.set('3d');
+	}
+
+	protected fitToViewport(): void {
+		if (this.mapView() === '3d') {
+			this.starmap3d()?.fitToViewport();
+			return;
+		}
+
+		this.starmap()?.fitToViewport();
 	}
 }
