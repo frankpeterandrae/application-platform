@@ -5,5 +5,6 @@
 
 export const STARMAP_3D_SCALE = {
 	systemDistance: 3,
-	starSize: 0.15
+	starSize: 0.5,
+	jumpLinkSystemGap: 0.6
 } as const;

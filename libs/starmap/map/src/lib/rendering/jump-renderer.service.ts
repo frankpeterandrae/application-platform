@@ -29,7 +29,7 @@ export class JumpRendererService {
 		}
 	> = {
 		normal: {
-			color: '#ffffff',
+			color: '#464646',
 			strokeWidth: 5
 		},
 		caution: {

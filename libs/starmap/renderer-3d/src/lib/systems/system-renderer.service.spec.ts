@@ -274,8 +274,8 @@ describe('SystemRendererService', () => {
 		const firstStar = systemGroup.children[0] as Mesh;
 		const secondStar = systemGroup.children[1] as Mesh;
 
-		expect(firstStar.position.toArray()).toEqual([-0.2, 0, 0]);
-		expect(secondStar.position.toArray()).toEqual([0.2, 0, 0]);
+		expect(firstStar.position.toArray()).toEqual([-0.375, 0, 0]);
+		expect(secondStar.position.toArray()).toEqual([0.375, 0, 0]);
 	});
 
 	it('should keep stars in multi-star systems separated', () => {

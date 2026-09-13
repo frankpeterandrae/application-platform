@@ -84,7 +84,7 @@
 			@if (mapView() === '2d') {
 				<starmap-container />
 			} @else {
-				<starmap-3d-container [systems]="map.systems" />
+				<starmap-3d-container [systems]="map.systems" [jumpLinks]="map.jumpLinks" />
 			}
 		</main>
 	</div>
