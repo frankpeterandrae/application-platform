@@ -2445,41 +2445,99 @@
 				"style": "haze",
 				"color": "#7a2f8f",
 				"opacity": 0.5,
-				"points": [
+				"nodes": [
 					{
-						"x": -17,
-						"y": -2,
-						"z": 0
+						"id": "N001-node-01",
+						"position": {
+							"x": -17,
+							"y": -2,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -15,
-						"y": -4,
-						"z": 0
+						"id": "N001-node-02",
+						"position": {
+							"x": -15,
+							"y": -4,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -11,
-						"y": -2,
-						"z": 0
+						"id": "N001-node-03",
+						"position": {
+							"x": -11,
+							"y": -2,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -11,
-						"y": 0,
-						"z": 0
+						"id": "N001-node-04",
+						"position": {
+							"x": -11,
+							"y": 0,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -15,
-						"y": 1,
-						"z": 0
+						"id": "N001-node-05",
+						"position": {
+							"x": -15,
+							"y": 1,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -16,
-						"y": 0,
-						"z": 0
+						"id": "N001-node-06",
+						"position": {
+							"x": -16,
+							"y": 0,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": -15,
-						"y": -1,
-						"z": 0
+						"id": "N001-node-07",
+						"position": {
+							"x": -15,
+							"y": -1,
+							"z": 0
+						},
+						"radius": 1
+					}
+				],
+				"connections": [
+					{
+						"from": "N001-node-01",
+						"to": "N001-node-02"
+					},
+					{
+						"from": "N001-node-02",
+						"to": "N001-node-03"
+					},
+					{
+						"from": "N001-node-03",
+						"to": "N001-node-04"
+					},
+					{
+						"from": "N001-node-04",
+						"to": "N001-node-05"
+					},
+					{
+						"from": "N001-node-05",
+						"to": "N001-node-06"
+					},
+					{
+						"from": "N001-node-06",
+						"to": "N001-node-07"
+					},
+					{
+						"from": "N001-node-07",
+						"to": "N001-node-01"
 					}
 				]
 			},
@@ -2489,36 +2547,86 @@
 				"style": "haze",
 				"color": "#7a2f8f",
 				"opacity": 0.35,
-				"points": [
+				"nodes": [
 					{
-						"x": 13,
-						"y": 11,
-						"z": 0
+						"id": "N002-node-01",
+						"position": {
+							"x": 13,
+							"y": 11,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": 12,
-						"y": 11,
-						"z": 0
+						"id": "N002-node-02",
+						"position": {
+							"x": 12,
+							"y": 11,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": 12,
-						"y": 13,
-						"z": 0
+						"id": "N002-node-03",
+						"position": {
+							"x": 12,
+							"y": 13,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": 17,
-						"y": 11,
-						"z": 0
+						"id": "N002-node-04",
+						"position": {
+							"x": 17,
+							"y": 11,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": 15,
-						"y": 8,
-						"z": 0
+						"id": "N002-node-05",
+						"position": {
+							"x": 15,
+							"y": 8,
+							"z": 0
+						},
+						"radius": 1
 					},
 					{
-						"x": 12,
-						"y": 8,
-						"z": 0
+						"id": "N002-node-06",
+						"position": {
+							"x": 12,
+							"y": 8,
+							"z": 0
+						},
+						"radius": 1
+					}
+				],
+				"connections": [
+					{
+						"from": "N002-node-01",
+						"to": "N002-node-02"
+					},
+					{
+						"from": "N002-node-02",
+						"to": "N002-node-03"
+					},
+					{
+						"from": "N002-node-03",
+						"to": "N002-node-04"
+					},
+					{
+						"from": "N002-node-04",
+						"to": "N002-node-05"
+					},
+					{
+						"from": "N002-node-05",
+						"to": "N002-node-06"
+					},
+					{
+						"from": "N002-node-06",
+						"to": "N002-node-01"
 					}
 				]
 			}

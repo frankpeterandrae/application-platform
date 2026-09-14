@@ -4,11 +4,12 @@
  */
 
 import { AfterViewInit, Component, DestroyRef, ElementRef, effect, inject, input, viewChild } from '@angular/core';
-import { JumpLink, StarSystem } from '@application-platform/starmap-domain';
+import { JumpLink, Nebula, StarSystem } from '@application-platform/starmap-domain';
 import { WebGLRenderer } from 'three';
 import { CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 
 import { JumpLinkRendererService } from '../jump-links/jump-link-renderer.service';
+import { NebulaRendererService } from '../nebulae/nebula-renderer.service';
 import { WebglRendererFactory } from '../rendering/webgl-renderer.factory';
 import { CameraService } from '../scene/camera.service';
 import { ControlsService } from '../scene/controls.service';
@@ -38,9 +39,11 @@ export class StarMap3dComponent implements AfterViewInit {
 	private readonly systemLabelVisibilityService = inject(SystemLabelVisibilityService);
 	private readonly systemLabelCollisionService = inject(SystemLabelCollisionService);
 	private readonly jumpLinkRenderer = inject(JumpLinkRendererService);
+	private readonly nebulaRenderer = inject(NebulaRendererService);
 
 	public readonly systems = input.required<StarSystem[]>();
 	public readonly jumpLinks = input.required<JumpLink[]>();
+	public readonly nebulae = input.required<Nebula[]>();
 
 	private readonly viewport = viewChild.required<ElementRef<HTMLDivElement>>('viewport');
 
@@ -54,6 +57,7 @@ export class StarMap3dComponent implements AfterViewInit {
 		effect(() => {
 			const systems = this.systems();
 			const jumpLinks = this.jumpLinks();
+			const nebulae = this.nebulae();
 
 			if (!this.renderer) {
 				return;
@@ -61,6 +65,7 @@ export class StarMap3dComponent implements AfterViewInit {
 
 			const scene = this.sceneService.getScene();
 
+			this.nebulaRenderer.render(scene, nebulae);
 			this.jumpLinkRenderer.render(scene, systems, jumpLinks);
 			this.systemRenderer.render(scene, systems);
 			this.systemLabelRenderer.render(scene, systems);
@@ -96,6 +101,7 @@ export class StarMap3dComponent implements AfterViewInit {
 
 		const scene = this.sceneService.getScene();
 
+		this.nebulaRenderer.render(scene, this.nebulae());
 		this.jumpLinkRenderer.render(scene, this.systems(), this.jumpLinks());
 
 		this.systemRenderer.render(scene, this.systems());
@@ -182,6 +188,7 @@ export class StarMap3dComponent implements AfterViewInit {
 		this.jumpLinkRenderer.clear();
 		this.systemRenderer.clear();
 		this.systemLabelRenderer.clear();
+		this.nebulaRenderer.clear();
 
 		this.labelRenderer?.domElement.remove();
 		this.labelRenderer = null;

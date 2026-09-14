@@ -7,11 +7,23 @@ import { Position3d } from './position.model';
 
 export type NebulaType = 'cloud' | 'outline' | 'haze';
 
+export interface NebulaNode {
+	id: string;
+	position: Position3d;
+	radius: number;
+}
+
+export interface NebulaConnection {
+	from: string;
+	to: string;
+}
+
 export interface Nebula {
 	id: string;
 	name: string;
 	style: NebulaType;
 	color: `#${string}`;
 	opacity: number;
-	points: Position3d[];
+	nodes: NebulaNode[];
+	connections: NebulaConnection[];
 }

@@ -82,6 +82,46 @@ describe('StarMap3dComponent', () => {
 		}
 	];
 
+	const nebulae = [
+		{
+			id: 'N001',
+			name: 'Nebula',
+			style: 'cloud',
+			color: '#ffffff',
+			opacity: 0.5,
+			nodes: [
+				{
+					id: 'node-1',
+					position: {
+						x: -15,
+						y: 0,
+						z: 0
+					},
+					radius: 1
+				},
+				{
+					id: 'node-2',
+					position: {
+						x: 0,
+						y: 18,
+						z: 0
+					},
+					radius: 1
+				},
+				{
+					id: 'node-3',
+					position: {
+						x: 1,
+						y: 1,
+						z: 20
+					},
+					radius: 1
+				}
+			],
+			connections: []
+		}
+	];
+
 	const controlsService = {
 		initialize: vi.fn(),
 		destroy: vi.fn(),
@@ -144,6 +184,7 @@ describe('StarMap3dComponent', () => {
 
 		fixture.componentRef.setInput('systems', systems);
 		fixture.componentRef.setInput('jumpLinks', jumpLinks);
+		fixture.componentRef.setInput('nebulae', nebulae);
 	});
 
 	it('should create', () => {

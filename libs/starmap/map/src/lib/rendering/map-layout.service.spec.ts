@@ -93,11 +93,36 @@ describe('MapLayoutService', () => {
 					style: 'cloud',
 					color: '#ffffff',
 					opacity: 0.5,
-					points: [
-						{ x: -15, y: 0, z: 0 },
-						{ x: 0, y: 18, z: 0 },
-						{ x: 1, y: 1, z: 20 }
-					]
+					nodes: [
+						{
+							id: 'node-1',
+							position: {
+								x: -15,
+								y: 0,
+								z: 0
+							},
+							radius: 1
+						},
+						{
+							id: 'node-2',
+							position: {
+								x: 0,
+								y: 18,
+								z: 0
+							},
+							radius: 1
+						},
+						{
+							id: 'node-3',
+							position: {
+								x: 1,
+								y: 1,
+								z: 20
+							},
+							radius: 1
+						}
+					],
+					connections: []
 				}
 			]
 		};

@@ -69,10 +69,31 @@ describe('StarmapEditorComponent', () => {
 				style: 'cloud',
 				color: '#7a2f8f',
 				opacity: 0.35,
-				points: [
-					{ x: 0, y: 0, z: 0 },
-					{ x: 1, y: 0, z: 0 },
-					{ x: 0, y: 1, z: 0 }
+				nodes: [
+					{
+						id: 'node-1',
+						position: {
+							x: 0,
+							y: 0,
+							z: 0
+						},
+						radius: 1
+					},
+					{
+						id: 'node-2',
+						position: {
+							x: 1,
+							y: 0,
+							z: 0
+						},
+						radius: 1
+					}
+				],
+				connections: [
+					{
+						from: 'node-1',
+						to: 'node-2'
+					}
 				]
 			}
 		]
@@ -270,7 +291,8 @@ describe('StarmapEditorComponent', () => {
 			opacity: 0.35
 		});
 
-		expect(created.points).toHaveLength(3);
+		expect(created.nodes).toHaveLength(2);
+		expect(created.connections).toHaveLength(1);
 
 		expect((component as any).editorSelection()).toEqual({
 			type: 'nebula',

@@ -55,7 +55,10 @@ export class MapLayoutService {
 	}
 
 	private getMapBounds(map: StarMap): MapBounds {
-		const positions = [...map.systems.map((system) => system.position), ...map.nebulae.flatMap((nebula) => nebula.points)];
+		const positions = [
+			...map.systems.map((system) => system.position),
+			...map.nebulae.flatMap((nebula) => nebula.nodes.map((node) => node.position))
+		];
 
 		if (positions.length === 0) {
 			return {
