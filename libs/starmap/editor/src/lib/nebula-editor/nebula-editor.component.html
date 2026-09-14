@@ -31,34 +31,88 @@
 
 		<section class="fpa-flex fpa-flex-column fpa-gap-1">
 			<div class="fpa-flex fpa-flex-align-items-center fpa-flex-justify-space-between fpa-gap-1">
-				<h3>Grenzpunkte</h3>
+				<h3>Kontrollpunkte</h3>
 
-				<theme-button buttonText="Punkt hinzufügen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="addPoint()" />
+				<theme-button buttonText="Punkt hinzufügen" [color]="ButtonColorDefinition.PRIMARY" (buttonClick)="addNode()" />
 			</div>
 
-			<div class="fpa-flex fpa-flex-column fpa-gap-1" formArrayName="points">
-				@for (point of points.controls; track $index; let index = $index) {
+			<div class="fpa-flex fpa-flex-column fpa-gap-1" formArrayName="nodes">
+				@for (node of nodes.controls; track node.controls.id.value; let index = $index) {
+					Punkt {{ index + 1 }}
 					<div class="point-row fpa-flex fpa-flex-row fpa-flex-align-items-center fpa-gap-1 fpa-p-1" [formGroupName]="index">
-						<div class="fpa-grid-3 fpa-gap-1 fpa-gap-1">
+						<div class="fpa-grid-2 fpa-gap-1">
 							<theme-input label="X" type="number" [darkText]="true" formControlName="x" />
 
 							<theme-input label="Y" type="number" [darkText]="true" formControlName="y" />
 
 							<theme-input label="Z" type="number" [darkText]="true" formControlName="z" />
+
+							<theme-input label="Radius" type="number" [darkText]="true" formControlName="radius" [min]="0.1" [step]="0.5" />
 						</div>
 
 						<theme-button
 							[icon]="IconDefinition.TRASH_CAN"
 							[color]="ButtonColorDefinition.DANGER"
-							[disabled]="points.length <= 3"
-							(buttonClick)="removePoint(index)"
+							(buttonClick)="removeNode(index)"
 						/>
 					</div>
 				}
 			</div>
 		</section>
 
+		<section class="fpa-flex fpa-flex-column fpa-gap-1">
+			<div class="fpa-flex fpa-flex-align-items-center fpa-flex-justify-space-between fpa-gap-1">
+				<h3>Verbindungen</h3>
+
+				<theme-button
+					buttonText="Verbindung hinzufügen"
+					[color]="ButtonColorDefinition.PRIMARY"
+					[disabled]="nodes.length < 2"
+					(buttonClick)="addConnection()"
+				/>
+			</div>
+
+			<div class="fpa-flex fpa-flex-column fpa-gap-1" formArrayName="connections">
+				@for (connection of connections.controls; track $index; let index = $index) {
+					<div class="fpa-grid-5 fpa-gap-1" [formGroupName]="index">
+						<theme-select
+							class="fpa-grid-col-end-2"
+							label="Von"
+							[darkText]="true"
+							[options]="nodeOptions"
+							[emptySelection]="false"
+							formControlName="from"
+						/>
+
+						<theme-select
+							class="fpa-grid-col-end-2"
+							label="Nach"
+							[darkText]="true"
+							[options]="nodeOptions"
+							[emptySelection]="false"
+							formControlName="to"
+						/>
+
+						<div class="item-actions">
+							<theme-button
+								[icon]="IconDefinition.TRASH_CAN"
+								[color]="ButtonColorDefinition.DANGER"
+								(buttonClick)="removeConnection(index)"
+							/>
+						</div>
+					</div>
+				}
+			</div>
+		</section>
+
 		<div class="fpa-flex fpa-flex-justify-flex-end fpa-gap-05">
+			<theme-button
+				buttonText="Speichern"
+				[color]="ButtonColorDefinition.PRIMARY"
+				[disabled]="form.invalid || nodes.length === 0"
+				(buttonClick)="saveNebula()"
+			/>
+
 			<theme-button
 				buttonText="Nebel löschen"
 				[color]="ButtonColorDefinition.DANGER"

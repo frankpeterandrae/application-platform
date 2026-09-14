@@ -231,16 +231,42 @@ export class StarmapEditorComponent {
 	}
 
 	protected createNebula(): void {
+		const firstNodeId = crypto.randomUUID();
+		const secondNodeId = crypto.randomUUID();
+
 		const nebula: Nebula = {
 			id: crypto.randomUUID(),
 			name: 'Neuer Nebel',
 			style: 'cloud',
 			color: '#7a2f8f',
 			opacity: 0.35,
-			points: [
-				{ x: 0, y: 0, z: 0 },
-				{ x: 1, y: 0, z: 0 },
-				{ x: 0, y: 1, z: 0 }
+
+			nodes: [
+				{
+					id: firstNodeId,
+					position: {
+						x: -1,
+						y: 0,
+						z: 0
+					},
+					radius: 2
+				},
+				{
+					id: secondNodeId,
+					position: {
+						x: 1,
+						y: 0,
+						z: 0
+					},
+					radius: 2
+				}
+			],
+
+			connections: [
+				{
+					from: firstNodeId,
+					to: secondNodeId
+				}
 			]
 		};
 

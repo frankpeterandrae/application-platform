@@ -3,10 +3,10 @@
  * All rights reserved.
  */
 import { Injectable, inject } from '@angular/core';
-import { Nebula, NebulaType, StarMap } from '@application-platform/starmap-domain';
+import { Nebula, StarMap } from '@application-platform/starmap-domain';
 
-import { MapLayoutService } from './map-layout.service';
-import { RenderedMap, SvgPoint } from './render-models';
+import { NebulaContourService } from './nebula-contour.service';
+import { RenderedMap } from './render-models';
 import { SvgElementService } from './svg-element.service';
 
 /**
@@ -16,7 +16,7 @@ import { SvgElementService } from './svg-element.service';
 	providedIn: 'root'
 })
 export class NebulaRendererService {
-	private readonly layout = inject(MapLayoutService);
+	private readonly contourService = inject(NebulaContourService);
 	private readonly svg = inject(SvgElementService);
 
 	/**
@@ -31,18 +31,15 @@ export class NebulaRendererService {
 		group.setAttribute('id', 'nebulae');
 
 		for (const nebula of map.nebulae) {
-			if (nebula.points.length < 3) {
+			const pathData = this.contourService.createPath(nebula, renderedMap);
+
+			if (!pathData) {
 				continue;
 			}
 
-			const points = nebula.points.map((point) => ({
-				x: (point.x - renderedMap.bounds.minX + 1) * this.layout.gridSize,
-				y: (point.y - renderedMap.bounds.minY + 1) * this.layout.gridSize
-			}));
-
 			const path = this.svg.create('path');
 
-			path.setAttribute('d', this.createSmoothClosedPath(points, this.getTension(nebula.style)));
+			path.setAttribute('d', pathData);
 
 			this.applyStyle(path, nebula);
 
@@ -56,19 +53,6 @@ export class NebulaRendererService {
 		}
 
 		return group;
-	}
-
-	private getTension(style: NebulaType): number {
-		switch (style) {
-			case 'outline':
-				return 0.65;
-
-			case 'haze':
-				return 1.5;
-
-			default:
-				return 1;
-		}
 	}
 
 	private applyStyle(path: SVGPathElement, nebula: Nebula): void {
@@ -97,39 +81,5 @@ export class NebulaRendererService {
 				path.setAttribute('fill-opacity', String(nebula.opacity));
 				path.setAttribute('stroke', 'none');
 		}
-	}
-
-	private createSmoothClosedPath(points: SvgPoint[], tension: number): string {
-		if (points.length < 3) {
-			return '';
-		}
-
-		const commands = [`M ${points[0].x},${points[0].y}`];
-
-		for (let index = 0; index < points.length; index++) {
-			const previous = points[(index - 1 + points.length) % points.length];
-
-			const current = points[index];
-
-			const next = points[(index + 1) % points.length];
-
-			const nextNext = points[(index + 2) % points.length];
-
-			const controlPoint1 = {
-				x: current.x + ((next.x - previous.x) * tension) / 6,
-				y: current.y + ((next.y - previous.y) * tension) / 6
-			};
-
-			const controlPoint2 = {
-				x: next.x - ((nextNext.x - current.x) * tension) / 6,
-				y: next.y - ((nextNext.y - current.y) * tension) / 6
-			};
-
-			commands.push(`C ${controlPoint1.x},${controlPoint1.y} ` + `${controlPoint2.x},${controlPoint2.y} ` + `${next.x},${next.y}`);
-		}
-
-		commands.push('Z');
-
-		return commands.join(' ');
 	}
 }

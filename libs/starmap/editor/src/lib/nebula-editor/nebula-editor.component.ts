@@ -13,12 +13,19 @@ import {
 	SelectComponent,
 	SelectOption
 } from '@application-platform/shared/ui-theme';
-import { Nebula, NebulaType, Position3d } from '@application-platform/starmap-domain';
+import { Nebula, NebulaConnection, NebulaNode, NebulaType } from '@application-platform/starmap-domain';
 
-type NebulaPointForm = FormGroup<{
+type NebulaNodeForm = FormGroup<{
+	id: FormControl<string>;
 	x: FormControl<number>;
 	y: FormControl<number>;
 	z: FormControl<number>;
+	radius: FormControl<number>;
+}>;
+
+type NebulaConnectionForm = FormGroup<{
+	from: FormControl<string>;
+	to: FormControl<string>;
 }>;
 
 type NebulaForm = FormGroup<{
@@ -27,7 +34,8 @@ type NebulaForm = FormGroup<{
 	style: FormControl<NebulaType>;
 	color: FormControl<`#${string}`>;
 	opacity: FormControl<number>;
-	points: FormArray<NebulaPointForm>;
+	nodes: FormArray<NebulaNodeForm>;
+	connections: FormArray<NebulaConnectionForm>;
 }>;
 
 /**
@@ -41,6 +49,7 @@ type NebulaForm = FormGroup<{
 })
 export class NebulaEditorComponent {
 	protected readonly ButtonColorDefinition = ButtonColorDefinition;
+	protected readonly IconDefinition = IconDefinition;
 
 	private readonly formBuilder = inject(FormBuilder);
 	public readonly nebula = input.required<Nebula>();
@@ -65,8 +74,19 @@ export class NebulaEditorComponent {
 		}
 	];
 
-	protected get points(): FormArray<NebulaPointForm> {
-		return this.form.controls.points;
+	protected get nodes(): FormArray<NebulaNodeForm> {
+		return this.form.controls.nodes;
+	}
+
+	protected get connections(): FormArray<NebulaConnectionForm> {
+		return this.form.controls.connections;
+	}
+
+	protected get nodeOptions(): SelectOption<string>[] {
+		return this.nodes.controls.map((node, index) => ({
+			label: `Punkt ${index + 1}`,
+			value: node.controls.id.value
+		}));
 	}
 
 	constructor() {
@@ -79,11 +99,12 @@ export class NebulaEditorComponent {
 			this.form.controls.color.setValue(nebula.color);
 			this.form.controls.opacity.setValue(nebula.opacity);
 
-			this.form.setControl('points', this.formBuilder.array(nebula.points.map((point) => this.createPointForm(point))));
+			this.form.setControl('nodes', this.formBuilder.array(nebula.nodes.map((node) => this.createNodeForm(node))));
 
-			this.form.valueChanges.subscribe(() => {
-				this.emitNebula();
-			});
+			this.form.setControl(
+				'connections',
+				this.formBuilder.array(nebula.connections.map((connection) => this.createConnectionForm(connection)))
+			);
 		});
 	}
 
@@ -94,32 +115,67 @@ export class NebulaEditorComponent {
 			style: [nebula?.style ?? 'cloud'],
 			color: [nebula?.color ?? '#7a2f8f'],
 			opacity: [nebula?.opacity ?? 0.35, [Validators.required, Validators.min(0), Validators.max(1)]],
-			points: this.formBuilder.array<NebulaPointForm>(nebula?.points.map((point) => this.createPointForm(point)) ?? [])
+			nodes: this.formBuilder.array<NebulaNodeForm>(nebula?.nodes.map((node) => this.createNodeForm(node)) ?? []),
+			connections: this.formBuilder.array<NebulaConnectionForm>(
+				nebula?.connections.map((connection) => this.createConnectionForm(connection)) ?? []
+			)
 		});
 	}
 
-	private createPointForm(point?: Position3d): NebulaPointForm {
+	private createNodeForm(node?: NebulaNode): NebulaNodeForm {
 		return this.formBuilder.nonNullable.group({
-			x: [point?.x ?? 0],
-			y: [point?.y ?? 0],
-			z: [point?.z ?? 0]
+			id: [node?.id ?? crypto.randomUUID()],
+			x: [node?.position.x ?? 0],
+			y: [node?.position.y ?? 0],
+			z: [node?.position.z ?? 0],
+			radius: [node?.radius ?? 2, [Validators.required, Validators.min(0.1)]]
 		});
 	}
 
-	protected addPoint(): void {
-		this.points.push(this.createPointForm());
+	private createConnectionForm(connection?: NebulaConnection): NebulaConnectionForm {
+		return this.formBuilder.nonNullable.group({
+			from: [connection?.from ?? ''],
+			to: [connection?.to ?? '']
+		});
 	}
 
-	protected removePoint(index: number): void {
-		if (this.points.length <= 3) {
+	protected addNode(): void {
+		this.nodes.push(this.createNodeForm());
+	}
+
+	protected removeNode(index: number): void {
+		const nodeId = this.nodes.at(index).controls.id.value;
+
+		this.nodes.removeAt(index);
+
+		for (let connectionIndex = this.connections.length - 1; connectionIndex >= 0; connectionIndex--) {
+			const connection = this.connections.at(connectionIndex).getRawValue();
+
+			if (connection.from === nodeId || connection.to === nodeId) {
+				this.connections.removeAt(connectionIndex);
+			}
+		}
+	}
+
+	protected addConnection(): void {
+		if (this.nodes.length < 2) {
 			return;
 		}
 
-		this.points.removeAt(index);
+		this.connections.push(
+			this.createConnectionForm({
+				from: this.nodes.at(0).controls.id.value,
+				to: this.nodes.at(1).controls.id.value
+			})
+		);
 	}
 
-	private emitNebula(): void {
-		if (this.form.invalid || this.points.length < 3) {
+	protected removeConnection(index: number): void {
+		this.connections.removeAt(index);
+	}
+
+	protected saveNebula(): void {
+		if (this.form.invalid || this.nodes.length === 0) {
 			return;
 		}
 
@@ -131,13 +187,21 @@ export class NebulaEditorComponent {
 			style: value.style,
 			color: value.color,
 			opacity: Number(value.opacity),
-			points: value.points.map((point) => ({
-				x: Number(point.x),
-				y: Number(point.y),
-				z: Number(point.z)
+
+			nodes: value.nodes.map((node) => ({
+				id: node.id,
+				position: {
+					x: Number(node.x),
+					y: Number(node.y),
+					z: Number(node.z)
+				},
+				radius: Number(node.radius)
+			})),
+
+			connections: value.connections.map((connection) => ({
+				from: connection.from,
+				to: connection.to
 			}))
 		});
 	}
-
-	protected readonly IconDefinition = IconDefinition;
 }
