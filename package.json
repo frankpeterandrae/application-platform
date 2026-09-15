@@ -34,7 +34,8 @@
 		"update": "nx migrate latest",
 		"watch:shared-styles": "node scripts/watch-css.js",
 		"desktop:starmap": "nx run starmap:desktop-dev",
-		"build:starmap:desktop": "nx run starmap:desktop-build"
+		"build:starmap:desktop": "nx run starmap:desktop-build",
+		"sonar:pr-findings": "tsx tools/sonar/get-pr-findings.ts"
 	},
 	"private": true,
 	"dependencies": {
@@ -45,6 +46,7 @@
 		"@angular/forms": "22.1.6",
 		"@angular/platform-browser": "22.1.6",
 		"@angular/router": "22.1.6",
+		"@elgato/streamdeck": "^2.1.2",
 		"@jsverse/transloco": "^8.4.0",
 		"@nestjs/common": "^11.2.3",
 		"@nestjs/core": "^11.2.3",
@@ -73,6 +75,7 @@
 		"@angular/cli": "22.1.8",
 		"@angular/compiler-cli": "22.1.6",
 		"@angular/language-service": "22.1.6",
+		"@elgato/cli": "^1.9.0",
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.2.3",
 		"@nx/angular": "23.2.1",

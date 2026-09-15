@@ -1,0 +1,62 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"UUID": "de.frankpeterandrae.paint-selector",
+	"Name": "Paint Selector",
+	"Version": "0.1.0.0",
+	"Author": "Frank-Peter Andrä",
+	"Category": "Paint Selector",
+	"CategoryIcon": "imgs/plugin/paint-selector",
+	"Description": "Select paints for the stream overlay.",
+	"Icon": "imgs/plugin/paint-selector",
+	"CodePath": "bin/main.js",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Actions": [
+		{
+			"UUID": "de.frankpeterandrae.paint-selector.select",
+			"Name": "Paint Selector",
+			"Tooltip": "Select a paint.",
+			"Controllers": ["Keypad"],
+			"Icon": "imgs/action",
+			"States": [
+				{
+					"Image": "imgs/action"
+				}
+			]
+		},
+		{
+			"UUID": "de.frankpeterandrae.paint-selector.open",
+			"Name": "Open Paint Selector",
+			"Tooltip": "Open the paint selector.",
+			"Controllers": ["Keypad"],
+			"Icon": "imgs/paint-selector",
+			"States": [
+				{
+					"Image": "imgs/paint-selector-light",
+					"TitleAlignment": "middle"
+				}
+			]
+		}
+	],
+	"Profiles": [
+		{
+			"Name": "profiles/paint-selector",
+			"DeviceType": 2,
+			"Readonly": true,
+			"DontAutoSwitchWhenInstalled": true,
+			"AutoInstall": true
+		}
+	]
+}
