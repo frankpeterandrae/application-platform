@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../dist/out-tsc",
+		"moduleResolution": "bundler",
+		"types": ["vitest/globals", "vitest/importMeta", "vite/client", "node", "vitest"]
+	},
+	"include": ["../../global.d.ts", "vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.d.ts"]
+}

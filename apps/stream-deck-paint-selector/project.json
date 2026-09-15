@@ -1,0 +1,108 @@
+{
+	"name": "stream-deck-paint-selector",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/stream-deck-paint-selector/src",
+	"projectType": "application",
+	"tags": ["platform:node", "scope:stream", "type:app"],
+	"targets": {
+		"build": {
+			"executor": "@nx/esbuild:esbuild",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"platform": "node",
+				"outputPath": "dist/apps/stream-deck-paint-selector/build",
+				"format": ["esm"],
+				"bundle": true,
+				"main": "apps/stream-deck-paint-selector/src/main.ts",
+				"tsConfig": "apps/stream-deck-paint-selector/tsconfig.app.json",
+				"assets": ["apps/stream-deck-paint-selector/src/assets"],
+				"esbuildOptions": {
+					"sourcemap": true,
+					"outExtension": {
+						".js": ".js"
+					}
+				}
+			},
+			"configurations": {
+				"development": {},
+				"production": {
+					"esbuildOptions": {
+						"sourcemap": false,
+						"outExtension": {
+							".js": ".js"
+						}
+					}
+				}
+			}
+		},
+		"package-plugin": {
+			"executor": "nx:run-commands",
+			"dependsOn": ["build"],
+			"options": {
+				"commands": [
+					"shx mkdir -p dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/bin",
+					"shx cp apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/manifest.json dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp -r apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/imgs dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/package.json dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp -r apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/profiles dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp dist/apps/stream-deck-paint-selector/build/main.js dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/bin/main.js"
+				],
+				"parallel": false
+			}
+		},
+		"link-plugin": {
+			"executor": "nx:run-commands",
+			"dependsOn": ["package-plugin"],
+			"options": {
+				"command": "npx streamdeck link dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin"
+			}
+		},
+		"restart-plugin": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx streamdeck restart de.frankpeterandrae.paint-selector"
+			}
+		},
+		"deploy-plugin": {
+			"executor": "nx:run-commands",
+			"dependsOn": ["package-plugin"],
+			"options": {
+				"command": "npx streamdeck restart de.frankpeterandrae.paint-selector"
+			}
+		},
+		"pack-plugin": {
+			"executor": "nx:run-commands",
+			"dependsOn": ["test", "typecheck", "package-plugin"],
+			"options": {
+				"command": "npx streamdeck pack dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin --output dist/apps/stream-deck-paint-selector --force --no-update-check"
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"options": {
+				"tsConfig": "apps/stream-deck-paint-selector/tsconfig.spec.json",
+				"vitestConfig": "apps/stream-deck-paint-selector/vitest.config.mts",
+				"reportsDirectory": "test-result/apps/stream-deck-paint-selector/coverage",
+				"passWithNoTests": true
+			},
+			"outputs": ["{options.reportsDirectory}"]
+		},
+		"typecheck": {
+			"executor": "nx:noop",
+			"dependsOn": ["typecheck-app", "typecheck-test"]
+		},
+		"typecheck-test": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.spec.json --noEmit"
+			}
+		},
+		"typecheck-app": {
+			"executor": "nx:run-commands",
+			"options": {
+				"command": "npx tsc -p {projectRoot}/tsconfig.app.json --noEmit"
+			}
+		}
+	}
+}
