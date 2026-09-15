@@ -1,0 +1,61 @@
+{
+	"name": "stream-deck-paint-selector",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/stream-deck-paint-selector/src",
+	"projectType": "application",
+	"tags": ["platform:node", "scope:stream", "type:app"],
+	"targets": {
+		"build": {
+			"executor": "@nx/esbuild:esbuild",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"platform": "node",
+				"outputPath": "dist/apps/stream-deck-paint-selector/build",
+				"format": ["esm"],
+				"bundle": true,
+				"main": "apps/stream-deck-paint-selector/src/main.ts",
+				"tsConfig": "apps/stream-deck-paint-selector/tsconfig.app.json",
+				"assets": ["apps/stream-deck-paint-selector/src/assets"],
+				"esbuildOptions": {
+					"sourcemap": true,
+					"outExtension": {
+						".js": ".js"
+					}
+				}
+			},
+			"configurations": {
+				"development": {},
+				"production": {
+					"esbuildOptions": {
+						"sourcemap": false,
+						"outExtension": {
+							".js": ".js"
+						}
+					}
+				}
+			}
+		},
+		"package-plugin": {
+			"executor": "nx:run-commands",
+			"dependsOn": ["build"],
+			"options": {
+				"commands": [
+					"shx mkdir -p dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/bin",
+					"shx cp apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/manifest.json dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp -r apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/imgs dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/package.json dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/",
+					"shx cp dist/apps/stream-deck-paint-selector/build/main.js dist/apps/stream-deck-paint-selector/de.frankpeterandrae.paint-selector.sdPlugin/bin/main.js"
+				],
+				"parallel": false
+			}
+		},
+		"test": {
+			"executor": "@nx/vitest:test",
+			"outputs": ["{options.reportsDirectory}"],
+			"options": {
+				"reportsDirectory": "coverage/apps/stream-deck-paint-selector"
+			}
+		}
+	}
+}
