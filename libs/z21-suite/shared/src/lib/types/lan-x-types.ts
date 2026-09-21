@@ -10,34 +10,26 @@ import { XBusCmd } from './x-bus-cmd';
 import { XHeader } from './x-header';
 
 /**
- * Map of all LAN_X command combinations.
- * Structure: [LAN_X (0x0040), XHeader, XBusCmd]
+ * LAN_X command definitions keyed by their semantic command name.
+ * Each entry describes the X-BUS header and optional command/option byte used inside LAN_X (0x0040).
  */
 export const LAN_X_COMMANDS = {
-	/**
-	 * Get version of the Z21 central.
-	 */
+	/** Requests the X-Bus version from the command station. */
 	LAN_X_GET_VERSION: {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.GET_VERSION
 	} as const satisfies LanXCommand,
-	/**
-	 * Get status of the Z21 central.
-	 */
+	/** Requests the current command station status. */
 	LAN_X_GET_STATUS: {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.GET_STATUS
 	} as const satisfies LanXCommand,
-	/**
-	 * Set track power off.
-	 */
+	/** Switches track power off. */
 	LAN_X_SET_TRACK_POWER_OFF: {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.TRACK_POWER_OFF
 	} as const satisfies LanXCommand,
-	/**
-	 * Set track power on.
-	 */
+	/** Switches track power on. */
 	LAN_X_SET_TRACK_POWER_ON: {
 		xHeader: XHeader.STATUS,
 		xBusCmd: XBusCmd.TRACK_POWER_ON
@@ -59,7 +51,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Write DCC CV register.
-	 * TODO: add handling
 	 */
 	LAN_X_DCC_WRITE_REGISTER: {
 		xHeader: XHeader.DCC_WRITE_REGISTER,
@@ -75,7 +66,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Write byte to Märklin-Motorola decoder.
-	 * TODO: add handling
 	 */
 	LAN_X_MM_WRITE_BYTE: {
 		xHeader: XHeader.MM_WRITE_BYTE,
@@ -95,14 +85,12 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Get extended accessory information.
-	 * TODO: add handling
 	 */
 	LAN_X_GET_EXT_ACCESSORY_INFO: {
 		xHeader: XHeader.EXT_ACCESSORY_INFO
 	} as const satisfies LanXCommand,
 	/**
 	 * Extended accessory information response.
-	 * TODO: add handling
 	 */
 	LAN_X_EXT_ACCESSORY_INFO: {
 		xHeader: XHeader.EXT_ACCESSORY_INFO
@@ -115,80 +103,56 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Set extended accessory state.
-	 * TODO: add handling
 	 */
 	LAN_X_SET_EXT_ACCESSORY: {
 		xHeader: XHeader.SET_EXT_ACCESSORY
 	} as const satisfies LanXCommand,
-	/**
-	 * Broadcast: track power off.
-	 */
+	/** Reports that track power was switched off. */
 	LAN_X_BC_TRACK_POWER_OFF: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.BC_TRACK_POWER_OFF
 	} as const satisfies LanXCommand,
-	/**
-	 * Broadcast: track power on.
-	 */
+	/** Reports that track power was switched on. */
 	LAN_X_BC_TRACK_POWER_ON: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.BC_TRACK_POWER_ON
 	} as const satisfies LanXCommand,
-	/**
-	 * Broadcast: programming mode.
-	 */
+	/** Reports that the command station entered programming mode. */
 	LAN_X_BC_PROGRAMMING_MODE: {
 		xHeader: XHeader.BROADCAST,
-		xBusCmd: XBusCmd.BC_BC_PROGRAMMING_MODE
+		xBusCmd: XBusCmd.BC_PROGRAMMING_MODE
 	} as const satisfies LanXCommand,
-	/**
-	 * Broadcast: track shortCircuit circuit.
-	 */
+	/** Reports a track short circuit. */
 	LAN_X_BC_TRACK_SHORT_CIRCUIT: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.BC_TRACK_SHORT_CIRCUIT
 	} as const satisfies LanXCommand,
-	/**
-	 * CV read NACK with shortCircuit circuit.
-	 */
+	/** Reports a CV programming NACK caused by a short circuit. */
 	LAN_X_CV_NACK_SC: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.CV_NACK_SC
 	} as const satisfies LanXCommand,
-	/**
-	 * CV read NACK.
-	 */
+	/** Reports a CV programming NACK. */
 	LAN_X_CV_NACK: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.CV_NACK
 	} as const satisfies LanXCommand,
-	/**
-	 * Unknown command response.
-	 * TODO: add handling
-	 */
+	/** Reports an unknown or invalid LAN-X command. */
 	LAN_X_UNKNOWN_COMMAND: {
 		xHeader: XHeader.BROADCAST,
 		xBusCmd: XBusCmd.UNKNOWN_COMMAND
 	} as const satisfies LanXCommand,
-	/**
-	 * Status changed notification.
-	 * TODO: add handling
-	 */
+	/** Reports a command station status change. */
 	LAN_X_STATUS_CHANGED: {
 		xHeader: XHeader.STATUS_CHANGED,
 		xBusCmd: XBusCmd.STATUS_CHANGED
 	} as const satisfies LanXCommand,
-	/**
-	 * Version information response.
-	 */
+	/** Reports X-Bus version information. */
 	LAN_X_GET_VERSION_ANSWER: {
-		xHeader: XHeader.VESION_ANSWER,
+		xHeader: XHeader.VERSION_ANSWER,
 		xBusCmd: XBusCmd.GET_VERSION
 	} as const satisfies LanXCommand,
-	/**
-	 * CV read result response.
-	 * TODO: add handling
-	 */
+	/** Reports the result of a CV programming operation. */
 	LAN_X_CV_RESULT: {
 		xHeader: XHeader.CV_RESULT,
 		xBusCmd: XBusCmd.CV_RESULT
@@ -213,7 +177,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Purge locomotive from slot.
-	 * TODO: add handling
 	 */
 	LAN_X_PURGE_LOCO: {
 		xHeader: XHeader.LOCO_INFO,
@@ -228,7 +191,6 @@ export const LAN_X_COMMANDS = {
 	} as const satisfies LanXCommand,
 	/**
 	 * Drive locomotive with 14 speed steps.
-	 * TODO: add handling
 	 */
 	LAN_X_SET_LOCO_DRIVE_14: {
 		xHeader: XHeader.LOCO_DRIVE,
@@ -256,96 +218,84 @@ export const LAN_X_COMMANDS = {
 		xBusCmd: XBusCmd.LOCO_FUNCTION
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F0 to F4
-	 * TODO: add handling
+	 * Set locomotive functions F0 to F4.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F0_F4: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F0_F4
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F5 to F8
-	 * TODO: add handling
+	 * Set locomotive functions F5 to F8.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F5_F8: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F5_F8
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F9 to F12
-	 * TODO: add handling
+	 * Set locomotive functions F9 to F12.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F9_F12: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F9_F12
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F13 to F20
-	 * TODO: add handling
+	 * Set locomotive functions F13 to F20.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F13_F20: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F13_F20
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F21 to F28
-	 * TODO: add handling
+	 * Set locomotive functions F21 to F28.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F21_F28: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F21_F28
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F29 to F36
-	 * TODO: add handling
+	 * Set locomotive functions F29 to F36.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F29_F36: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F29_F36
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F37 to F44
-	 * TODO: add handling
+	 * Set locomotive functions F37 to F44.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F37_F44: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F37_F44
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F45 to F52
-	 * TODO: add handling
+	 * Set locomotive functions F45 to F52.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F45_F52: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F45_F52
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F53 to F60
-	 * TODO: add handling
+	 * Set locomotive functions F53 to F60.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F53_F60: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F53_F60
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive functions F61 to F68
-	 * TODO: add handling
+	 * Set locomotive functions F61 to F68.
 	 */
 	LAN_X_SET_LOCO_FUNCTION_GROUP_F61_F68: {
 		xHeader: XHeader.LOCO_DRIVE,
 		xBusCmd: XBusCmd.FUNCTION_GRP_F61_F68
 	} as const satisfies LanXCommand,
 	/**
-	 * Set locomotive binary state
-	 * TODO: add handling
+	 * Set locomotive binary state.
 	 */
 	LAN_X_SET_LOCO_BINARY_STATE: {
 		xHeader: XHeader.LOCO_BINARY_STATE,
 		xBusCmd: XBusCmd.LOCO_BINARY_STATE
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main: write byte to CV
-	 * TODO: add handling
+	 * Programming on Main: write byte to CV
 	 */
 	LAN_X_CV_POM_WRITE_BYTE: {
 		xHeader: XHeader.CV_POM,
@@ -353,8 +303,7 @@ export const LAN_X_COMMANDS = {
 		option: POM_Options.WRITE_BYTE
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main: write bit to CV
-	 * TODO: add handling
+	 * Programming on Main: write bit to CV
 	 */
 	LAN_X_CV_POM_WRITE_BIT: {
 		xHeader: XHeader.CV_POM,
@@ -362,8 +311,7 @@ export const LAN_X_COMMANDS = {
 		option: POM_Options.WRITE_BIT
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main: read byte from CV
-	 * TODO: add handling
+	 * Programming on Main: read byte from CV
 	 */
 	LAN_X_CV_POM_READ_BYTE: {
 		xHeader: XHeader.CV_POM,
@@ -371,8 +319,7 @@ export const LAN_X_COMMANDS = {
 		option: POM_Options.READ_BYTE
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main Accessory: write byte to CV
-	 * TODO: add handling
+	 * Programming on Main for an accessory: write byte to CV
 	 */
 	LAN_X_CV_POM_ACCESSORY_WRITE_BYTE: {
 		xHeader: XHeader.CV_POM,
@@ -380,8 +327,7 @@ export const LAN_X_COMMANDS = {
 		option: POM_Options.WRITE_BYTE
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main Accessory: write bit to CV
-	 * TODO: add handling
+	 * Programming on Main for an accessory: write bit to CV
 	 */
 	LAN_X_CV_POM_ACCESSORY_WRITE_BIT: {
 		xHeader: XHeader.CV_POM,
@@ -389,30 +335,23 @@ export const LAN_X_COMMANDS = {
 		option: POM_Options.WRITE_BIT
 	} as const satisfies LanXCommand,
 	/**
-	 * Programming on the main Accessory: read byte from CV
-	 * TODO: add handling
+	 * Programming on Main for an accessory: read byte from CV
 	 */
 	LAN_X_CV_POM_ACCESSORY_READ_BYTE: {
 		xHeader: XHeader.CV_POM,
 		xBusCmd: XBusCmd.CV_POM_ACCESSORY,
 		option: POM_Options.READ_BYTE
 	} as const satisfies LanXCommand,
-	/**
-	 * Loco info answer
-	 */
+	/** Reports locomotive state information. */
 	LAN_X_LOCO_INFO: {
 		xHeader: XHeader.LOCO_INFO_ANSWER
 	} as const satisfies LanXCommand,
-	/**
-	 * Get firmware version of the Z21 central
-	 */
+	/** Requests the command station firmware version. */
 	LAN_X_GET_FIRMWARE_VERSION: {
 		xHeader: XHeader.FIRMWARE_VERSION,
 		xBusCmd: XBusCmd.FIRMWARE_VERSION
 	} as const satisfies LanXCommand,
-	/**
-	 * Firmware version response
-	 */
+	/** Reports the command station firmware version. */
 	LAN_X_GET_FIRMWARE_VERSION_ANSWER: {
 		xHeader: XHeader.FIRMWARE_VERSION_ANSWER,
 		xBusCmd: XBusCmd.FIRMWARE_VERSION
