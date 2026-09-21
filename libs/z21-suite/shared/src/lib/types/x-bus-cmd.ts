@@ -16,7 +16,7 @@ export const enum XBusCmd {
 	/** Acknowledge for a broadcast command to turn track power on. */
 	BC_TRACK_POWER_ON = 0x01,
 	/** Acknowledge for a broadcast command in programming mode. */
-	BC_BC_PROGRAMMING_MODE = 0x02,
+	BC_PROGRAMMING_MODE = 0x02,
 	/** Acknowledge for a broadcast command. */
 	BC_TRACK_SHORT_CIRCUIT = 0x08,
 	/** Negative acknowledge for a CV read or write operation in service mode. */
@@ -41,7 +41,7 @@ export const enum XBusCmd {
 	TRACK_POWER_OFF = 0x80,
 	/** Turn track power on. */
 	TRACK_POWER_ON = 0x81,
-	/** Purge the locomotive from its slot. */
+	/** Reports an unknown or invalid LAN-X command. */
 	UNKNOWN_COMMAND = 0x82,
 	/** Request locomotive information. */
 	LOCO_INFO = 0xf0,
@@ -71,11 +71,11 @@ export const enum XBusCmd {
 	FUNCTION_GRP_F61_F68 = 0x51,
 	/** Set function group F69 to F76. */
 	LOCO_BINARY_STATE = 0x5f,
-	/** Programming on the main */
+	/** Programming on Main */
 	CV_POM = 0x30,
-	/** Programming on the main Accessory */
+	/** Programming on Main for an accessory */
 	CV_POM_ACCESSORY = 0x31,
-	/** Request the firmware version of  of the Z21 central. */
+	/** Request the firmware version of the Z21 command station. */
 	FIRMWARE_VERSION = 0x0a,
 	/** Drive command encoding for 14 speed steps. */
 	LOCO_DRIVE_14 = 0x10,
