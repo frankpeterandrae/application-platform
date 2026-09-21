@@ -202,7 +202,7 @@ describe('decodeLanXPayload', () => {
 		});
 
 		it('returns track power events for LAN_X_BC_PROGRAMMING_MODE', () => {
-			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_BC_PROGRAMMING_MODE));
+			const events = decodeLanXPayload(XHeader.BROADCAST, makePayload(XBusCmd.BC_PROGRAMMING_MODE));
 
 			expectEventArray(events);
 			expectEventType(events[0], 'system.event.track.power');
