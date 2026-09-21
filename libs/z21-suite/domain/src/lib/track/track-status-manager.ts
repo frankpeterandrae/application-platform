@@ -5,74 +5,78 @@
 
 import type { PowerPayload } from '@application-platform/z21-shared';
 
-import type { TrackStatus } from './track-types';
+import type { TrackStatus, TrackStatusSource } from './track-types';
 
 /**
- * Manages and merges track power/status state coming from X-Bus power events
- * and system state messages, keeping track of the last authoritative source.
+ * Maintains the current track power and fault state reported by the Z21.
  */
 export class TrackStatusManager {
 	private status: TrackStatus = {
 		emergencyStop: false,
 		powerOn: false,
 		programmingMode: false,
-		shortCircuit: false,
-		source: undefined
+		shortCircuit: false
 	};
 
 	/**
-	 * Returns a shallow copy of the current track status to prevent external mutation.
+	 * Returns the current track status.
+	 *
+	 * @returns A copy of the current track status.
 	 */
 	public getStatus(): TrackStatus {
 		return { ...this.status };
 	}
 
 	/**
-	 * Applies a power update and marks source.
-	 * @param payload - X-Bus track power event payload.
-	 * @param source - Source of the power event.
-	 * @returns Updated track status.
+	 * Replaces the complete track power and fault state.
+	 *
+	 * @param payload - Track power and fault state reported by the Z21.
+	 * @param source - Protocol source of the update.
+	 * @returns A copy of the updated track status.
 	 */
-	public updateStatus(payload: PowerPayload, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x'): TrackStatus {
+	public updateStatus(payload: PowerPayload, source: TrackStatusSource): TrackStatus {
 		this.status = {
-			...this.status,
 			powerOn: payload.powerOn,
 			emergencyStop: payload.emergencyStop,
 			programmingMode: payload.programmingMode,
 			shortCircuit: payload.shortCircuit,
 			source
 		};
+
 		return this.getStatus();
 	}
 
 	/**
-	 * Sets the emergency stop state.
-	 * @param isEmergency - Whether emergency stop is active
-	 * @param source - Source of the emergency stop signal
-	 * @returns The updated track status
+	 * Updates the emergency-stop state without changing the other track flags.
+	 *
+	 * @param isEmergency - Whether emergency stop is active.
+	 * @param source - Protocol source of the update.
+	 * @returns A copy of the updated track status.
 	 */
-	public setEmergencyStop(isEmergency: boolean, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x' | undefined): TrackStatus {
+	public setEmergencyStop(isEmergency: boolean, source: TrackStatusSource): TrackStatus {
 		this.status = {
 			...this.status,
 			emergencyStop: isEmergency,
 			source
 		};
+
 		return this.getStatus();
 	}
 
 	/**
-	 * Sets the shortCircuit circuit status directly.
+	 * Updates the short-circuit state without changing the other track flags.
 	 *
-	 * @param shortCircuit - The shortCircuit circuit status to set.
-	 * @param source - The source of the update.
-	 * @returns Updated track status.
+	 * @param shortCircuit - Whether a short circuit is active.
+	 * @param source - Protocol source of the update.
+	 * @returns A copy of the updated track status.
 	 */
-	public setShortCircuit(shortCircuit: boolean, source: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x' | undefined): TrackStatus {
+	public setShortCircuit(shortCircuit: boolean, source: TrackStatusSource): TrackStatus {
 		this.status = {
 			...this.status,
-			shortCircuit: shortCircuit,
+			shortCircuit,
 			source
 		};
+
 		return this.getStatus();
 	}
 }

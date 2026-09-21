@@ -14,12 +14,12 @@ import type { Z21SystemState } from '@application-platform/z21-shared';
 export function decodeSystemState(payload: Uint8Array): Z21SystemState {
 	const b = Buffer.from(payload);
 	return {
-		mainCurrent_mA: b.readInt16LE(0),
-		progCurrent_mA: b.readInt16LE(2),
-		filteredMainCurrent_mA: b.readInt16LE(4),
-		temperature_C: b.readInt16LE(6),
-		supplyVoltage_mV: b.readUInt16LE(8),
-		vccVoltage_mV: b.readUInt16LE(10),
+		mainCurrentMa: b.readInt16LE(0),
+		progCurrentMa: b.readInt16LE(2),
+		filteredMainCurrentMa: b.readInt16LE(4),
+		temperatureC: b.readInt16LE(6),
+		supplyVoltageMv: b.readUInt16LE(8),
+		vccVoltageMv: b.readUInt16LE(10),
 		centralState: b.readUInt8(12),
 		centralStateEx: b.readUInt8(13),
 		capabilities: b.readUInt8(15)

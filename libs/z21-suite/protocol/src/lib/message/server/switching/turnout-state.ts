@@ -10,7 +10,7 @@ import type { Message } from '../../message-types';
 /**
  * Reports turnout position/state.
  */
-export type TurnoutState_Message = Message<
+export type TurnoutStateMessage = Message<
 	'switching',
 	'turnout.state',
 	{

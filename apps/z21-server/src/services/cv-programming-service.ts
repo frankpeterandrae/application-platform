@@ -13,8 +13,8 @@ import { Z21Event } from '@application-platform/z21-shared';
 export class CvProgrammingService {
 	private readonly queue: Array<() => void> = [];
 	private inFlight: {
-		cvAdress: number;
-		resolve: (value: { cvAdress: number; cvValue: number }) => void;
+		cvAddress: number;
+		resolve: (value: { cvAddress: number; cvValue: number }) => void;
 		reject: (reason?: Error) => void;
 		timeout: NodeJS.Timeout;
 	} | null = null;
@@ -39,13 +39,13 @@ export class CvProgrammingService {
 		}
 
 		if (event.event === 'programming.event.cv.result') {
-			if (event.payload.cv !== this.inFlight.cvAdress) {
+			if (event.payload.cv !== this.inFlight.cvAddress) {
 				// CV address mismatch - ignore this response
 				return;
 			}
 
 			this.succeed({
-				cvAdress: event.payload.cv,
+				cvAddress: event.payload.cv,
 				cvValue: event.payload.value
 			});
 
@@ -67,30 +67,30 @@ export class CvProgrammingService {
 
 	/**
 	 * Reads a CV value from the programming track.
-	 * @param cvAdress - CV address to read (1-1024)
+	 * @param cvAddress - CV address to read (1-1024)
 	 * @returns Promise that resolves with CV address and value
 	 */
-	public readCv(cvAdress: number): Promise<{ cvAdress: number; cvValue: number }> {
-		return this.enqueue(cvAdress, () => this.z21.sendCvRead(cvAdress));
+	public readCv(cvAddress: number): Promise<{ cvAddress: number; cvValue: number }> {
+		return this.enqueue(cvAddress, () => this.z21.sendCvRead(cvAddress));
 	}
 
 	/**
 	 * Writes a CV value to the programming track.
-	 * @param cvAdress - CV address to write (1-1024)
+	 * @param cvAddress - CV address to write (1-1024)
 	 * @param cvValue - CV value to write (0-255)
 	 * @returns Promise that resolves when write is complete
 	 */
-	public writeCv(cvAdress: number, cvValue: number): Promise<void> {
-		return this.enqueue(cvAdress, () => this.z21.sendCvWrite(cvAdress, cvValue)).then(() => undefined);
+	public writeCv(cvAddress: number, cvValue: number): Promise<void> {
+		return this.enqueue(cvAddress, () => this.z21.sendCvWrite(cvAddress, cvValue)).then(() => undefined);
 	}
 
 	/**
 	 * Enqueues a CV operation.
-	 * @param cvAdress - CV address
+	 * @param cvAddress - CV address
 	 * @param send - Function to send the CV command
 	 * @returns Promise that resolves with CV address and value
 	 */
-	private enqueue(cvAdress: number, send: () => void): Promise<{ cvAdress: number; cvValue: number }> {
+	private enqueue(cvAddress: number, send: () => void): Promise<{ cvAddress: number; cvValue: number }> {
 		return new Promise((resolve, reject) => {
 			const task = (): void => {
 				if (this.inFlight) {
@@ -102,7 +102,7 @@ export class CvProgrammingService {
 				}, this.timeoutMs);
 
 				this.inFlight = {
-					cvAdress,
+					cvAddress,
 					resolve,
 					reject,
 					timeout
@@ -148,7 +148,7 @@ export class CvProgrammingService {
 	 * Marks the current CV operation as successful.
 	 * @param param - CV address and value result
 	 */
-	private succeed(param: { cvAdress: number; cvValue: number }): void {
+	private succeed(param: { cvAddress: number; cvValue: number }): void {
 		if (!this.inFlight) {
 			return;
 		}

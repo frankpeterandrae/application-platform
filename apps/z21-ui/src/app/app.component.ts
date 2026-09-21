@@ -196,7 +196,7 @@ export class AppComponent {
 				(requestId) => ({
 					type: 'programming.command.cv.read',
 
-					payload: { requestId, cvAdress: this.cvAddress() }
+					payload: { requestId, cvAddress: this.cvAddress() }
 				}),
 				{ timeoutMs: 8000 }
 			);
@@ -227,7 +227,7 @@ export class AppComponent {
 			await this.ws.request<Extract<ServerToClient, { type: 'programming.replay.cv.result' }>>(
 				(requestId) => ({
 					type: 'programming.command.cv.write',
-					payload: { requestId, cvAdress: this.cvAddress(), cvValue: value }
+					payload: { requestId, cvAddress: this.cvAddress(), cvValue: value }
 				}),
 				{ timeoutMs: 8000 }
 			);

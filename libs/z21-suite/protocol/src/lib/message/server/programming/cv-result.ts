@@ -9,7 +9,7 @@ export type CvResult = ReplayMessage<
 	'programming',
 	'cv.result',
 	{
-		cvAdress: number;
+		cvAddress: number;
 		cvValue: number;
 	}
 >;

@@ -5,26 +5,23 @@
 
 import type * as http from 'node:http';
 
-import { RawData, WebSocketServer, type WebSocket as WsWebSocket } from 'ws';
+import { WebSocket, WebSocketServer, type RawData } from 'ws';
 
-import type { AliveWebsocket, ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
+import type { AliveWebSocket, ConnectHandler, DisconnectHandler, MessageHandler } from './websocket-server-types';
+
+const DEFAULT_HEARTBEAT_INTERVAL_MS = 30_000;
 
 /**
- * WebSocket server wrapper that simplifies connection handling and messaging.
- *
- * Features:
- * - Attaches to an existing HTTP server
- * - Provides simplified message and disconnect event handling
- * - Supports sending messages to individual clients or broadcasting to all
- * - Automatically serializes objects to JSON for transmission
+ * Manages WebSocket connections, messaging and connection health.
  */
 export class WsServer {
 	private readonly wss: WebSocketServer;
-
 	private heartbeatTimer?: NodeJS.Timeout;
+
 	/**
-	 * Creates a new WebSocket server attached to an HTTP server.
-	 * @param server - The HTTP server to attach the WebSocket server to
+	 * Creates a WebSocket server attached to an existing HTTP server.
+	 *
+	 * @param server - HTTP server used by the WebSocket server.
 	 */
 	constructor(server: http.Server) {
 		this.wss = new WebSocketServer({ server });
@@ -32,118 +29,120 @@ export class WsServer {
 	}
 
 	/**
-	 * Registers handlers for new WebSocket connections.
+	 * Registers handlers for WebSocket connection events.
 	 *
-	 * For each new connection:
-	 * - Converts incoming message data to string and forwards to onMessage
-	 * - Invokes onDisconnect when the connection closes
-	 *
-	 * @param onMessage - Handler called for each message received from any client
-	 * @param onDisconnect - Optional handler called when a client disconnects
-	 * @param onConnect - Optional handler called when a client connects
+	 * @param onMessage - Handler invoked for incoming messages.
+	 * @param onDisconnect - Optional handler invoked when a client disconnects.
+	 * @param onConnect - Optional handler invoked when a client connects.
 	 */
 	public onConnection(onMessage: MessageHandler, onDisconnect?: DisconnectHandler, onConnect?: ConnectHandler): void {
 		this.wss.on('connection', (ws) => {
-			const aliveWs = ws as AliveWebsocket;
+			const aliveWs = ws as AliveWebSocket;
+
 			aliveWs.isAlive = true;
+
 			aliveWs.on('pong', () => {
 				aliveWs.isAlive = true;
 			});
 
-			if (onConnect) {
-				onConnect(ws);
-			}
+			onConnect?.(ws);
 
 			ws.on('message', (data: RawData) => {
-				let message: string;
-
-				if (Array.isArray(data)) {
-					message = Buffer.concat(data).toString('utf8');
-				} else if (data instanceof ArrayBuffer) {
-					message = Buffer.from(data).toString('utf8');
-				} else {
-					message = data.toString('utf8');
-				}
-
-				onMessage(message, ws);
+				onMessage(this.toMessageString(data), ws);
 			});
 
 			ws.on('close', () => {
-				if (onDisconnect) {
-					onDisconnect(ws);
-				}
+				onDisconnect?.(ws);
 			});
 		});
 	}
 
 	/**
-	 * Sends a message to a specific WebSocket client.
+	 * Sends a message to a WebSocket client.
 	 *
-	 * - If msg is a string, sends it directly
-	 * - Otherwise, serializes msg to JSON before sending
+	 * Strings are sent unchanged; all other values are serialized as JSON.
 	 *
-	 * @param ws - The WebSocket connection to send to
-	 * @param msg - The message to send (string or object)
+	 * @param ws - Target WebSocket connection.
+	 * @param message - Message to send.
 	 */
-	public send(ws: WsWebSocket, msg: unknown): void {
-		ws.send(typeof msg === 'string' ? msg : JSON.stringify(msg));
+	public send(ws: WebSocket, message: unknown): void {
+		ws.send(this.serializeMessage(message));
 	}
 
 	/**
-	 * Broadcasts a message to all connected clients with open connections.
+	 * Broadcasts a message to all connected clients whose connection is open.
 	 *
-	 * - If msg is a string, sends it directly
-	 * - Otherwise, serializes msg to JSON before sending
-	 * - Only sends to clients with readyState === 1 (OPEN)
-	 *
-	 * @param msg - The message to broadcast (string or object)
+	 * @param message - Message to broadcast.
 	 */
-	public broadcast(msg: unknown): void {
-		const s = typeof msg === 'string' ? msg : JSON.stringify(msg);
+	public broadcast(message: unknown): void {
+		const serializedMessage = this.serializeMessage(message);
+
 		for (const client of this.wss.clients) {
-			if (client.readyState === 1) {
-				client.send(s);
+			if (client.readyState === WebSocket.OPEN) {
+				client.send(serializedMessage);
 			}
 		}
 	}
 
 	/**
-	 * Closes the WebSocket server, terminating all connections.
-	 * Also stops the heartbeat timer.
+	 * Stops heartbeat monitoring and closes the WebSocket server.
 	 */
 	public close(): void {
 		if (this.heartbeatTimer) {
 			clearInterval(this.heartbeatTimer);
 			this.heartbeatTimer = undefined;
 		}
+
 		this.wss.close();
 	}
 
-	/**
-	 * Starts the heartbeat mechanism to monitor connection health.
-	 * Pings clients at regular intervals and terminates unresponsive connections.
-	 * The interval duration can be configured via the WS_HEARTBEAT_MS environment variable.
-	 * Defaults to 30 seconds if not set.
-	 */
+	private toMessageString(data: RawData): string {
+		if (Array.isArray(data)) {
+			return Buffer.concat(data).toString('utf8');
+		}
+
+		if (data instanceof ArrayBuffer) {
+			return Buffer.from(data).toString('utf8');
+		}
+
+		return data.toString('utf8');
+	}
+
+	private serializeMessage(message: unknown): string {
+		return typeof message === 'string' ? message : JSON.stringify(message);
+	}
+
 	private startHeartbeat(): void {
-		const intervalMs = Number(process.env['WS_HEARTBEAT_MS'] ?? '30000'); // 30 seconds
-		this.heartbeatTimer = setInterval(() => {
-			for (const client of this.wss.clients) {
-				const aliveWs = client as AliveWebsocket;
+		this.heartbeatTimer = setInterval(() => this.checkConnections(), this.getHeartbeatInterval());
 
-				if (aliveWs.readyState !== WebSocket.OPEN) {
-					continue;
-				}
+		this.heartbeatTimer.unref();
+	}
 
-				if (!aliveWs.isAlive) {
-					client.terminate();
-					continue;
-				}
-				aliveWs.isAlive = false;
-				aliveWs.ping();
+	private checkConnections(): void {
+		for (const client of this.wss.clients) {
+			const aliveWs = client as AliveWebSocket;
+
+			if (aliveWs.readyState !== WebSocket.OPEN) {
+				continue;
 			}
-		}, intervalMs);
 
-		this.heartbeatTimer?.unref();
+			if (!aliveWs.isAlive) {
+				aliveWs.terminate();
+				continue;
+			}
+
+			aliveWs.isAlive = false;
+			aliveWs.ping();
+		}
+	}
+
+	private getHeartbeatInterval(): number {
+		const configuredInterval = Number(process.env['WS_HEARTBEAT_MS']);
+
+		if (Number.isFinite(configuredInterval) && configuredInterval > 0) {
+			return configuredInterval;
+		}
+
+		return DEFAULT_HEARTBEAT_INTERVAL_MS;
 	}
 }

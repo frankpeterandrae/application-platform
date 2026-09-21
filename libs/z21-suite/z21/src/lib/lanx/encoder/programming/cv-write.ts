@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
 import { encodeCvAddress, encodeLanX } from '../../../codec/frames';
 import { FULL_BYTE_MASK } from '../../../constants';
 
@@ -10,7 +15,7 @@ import { FULL_BYTE_MASK } from '../../../constants';
  */
 export function encodeLanXCvWrite(cvAddress: number, cvValue: number): Buffer {
 	if (cvAddress < 1 || cvAddress > 1024) {
-		throw new Error(`CV adress out of range: ${cvAddress}`);
+		throw new Error(`CV address out of range: ${cvAddress}`);
 	}
 
 	if (cvValue < 0 || cvValue > 255) {

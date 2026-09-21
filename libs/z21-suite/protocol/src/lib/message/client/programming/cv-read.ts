@@ -9,6 +9,6 @@ export type CvRead = CommandMessage<
 	'programming',
 	'cv.read',
 	{
-		cvAdress: number;
+		cvAddress: number;
 	}
 >;

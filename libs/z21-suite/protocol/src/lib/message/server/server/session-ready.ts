@@ -6,8 +6,7 @@
 import type { ReplayMessage } from '../../message-types';
 
 /**
- * Confirms server readiness and protocol version.
- * Response to client's server.command.session.hello message.
+ * Confirms server readiness and reports the active protocol version.
  */
 export type SessionReady = ReplayMessage<
 	'server',

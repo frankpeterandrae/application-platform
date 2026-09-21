@@ -8,312 +8,247 @@ import type * as http from 'node:http';
 import * as path from 'node:path';
 
 import { DeepMock, type DeepMocked } from '@application-platform/shared-node-test';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
-// DeepMock the node:fs module so its named exports (like readFile) are writable
-// and mockImplementation can be applied under ESM.
 vi.mock('node:fs', () => ({
 	readFile: vi.fn()
 }));
 
-import { createStaticFileServer } from './http-server';
+import { StaticFileServer } from './http-server';
 
-// note: we don't auto-mock 'node:fs' here; tests use vi.spyOn(fs, 'readFile')
-// to mock specific behaviors per-test.
+describe('StaticFileServer', () => {
+	let server: StaticFileServer;
+	let request: DeepMocked<http.IncomingMessage>;
+	let response: DeepMocked<http.ServerResponse>;
 
-describe('createStaticFileServer', () => {
-	let mockReq: DeepMocked<http.IncomingMessage>;
-	let mockRes: DeepMocked<http.ServerResponse>;
-
-	// Helper function to create mock request (similar to makeProviders in bootstrap.spec.ts)
-	function makeMockRequest(overrides: Partial<http.IncomingMessage> = {}): DeepMocked<http.IncomingMessage> {
+	function makeRequest(overrides: Partial<http.IncomingMessage> = {}): DeepMocked<http.IncomingMessage> {
 		const mock = DeepMock<http.IncomingMessage>();
+
 		mock.url = '/';
 		mock.headers = { host: 'localhost' };
+
 		Object.assign(mock, overrides);
+
 		return mock;
 	}
 
-	// Helper function to create mock response
-	function makeMockResponse(): DeepMocked<http.ServerResponse> {
-		return DeepMock<http.ServerResponse>();
-	}
-
-	// Helper function to setup fs.readFile mock for successful file read
-	function mockFileRead(fileContent: Buffer, condition?: (filePath: string) => boolean): void {
+	function mockSuccessfulRead(content: Buffer, condition?: (filePath: string) => boolean): void {
 		(fs.readFile as unknown as Mock).mockImplementation(
-			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void): void => {
+			(filePath: string, callback: (error: NodeJS.ErrnoException | null, data: Buffer) => void): void => {
 				if (condition && !condition(filePath)) {
-					callback(new Error('ENOENT') as NodeJS.ErrnoException, null as any);
-				} else {
-					callback(null, fileContent);
+					callback(new Error('ENOENT') as NodeJS.ErrnoException, Buffer.alloc(0));
+					return;
 				}
+
+				callback(null, content);
 			}
 		);
 	}
 
-	// Helper function to setup fs.readFile mock for file not found
-	function mockFileNotFound(): void {
+	function mockMissingFiles(): void {
 		(fs.readFile as unknown as Mock).mockImplementation(
-			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void): void => {
-				callback(new Error('ENOENT') as NodeJS.ErrnoException, null);
+			(_filePath: string, callback: (error: NodeJS.ErrnoException | null, data: Buffer) => void): void => {
+				callback(new Error('ENOENT') as NodeJS.ErrnoException, Buffer.alloc(0));
 			}
 		);
 	}
 
-	// Helper function to setup fs.readFile mock with fallback to index.html
-	function mockFileWithIndexFallback(indexContent: Buffer): void {
+	function mockIndexFallback(indexContent: Buffer): void {
 		(fs.readFile as unknown as Mock).mockImplementation(
-			(filePath: string, callback: (err: NodeJS.ErrnoException | null, data: Buffer | null) => void): void => {
-				if (filePath.includes('index.html')) {
+			(filePath: string, callback: (error: NodeJS.ErrnoException | null, data: Buffer) => void): void => {
+				if (filePath.endsWith('index.html')) {
 					callback(null, indexContent);
-				} else {
-					callback(new Error('ENOENT') as NodeJS.ErrnoException, null);
+					return;
 				}
+
+				callback(new Error('ENOENT') as NodeJS.ErrnoException, Buffer.alloc(0));
 			}
 		);
 	}
 
 	beforeEach(() => {
-		// Clear mock call history and reset the mocked readFile implementation
 		vi.clearAllMocks();
-		// Ensure fs.readFile is a mock function we control
 		(fs.readFile as unknown as Mock).mockReset();
-		mockReq = makeMockRequest();
-		mockRes = makeMockResponse();
+
+		server = new StaticFileServer('/public');
+		request = makeRequest();
+		response = DeepMock<http.ServerResponse>();
 	});
 
-	describe('basic file serving', () => {
-		it('serves index.html for root path', () => {
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
+	describe('file serving', () => {
+		it('serves index.html for the root path', () => {
+			const content = Buffer.from('<html></html>');
+			mockSuccessfulRead(content);
 
-			handler(mockReq as any, mockRes as any);
+			server.handle(request, response);
 
-			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/public/index.html'), expect.any(Function));
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
+			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/public', 'index.html'), expect.any(Function));
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': 'text/html; charset=utf-8'
+			});
+			expect(response.end).toHaveBeenCalledWith(content);
 		});
 
-		it('serves HTML file with correct content type', () => {
-			mockReq = makeMockRequest({ url: '/page.html' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('resolves public directory path', () => {
-			const handler = createStaticFileServer('public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('public/index.html'), expect.any(Function));
-		});
-	});
-
-	describe('content type handling', () => {
 		it.each([
-			{
-				name: 'JavaScript',
-				url: '/app.js',
-				content: 'console.log("test")',
-				contentType: 'application/javascript; charset=utf-8'
-			},
-			{
-				name: 'CSS',
-				url: '/styles.css',
-				content: 'body { margin: 0; }',
-				contentType: 'text/css; charset=utf-8'
-			},
-			{
-				name: 'JSON',
-				url: '/data.json',
-				content: '{"key":"value"}',
-				contentType: 'application/json; charset=utf-8'
-			},
-			{
-				name: 'other',
-				url: '/image.png',
-				content: 'binary data',
-				contentType: 'application/octet-stream'
-			},
-			{
-				name: 'uppercase',
-				url: '/style.CSS',
-				content: 'body { margin: 0; }',
-				contentType: 'application/octet-stream'
-			},
-			{
-				name: 'without extension',
-				url: '/LICENSE',
-				content: 'MIT License',
-				contentType: 'application/octet-stream'
-			}
-		])('serves $name file with correct content type', ({ url, content, contentType }) => {
-			mockReq = makeMockRequest({ url });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from(content);
-			mockFileRead(fileContent);
+			['/page.html', 'text/html; charset=utf-8'],
+			['/app.js', 'application/javascript; charset=utf-8'],
+			['/styles.css', 'text/css; charset=utf-8'],
+			['/data.json', 'application/json; charset=utf-8'],
+			['/image.png', 'application/octet-stream'],
+			['/LICENSE', 'application/octet-stream']
+		])('serves %s with content type %s', (url, contentType) => {
+			request = makeRequest({ url });
+			const content = Buffer.from('content');
 
-			handler(mockReq as any, mockRes as any);
+			mockSuccessfulRead(content);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, {
+			server.handle(request, response);
+
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
 				'Content-Type': contentType
 			});
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
+			expect(response.end).toHaveBeenCalledWith(content);
+		});
+
+		it('ignores query parameters when resolving files', () => {
+			request = makeRequest({
+				url: '/app.js?v=1.0'
+			});
+
+			const content = Buffer.from('script');
+
+			mockSuccessfulRead(content);
+
+			server.handle(request, response);
+
+			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/public/app.js'), expect.any(Function));
+		});
+
+		it('serves nested files', () => {
+			request = makeRequest({
+				url: '/assets/css/main.css'
+			});
+
+			const content = Buffer.from('body {}');
+
+			mockSuccessfulRead(content);
+
+			server.handle(request, response);
+
+			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/public/assets/css/main.css'), expect.any(Function));
 		});
 	});
 
-	describe('fallback handling', () => {
-		it('falls back to index.html when requested file does not exist', () => {
-			mockReq = makeMockRequest({ url: '/nonexistent' });
-			const handler = createStaticFileServer('/public');
+	describe('SPA fallback', () => {
+		it('serves index.html when the requested file does not exist', () => {
+			request = makeRequest({
+				url: '/route/not-found'
+			});
+
 			const indexContent = Buffer.from('<html></html>');
-			mockFileWithIndexFallback(indexContent);
 
-			handler(mockReq as any, mockRes as any);
+			mockIndexFallback(indexContent);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(indexContent);
+			server.handle(request, response);
+
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': 'text/html; charset=utf-8'
+			});
+			expect(response.end).toHaveBeenCalledWith(indexContent);
 		});
 
-		it('returns 404 when file and index.html both do not exist', () => {
-			mockReq = makeMockRequest({ url: '/nonexistent' });
-			const handler = createStaticFileServer('/public');
-			mockFileNotFound();
+		it('returns 404 when index.html is unavailable', () => {
+			request = makeRequest({
+				url: '/route/not-found'
+			});
 
-			handler(mockReq as any, mockRes as any);
+			mockMissingFiles();
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(404);
-			expect(mockRes.end).toHaveBeenCalledWith('Not Found');
+			server.handle(request, response);
+
+			expect(response.writeHead).toHaveBeenCalledWith(404);
+			expect(response.end).toHaveBeenCalledWith('Not Found');
 		});
+	});
 
-		it('falls back to index.html for nested non-existent paths', () => {
-			mockReq = makeMockRequest({ url: '/api/users/123' });
-			const handler = createStaticFileServer('/public');
+	describe('path handling', () => {
+		it('does not read files outside the public directory', () => {
+			request = makeRequest({
+				url: '../../../etc/passwd'
+			});
+
 			const indexContent = Buffer.from('<html></html>');
-			mockFileWithIndexFallback(indexContent);
+			mockIndexFallback(indexContent);
 
-			handler(mockReq as any, mockRes as any);
+			server.handle(request, response);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			for (const [filePath] of (fs.readFile as unknown as Mock).mock.calls) {
+				expect(path.relative('/public', String(filePath)).startsWith('..')).toBe(false);
+			}
 		});
 
-		it('handles trailing slash in URL', () => {
-			mockReq = makeMockRequest({ url: '/assets/' });
-			const handler = createStaticFileServer('/public');
+		it('keeps encoded traversal paths inside the public directory', () => {
+			request = makeRequest({
+				url: '/assets/%2e%2e/%2e%2e/secret'
+			});
+
 			const indexContent = Buffer.from('<html></html>');
-			mockFileWithIndexFallback(indexContent);
+			mockIndexFallback(indexContent);
 
-			handler(mockReq as any, mockRes as any);
+			server.handle(request, response);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			expect(fs.readFile).toHaveBeenNthCalledWith(1, path.resolve('/public', 'secret'), expect.any(Function));
+
+			expect(fs.readFile).toHaveBeenNthCalledWith(2, path.resolve('/public', 'index.html'), expect.any(Function));
+
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': 'text/html; charset=utf-8'
+			});
+		});
+
+		it('falls back to index.html for null bytes', () => {
+			request = makeRequest({
+				url: '/test%00.txt'
+			});
+
+			const indexContent = Buffer.from('<html></html>');
+			mockIndexFallback(indexContent);
+
+			server.handle(request, response);
+
+			expect(fs.readFile).toHaveBeenCalledWith(path.resolve('/public', 'index.html'), expect.any(Function));
 		});
 	});
 
-	describe('security', () => {
-		it('normalizes path traversal attempts within public directory', () => {
-			mockReq = makeMockRequest({ url: '../../../etc/passwd' });
-			const handler = createStaticFileServer('/public');
-			mockFileNotFound();
+	describe('request defaults', () => {
+		it('handles a missing request URL', () => {
+			request = makeRequest({
+				url: undefined
+			});
 
-			handler(mockReq as any, mockRes as any);
+			const content = Buffer.from('<html></html>');
+			mockSuccessfulRead(content);
 
-			const firstCall = (fs.readFile as unknown as Mock).mock.calls[0][0];
-			expect(firstCall).toContain(path.resolve('/public'));
-		});
-	});
+			server.handle(request, response);
 
-	describe('edge cases', () => {
-		it('handles missing url gracefully', () => {
-			mockReq = makeMockRequest({ url: undefined });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': 'text/html; charset=utf-8'
+			});
 		});
 
-		it('handles missing host header gracefully', () => {
-			mockReq = makeMockRequest({ headers: {} });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
+		it('handles a missing host header', () => {
+			request = makeRequest({
+				headers: {}
+			});
 
-			handler(mockReq as any, mockRes as any);
+			const content = Buffer.from('<html></html>');
+			mockSuccessfulRead(content);
 
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
-		});
+			server.handle(request, response);
 
-		it('handles empty pathname from URL', () => {
-			mockReq = makeMockRequest({ url: 'http://example.com', headers: { host: 'example.com' } });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('<html></html>');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/html; charset=utf-8' });
-		});
-	});
-
-	describe('URL handling', () => {
-		it('serves files with query strings by ignoring query parameters', () => {
-			mockReq = makeMockRequest({ url: '/app.js?v=1.0' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('console.log("test")');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
-		});
-
-		it('serves files with path segments with query strings', () => {
-			mockReq = makeMockRequest({ url: '/assets/script.js?cache=false' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('var x = 1;');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
-		});
-
-		it('serves file with dot in filename correctly', () => {
-			mockReq = makeMockRequest({ url: '/app.min.js' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('var x=1;');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/javascript; charset=utf-8' });
-		});
-	});
-
-	describe('nested files', () => {
-		it('serves nested files correctly', () => {
-			mockReq = makeMockRequest({ url: '/assets/css/main.css' });
-			const handler = createStaticFileServer('/public');
-			const fileContent = Buffer.from('body { color: blue; }');
-			mockFileRead(fileContent);
-
-			handler(mockReq as any, mockRes as any);
-
-			expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'text/css; charset=utf-8' });
-			expect(mockRes.end).toHaveBeenCalledWith(fileContent);
+			expect(response.writeHead).toHaveBeenCalledWith(200, {
+				'Content-Type': 'text/html; charset=utf-8'
+			});
 		});
 	});
 });

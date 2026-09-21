@@ -6,7 +6,6 @@
 import type { CommandMessage } from '../../message-types';
 
 /**
- * Announces protocol version and optional client name.
- * Initial handshake message sent by client to establish connection.
+ * Starts the client-server handshake and reports the client's protocol version.
  */
 export type SessionHello = CommandMessage<'server', 'session.hello', { protocolVersion: string; clientName?: string }>;

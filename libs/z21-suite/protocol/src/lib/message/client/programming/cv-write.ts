@@ -9,7 +9,7 @@ export type CvWrite = CommandMessage<
 	'programming',
 	'cv.write',
 	{
-		cvAdress: number;
+		cvAddress: number;
 		cvValue: number;
 	}
 >;

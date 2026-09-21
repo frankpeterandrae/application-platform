@@ -25,15 +25,15 @@ describe('decodeSystemState', () => {
 
 	// Helper function to verify current measurements
 	function expectCurrents(result: Z21SystemState, main: number, prog: number, filtered: number): void {
-		expect(result.mainCurrent_mA).toBe(main);
-		expect(result.progCurrent_mA).toBe(prog);
-		expect(result.filteredMainCurrent_mA).toBe(filtered);
+		expect(result.mainCurrentMa).toBe(main);
+		expect(result.progCurrentMa).toBe(prog);
+		expect(result.filteredMainCurrentMa).toBe(filtered);
 	}
 
 	// Helper function to verify voltage measurements
 	function expectVoltages(result: Z21SystemState, supply: number, vcc: number): void {
-		expect(result.supplyVoltage_mV).toBe(supply);
-		expect(result.vccVoltage_mV).toBe(vcc);
+		expect(result.supplyVoltageMv).toBe(supply);
+		expect(result.vccVoltageMv).toBe(vcc);
 	}
 
 	// Helper function to verify state flags
@@ -49,12 +49,12 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectSystemState(result, {
-				mainCurrent_mA: 1,
-				progCurrent_mA: 2,
-				filteredMainCurrent_mA: 3,
-				temperature_C: 4,
-				supplyVoltage_mV: 5,
-				vccVoltage_mV: 6,
+				mainCurrentMa: 1,
+				progCurrentMa: 2,
+				filteredMainCurrentMa: 3,
+				temperatureC: 4,
+				supplyVoltageMv: 5,
+				vccVoltageMv: 6,
 				centralState: 7,
 				centralStateEx: 8,
 				capabilities: 9
@@ -67,7 +67,7 @@ describe('decodeSystemState', () => {
 
 			expectCurrents(result, 0, 0, 0);
 			expectVoltages(result, 0, 0);
-			expect(result.temperature_C).toBe(0);
+			expect(result.temperatureC).toBe(0);
 			expectStateFlags(result, 0, 0, 0);
 		});
 	});
@@ -78,12 +78,12 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectSystemState(result, {
-				mainCurrent_mA: -1,
-				progCurrent_mA: -2,
-				filteredMainCurrent_mA: -3,
-				temperature_C: -4,
-				supplyVoltage_mV: 0,
-				vccVoltage_mV: 0,
+				mainCurrentMa: -1,
+				progCurrentMa: -2,
+				filteredMainCurrentMa: -3,
+				temperatureC: -4,
+				supplyVoltageMv: 0,
+				vccVoltageMv: 0,
 				centralState: 0xaa,
 				centralStateEx: 0xbb,
 				capabilities: 0xcc
@@ -95,7 +95,7 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectCurrents(result, -32768, -32768, -32768);
-			expect(result.temperature_C).toBe(-32768);
+			expect(result.temperatureC).toBe(-32768);
 		});
 	});
 
@@ -105,12 +105,12 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectSystemState(result, {
-				mainCurrent_mA: 32767,
-				progCurrent_mA: 32767,
-				filteredMainCurrent_mA: 32767,
-				temperature_C: 32767,
-				supplyVoltage_mV: 65535,
-				vccVoltage_mV: 65535,
+				mainCurrentMa: 32767,
+				progCurrentMa: 32767,
+				filteredMainCurrentMa: 32767,
+				temperatureC: 32767,
+				supplyVoltageMv: 65535,
+				vccVoltageMv: 65535,
 				centralState: 0xff,
 				centralStateEx: 0xff,
 				capabilities: 0xff
@@ -122,7 +122,7 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectCurrents(result, 32767, 32767, 32767);
-			expect(result.temperature_C).toBe(32767);
+			expect(result.temperatureC).toBe(32767);
 		});
 	});
 
@@ -145,7 +145,7 @@ describe('decodeSystemState', () => {
 			const payload = makePayload(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 			const result = decode(payload);
 
-			expect(result.temperature_C).toBe(55);
+			expect(result.temperatureC).toBe(55);
 		});
 
 		it('correctly decodes state flags independently', () => {
@@ -182,7 +182,7 @@ describe('decodeSystemState', () => {
 			const result = decode(payload);
 
 			expectCurrents(result, 100, -1, 0);
-			expect(result.temperature_C).toBe(1);
+			expect(result.temperatureC).toBe(1);
 			expectVoltages(result, 1000, 2000);
 			expectStateFlags(result, 0x11, 0x22, 0x33);
 		});
@@ -192,11 +192,11 @@ describe('decodeSystemState', () => {
 			const payload = makePayload(0xb8, 0x0b, 0x00, 0x00, 0xb8, 0x0b, 0x14, 0x00, 0x98, 0x3a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 			const result = decode(payload);
 
-			expect(result.mainCurrent_mA).toBe(3000);
-			expect(result.progCurrent_mA).toBe(0);
-			expect(result.filteredMainCurrent_mA).toBe(3000);
-			expect(result.temperature_C).toBe(20);
-			expect(result.supplyVoltage_mV).toBe(15000); // 0x3a98 in little endian = 58*256 + 152 = 15000
+			expect(result.mainCurrentMa).toBe(3000);
+			expect(result.progCurrentMa).toBe(0);
+			expect(result.filteredMainCurrentMa).toBe(3000);
+			expect(result.temperatureC).toBe(20);
+			expect(result.supplyVoltageMv).toBe(15000); // 0x3a98 in little endian = 58*256 + 152 = 15000
 		});
 	});
 });

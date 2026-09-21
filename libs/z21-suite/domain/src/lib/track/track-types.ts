@@ -3,12 +3,19 @@
  * All rights reserved.
  */
 
-import { PowerPayload } from '@application-platform/z21-shared';
+import type { PowerPayload } from '@application-platform/z21-shared';
 
 /**
- * Represents the current track state reported by the system, including power and fault flags.
+ * Identifies the protocol source that produced a track status update.
+ */
+export type TrackStatusSource = 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x';
+
+/**
+ * Represents the current track power and fault state.
  */
 export type TrackStatus = PowerPayload & {
-	/** Source of the status information, e.g., external bus or system state. */
-	source?: 'ds.x.bus' | 'ds.system.state' | 'ds.lan.x';
+	/**
+	 * Protocol source of the most recent status update.
+	 */
+	source?: TrackStatusSource;
 };

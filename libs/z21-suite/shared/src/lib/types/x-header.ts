@@ -4,10 +4,10 @@
  */
 
 /**
- * X-BUS protocol headers used within LAN_X wrapped messages.
- * These headers identify specific X-BUS command or event types.
- * Note: Same byte values may appear multiple times as they represent different
- * commands in different protocol contexts (e.g., 0x23 is both DCC_WRITE_REGISTER and CV_READ).
+ * X-Bus headers used inside LAN-X frames.
+ *
+ * Header values are context-dependent. The same byte may represent different
+ * operations depending on the accompanying X-Bus command.
  */
 /* eslint-disable @typescript-eslint/no-duplicate-enum-values */
 export const enum XHeader {
@@ -21,13 +21,13 @@ export const enum XHeader {
 	CV_READ = 0x23,
 	/** CV: write CV register */
 	CV_WRITE = 0x24,
-	/** MM: read byte from decoder */
+	/** MM: write byte to decoder */
 	MM_WRITE_BYTE = 0x24,
 	/** Command: get turnout information */
 	TURNOUT_INFO = 0x43,
 	/** Command: get extended accessory information */
 	EXT_ACCESSORY_INFO = 0x44,
-	/** Command: set extended accessory state */
+	/** Command: set turnout state */
 	SET_TURNOUT = 0x53,
 	/** Command: set extended accessory state */
 	SET_EXT_ACCESSORY = 0x54,
@@ -36,7 +36,7 @@ export const enum XHeader {
 	/** Broadcast: general status changed */
 	STATUS_CHANGED = 0x62,
 	/** Response: version information */
-	VESION_ANSWER = 0x63,
+	VERSION_ANSWER = 0x63,
 	/** Response: CV read result */
 	CV_RESULT = 0x64,
 	/** Command: emergency stop for all locomotives */

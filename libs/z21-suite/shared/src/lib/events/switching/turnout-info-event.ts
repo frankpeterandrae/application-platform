@@ -10,7 +10,7 @@ export const TurnoutState = {
 	STRAIGHT: 'STRAIGHT',
 	DIVERGING: 'DIVERGING',
 	UNKNOWN: 'UNKNOWN'
-};
+} as const;
 
 export type TurnoutState = (typeof TurnoutState)[keyof typeof TurnoutState];
 

@@ -1201,12 +1201,12 @@ describe('Z21EventHandler.handleDatagram', () => {
 				{
 					event: 'system.event.state',
 					payload: {
-						mainCurrent_mA: 0x0124,
-						progCurrent_mA: 0x0124,
-						filteredMainCurrent_mA: 0x0124,
-						temperature_C: 0x0124,
-						supplyVoltage_mV: 0x0124,
-						vccVoltage_mV: 0x0124,
+						mainCurrentMa: 0x0124,
+						progCurrentMa: 0x0124,
+						filteredMainCurrentMa: 0x0124,
+						temperatureC: 0x0124,
+						supplyVoltageMv: 0x0124,
+						vccVoltageMv: 0x0124,
 						centralState: 0x0124,
 						centralStateEx: 0x0124,
 						capabilities: 0x0124,

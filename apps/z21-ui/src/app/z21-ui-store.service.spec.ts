@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { LocoState, SystemTrackPower, TurnoutState_Message } from '@application-platform/protocol';
+import { LocoState, SystemTrackPower, TurnoutStateMessage } from '@application-platform/protocol';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Z21UiStore } from './z21-ui-store.service';
@@ -120,7 +120,10 @@ describe('Z21UiStore', () => {
 			turnoutAddr: store.turnoutAddr()
 		};
 
-		store.updateFromServer({ type: 'switching.message.turnout.state', payload: { addr: 12, state: 'THROWN' } } as TurnoutState_Message);
+		store.updateFromServer({
+			type: 'switching.message.turnout.state',
+			payload: { addr: 12, state: 'STRAIGHT' }
+		} as TurnoutStateMessage);
 
 		expect(store.powerOn()).toBe(before.powerOn);
 		expect(store.selectedAddr()).toBe(before.selectedAddr);

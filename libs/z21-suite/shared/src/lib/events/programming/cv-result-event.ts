@@ -7,9 +7,9 @@ import { Domain } from '../../types';
 import { Event } from '../event';
 
 export type CvResultPayload = {
-	/** 1-based CV: CV1 => 1 */
+	/** One-based CV address, e.g. CV1 is represented as 1. */
 	cv: number;
-	/** 0..255 */
+	/** CV value in the range 0–255. */
 	value: number;
 };
 

@@ -6,7 +6,7 @@
 import type { Message } from '../../message-types';
 
 /**
- * Reports track power state and optional fault flags.
+ * Reports the X-Bus version and command station identifier.
  */
 export type SystemVersion = Message<
 	'system',

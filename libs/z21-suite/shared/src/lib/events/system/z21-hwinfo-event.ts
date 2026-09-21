@@ -6,7 +6,10 @@
 import { Domain } from '../../types';
 import { Event } from '../event';
 
-export const HARDWARE_TYPE = {
+/**
+ * Maps Z21 hardware identifiers to their known device types.
+ */
+export const HARDWARE_TYPE_BY_ID = {
 	0x00000200: 'Z21_OLD',
 	0x00000201: 'Z21_NEW',
 	0x00000202: 'SMARTRAIL',
@@ -20,7 +23,7 @@ export const HARDWARE_TYPE = {
 	0x00000302: 'Z21_SIGNAL_DECODER'
 } as const;
 
-export type HardwareType = (typeof HARDWARE_TYPE)[keyof typeof HARDWARE_TYPE];
+export type HardwareType = (typeof HARDWARE_TYPE_BY_ID)[keyof typeof HARDWARE_TYPE_BY_ID];
 
 export type Z21HwinfoEvent = Event<
 	Domain.SYSTEM,

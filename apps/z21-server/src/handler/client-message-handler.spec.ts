@@ -8,7 +8,7 @@ import type { ClientToServer } from '@application-platform/protocol';
 import { DeepMock, DeepMocked } from '@application-platform/shared-node-test';
 import { LocoFunctionSwitchType, Z21CommandService } from '@application-platform/z21';
 import { TurnoutState } from '@application-platform/z21-shared';
-import type { Mock as VitestMock, MockedFunction } from 'vitest';
+import type { MockedFunction, Mock as VitestMock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CvProgrammingService } from '../services/cv-programming-service';
@@ -36,7 +36,7 @@ describe('ClientMessageHandler.handle', () => {
 		locoManager.setSpeed.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
 		locoManager.setFunction.mockReturnValue({ speed: 10, dir: 'REV', fns: { 0: true }, estop: false });
 		locoManager.getState.mockReturnValue({ speed: 0, dir: 'FWD', fns: {}, estop: false });
-		cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 1, cvValue: 0 });
+		cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 1, cvValue: 0 });
 		cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 		handler = new ClientMessageHandler(locoManager as any, z21Service as any, cvProgrammingService, reply, broadcast);
@@ -548,10 +548,10 @@ describe('ClientMessageHandler.handle', () => {
 
 	describe('programming.command.cv.read', () => {
 		it('reads CV and replies with result on success', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 29, cvValue: 42 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 29, cvValue: 42 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-1' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-1' } } as ClientToServer,
 				ws
 			);
 
@@ -560,7 +560,7 @@ describe('ClientMessageHandler.handle', () => {
 				type: 'programming.replay.cv.result',
 				payload: {
 					requestId: 'req-1',
-					cvAdress: 29,
+					cvAddress: 29,
 					cvValue: 42
 				}
 			});
@@ -570,7 +570,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.readCv.mockRejectedValue(new Error('CV programming timeout'));
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-2' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 1, requestId: 'req-2' } } as ClientToServer,
 				ws
 			);
 
@@ -584,10 +584,10 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('includes requestId in result when provided', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 17, cvValue: 100 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 17, cvValue: 100 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 17, requestId: 'test-123' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 17, requestId: 'test-123' } } as ClientToServer,
 				ws
 			);
 
@@ -600,10 +600,10 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles undefined requestId gracefully', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 5, cvValue: 10 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 5, cvValue: 10 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 5, requestId: undefined as any } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 5, requestId: undefined as any } } as ClientToServer,
 				ws
 			);
 
@@ -616,10 +616,10 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('does not broadcast CV read results', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 10, cvValue: 20 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 10, cvValue: 20 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 10, requestId: 'req-3' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 10, requestId: 'req-3' } } as ClientToServer,
 				ws
 			);
 
@@ -630,7 +630,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.readCv.mockRejectedValue(new Error('Short circuit detected'));
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 50, requestId: 'req-4' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 50, requestId: 'req-4' } } as ClientToServer,
 				ws
 			);
 
@@ -644,10 +644,10 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles CV address 1', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 1, cvValue: 3 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 1, cvValue: 3 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-5' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 1, requestId: 'req-5' } } as ClientToServer,
 				ws
 			);
 
@@ -655,10 +655,10 @@ describe('ClientMessageHandler.handle', () => {
 		});
 
 		it('handles CV address 1024', async () => {
-			cvProgrammingService.readCv.mockResolvedValue({ cvAdress: 1024, cvValue: 255 });
+			cvProgrammingService.readCv.mockResolvedValue({ cvAddress: 1024, cvValue: 255 });
 
 			await handler.handle(
-				{ type: 'programming.command.cv.read', payload: { cvAdress: 1024, requestId: 'req-6' } } as ClientToServer,
+				{ type: 'programming.command.cv.read', payload: { cvAddress: 1024, requestId: 'req-6' } } as ClientToServer,
 				ws
 			);
 
@@ -671,7 +671,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-7' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 29, cvValue: 14, requestId: 'req-7' } } as ClientToServer,
 				ws
 			);
 
@@ -680,7 +680,7 @@ describe('ClientMessageHandler.handle', () => {
 				type: 'programming.replay.cv.result',
 				payload: {
 					requestId: 'req-7',
-					cvAdress: 29,
+					cvAddress: 29,
 					cvValue: 14
 				}
 			});
@@ -690,7 +690,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockRejectedValue(new Error('CV write failed'));
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 8, cvValue: 100, requestId: 'req-8' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 8, cvValue: 100, requestId: 'req-8' } } as ClientToServer,
 				ws
 			);
 
@@ -707,7 +707,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 1, cvValue: 3, requestId: 'write-123' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 1, cvValue: 3, requestId: 'write-123' } } as ClientToServer,
 				ws
 			);
 
@@ -725,7 +725,7 @@ describe('ClientMessageHandler.handle', () => {
 			await handler.handle(
 				{
 					type: 'programming.command.cv.write',
-					payload: { cvAdress: 5, cvValue: 50, requestId: undefined as any }
+					payload: { cvAddress: 5, cvValue: 50, requestId: undefined as any }
 				} as ClientToServer,
 				ws
 			);
@@ -742,7 +742,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 20, cvValue: 200, requestId: 'req-9' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 20, cvValue: 200, requestId: 'req-9' } } as ClientToServer,
 				ws
 			);
 
@@ -753,7 +753,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 10, cvValue: 0, requestId: 'req-10' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 10, cvValue: 0, requestId: 'req-10' } } as ClientToServer,
 				ws
 			);
 
@@ -764,7 +764,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 100, cvValue: 255, requestId: 'req-11' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 100, cvValue: 255, requestId: 'req-11' } } as ClientToServer,
 				ws
 			);
 
@@ -775,7 +775,7 @@ describe('ClientMessageHandler.handle', () => {
 			cvProgrammingService.writeCv.mockResolvedValue(undefined);
 
 			await handler.handle(
-				{ type: 'programming.command.cv.write', payload: { cvAdress: 50, cvValue: 128, requestId: 'req-12' } } as ClientToServer,
+				{ type: 'programming.command.cv.write', payload: { cvAddress: 50, cvValue: 128, requestId: 'req-12' } } as ClientToServer,
 				ws
 			);
 
@@ -792,20 +792,20 @@ describe('ClientMessageHandler.handle', () => {
 		it('does not throw error for unimplemented POM read', () => {
 			expect(() => {
 				void handler.handle(
-					{ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAdress: 29 } } as ClientToServer,
+					{ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAddress: 29 } } as ClientToServer,
 					ws
 				);
 			}).not.toThrow();
 		});
 
 		it('does not call cvProgrammingService for POM read', () => {
-			void handler.handle({ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAdress: 29 } } as ClientToServer, ws);
+			void handler.handle({ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAddress: 29 } } as ClientToServer, ws);
 
 			expect(cvProgrammingService.readCv).not.toHaveBeenCalled();
 		});
 
 		it('does not broadcast or reply for unimplemented POM read', () => {
-			void handler.handle({ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAdress: 29 } } as ClientToServer, ws);
+			void handler.handle({ type: 'programming.command.pom.cv.read', payload: { address: 3, cvAddress: 29 } } as ClientToServer, ws);
 
 			expect(broadcast).not.toHaveBeenCalled();
 			expect(reply).not.toHaveBeenCalled();
@@ -816,7 +816,7 @@ describe('ClientMessageHandler.handle', () => {
 		it('does not throw error for unimplemented POM write', () => {
 			expect(() => {
 				void handler.handle(
-					{ type: 'programming.command.pom.cv.write', payload: { adress: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
+					{ type: 'programming.command.pom.cv.write', payload: { address: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
 					ws
 				);
 			}).not.toThrow();
@@ -824,7 +824,7 @@ describe('ClientMessageHandler.handle', () => {
 
 		it('does not call cvProgrammingService for POM write', () => {
 			void handler.handle(
-				{ type: 'programming.command.pom.cv.write', payload: { adress: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
+				{ type: 'programming.command.pom.cv.write', payload: { address: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
 				ws
 			);
 
@@ -833,7 +833,7 @@ describe('ClientMessageHandler.handle', () => {
 
 		it('does not broadcast or reply for unimplemented POM write', () => {
 			void handler.handle(
-				{ type: 'programming.command.pom.cv.write', payload: { adress: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
+				{ type: 'programming.command.pom.cv.write', payload: { address: 5, cvAddress: 17, cvValue: 50 } } as ClientToServer,
 				ws
 			);
 

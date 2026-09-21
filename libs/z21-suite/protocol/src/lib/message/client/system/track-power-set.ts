@@ -8,4 +8,4 @@ import type { CommandMessage } from '../../message-types';
 /**
  * Toggles track power on or off.
  */
-export type TrackpowerSet = CommandMessage<'system', 'trackpower.set', { powerOn: boolean }>;
+export type TrackPowerSet = CommandMessage<'system', 'trackpower.set', { powerOn: boolean }>;

@@ -75,12 +75,12 @@ describe('datasetsToEvents', () => {
 				{
 					event: 'system.event.state',
 					payload: {
-						mainCurrent_mA: 1,
-						progCurrent_mA: 2,
-						filteredMainCurrent_mA: 3,
-						temperature_C: 4,
-						supplyVoltage_mV: 5,
-						vccVoltage_mV: 6,
+						mainCurrentMa: 1,
+						progCurrentMa: 2,
+						filteredMainCurrentMa: 3,
+						temperatureC: 4,
+						supplyVoltageMv: 5,
+						vccVoltageMv: 6,
 						centralState: 7,
 						centralStateEx: 8,
 						capabilities: 9,
@@ -98,8 +98,8 @@ describe('datasetsToEvents', () => {
 			expectEventCount(events, 1);
 			expect(events[0].event).toBe('system.event.state');
 			if (events[0].event === 'system.event.state') {
-				expect(events[0].payload.mainCurrent_mA).toBe(0);
-				expect(events[0].payload.progCurrent_mA).toBe(0);
+				expect(events[0].payload.mainCurrentMa).toBe(0);
+				expect(events[0].payload.progCurrentMa).toBe(0);
 			}
 		});
 

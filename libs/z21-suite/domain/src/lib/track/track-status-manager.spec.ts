@@ -3,8 +3,6 @@
  * All rights reserved.
  */
 
-import { Z21StatusEvent } from '@application-platform/z21-shared';
-
 import { TrackStatusManager } from './track-status-manager';
 
 describe('TrackStatusManager', () => {
@@ -14,101 +12,170 @@ describe('TrackStatusManager', () => {
 		manager = new TrackStatusManager();
 	});
 
-	// Helper functions to create test data (similar to makeProviders in bootstrap.spec.ts)
-	function makeCsStatusEvent(overrides: Partial<any> = {}): any {
-		return {
-			event: 'system.event.status' as const,
-			payload: {
-				powerOn: true,
-				emergencyStop: false,
-				shortCircuit: false,
-				programmingMode: false,
-				...overrides
-			}
-		} as Z21StatusEvent;
-	}
-
-	describe('basic state management', () => {
-		it('returns  status initially', () => {
-			const status = manager.getStatus();
-			expect(status).toEqual({
+	describe('initial state', () => {
+		it('returns the initial track status', () => {
+			expect(manager.getStatus()).toEqual({
 				powerOn: false,
 				emergencyStop: false,
 				programmingMode: false,
 				shortCircuit: false
 			});
 		});
+
+		it('returns a copy of the current status', () => {
+			const status = manager.getStatus();
+
+			status.powerOn = true;
+
+			expect(manager.getStatus().powerOn).toBe(false);
+		});
+	});
+
+	describe('updateStatus', () => {
+		it('replaces all track status flags and stores the source', () => {
+			const status = manager.updateStatus(
+				{
+					powerOn: true,
+					emergencyStop: false,
+					programmingMode: true,
+					shortCircuit: false
+				},
+				'ds.system.state'
+			);
+
+			expect(status).toEqual({
+				powerOn: true,
+				emergencyStop: false,
+				programmingMode: true,
+				shortCircuit: false,
+				source: 'ds.system.state'
+			});
+		});
+
+		it('replaces a previously stored status completely', () => {
+			manager.updateStatus(
+				{
+					powerOn: true,
+					emergencyStop: true,
+					programmingMode: true,
+					shortCircuit: true
+				},
+				'ds.system.state'
+			);
+
+			const status = manager.updateStatus(
+				{
+					powerOn: false,
+					emergencyStop: false,
+					programmingMode: false,
+					shortCircuit: false
+				},
+				'ds.x.bus'
+			);
+
+			expect(status).toEqual({
+				powerOn: false,
+				emergencyStop: false,
+				programmingMode: false,
+				shortCircuit: false,
+				source: 'ds.x.bus'
+			});
+		});
+
+		it('returns a copy of the updated status', () => {
+			const status = manager.updateStatus(
+				{
+					powerOn: true,
+					emergencyStop: false,
+					programmingMode: false,
+					shortCircuit: false
+				},
+				'ds.x.bus'
+			);
+
+			status.powerOn = false;
+
+			expect(manager.getStatus().powerOn).toBe(true);
+		});
 	});
 
 	describe('setEmergencyStop', () => {
-		it('sets emergency stop to true with ds.x.bus source', () => {
-			const status = manager.setEmergencyStop(true, 'ds.x.bus');
+		it('updates emergency stop and source', () => {
+			const status = manager.setEmergencyStop(true, 'ds.lan.x');
 
 			expect(status.emergencyStop).toBe(true);
-			expect(status.source).toBe('ds.x.bus');
-		});
-
-		it('sets emergency stop to false with ds.lan.x source', () => {
-			manager.setEmergencyStop(true, 'ds.x.bus');
-			const status = manager.setEmergencyStop(false, 'ds.lan.x');
-
-			expect(status.emergencyStop).toBe(false);
 			expect(status.source).toBe('ds.lan.x');
 		});
 
-		it('handles undefined source parameter', () => {
-			const status = manager.setEmergencyStop(true, undefined);
+		it('preserves the remaining track status', () => {
+			manager.updateStatus(
+				{
+					powerOn: true,
+					emergencyStop: false,
+					programmingMode: true,
+					shortCircuit: true
+				},
+				'ds.system.state'
+			);
 
-			expect(status.emergencyStop).toBe(true);
-			expect(status.source).toBeUndefined();
+			const status = manager.setEmergencyStop(true, 'ds.lan.x');
+
+			expect(status).toEqual({
+				powerOn: true,
+				emergencyStop: true,
+				programmingMode: true,
+				shortCircuit: true,
+				source: 'ds.lan.x'
+			});
 		});
 
-		it('toggles emergency stop flag multiple times', () => {
-			manager.setEmergencyStop(true, 'ds.x.bus');
-			manager.setEmergencyStop(false, 'ds.x.bus');
-			const status = manager.setEmergencyStop(true, 'ds.x.bus');
+		it('can clear emergency stop', () => {
+			manager.setEmergencyStop(true, 'ds.lan.x');
 
-			expect(status.emergencyStop).toBe(true);
+			const status = manager.setEmergencyStop(false, 'ds.x.bus');
+
+			expect(status.emergencyStop).toBe(false);
+			expect(status.source).toBe('ds.x.bus');
 		});
 	});
 
 	describe('setShortCircuit', () => {
-		it('sets shortCircuit circuit to true with ds.x.bus source', () => {
+		it('updates short-circuit state and source', () => {
 			const status = manager.setShortCircuit(true, 'ds.x.bus');
 
 			expect(status.shortCircuit).toBe(true);
 			expect(status.source).toBe('ds.x.bus');
 		});
 
-		it('sets shortCircuit circuit to false with ds.lan.x source', () => {
-			manager.setShortCircuit(true, 'ds.x.bus');
-			const status = manager.setShortCircuit(false, 'ds.lan.x');
+		it('preserves the remaining track status', () => {
+			manager.updateStatus(
+				{
+					powerOn: true,
+					emergencyStop: true,
+					programmingMode: true,
+					shortCircuit: false
+				},
+				'ds.system.state'
+			);
 
-			expect(status.shortCircuit).toBe(false);
-			expect(status.source).toBe('ds.lan.x');
-		});
-
-		it('preserves existing emergency stop status when setting shortCircuit circuit', () => {
-			manager.setEmergencyStop(true, 'ds.x.bus');
 			const status = manager.setShortCircuit(true, 'ds.lan.x');
 
-			expect(status.emergencyStop).toBe(true);
-			expect(status.shortCircuit).toBe(true);
+			expect(status).toEqual({
+				powerOn: true,
+				emergencyStop: true,
+				programmingMode: true,
+				shortCircuit: true,
+				source: 'ds.lan.x'
+			});
 		});
 
-		it('handles undefined source parameter', () => {
-			const status = manager.setShortCircuit(true, undefined);
+		it('can clear short-circuit state', () => {
+			manager.setShortCircuit(true, 'ds.x.bus');
 
-			expect(status.shortCircuit).toBe(true);
-			expect(status.source).toBeUndefined();
-		});
+			const status = manager.setShortCircuit(false, 'ds.system.state');
 
-		it('toggles shortCircuit circuit flag multiple times', () => {
-			manager.setShortCircuit(true, 'ds.system.state');
-			manager.setShortCircuit(false, 'ds.system.state');
-			const status = manager.setShortCircuit(true, 'ds.system.state');
-
-			expect(status.shortCircuit).toBe(true);
+			expect(status.shortCircuit).toBe(false);
+			expect(status.source).toBe('ds.system.state');
 		});
 	});
 });

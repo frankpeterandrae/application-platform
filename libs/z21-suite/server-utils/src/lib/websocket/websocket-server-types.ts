@@ -6,25 +6,23 @@
 import type { WebSocket as WsWebSocket } from 'ws';
 
 /**
- * Callback signature for handling incoming WebSocket messages.
- * @param msg - The parsed message data (typically a string)
- * @param ws - The WebSocket connection that sent the message
+ * Handles an incoming WebSocket message.
  */
-export type MessageHandler = (msg: string, ws: WsWebSocket) => void;
+export type MessageHandler = (message: string, ws: WsWebSocket) => void;
 
 /**
- * Callback signature for handling WebSocket disconnections.
- * @param ws - The WebSocket connection that closed
+ * Handles a closed WebSocket connection.
  */
 export type DisconnectHandler = (ws: WsWebSocket) => void;
 
 /**
- * Callback signature for handling new WebSocket connections.
- * @param ws - The newly connected WebSocket
+ * Handles a newly established WebSocket connection.
  */
 export type ConnectHandler = (ws: WsWebSocket) => void;
 
 /**
- * Extended WebSocket type that includes an isAlive property for connection health tracking.
+ * WebSocket connection extended with heartbeat state.
  */
-export type AliveWebsocket = WsWebSocket & { isAlive: boolean };
+export type AliveWebSocket = WsWebSocket & {
+	isAlive: boolean;
+};

@@ -7,6 +7,7 @@ import { Domain } from '../../types';
 import { Event } from '../event';
 
 export type CvNackEventPayload = {
+	/** Whether the command station reported a short circuit while programming. */
 	shortCircuit: boolean;
 };
 

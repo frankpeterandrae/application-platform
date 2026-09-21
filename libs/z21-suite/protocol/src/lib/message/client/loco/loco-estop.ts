@@ -6,7 +6,7 @@
 import type { CommandMessage } from '../../message-types';
 
 /**
- * Triggers emergency stop for a specific locomotive.
+ * Requests an emergency stop for a specific locomotive.
  */
 export type LocoEStop = CommandMessage<
 	'loco',

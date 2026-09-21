@@ -14,7 +14,7 @@ import type {
 	PomCvWrite,
 	SessionHello,
 	StopAll,
-	TrackpowerSet,
+	TrackPowerSet,
 	TurnoutSet
 } from './client';
 import type {
@@ -30,16 +30,14 @@ import type {
 	SystemStop,
 	SystemTrackPower,
 	SystemVersion,
-	TurnoutState_Message,
+	TurnoutStateMessage,
 	Z21Rx
 } from './server';
 
 /**
- * Union of all messages a client may send to the server.
+ * Union of all messages accepted from clients.
  *
- * When you add a new ClientToServer message type:
- * 1. Import the type
- * 2. Add it to this union
+ * New client message types must also be added to CLIENT_TO_SERVER_TYPES.
  */
 export type ClientToServer =
 	| CvRead
@@ -52,17 +50,16 @@ export type ClientToServer =
 	| PomCvWrite
 	| SessionHello
 	| StopAll
-	| TrackpowerSet
+	| TrackPowerSet
 	| TurnoutSet;
 
 type ClientToServerType = ClientToServer['type'];
 
 /**
- * Set of all valid ClientToServer message types.
- * Automatically created from the ClientToServerType union.
- * Used for runtime validation in isClientToServerMessage().
+ * Runtime lookup of supported client-to-server message types.
  *
- * Note: This requires that all message types in the union have a literal 'type' property.
+ * The satisfies constraint ensures that every ClientToServer discriminator
+ * is represented at compile time.
  */
 export const CLIENT_TO_SERVER_TYPES = {
 	'loco.command.drive': true,
@@ -80,11 +77,9 @@ export const CLIENT_TO_SERVER_TYPES = {
 } as const satisfies Record<ClientToServerType, true>;
 
 /**
- * Union of all messages the server may send to a client.
+ * Union of all messages sent from the server to clients.
  *
- * When you add a new ServerToClient message type:
- * 1. Import the type
- * 2. Add it to this union
+ * New server message types must also be added to SERVER_TO_CLIENT_TYPES.
  */
 export type ServerToClient =
 	| CvNack
@@ -99,16 +94,16 @@ export type ServerToClient =
 	| SystemStop
 	| SystemTrackPower
 	| SystemVersion
-	| TurnoutState_Message
+	| TurnoutStateMessage
 	| Z21Rx;
 
 type ServerToClientType = ServerToClient['type'];
+
 /**
- * Set of all valid ServerToClient message types.
- * Automatically created from the ServerToClientType union.
- * Used for runtime validation in isServerToClientMessage().
+ * Runtime lookup of supported server-to-client message types.
  *
- * Note: This requires that all message types in the union have a literal 'type' property.
+ * The satisfies constraint ensures that every ServerToClient discriminator
+ * is represented at compile time.
  */
 export const SERVER_TO_CLIENT_TYPES = {
 	'feedback.message.changed': true,
@@ -128,31 +123,18 @@ export const SERVER_TO_CLIENT_TYPES = {
 } as const satisfies Record<ServerToClientType, true>;
 
 /**
- * Role names used when composing typed message strings via `MessageType`.
- *
- * 'command' — request from UI/client that triggers an action.
- * 'replay'  — responses/results produced by the server (replays of commands).
- * 'message' — informational messages (not necessarily request/response).
+ * Supported roles within protocol message type strings.
  */
 type RoleType = 'command' | 'replay' | 'message';
 
 /**
- * Template type for message type strings.
- *
- * Produces strings of the form: `${Domain}.${Role}.${Action}`
- * Example: `programming.command.cv.read`
+ * Constructs a protocol message discriminator in the form
+ * `${Domain}.${Role}.${Action}`.
  */
 type MessageType<Domain extends string, Role extends RoleType, Action extends string> = `${Domain}.${Role}.${Action}`;
 
 /**
- * CommandMessage helper type.
- *
- * Use when building a command message type whose `type` is `${Domain}.command.${Action}`.
- * The `payload` is normalized via `Payload<TPayload>` so `requestId` is enforced.
- *
- * Example:
- *   type CvReadMsg = CommandMessage<'programming', 'cv.read', { cvAddress: number }>;
- *   // -> { type: 'programming.command.cv.read', payload: { requestId: string, cvAddress: number } }
+ * Defines a client command message with a mandatory request identifier.
  */
 export type CommandMessage<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
 	type: MessageType<Domain, 'command', Action>;
@@ -160,10 +142,7 @@ export type CommandMessage<Domain extends string, Action extends string, TPayloa
 };
 
 /**
- * ReplayMessage helper type.
- *
- * Use when the server publishes a replay/result message with type `${Domain}.replay.${Action}`.
- * The `payload` is normalized via `Payload<TPayload>` so `requestId` is enforced.
+ * Defines a server response associated with a client request.
  */
 export type ReplayMessage<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
 	type: MessageType<Domain, 'replay', Action>;
@@ -171,13 +150,7 @@ export type ReplayMessage<Domain extends string, Action extends string, TPayload
 };
 
 /**
- * Generic informational Message type.
- *
- * Produces `${Domain}.message.${Action}` as the type string. This variant intentionally
- * leaves `payload` as `TPayload` (no automatic `requestId` injection) because not all
- * informational messages are request-like.
- *
- * For messages that should include `requestId`, prefer `CommandMessage` or `ReplayMessage`.
+ * Defines an informational server message without an implicit request identifier.
  */
 export type Message<Domain extends string, Action extends string, TPayload = Record<string, unknown>> = {
 	type: MessageType<Domain, 'message', Action>;
@@ -185,19 +158,7 @@ export type Message<Domain extends string, Action extends string, TPayload = Rec
 };
 
 /**
- * Payload<TPayload>
- *
- * Ensures that any request-like payload always includes a `requestId: string`.
- *
- * Implementation detail:
- * - `Omit<TPayload, 'requestId'>` removes any `requestId` declaration from `TPayload`
- *   (prevents conflicts such as `number & string`).
- * - `& { requestId: string }` then enforces the canonical `requestId: string` type.
- *
- * Result:
- * - If `TPayload` does not include `requestId`, payload becomes `{ requestId: string } & TPayload`.
- * - If `TPayload` included `requestId` with a different type, that field is replaced
- *   with `requestId: string`, avoiding incompatible intersections.
+ * Ensures that request-like payloads contain a canonical request identifier.
  */
 type Payload<TPayload> = Omit<TPayload, 'requestId'> & {
 	requestId: string;

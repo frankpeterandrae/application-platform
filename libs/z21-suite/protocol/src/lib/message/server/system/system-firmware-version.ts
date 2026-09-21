@@ -6,7 +6,7 @@
 import type { Message } from '../../message-types';
 
 /**
- * Reports track power state and optional fault flags.
+ * Reports the firmware version of the connected command station.
  */
 export type SystemFirmwareVersion = Message<
 	'system',

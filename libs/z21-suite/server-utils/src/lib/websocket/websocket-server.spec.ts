@@ -3,248 +3,333 @@
  * All rights reserved.
  */
 
-import { DeepMock, DeepMocked } from '@application-platform/shared-node-test';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import type { WebSocket } from 'ws';
-import { WebSocketServer } from 'ws';
+import type * as http from 'node:http';
+
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { WebSocket, WebSocketServer, type RawData, type WebSocket as WsWebSocket } from 'ws';
 
 import { WsServer } from './websocket-server';
+import type { AliveWebSocket } from './websocket-server-types';
 
-// DeepMock the 'ws' module with a constructable mock so `new WebSocketServer()` works.
 vi.mock('ws', () => {
-	const WebSocketServer = vi.fn(function (this: any, _opts?: any) {
-		// Constructed instances should expose `clients` and `on`.
+	const WebSocketServer = vi.fn(function (this: {
+		clients: Set<WsWebSocket>;
+		on: ReturnType<typeof vi.fn>;
+		close: ReturnType<typeof vi.fn>;
+	}) {
 		this.clients = new Set();
 		this.on = vi.fn();
+		this.close = vi.fn();
 	});
-	return { WebSocketServer };
+
+	return {
+		WebSocket: {
+			OPEN: 1,
+			CLOSED: 3
+		},
+		WebSocketServer
+	};
 });
+
+type MockWebSocket = AliveWebSocket & {
+	send: Mock;
+	on: Mock;
+	ping: Mock;
+	terminate: Mock;
+};
+
+type MockWebSocketServer = {
+	clients: Set<WsWebSocket>;
+	on: Mock;
+	close: Mock;
+};
 
 describe('WsServer', () => {
 	let wsServer: WsServer;
-	let wssInstance: any;
+	let wssInstance: MockWebSocketServer;
 
-	// Helper function to create mock WebSocket client (similar to makeProviders in bootstrap.spec.ts)
-	function makeMockWebSocket(overrides: Partial<WebSocket> = {}): DeepMocked<WebSocket> {
-		const mock = DeepMock<WebSocket>();
-		// Use Object.defineProperty for readonly properties
-		Object.defineProperty(mock, 'readyState', {
-			value: overrides.readyState ?? 1, // OPEN state by default
-			writable: true,
-			configurable: true
-		});
-		// Apply other overrides
-		Object.keys(overrides).forEach((key) => {
-			if (key !== 'readyState') {
-				(mock as any)[key] = (overrides as any)[key];
-			}
-		});
-		return mock;
+	function createServer(): void {
+		wsServer = new WsServer({} as http.Server);
+
+		wssInstance = (WebSocketServer as unknown as Mock).mock.instances[0] as MockWebSocketServer;
 	}
 
-	// Helper function to get connection handler from wss.on calls
-	function getConnectionHandler(): ((ws: WebSocket) => void) | undefined {
-		return wssInstance.on.mock.calls.find((c: any) => c[0] === 'connection')?.[1];
+	function makeWebSocket(readyState = WebSocket.OPEN): MockWebSocket {
+		return {
+			readyState,
+			isAlive: true,
+			send: vi.fn(),
+			on: vi.fn(),
+			ping: vi.fn(),
+			terminate: vi.fn()
+		} as unknown as MockWebSocket;
 	}
 
-	// Helper function to get message handler from ws.on calls
-	function getMessageHandler(ws: DeepMocked<WebSocket>): ((data: any) => void) | undefined {
-		return ws.on.mock.calls.find((c: any) => c[0] === 'message')?.[1];
+	function getConnectionHandler(): (ws: WsWebSocket) => void {
+		const call = wssInstance.on.mock.calls.find(([event]) => event === 'connection');
+
+		expect(call).toBeDefined();
+
+		return call?.[1] as (ws: WsWebSocket) => void;
 	}
 
-	// Helper function to get close handler from ws.on calls
-	function getCloseHandler(ws: DeepMocked<WebSocket>): (() => void) | undefined {
-		return ws.on.mock.calls.find((c: any) => c[0] === 'close')?.[1];
-	}
+	function getSocketHandler<T>(ws: MockWebSocket, event: string): T {
+		const call = ws.on.mock.calls.find(([registeredEvent]) => registeredEvent === event);
 
-	// Helper function to get pong handler from ws.on calls
-	function getPongHandler(ws: DeepMocked<WebSocket>): (() => void) | undefined {
-		return ws.on.mock.calls.find((c: any) => c[0] === 'pong')?.[1];
+		expect(call).toBeDefined();
+
+		return call?.[1] as T;
 	}
 
 	beforeEach(() => {
+		vi.useFakeTimers();
 		vi.clearAllMocks();
-		(WebSocketServer as unknown as Mock).mockClear();
-		wsServer = new WsServer({} as any);
-		// When a mock is used as a constructor, constructed instances are in mock.instances
-		wssInstance = (WebSocketServer as unknown as Mock).mock.instances[0];
-		// Clear clients set from previous tests
-		wssInstance.clients.clear();
+		delete process.env['WS_HEARTBEAT_MS'];
+
+		createServer();
+	});
+
+	afterEach(() => {
+		wsServer.close();
+		vi.useRealTimers();
+		delete process.env['WS_HEARTBEAT_MS'];
 	});
 
 	describe('connection handling', () => {
-		it('registers connection handler and wires message and close events', () => {
+		it('initializes heartbeat state and registers socket handlers', () => {
 			const onMessage = vi.fn();
 			const onDisconnect = vi.fn();
-			wsServer.onConnection(onMessage, onDisconnect);
-
-			const connectionHandler = getConnectionHandler();
-			const ws = makeMockWebSocket();
-			connectionHandler?.(ws as any);
-
-			const messageHandler = getMessageHandler(ws);
-			const closeHandler = getCloseHandler(ws);
-
-			messageHandler?.('payload');
-			closeHandler?.();
-
-			// Check that callbacks were called with the correct first parameter
-			expect(onMessage).toHaveBeenCalledTimes(1);
-			expect(onMessage.mock.calls[0][0]).toBe('payload');
-			expect(onDisconnect).toHaveBeenCalledTimes(1);
-		});
-
-		it('does not call onDisconnect if not provided', () => {
-			const onMessage = vi.fn();
-			wsServer.onConnection(onMessage);
-
-			const connectionHandler = getConnectionHandler();
-			const ws = makeMockWebSocket();
-			connectionHandler?.(ws as any);
-
-			const closeHandler = getCloseHandler(ws);
-
-			expect(() => closeHandler?.()).not.toThrow();
-		});
-
-		it('calls onConnect when client connects', () => {
-			const onMessage = vi.fn();
 			const onConnect = vi.fn();
-			wsServer.onConnection(onMessage, undefined, onConnect);
 
-			const connectionHandler = getConnectionHandler();
-			const ws = makeMockWebSocket();
+			wsServer.onConnection(onMessage, onDisconnect, onConnect);
 
-			expect(connectionHandler).toBeDefined();
-			connectionHandler?.(ws as any);
-
-			expect(onConnect).toHaveBeenCalledTimes(1);
-		});
-
-		it('does not call onConnect if not provided', () => {
-			const onMessage = vi.fn();
-			wsServer.onConnection(onMessage);
-
-			const connectionHandler = getConnectionHandler();
-			const ws = makeMockWebSocket();
-
-			expect(() => connectionHandler?.(ws as any)).not.toThrow();
-		});
-
-		it('sets isAlive to true on new connection', () => {
-			const onMessage = vi.fn();
-			wsServer.onConnection(onMessage);
-
-			const connectionHandler = getConnectionHandler();
-			const ws: any = makeMockWebSocket();
-
-			connectionHandler?.(ws);
+			const ws = makeWebSocket();
+			getConnectionHandler()(ws);
 
 			expect(ws.isAlive).toBe(true);
+			expect(ws.on).toHaveBeenCalledWith('pong', expect.any(Function));
+			expect(ws.on).toHaveBeenCalledWith('message', expect.any(Function));
+			expect(ws.on).toHaveBeenCalledWith('close', expect.any(Function));
+			expect(onConnect).toHaveBeenCalledWith(ws);
+		});
+
+		it('invokes the disconnect handler when the connection closes', () => {
+			const onDisconnect = vi.fn();
+
+			wsServer.onConnection(vi.fn(), onDisconnect);
+
+			const ws = makeWebSocket();
+			getConnectionHandler()(ws);
+
+			const closeHandler = getSocketHandler<() => void>(ws, 'close');
+
+			closeHandler();
+
+			expect(onDisconnect).toHaveBeenCalledWith(ws);
+		});
+
+		it('works without optional connection handlers', () => {
+			wsServer.onConnection(vi.fn());
+
+			const ws = makeWebSocket();
+
+			expect(() => {
+				getConnectionHandler()(ws);
+
+				getSocketHandler<() => void>(ws, 'close')();
+			}).not.toThrow();
 		});
 	});
 
 	describe('message handling', () => {
-		it('converts Buffer message data to string', () => {
+		it.each([
+			{
+				name: 'Buffer',
+				data: Buffer.from('buffer message'),
+				expected: 'buffer message'
+			},
+			{
+				name: 'ArrayBuffer',
+				data: Uint8Array.from(Buffer.from('array buffer message')).buffer,
+				expected: 'array buffer message'
+			},
+			{
+				name: 'Buffer array',
+				data: [Buffer.from('buffer '), Buffer.from('array')],
+				expected: 'buffer array'
+			}
+		])('converts $name data to UTF-8 text', ({ data, expected }) => {
 			const onMessage = vi.fn();
+
 			wsServer.onConnection(onMessage);
 
-			const connectionHandler = getConnectionHandler();
-			const ws = makeMockWebSocket();
-			connectionHandler?.(ws as any);
+			const ws = makeWebSocket();
+			getConnectionHandler()(ws);
 
-			const messageHandler = getMessageHandler(ws);
-			const buffer = { toString: vi.fn().mockReturnValue('converted') };
+			const messageHandler = getSocketHandler<(data: RawData) => void>(ws, 'message');
 
-			messageHandler?.(buffer);
+			messageHandler(data as RawData);
 
-			expect(buffer.toString).toHaveBeenCalledTimes(1);
-			expect(onMessage).toHaveBeenCalledTimes(1);
-			expect(onMessage.mock.calls[0][0]).toBe('converted');
-		});
-	});
-
-	describe('sending messages', () => {
-		it('sends string directly and serializes objects', () => {
-			const ws = makeMockWebSocket();
-
-			wsServer.send(ws as any, 'hi');
-			wsServer.send(ws as any, { a: 1 });
-
-			expect(ws.send).toHaveBeenNthCalledWith(1, 'hi');
-			expect(ws.send).toHaveBeenNthCalledWith(2, JSON.stringify({ a: 1 }));
-		});
-	});
-
-	describe('broadcasting', () => {
-		it('broadcasts only to open clients and serializes non-string messages', () => {
-			// Create simple mock objects without using DeepMock<WebSocket> for this test
-			// because Set operations with Proxy objects cause issues
-			const wsOpen1: any = {
-				readyState: 1,
-				send: vi.fn(),
-				on: vi.fn(),
-				close: vi.fn(),
-				terminate: vi.fn()
-			};
-			const wsOpen2: any = {
-				readyState: 1,
-				send: vi.fn(),
-				on: vi.fn(),
-				close: vi.fn(),
-				terminate: vi.fn()
-			};
-			const wsClosed: any = {
-				readyState: 3,
-				send: vi.fn(),
-				on: vi.fn(),
-				close: vi.fn(),
-				terminate: vi.fn()
-			};
-
-			wssInstance.clients.add(wsOpen1);
-			wssInstance.clients.add(wsOpen2);
-			wssInstance.clients.add(wsClosed);
-
-			wsServer.broadcast({ msg: 'hello' });
-
-			expect(wsOpen1.send).toHaveBeenCalledWith(JSON.stringify({ msg: 'hello' }));
-			expect(wsOpen2.send).toHaveBeenCalledWith(JSON.stringify({ msg: 'hello' }));
-			expect(wsClosed.send).not.toHaveBeenCalled();
+			expect(onMessage).toHaveBeenCalledWith(expected, ws);
 		});
 
-		it('broadcasts string messages directly without serialization', () => {
-			// Create simple mock object
-			const wsOpen: any = {
-				readyState: 1,
-				send: vi.fn(),
-				on: vi.fn(),
-				close: vi.fn(),
-				terminate: vi.fn()
-			};
-			wssInstance.clients.add(wsOpen);
+		it('marks a connection as alive after receiving pong', () => {
+			wsServer.onConnection(vi.fn());
 
-			wsServer.broadcast('plain text');
+			const ws = makeWebSocket();
+			getConnectionHandler()(ws);
 
-			expect(wsOpen.send).toHaveBeenCalledWith('plain text');
-		});
-	});
-
-	describe('heartbeat handling', () => {
-		it('sets isAlive to true when pong is received', () => {
-			const onMessage = vi.fn();
-			wsServer.onConnection(onMessage);
-
-			const connectionHandler = getConnectionHandler();
-			const ws: any = makeMockWebSocket();
-			connectionHandler?.(ws);
-
-			const pongHandler = getPongHandler(ws);
 			ws.isAlive = false;
 
-			pongHandler?.();
+			getSocketHandler<() => void>(ws, 'pong')();
 
 			expect(ws.isAlive).toBe(true);
+		});
+	});
+
+	describe('send', () => {
+		it('sends strings unchanged', () => {
+			const ws = makeWebSocket();
+
+			wsServer.send(ws, 'hello');
+
+			expect(ws.send).toHaveBeenCalledWith('hello');
+		});
+
+		it('serializes non-string messages as JSON', () => {
+			const ws = makeWebSocket();
+
+			wsServer.send(ws, {
+				message: 'hello'
+			});
+
+			expect(ws.send).toHaveBeenCalledWith('{"message":"hello"}');
+		});
+	});
+
+	describe('broadcast', () => {
+		it('broadcasts to open clients only', () => {
+			const openClient = makeWebSocket(WebSocket.OPEN);
+			const closedClient = makeWebSocket(WebSocket.CLOSED);
+
+			wssInstance.clients.add(openClient);
+			wssInstance.clients.add(closedClient);
+
+			wsServer.broadcast('hello');
+
+			expect(openClient.send).toHaveBeenCalledWith('hello');
+			expect(closedClient.send).not.toHaveBeenCalled();
+		});
+
+		it('serializes non-string broadcast messages as JSON', () => {
+			const client = makeWebSocket();
+
+			wssInstance.clients.add(client);
+
+			wsServer.broadcast({
+				message: 'hello'
+			});
+
+			expect(client.send).toHaveBeenCalledWith('{"message":"hello"}');
+		});
+	});
+
+	describe('heartbeat', () => {
+		it('pings open and responsive connections', () => {
+			const client = makeWebSocket();
+			client.isAlive = true;
+
+			wssInstance.clients.add(client);
+
+			vi.advanceTimersByTime(30_000);
+
+			expect(client.isAlive).toBe(false);
+			expect(client.ping).toHaveBeenCalledTimes(1);
+			expect(client.terminate).not.toHaveBeenCalled();
+		});
+
+		it('terminates an open connection that did not respond', () => {
+			const client = makeWebSocket();
+			client.isAlive = false;
+
+			wssInstance.clients.add(client);
+
+			vi.advanceTimersByTime(30_000);
+
+			expect(client.terminate).toHaveBeenCalledTimes(1);
+			expect(client.ping).not.toHaveBeenCalled();
+		});
+
+		it('ignores connections that are not open', () => {
+			const client = makeWebSocket(WebSocket.CLOSED);
+			client.isAlive = false;
+
+			wssInstance.clients.add(client);
+
+			vi.advanceTimersByTime(30_000);
+
+			expect(client.ping).not.toHaveBeenCalled();
+			expect(client.terminate).not.toHaveBeenCalled();
+		});
+
+		it('uses the configured heartbeat interval', () => {
+			wsServer.close();
+
+			process.env['WS_HEARTBEAT_MS'] = '1000';
+
+			vi.clearAllMocks();
+			createServer();
+
+			const client = makeWebSocket();
+			wssInstance.clients.add(client);
+
+			vi.advanceTimersByTime(999);
+
+			expect(client.ping).not.toHaveBeenCalled();
+
+			vi.advanceTimersByTime(1);
+
+			expect(client.ping).toHaveBeenCalledTimes(1);
+		});
+
+		it.each(['', '0', '-100', 'invalid'])('uses the default interval for invalid configuration "%s"', (value) => {
+			wsServer.close();
+
+			process.env['WS_HEARTBEAT_MS'] = value;
+
+			vi.clearAllMocks();
+			createServer();
+
+			const client = makeWebSocket();
+			wssInstance.clients.add(client);
+
+			vi.advanceTimersByTime(29_999);
+
+			expect(client.ping).not.toHaveBeenCalled();
+
+			vi.advanceTimersByTime(1);
+
+			expect(client.ping).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('close', () => {
+		it('closes the WebSocket server', () => {
+			wsServer.close();
+
+			expect(wssInstance.close).toHaveBeenCalledTimes(1);
+		});
+
+		it('stops heartbeat monitoring', () => {
+			const client = makeWebSocket();
+
+			wssInstance.clients.add(client);
+
+			wsServer.close();
+
+			vi.advanceTimersByTime(30_000);
+
+			expect(client.ping).not.toHaveBeenCalled();
 		});
 	});
 });

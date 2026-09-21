@@ -361,11 +361,11 @@ describe('Z21CommandService', () => {
 		});
 
 		it.each([
-			{ name: 'handles minimum accessory address', adresse: 0, expected: 1 },
-			{ name: 'handles maximum accessory address', adresse: 16383, expected: 1 },
-			{ name: 'handles mid-range accessory address', adresse: 500, expected: 1 }
-		])('$name', ({ adresse, expected }) => {
-			services.service.getTurnoutInfo(adresse);
+			{ name: 'handles minimum accessory address', addresse: 0, expected: 1 },
+			{ name: 'handles maximum accessory address', addresse: 16383, expected: 1 },
+			{ name: 'handles mid-range accessory address', addresse: 500, expected: 1 }
+		])('$name', ({ addresse, expected }) => {
+			services.service.getTurnoutInfo(addresse);
 
 			expect(services.udp.sendRaw).toHaveBeenCalledTimes(expected);
 		});

@@ -6,10 +6,7 @@
 import { Domain } from '../../types';
 import { Event } from '../event';
 
-/**
- * Cardinal direction a locomotive can travel.
- * 'FWD' denotes direction; 'REV' denotes reverse.
- */
+/** Direction of travel reported for a locomotive. */
 export const Direction = {
 	FWD: 'FWD',
 	REV: 'REV'

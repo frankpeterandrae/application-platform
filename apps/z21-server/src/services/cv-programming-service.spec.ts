@@ -42,7 +42,7 @@ describe('CvProgrammingService', () => {
 			service.onEvent(event);
 
 			const result = await promise;
-			expect(result).toEqual({ cvAdress: 29, cvValue: 42 });
+			expect(result).toEqual({ cvAddress: 29, cvValue: 42 });
 		});
 
 		it('rejects with timeout error when no response received', async () => {
@@ -107,7 +107,7 @@ describe('CvProgrammingService', () => {
 			service.onEvent(correctEvent);
 
 			const result = await promise;
-			expect(result).toEqual({ cvAdress: 29, cvValue: 42 });
+			expect(result).toEqual({ cvAddress: 29, cvValue: 42 });
 		});
 
 		it('queues multiple CV read operations', async () => {
@@ -150,7 +150,7 @@ describe('CvProgrammingService', () => {
 
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 17, value: 192, raw: [] } });
 
-			await expect(promise2).resolves.toEqual({ cvAdress: 17, cvValue: 192 });
+			await expect(promise2).resolves.toEqual({ cvAddress: 17, cvValue: 192 });
 		});
 
 		it('returns CV value 0', async () => {
@@ -159,7 +159,7 @@ describe('CvProgrammingService', () => {
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 1, value: 0, raw: [] } });
 
 			const result = await promise;
-			expect(result).toEqual({ cvAdress: 1, cvValue: 0 });
+			expect(result).toEqual({ cvAddress: 1, cvValue: 0 });
 		});
 
 		it('returns CV value 255', async () => {
@@ -168,7 +168,7 @@ describe('CvProgrammingService', () => {
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 100, value: 255, raw: [] } });
 
 			const result = await promise;
-			expect(result).toEqual({ cvAdress: 100, cvValue: 255 });
+			expect(result).toEqual({ cvAddress: 100, cvValue: 255 });
 		});
 
 		it('handles CV address 1', async () => {
@@ -176,7 +176,7 @@ describe('CvProgrammingService', () => {
 
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 1, value: 3, raw: [] } });
 
-			await expect(promise).resolves.toEqual({ cvAdress: 1, cvValue: 3 });
+			await expect(promise).resolves.toEqual({ cvAddress: 1, cvValue: 3 });
 		});
 
 		it('handles CV address 1024', async () => {
@@ -184,7 +184,7 @@ describe('CvProgrammingService', () => {
 
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 1024, value: 100, raw: [] } });
 
-			await expect(promise).resolves.toEqual({ cvAdress: 1024, cvValue: 100 });
+			await expect(promise).resolves.toEqual({ cvAddress: 1024, cvValue: 100 });
 		});
 	});
 
@@ -316,7 +316,7 @@ describe('CvProgrammingService', () => {
 
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 29, value: 42, raw: [] } });
 
-			await expect(promise).resolves.toEqual({ cvAdress: 29, cvValue: 42 });
+			await expect(promise).resolves.toEqual({ cvAddress: 29, cvValue: 42 });
 		});
 
 		it('ignores loco info events', async () => {
@@ -345,7 +345,7 @@ describe('CvProgrammingService', () => {
 
 			service.onEvent({ event: 'programming.event.cv.result', payload: { cv: 29, value: 42, raw: [] } });
 
-			await expect(promise).resolves.toEqual({ cvAdress: 29, cvValue: 42 });
+			await expect(promise).resolves.toEqual({ cvAddress: 29, cvValue: 42 });
 		});
 	});
 
@@ -434,7 +434,7 @@ describe('CvProgrammingService', () => {
 			// Normally this should never happen, but the code defends against it
 			expect(() => {
 				// Testing internal method
-				service['succeed']({ cvAdress: 99, cvValue: 99 });
+				service['succeed']({ cvAddress: 99, cvValue: 99 });
 			}).not.toThrow();
 		});
 

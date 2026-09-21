@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { HARDWARE_TYPE, type HardwareType, type Z21HwinfoEvent } from '@application-platform/z21-shared';
+import { HARDWARE_TYPE_BY_ID, type HardwareType, type Z21HwinfoEvent } from '@application-platform/z21-shared';
 
 /**
  * Maps hardware type number to HardwareType enum or 'UNKNOWN'.
@@ -11,7 +11,7 @@ import { HARDWARE_TYPE, type HardwareType, type Z21HwinfoEvent } from '@applicat
  * @returns Mapped HardwareType or 'UNKNOWN'
  */
 function getHardwareType(hwtype: number): HardwareType | 'UNKNOWN' {
-	const mapped = (HARDWARE_TYPE as Record<number, HardwareType>)[hwtype];
+	const mapped = (HARDWARE_TYPE_BY_ID as Record<number, HardwareType>)[hwtype];
 	return mapped ?? 'UNKNOWN';
 }
 

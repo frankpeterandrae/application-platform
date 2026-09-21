@@ -11,6 +11,5 @@ export type BroadcastflagEvent = Event<
 	'broadcastflag',
 	{
 		flags: Broadcastflags;
-		raw: number[];
 	}
 >;

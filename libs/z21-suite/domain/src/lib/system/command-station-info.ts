@@ -6,9 +6,9 @@
 import { HardwareType } from '@application-platform/z21-shared';
 
 export type XBusVersion = {
-	xBusVersion?: number;
-	xBusVersionString?: string;
-	cmdsId?: number;
+	xBusVersion: number;
+	xBusVersionString: string;
+	cmdsId: number;
 	raw?: number[];
 };
 
@@ -19,8 +19,7 @@ export type FirmwareVersion = {
 };
 
 /**
- * Command Station Information
- * Holds information about the connected command station
+ * Stores information discovered about the connected Z21 command station.
  */
 export class CommandStationInfo {
 	private xBusVersion?: XBusVersion;
@@ -29,88 +28,108 @@ export class CommandStationInfo {
 	private code?: number;
 
 	/**
-	 *  Get Command Station x-Bus Version Information
+	 * Returns the discovered X-Bus version information.
+	 *
+	 * @returns The X-Bus version, or undefined if it has not been received yet.
 	 */
 	public getXBusVersion(): XBusVersion | undefined {
 		return this.xBusVersion;
 	}
 
 	/**
-	 * Set Command Station x-Bus Version Information
-	 * @param value - version information
+	 * Stores X-Bus version information reported by the command station.
+	 *
+	 * @param value - X-Bus version information.
 	 */
 	public setXBusVersion(value: XBusVersion): void {
 		this.xBusVersion = value;
 	}
 
 	/**
-	 * Check if version information is available
+	 * Indicates whether X-Bus version information has been received.
+	 *
+	 * @returns True when X-Bus version information is available.
 	 */
 	public hasXBusVersion(): boolean {
-		return !!this.xBusVersion;
+		return this.xBusVersion !== undefined;
 	}
 
 	/**
-	 * Get Firmware Version Information
+	 * Returns the discovered firmware version.
+	 *
+	 * @returns The firmware version, or undefined if it has not been received yet.
 	 */
 	public getFirmwareVersion(): FirmwareVersion | undefined {
 		return this.firmwareVersion;
 	}
 
 	/**
-	 * Set Firmware Version Information
-	 * @param value - Firmware version information
+	 * Stores firmware version information reported by the command station.
+	 *
+	 * @param value - Firmware version information.
 	 */
 	public setFirmwareVersion(value: FirmwareVersion): void {
 		this.firmwareVersion = value;
 	}
 
 	/**
-	 * Check if Firmware Version information is available
+	 * Indicates whether firmware version information has been received.
+	 *
+	 * @returns True when firmware version information is available.
 	 */
 	public hasFirmwareVersion(): boolean {
-		return !!this.firmwareVersion;
+		return this.firmwareVersion !== undefined;
 	}
 
 	/**
-	 * Get Hardware Information
+	 * Returns the discovered command station hardware type.
+	 *
+	 * @returns The hardware type, or undefined if it has not been received yet.
 	 */
 	public getHardwareType(): HardwareType | 'UNKNOWN' | undefined {
 		return this.hardwareType;
 	}
 
 	/**
-	 * Set Hardware Information
-	 * @param hardwareType - Hardware type information
+	 * Stores the hardware type reported by the command station.
+	 *
+	 * @param hardwareType - Hardware type reported by the command station.
 	 */
 	public setHardwareType(hardwareType: HardwareType | 'UNKNOWN'): void {
 		this.hardwareType = hardwareType;
 	}
 
 	/**
-	 * Check if Hardware Information is available
+	 * Indicates whether hardware information has been received.
+	 *
+	 * @returns True when a hardware type is available, including UNKNOWN.
 	 */
 	public hasHardwareType(): boolean {
-		return !!this.hardwareType;
+		return this.hardwareType !== undefined;
 	}
 
 	/**
-	 * Get CS Code
+	 * Returns the command station code.
+	 *
+	 * @returns The code, or undefined if it has not been received yet.
 	 */
 	public getCode(): number | undefined {
 		return this.code;
 	}
 
 	/**
-	 * Set CS Code
-	 * @param code - CS code information
+	 * Stores the command station code.
+	 *
+	 * @param code - Command station code.
 	 */
 	public setCode(code: number): void {
 		this.code = code;
 	}
 
 	/**
-	 * Check if CS Code is available
+	 * Indicates whether a command station code has been received.
+	 *
+	 * @returns True when a code is available, including zero.
 	 */
 	public hasCode(): boolean {
 		return this.code !== undefined;

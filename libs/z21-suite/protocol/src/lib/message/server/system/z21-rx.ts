@@ -6,8 +6,7 @@
 import type { Message } from '../../message-types';
 
 /**
- * Forwards raw Z21 datasets/events with hex payload.
- * Used for debugging or advanced integrations.
+ * Forwards received Z21 datasets, derived events and the raw frame representation.
  */
 export type Z21Rx = Message<
 	'system',

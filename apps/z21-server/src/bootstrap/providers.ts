@@ -8,7 +8,7 @@ import path from 'node:path';
 
 import { CommandStationInfo, LocoManager } from '@application-platform/domain';
 import type { ServerToClient } from '@application-platform/protocol';
-import { createStaticFileServer, WsServer } from '@application-platform/server-utils';
+import { StaticFileServer, WsServer } from '@application-platform/server-utils';
 import { Z21CommandService, Z21Udp } from '@application-platform/z21';
 import { createConsoleLogger, ServerConfig, type Logger } from '@application-platform/z21-shared';
 
@@ -88,7 +88,9 @@ export function createProviders(cfg = loadConfig()): Providers {
 	});
 
 	const publicDir = path.resolve(process.cwd(), 'public');
-	const httpServer = http.createServer(createStaticFileServer(publicDir));
+	const staticFileServer = new StaticFileServer(publicDir);
+
+	const httpServer = http.createServer(staticFileServer.handle);
 
 	const udp = new Z21Udp(cfg.z21.host, cfg.z21.udpPort, logger.child({ component: 'z21.udp' }));
 	const wsServer = new AppWsServer(new WsServer(httpServer), logger.child({ component: 'ws.server' }));

@@ -16,9 +16,9 @@ import {
 	SystemFirmwareVersion,
 	SystemHardwareInfo,
 	SystemTrackPower,
-	TrackpowerSet,
+	TrackPowerSet,
 	TurnoutSet,
-	TurnoutState_Message
+	TurnoutStateMessage
 } from '@application-platform/protocol';
 import { TurnoutState } from '@application-platform/z21-shared';
 import { describe, expect, it } from 'vitest';
@@ -187,7 +187,7 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0900400043000c014e'); // dein funktionierendes Frame
-			const locoState: TurnoutState_Message = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
+			const locoState: TurnoutStateMessage = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
 			expect(locoState.payload.addr).toBe(12);
 			expect(locoState.payload.state).toBe(TurnoutState.STRAIGHT);
@@ -199,7 +199,7 @@ describe('server e2e', () => {
 			const ctx = await startServerAndConnectWs();
 
 			await sendUdpHex('0900400043000c024d'); // dein funktionierendes Frame
-			const locoState: TurnoutState_Message = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
+			const locoState: TurnoutStateMessage = await waitForWsType<any>(ctx, 'switching.message.turnout.state');
 
 			expect(locoState.payload.addr).toBe(12);
 			expect(locoState.payload.state).toBe(TurnoutState.DIVERGING);
@@ -290,7 +290,7 @@ describe('server e2e', () => {
 		it('sends TRACK_POWER ON to Z21 when UI sends system.command.trackpower.set on', async () => {
 			const ctx = await startServerAndConnectWs();
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
-			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-003' } };
+			const command: TrackPowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-003' } };
 			// WS command wie bei dir im Log:
 			ctx.ws?.send(JSON.stringify(command));
 
@@ -846,7 +846,7 @@ describe('server e2e', () => {
 			await delay(300);
 
 			// Server should still be responsive - send valid command
-			const command: TrackpowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-020' } };
+			const command: TrackPowerSet = { type: 'system.command.trackpower.set', payload: { powerOn: true, requestId: 'req-020' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for the valid command to be processed
@@ -902,7 +902,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request for CV29
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-1' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-1' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for LAN_X_CV_READ command to be sent to Z21
@@ -926,7 +926,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-2' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-2' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command with sub-command 0x11 and MSB-first address (00 1c)
@@ -944,7 +944,7 @@ describe('server e2e', () => {
 
 			// Wait for WS broadcast with CV result
 			const cvResult: CvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
-			expect(cvResult.payload.cvAdress).toBe(29);
+			expect(cvResult.payload.cvAddress).toBe(29);
 			expect(cvResult.payload.cvValue).toBe(42);
 
 			await z21.close();
@@ -956,7 +956,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV write request: set CV29 to 14
-			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-3' } };
+			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAddress: 29, cvValue: 14, requestId: 'req-3' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for LAN_X_CV_WRITE command to be sent to Z21
@@ -980,7 +980,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV write request
-			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAdress: 29, cvValue: 14, requestId: 'req-4' } };
+			const command: CvWrite = { type: 'programming.command.cv.write', payload: { cvAddress: 29, cvValue: 14, requestId: 'req-4' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for write command with MSB-first address (00 1c)
@@ -996,7 +996,7 @@ describe('server e2e', () => {
 
 			// Wait for WS broadcast with CV result
 			const cvResult: CvResult = await waitForWsType<any>(ctx, 'programming.replay.cv.result', 4000);
-			expect(cvResult.payload.cvAdress).toBe(29);
+			expect(cvResult.payload.cvAddress).toBe(29);
 			expect(cvResult.payload.cvValue).toBe(14);
 
 			await z21.close();
@@ -1008,7 +1008,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-5' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-5' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command
@@ -1034,7 +1034,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-6' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 1, requestId: 'req-6' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command (CV1 = address 0x0000)
@@ -1060,7 +1060,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// Read CV1 and respond
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 1, requestId: 'req-7' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 1, requestId: 'req-7' } };
 			ctx.ws?.send(JSON.stringify(command));
 			await waitFor(() => z21.rx.length >= 1, { label: 'cv1 read', timeoutMs: 2000 });
 			// CV1 = 1: 64 14 00 00 01 => XOR = 0x71
@@ -1068,7 +1068,7 @@ describe('server e2e', () => {
 			await delay(100);
 
 			// Read CV17 and respond
-			const command2: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 17, requestId: 'req-8' } };
+			const command2: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 17, requestId: 'req-8' } };
 			ctx.ws?.send(JSON.stringify(command2));
 			await waitFor(() => z21.rx.length >= 2, { label: 'cv17 read', timeoutMs: 2000 });
 			// CV17 = 17: 64 14 00 10 11 => XOR = 0x75
@@ -1076,7 +1076,7 @@ describe('server e2e', () => {
 			await delay(100);
 
 			// Read CV29 and respond
-			const command3: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-9' } };
+			const command3: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-9' } };
 			ctx.ws?.send(JSON.stringify(command3));
 			await waitFor(() => z21.rx.length >= 3, { label: 'cv29 read', timeoutMs: 2000 });
 
@@ -1092,7 +1092,7 @@ describe('server e2e', () => {
 			const z21 = await startFakeZ21(ctx.fakeZ21Port);
 
 			// UI sends CV read request
-			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAdress: 29, requestId: 'req-10' } };
+			const command: CvRead = { type: 'programming.command.cv.read', payload: { cvAddress: 29, requestId: 'req-10' } };
 			ctx.ws?.send(JSON.stringify(command));
 
 			// Wait for read command
@@ -1108,7 +1108,7 @@ describe('server e2e', () => {
 			await delay(1500);
 
 			// Server should still be responsive
-			const command2: TrackpowerSet = {
+			const command2: TrackPowerSet = {
 				type: 'system.command.trackpower.set',
 				payload: { powerOn: true, requestId: 'req-023' }
 			};

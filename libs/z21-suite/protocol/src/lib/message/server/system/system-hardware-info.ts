@@ -3,12 +3,17 @@
  * All rights reserved.
  */
 
+import type { HardwareType } from '@application-platform/z21-shared';
+
 import type { Message } from '../../message-types';
 
+/**
+ * Reports the detected command station hardware type.
+ */
 export type SystemHardwareInfo = Message<
 	'system',
 	'hardware.info',
 	{
-		hardwareType: string;
+		hardwareType: HardwareType | 'UNKNOWN';
 	}
 >;

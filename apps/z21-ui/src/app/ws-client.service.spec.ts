@@ -130,7 +130,7 @@ describe('WsClientService', () => {
 		const send = JSON.parse(lastCreatedWs.send.mock.calls[0][0]);
 		const requestId = send.payload.requestId;
 
-		const response = { type: 'programming.replay.cv.result', payload: { requestId, cvAdress: 42 } } as CvResult;
+		const response = { type: 'programming.replay.cv.result', payload: { requestId, cvAddress: 42 } } as CvResult;
 		lastCreatedWs.onmessage?.({ data: JSON.stringify(response) });
 
 		await expect(promise).resolves.toEqual(response);

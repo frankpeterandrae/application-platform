@@ -167,12 +167,12 @@ export class ClientMessageHandler {
 			case 'programming.command.cv.read': {
 				const requestId = msg.payload.requestId;
 				try {
-					const res = await this.cvProgrammingService.readCv(msg.payload.cvAdress);
+					const res = await this.cvProgrammingService.readCv(msg.payload.cvAddress);
 					this.reply(ws, {
 						type: 'programming.replay.cv.result',
 						payload: {
 							requestId,
-							cvAdress: res.cvAdress,
+							cvAddress: res.cvAddress,
 							cvValue: res.cvValue
 						}
 					});
@@ -191,12 +191,12 @@ export class ClientMessageHandler {
 			case 'programming.command.cv.write': {
 				const requestId = msg.payload.requestId;
 				try {
-					await this.cvProgrammingService.writeCv(msg.payload.cvAdress, msg.payload.cvValue);
+					await this.cvProgrammingService.writeCv(msg.payload.cvAddress, msg.payload.cvValue);
 					this.reply(ws, {
 						type: 'programming.replay.cv.result',
 						payload: {
 							requestId,
-							cvAdress: msg.payload.cvAdress,
+							cvAddress: msg.payload.cvAddress,
 							cvValue: msg.payload.cvValue
 						}
 					});

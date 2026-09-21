@@ -9,7 +9,7 @@ export type PomCvWrite = CommandMessage<
 	'programming',
 	'pom.cv.write',
 	{
-		adress: number;
+		address: number;
 		cvAddress: number;
 		cvValue: number;
 	}

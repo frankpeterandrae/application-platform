@@ -14,4 +14,4 @@ export * from './programming/pom-cv-read';
 export * from './programming/pom-cv-write';
 export * from './server/session-hello';
 export * from './switching/turnout-set';
-export * from './system/trackpower-set';
+export * from './system/track-power-set';

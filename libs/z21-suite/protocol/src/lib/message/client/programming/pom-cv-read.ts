@@ -10,6 +10,6 @@ export type PomCvRead = CommandMessage<
 	'pom.cv.read',
 	{
 		address: number;
-		cvAdress: number;
+		cvAddress: number;
 	}
 >;
