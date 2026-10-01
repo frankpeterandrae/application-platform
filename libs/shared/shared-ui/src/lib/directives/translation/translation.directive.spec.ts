@@ -2,12 +2,19 @@
  * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
-
+import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { TRANSLOCO_SCOPE, TranslocoScope } from '@jsverse/transloco';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Use async factory and vi.importActual so the mock works in Vitest ESM environment
+import { setupTestingModule } from '../../../test-setup';
+
+import { TranslationDirective } from './translation.directive';
+
 vi.mock('@jsverse/transloco', async () => {
 	const original = await vi.importActual('@jsverse/transloco');
+
 	return {
 		...original,
 		translateSignal: vi.fn((key: any, params?: any, options?: any) => {
@@ -15,20 +22,12 @@ vi.mock('@jsverse/transloco', async () => {
 				const k = typeof key === 'function' ? key() : key;
 				const p = typeof params === 'function' ? params() : params;
 				const sc = options?.scope;
+
 				return `${k}${JSON.stringify(p)}${sc ? `_${sc}` : ''}`;
 			};
 		})
 	};
 });
-
-import { Component, DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { TRANSLOCO_SCOPE, TranslocoScope } from '@jsverse/transloco';
-
-import { setupTestingModule } from '../../../test-setup';
-
-import { TranslationDirective } from './translation.directive';
 
 @Component({
 	imports: [TranslationDirective],
@@ -60,30 +59,25 @@ describe('TranslationDirective', () => {
 		debugEl = fixture.debugElement.query(By.directive(TranslationDirective));
 	});
 
-	it('should create directive', () => {
-		expect(debugEl).toBeTruthy();
-		const directive = debugEl.injector.get(TranslationDirective);
-		expect(directive).toBeTruthy();
+	it('should render the translated value and preserve the existing suffix', () => {
+		fixture.detectChanges();
+
+		expect(debugEl.nativeElement.textContent).toBe('greeting{"name":"John"}_defaultsuffix');
 	});
 
-	it('should have required inputs', () => {
-		const directive = debugEl.injector.get(TranslationDirective);
-		expect(directive).toBeTruthy();
+	it('should use the provided scope', () => {
+		component.scope = 'custom';
+
+		fixture.detectChanges();
+
+		expect(debugEl.nativeElement.textContent).toBe('greeting{"name":"John"}_customsuffix');
 	});
 
-	it('should accept optional scope input', () => {
-		const directive = debugEl.injector.get(TranslationDirective);
-		expect(typeof directive.fpaSharedUiTranslateScope).toBe('function');
-	});
+	it('should use the first scope when an array is provided', () => {
+		component.scope = ['first', 'second'];
 
-	it('should not throw when initialized', () => {
-		expect(() => {
-			fixture.detectChanges();
-		}).not.toThrow();
-	});
+		fixture.detectChanges();
 
-	it('should be applied as a directive', () => {
-		const directiveElement = debugEl.nativeElement;
-		expect(directiveElement).toBeTruthy();
+		expect(debugEl.nativeElement.textContent).toBe('greeting{"name":"John"}_firstsuffix');
 	});
 });

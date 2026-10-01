@@ -4,8 +4,8 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { TranslocoService, TRANSLOCO_SCOPE } from '@jsverse/transloco';
-import { of } from 'rxjs';
+import { TRANSLOCO_SCOPE, TranslocoService } from '@jsverse/transloco';
+import { of, Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
@@ -16,28 +16,27 @@ describe('TranslationPipe', () => {
 	let pipe: TranslationPipe;
 	let translocoService: any;
 
-	beforeEach(async () => {
+	beforeEach(() => {
 		translocoService = {
 			selectTranslate: vi.fn().mockReturnValue(of('test')),
 			getActiveLang: vi.fn().mockReturnValue('en')
 		};
+	});
 
+	async function createPipe(scope: unknown = null): Promise<TranslationPipe> {
 		await setupTestingModule({
 			providers: [
 				TranslationPipe,
 				{ provide: TranslocoService, useValue: translocoService },
-				{ provide: TRANSLOCO_SCOPE, useValue: null }
+				{ provide: TRANSLOCO_SCOPE, useValue: scope }
 			]
 		});
 
-		pipe = TestBed.inject(TranslationPipe);
-	});
+		return TestBed.inject(TranslationPipe);
+	}
 
-	it('should create an instance', () => {
-		expect(pipe).toBeTruthy();
-	});
-
-	it('should subscribe to selectTranslate and return translated value', () => {
+	it('should subscribe to selectTranslate and return translated value', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Translated Value'));
 
 		const result = pipe.transform('test.key');
@@ -46,7 +45,8 @@ describe('TranslationPipe', () => {
 		expect(result).toBe('Translated Value');
 	});
 
-	it('should handle parameters in translation', () => {
+	it('should handle parameters in translation', async () => {
+		pipe = await createPipe();
 		const params = { name: 'John' };
 		translocoService.selectTranslate.mockReturnValue(of('Hello John'));
 
@@ -56,7 +56,8 @@ describe('TranslationPipe', () => {
 		expect(result).toBe('Hello John');
 	});
 
-	it('should handle scope as string', () => {
+	it('should handle scope as string', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Scoped Translation'));
 
 		const result = pipe.transform('test.key', 'custom-scope');
@@ -65,7 +66,8 @@ describe('TranslationPipe', () => {
 		expect(result).toBe('Scoped Translation');
 	});
 
-	it('should handle scope as array', () => {
+	it('should handle scope as array', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Array Scope Translation'));
 
 		const result = pipe.transform('test.key', ['scope1', 'scope2']);
@@ -74,7 +76,8 @@ describe('TranslationPipe', () => {
 		expect(result).toBe('Array Scope Translation');
 	});
 
-	it('should only resubscribe when inputs change', () => {
+	it('should only resubscribe when inputs change', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Translation'));
 
 		pipe.transform('test.key');
@@ -84,7 +87,8 @@ describe('TranslationPipe', () => {
 		expect(translocoService.selectTranslate).toHaveBeenCalledTimes(1);
 	});
 
-	it('should resubscribe when key changes', () => {
+	it('should resubscribe when key changes', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Translation'));
 
 		pipe.transform('key1');
@@ -93,20 +97,38 @@ describe('TranslationPipe', () => {
 		expect(translocoService.selectTranslate).toHaveBeenCalledTimes(2);
 	});
 
-	it('should handle translation value updates', () => {
-		translocoService.selectTranslate.mockReturnValueOnce(of('First'));
-
-		const result = pipe.transform('test.key');
-
-		expect(result).toBe('First');
-	});
-
-	it('should cleanup subscription on destroy', () => {
+	it('should cleanup subscription on destroy', async () => {
+		pipe = await createPipe();
 		translocoService.selectTranslate.mockReturnValue(of('Translation'));
 
 		pipe.transform('test.key');
 
 		// Just verify ngOnDestroy doesn't throw
 		expect(() => pipe.ngOnDestroy()).not.toThrow();
+	});
+
+	it('should unsubscribe from translation updates on destroy', async () => {
+		pipe = await createPipe();
+		const translation$ = new Subject<string>();
+		translocoService.selectTranslate.mockReturnValue(translation$);
+
+		pipe.transform('test.key');
+
+		expect(translation$.observers).toHaveLength(1);
+
+		pipe.ngOnDestroy();
+
+		expect(translation$.observers).toHaveLength(0);
+	});
+
+	it('should use the injected scope when no scope is provided', async () => {
+		pipe = await createPipe({ scope: 'default' });
+
+		translocoService.selectTranslate.mockReturnValue(of('Scoped Translation'));
+
+		const result = pipe.transform('test.key');
+
+		expect(translocoService.selectTranslate).toHaveBeenCalledWith('test.key', undefined, { scope: 'default' });
+		expect(result).toBe('Scoped Translation');
 	});
 });

@@ -10,7 +10,7 @@ import type { Observable } from 'rxjs';
 import { APP_ENVIRONMENT } from '../../config/app-environment';
 
 /**
- * Injectable service for data connection operations.
+ * Provides access to the legacy PHP API used by the application.
  */
 @Injectable({
 	providedIn: 'root'
@@ -19,13 +19,14 @@ export class DataConnectionService {
 	private readonly environment = inject(APP_ENVIRONMENT);
 	private readonly http = inject(HttpClient);
 
-	private readonly apiUrl = '/php-api/api.php'; // Use the environment-specific API URL
-	private readonly addUserUrl = '/php-api/encryption.php'; // Use the environment-specific API URL
+	private readonly apiUrl = '/php-api/api.php';
+	private readonly addUserUrl = '/php-api/encryption.php';
 	private readonly loginUrl = '/php-api/login.php';
 
 	/**
-	 * Fetches data from the server.
-	 * @returns {Observable<any>} An observable containing the server response.
+	 * Fetches stored data from the server.
+	 *
+	 * @returns An observable containing the server response.
 	 */
 	public getData(): Observable<unknown> {
 		return this.http.get(`${this.environment.baseUrl}${this.apiUrl}`, { params: { action: 'getData' } });

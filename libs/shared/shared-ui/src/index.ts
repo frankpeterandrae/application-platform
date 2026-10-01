@@ -14,7 +14,7 @@ export * from './lib/services/data-connection/data.connection.service';
 export * from './lib/services/file-persistence/browser-file-persistence.service';
 export * from './lib/services/file-persistence/file-persistence';
 export * from './lib/services/logger/logger.service';
-export * from './lib/services/network-status-service/network-status-service.service';
+export * from './lib/services/network-status-service/network-status.service';
 export * from './lib/services/translation/scoped-translation.service';
 export * from './lib/services/translation/scopes.enum';
 export * from './lib/services/translation/transloco.loader';

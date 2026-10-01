@@ -4,12 +4,10 @@
  */
 
 import { Directive, effect, ElementRef, inject, Injector, input, OnInit, runInInjectionContext } from '@angular/core';
-import { ProviderScope, translateSignal, TranslocoScope, TRANSLOCO_SCOPE } from '@jsverse/transloco';
+import { ProviderScope, translateSignal, TRANSLOCO_SCOPE, TranslocoScope } from '@jsverse/transloco';
 
 /**
- * TranslationDirective is an Angular directive that translates text content
- * of an HTML element using the Transloco library.
- * It listens for changes in the translation key and updates the element's text content accordingly.
+ * Translates the text content of an element and preserves its existing suffix.
  */
 @Directive({
 	selector: '[fpaSharedUiTranslate]',
@@ -25,10 +23,6 @@ export class TranslationDirective implements OnInit {
 
 	private readonly injector = inject(Injector);
 
-	/**
-	 * Lifecycle hook that is called after data-bound properties of a directive are initialized.
-	 * Initializes the component by setting the title and meta description using translations.
-	 */
 	ngOnInit(): void {
 		const suffix = this.el.nativeElement.textContent;
 		this.el.nativeElement.textContent = '';
@@ -46,9 +40,10 @@ export class TranslationDirective implements OnInit {
 	}
 
 	/**
-	 * Resolves the current scope.
-	 * @param {string | string[] } scope - The given scope.
-	 * @returns {string} The resolved scope.
+	 * Resolves the configured Transloco scope to a single scope name.
+	 *
+	 * @param scope The configured Transloco scope.
+	 * @returns The resolved scope name, or `undefined` if no scope is configured.
 	 */
 	private resolveScope(scope: string | ProviderScope | string[] | null | undefined): string | undefined {
 		if (!scope) return undefined;

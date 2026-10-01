@@ -9,17 +9,17 @@ import type { Translation, TranslocoLoader } from '@jsverse/transloco';
 import type { Observable } from 'rxjs';
 
 /**
- * TranslocoHttpLoader is an Angular service that implements the TranslocoLoader interface.
- * It is responsible for loading translation files over HTTP.
+ * Loads translation data over HTTP.
  */
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
 	private readonly http = inject(HttpClient);
 
 	/**
-	 * Fetches the translation file for the specified language.
-	 * @param {string} lang - The language code for the translation file to be fetched.
-	 * @returns {Observable<Translation>} An observable that emits the translation data.
+	 * Loads the translation file for the given language or scoped translation path.
+	 *
+	 * @param lang The language code or scoped translation path.
+	 * @returns An observable containing the translation data.
 	 */
 	public getTranslation(lang: string): Observable<Translation> {
 		const path = lang.includes('/') ? `/assets/${lang}.json` : `/assets/i18n/${lang}.json`;

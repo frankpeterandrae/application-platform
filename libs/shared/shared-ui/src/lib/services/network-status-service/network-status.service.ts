@@ -7,16 +7,16 @@ import { Injectable } from '@angular/core';
 import { fromEvent, map, merge, of } from 'rxjs';
 
 /**
- * Injectable service to monitor network status changes.
- * Provides an observable `status$` that emits `true` when online and `false` when offline.
+ * Monitors browser network status changes.
+ *
+ * `status$` emits `true` when the browser is online and `false` when offline.
  */
 @Injectable({
 	providedIn: 'root'
 })
-export class NetworkStatusServiceService {
+export class NetworkStatusService {
 	/**
-	 * Observable that emits the current network status.
-	 * Emits `true` when the network is online and `false` when offline.
+	 * Emits the current browser network status and subsequent online/offline changes.
 	 */
 	public readonly status$ = merge(
 		fromEvent(globalThis, 'offline').pipe(map(() => false)),

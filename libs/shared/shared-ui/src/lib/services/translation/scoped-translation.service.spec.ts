@@ -5,8 +5,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import type { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
-import type { Mocked } from '@application-platform/testing';
-import { createMock } from '@application-platform/testing';
+import { type Mocked, createMock } from '@application-platform/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -48,7 +47,7 @@ describe('ScopedTranslationService', () => {
 		const currentLang = 'de';
 		vi.spyOn(translocoService as any, 'getActiveLang').mockReturnValue(currentLang);
 
-		service.getActiveLang();
+		service.syncActiveLang();
 
 		expect(service.currentLang()).toBe(currentLang);
 	});

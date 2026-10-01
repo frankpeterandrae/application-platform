@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
@@ -8,8 +8,7 @@ import type { ScopedTranslationServiceInterface } from '@application-platform/in
 import { TranslocoService } from '@jsverse/transloco';
 
 /**
- * ScopedTranslationService is an Angular service that provides scoped translation functionality.
- * It uses the TranslocoService to fetch translations for specific keys within an optional scope.
+ * Manages the active application language and exposes it as a signal.
  */
 @Injectable({ providedIn: 'root' })
 export class ScopedTranslationService implements ScopedTranslationServiceInterface {
@@ -18,30 +17,27 @@ export class ScopedTranslationService implements ScopedTranslationServiceInterfa
 	readonly #currentLang = signal<string>('');
 	public readonly currentLang = computed(this.#currentLang);
 
-	/**
-	 * Creates an instance of ScopedTranslationService.
-	 * Sets the active language to German ('de').
-	 */
 	constructor() {
 		this.translocoService.setActiveLang('de');
-		this.getActiveLang();
+		this.syncActiveLang();
 	}
 
 	/**
-	 * Toggles the active language to the next available language.
+	 * Switches to the next available language.
 	 */
 	public toggleLanguage(): void {
 		const availableLangs = this.translocoService.getAvailableLangs();
 		const currentLang = this.translocoService.getActiveLang();
 		const nextLang = availableLangs.find((lang) => lang !== currentLang) as string;
+
 		this.translocoService.setActiveLang(nextLang);
-		this.getActiveLang();
+		this.syncActiveLang();
 	}
 
 	/**
-	 * Updates the current language signal with the active language.
+	 * Synchronizes the current language signal with Transloco.
 	 */
-	public getActiveLang(): void {
+	public syncActiveLang(): void {
 		this.#currentLang.set(this.translocoService.getActiveLang());
 	}
 }

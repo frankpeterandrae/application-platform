@@ -3,13 +3,13 @@
  * All rights reserved.
  */
 
-import type { TranslocoConfig } from '@jsverse/transloco';
-import { translocoConfig } from '@jsverse/transloco';
+import { type TranslocoConfig, translocoConfig } from '@jsverse/transloco';
 
 /**
- * Creates a Transloco configuration object based on the provided production flag.
- * @param production - A boolean indicating whether the application is in production mode.
- * @returns A TranslocoConfig object configured with available languages, default language, and production mode.
+ * Creates the shared Transloco configuration.
+ *
+ * @param production Whether production mode is enabled.
+ * @returns The application-wide Transloco configuration.
  */
 export function createTranslocoConfig(production: boolean): TranslocoConfig {
 	return translocoConfig({

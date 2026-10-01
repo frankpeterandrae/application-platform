@@ -34,13 +34,13 @@ describe('BaseComponent', () => {
 
 		fixture = TestBed.createComponent(TestComponent);
 		component = fixture.componentInstance;
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		loggerSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+		loggerSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);
 		fixture.detectChanges();
 	});
 
-	it('should forward calls to the log method of Logger when actions are performed', () => {
+	it('should provide logger access to derived components', () => {
 		component.someAction();
+
 		expect(loggerSpy).toHaveBeenCalledWith('action');
 	});
 });

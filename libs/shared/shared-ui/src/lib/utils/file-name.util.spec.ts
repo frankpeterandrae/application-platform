@@ -14,4 +14,8 @@ describe('createFileName', () => {
 	])('should convert "%s" to "%s"', (input, expected) => {
 		expect(createFileName(input)).toBe(expected);
 	});
+
+	it('should use the provided fallback when the normalized name is empty', () => {
+		expect(createFileName('!!!', 'untitled')).toBe('untitled');
+	});
 });

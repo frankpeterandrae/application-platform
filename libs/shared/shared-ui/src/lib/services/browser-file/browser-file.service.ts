@@ -6,17 +6,19 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Saves SVG files using the browser download mechanism.
+ * Saves text content using the browser download mechanism.
  */
 @Injectable({
 	providedIn: 'root'
 })
 export class BrowserFileService {
 	/**
-	 * Saves the given SVG content to a file with the specified name.
-	 * @param content The SVG content to save.
-	 * @param fileName The name of the file to save the content as.
-	 * @param mimeType The MIME type of the file to save.
+	 * Triggers a browser download for the provided content.
+	 *
+	 * @param content The content to save.
+	 * @param fileName The file name used for the download.
+	 * @param mimeType The MIME type of the generated file.
+	 * @returns Nothing.
 	 */
 	public save(content: string, fileName: string, mimeType: string): void {
 		const blob = new Blob([content], {

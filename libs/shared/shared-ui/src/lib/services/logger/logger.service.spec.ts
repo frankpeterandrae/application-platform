@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../test-setup';
 
-import { Logger, LOGGER_SOURCE } from './logger.service';
+import { Logger, LOGGER_SOURCE, LogLevel } from './logger.service';
 
 describe('Logger', () => {
 	let logger: Logger;
@@ -32,36 +32,39 @@ describe('Logger', () => {
 		Logger.setProductionMode({ disable: false });
 	});
 
-	it('should be created', () => {
-		expect(logger).toBeTruthy();
-	});
-
 	it('should log info messages', () => {
-		vi.spyOn(console, 'info');
 		logger.info('Info message');
 
 		expect(console.info).toHaveBeenCalledWith('[TestSource]', 'Info message');
 	});
 
 	it('should log warning messages', () => {
-		vi.spyOn(console, 'warn');
 		logger.warn('Warning message');
 
 		expect(console.warn).toHaveBeenCalledWith('[TestSource]', 'Warning message');
 	});
 
 	it('should log error messages', () => {
-		vi.spyOn(console, 'error');
 		logger.error('Error message');
 
 		expect(console.error).toHaveBeenCalledWith('[TestSource]', 'Error message');
 	});
 
 	it('should log debug messages', () => {
-		vi.spyOn(console, 'debug');
 		logger.debug('Debug message');
 
 		expect(console.debug).toHaveBeenCalledWith('[TestSource]', 'Debug message');
+	});
+
+	it('should forward messages to registered output handlers', () => {
+		const output = vi.fn();
+		const removeOutput = Logger.addOutput(output);
+
+		logger.warn('Warning message');
+
+		expect(output).toHaveBeenCalledWith('TestSource', LogLevel.Warn, 'Warning message');
+
+		removeOutput();
 	});
 
 	it('should not log messages if disabled', () => {
@@ -83,5 +86,33 @@ describe('Logger', () => {
 		logger.info('Info message');
 
 		expect(console.info).toHaveBeenCalledWith('Info message');
+	});
+
+	it('should ignore errors thrown by custom output handlers', () => {
+		Logger.addOutput(() => {
+			throw new Error('output failed');
+		});
+
+		expect(() => logger.info('Info message')).not.toThrow();
+
+		expect(console.info).toHaveBeenCalledWith('[TestSource]', 'Info message');
+	});
+
+	it('should ignore errors thrown by console output', () => {
+		vi.mocked(console.info).mockImplementation(() => {
+			throw new Error('console failed');
+		});
+
+		expect(() => logger.info('Info message')).not.toThrow();
+	});
+
+	it('should unregister an output handler', () => {
+		const output = vi.fn();
+		const removeOutput = Logger.addOutput(output);
+
+		removeOutput();
+		logger.info('Info message');
+
+		expect(output).not.toHaveBeenCalled();
 	});
 });

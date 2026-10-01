@@ -13,9 +13,6 @@ import { APP_ENVIRONMENT } from '../../config/app-environment';
 
 import { DataConnectionService } from './data.connection.service';
 
-/**
- * Test suite for DataConnectionService.
- */
 describe('DataConnectionService', () => {
 	let httpClient: HttpClient;
 	let service: DataConnectionService;
@@ -38,43 +35,89 @@ describe('DataConnectionService', () => {
 		service = TestBed.inject(DataConnectionService);
 	});
 
-	it('should fetch data from the server', () => {
-		const mockResponse = { data: 'test data' };
-		vi.spyOn(httpClient, 'get').mockReturnValue(of(mockResponse));
-		service.getData().subscribe((response) => {
-			expect(response).toEqual(mockResponse);
+	it('should request data from the configured API', () => {
+		const getSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of({}));
+
+		service.getData();
+
+		expect(getSpy).toHaveBeenCalledWith('http://localhost/php-api/api.php', {
+			params: {
+				action: 'getData'
+			}
 		});
 	});
 
-	it('should add data to the server', () => {
-		const mockResponse = { success: true };
-		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
-		service.addData('test list').subscribe((response) => {
-			expect(response).toEqual(mockResponse);
+	it('should send the list and current date to the API', () => {
+		const postSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of({}));
+
+		service.addData('test list');
+
+		const [url, body, options] = postSpy.mock.calls[0];
+
+		expect(url).toBe('http://localhost/php-api/api.php');
+		expect(body.get('action')).toBe('addData');
+		expect(body.get('list')).toBe('test list');
+		expect(body.get('date')).toEqual(expect.any(String));
+		expect(options).toEqual({
+			withCredentials: true
 		});
 	});
 
-	it('should delete data from the server', () => {
-		const mockResponse = { success: true };
-		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
-		service.deleteData(1).subscribe((response) => {
-			expect(response).toEqual(mockResponse);
+	it('should request deletion of the given entry', () => {
+		const postSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of({}));
+
+		service.deleteData(42);
+
+		expect(postSpy).toHaveBeenCalledOnce();
+
+		const [url, body, options] = postSpy.mock.calls[0];
+
+		expect(url).toBe('http://localhost/php-api/api.php');
+		expect(body).toBeInstanceOf(FormData);
+		expect(body.get('action')).toBe('deleteData');
+		expect(body.get('id')).toBe('42');
+		expect(options).toEqual({
+			withCredentials: true
 		});
 	});
 
-	it('should add a new user to the server', () => {
-		const mockResponse = { success: true };
-		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
-		service.addUser({ user: 'testUser', password: 'testPassword', email: 'test@example.com' }).subscribe((response) => {
-			expect(response).toEqual(mockResponse);
+	it('should send the user data to the user API', () => {
+		const postSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of({}));
+
+		service.addUser({
+			user: 'testUser',
+			password: 'testPassword',
+			email: 'test@example.com'
+		});
+
+		const [url, body, options] = postSpy.mock.calls[0];
+
+		expect(url).toBe('http://localhost/php-api/encryption.php');
+		expect(body.get('action')).toBe('addUser');
+		expect(body.get('username')).toBe('testUser');
+		expect(body.get('password')).toBe('testPassword');
+		expect(body.get('email')).toBe('test@example.com');
+		expect(options).toEqual({
+			withCredentials: true
 		});
 	});
 
-	it('should log in a user', () => {
-		const mockResponse = { success: true };
-		vi.spyOn(httpClient, 'post').mockReturnValue(of(mockResponse));
-		service.login({ email: 'test@example.com', password: 'testPassword' }).subscribe((response) => {
-			expect(response).toEqual(mockResponse);
+	it('should send the login credentials to the login API', () => {
+		const postSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of({}));
+
+		service.login({
+			email: 'test@example.com',
+			password: 'testPassword'
+		});
+
+		const [url, body, options] = postSpy.mock.calls[0];
+
+		expect(url).toBe('http://localhost/php-api/login.php');
+		expect(body.get('action')).toBe('login');
+		expect(body.get('email')).toBe('test@example.com');
+		expect(body.get('password')).toBe('testPassword');
+		expect(options).toEqual({
+			withCredentials: true
 		});
 	});
 });

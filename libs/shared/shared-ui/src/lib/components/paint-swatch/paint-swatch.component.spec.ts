@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Paint, PaintColorGroup } from '@application-platform/paint';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { type Paint, PaintColorGroup } from '@application-platform/paint';
 
 import { setupTestingModule } from '../../../test-setup';
 
@@ -16,8 +16,8 @@ describe('PaintSwatchComponent', () => {
 
 	const createPaint = (
 		colorGroups: readonly PaintColorGroup[],
-		mainColor = '#112233' as '#${string}',
-		secondaryColor = '#aabbcc' as '#${string}'
+		mainColor: `#${string}` = '#112233',
+		secondaryColor: `#${string}` = '#aabbcc'
 	): Paint => ({
 		id: 'test:01',
 		brand: 'test',
@@ -35,10 +35,6 @@ describe('PaintSwatchComponent', () => {
 
 		fixture = TestBed.createComponent(PaintSwatchComponent);
 		component = fixture.componentInstance;
-	});
-
-	it('should create', () => {
-		expect(component).toBeTruthy();
 	});
 
 	it('should use the color input when no paint is provided', () => {
@@ -74,7 +70,11 @@ describe('PaintSwatchComponent', () => {
 		const gradient = fixture.nativeElement.querySelector('defs radialGradient') as SVGRadialGradientElement | null;
 		expect(gradient).not.toBeNull();
 
-		const stops = getStops(gradient!);
+		if (!gradient) {
+			throw new Error('Expected radial gradient to be rendered');
+		}
+
+		const stops = getStops(gradient);
 
 		expect(stops).toHaveLength(2);
 		expect(stops[0].getAttribute('stop-color')).toBe('#aabbcc');
@@ -104,7 +104,11 @@ describe('PaintSwatchComponent', () => {
 
 		expect(gradient).not.toBeNull();
 
-		const stops = getStops(gradient!);
+		if (!gradient) {
+			throw new Error('Expected radial gradient to be rendered');
+		}
+
+		const stops = getStops(gradient);
 
 		expect(stops).toHaveLength(2);
 		expect(stops[0].getAttribute('stop-color')).toBe('#112233');
@@ -141,16 +145,9 @@ describe('PaintSwatchComponent', () => {
 		expect(clipPath).not.toBeNull();
 		expect(clippedGroup).not.toBeNull();
 
-		/*
-		 * The complete blob forms the lower area and therefore uses
-		 * the paint's main color directly.
-		 */
 		expect(visiblePaths).toHaveLength(1);
 		expect(visiblePaths[0].getAttribute('fill')).toBe('#112233');
 
-		/*
-		 * The upper area is rendered separately inside the blob clip.
-		 */
 		const upperPath = clippedGroup?.querySelector('path');
 
 		expect(upperPath).not.toBeNull();
@@ -175,6 +172,16 @@ describe('PaintSwatchComponent', () => {
 		secondFixture.destroy();
 	});
 
+	it('should prefer the paint colors over the color input', () => {
+		fixture.componentRef.setInput('color', '#445566');
+		setPaint(createPaint([]));
+
+		const stops = getStops(getBaseLinearGradient());
+
+		expect(stops[0].getAttribute('stop-color')).toBe('#aabbcc');
+		expect(stops[1].getAttribute('stop-color')).toBe('#112233');
+	});
+
 	function setPaint(paint: Paint): void {
 		fixture.componentRef.setInput('paint', paint);
 		fixture.detectChanges();
@@ -185,9 +192,11 @@ describe('PaintSwatchComponent', () => {
 
 		const gradient = gradients.find((element) => element.id.endsWith('-base-gradient'));
 
-		expect(gradient).toBeDefined();
+		if (!gradient) {
+			throw new Error('Expected base gradient to be rendered');
+		}
 
-		return gradient!;
+		return gradient;
 	}
 
 	function getGradientStops(): SVGStopElement[] {

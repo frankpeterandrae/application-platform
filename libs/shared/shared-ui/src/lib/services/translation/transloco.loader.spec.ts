@@ -28,21 +28,19 @@ describe('TranslocoHttpLoader', () => {
 		httpMock.verify();
 	});
 
-	it('fetches translation file for specified language', async () => {
-		const lang = 'en';
-		const mockTranslation: Translation = { hello: 'Hello' };
-
-		const p = new Promise<void>((resolve) => {
-			loader.getTranslation(lang).subscribe((translation) => {
-				expect(translation).toEqual(mockTranslation);
-				resolve();
-			});
+	it.each([
+		['en', '/assets/i18n/en.json', { hello: 'Hello' }],
+		['de', '/assets/i18n/de.json', { hello: 'Hallo' }]
+	])('should load %s translations from %s', (lang, url, mockTranslation) => {
+		loader.getTranslation(lang).subscribe((translation) => {
+			expect(translation).toEqual(mockTranslation);
 		});
 
-		const req = httpMock.expectOne(`/assets/i18n/${lang}.json`);
+		const req = httpMock.expectOne(url);
+
 		expect(req.request.method).toBe('GET');
+
 		req.flush(mockTranslation);
-		await p;
 	});
 
 	it('handles HTTP error when fetching translation file', async () => {
@@ -64,20 +62,19 @@ describe('TranslocoHttpLoader', () => {
 		await p;
 	});
 
-	it('fetches translation file for another language', async () => {
-		const lang = 'de';
-		const mockTranslation: Translation = { hello: 'Hallo' };
+	it('should load scoped translations from the asset path', () => {
+		const mockTranslation: Translation = {
+			title: 'Theme'
+		};
 
-		const p = new Promise<void>((resolve) => {
-			loader.getTranslation(lang).subscribe((translation) => {
-				expect(translation).toEqual(mockTranslation);
-				resolve();
-			});
+		loader.getTranslation('theme/i18n/de').subscribe((translation) => {
+			expect(translation).toEqual(mockTranslation);
 		});
 
-		const req = httpMock.expectOne(`/assets/i18n/${lang}.json`);
+		const req = httpMock.expectOne('/assets/theme/i18n/de.json');
+
 		expect(req.request.method).toBe('GET');
+
 		req.flush(mockTranslation);
-		await p;
 	});
 });

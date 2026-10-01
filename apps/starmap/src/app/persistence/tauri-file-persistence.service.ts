@@ -14,10 +14,9 @@ import { readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 @Injectable()
 export class TauriFilePersistenceService implements FilePersistence {
 	/**
-	 * Persists starmap data using the configured file persistence backend.
+	 * Loads starmap data using the configured file persistence backend.
 	 *
-	 * @param content - The content to write (typically serialized data).
-	 * @param options - Persistence options such as destination path and write behavior.
+	 * @param options - Read options such as source path and parsing behavior.
 	 */
 	public async open(options: FileOpenOptions): Promise<string | null> {
 		const path = await open({
@@ -39,9 +38,10 @@ export class TauriFilePersistenceService implements FilePersistence {
 	}
 
 	/**
-	 * Loads starmap data using the configured file persistence backend.
+	 * Persists starmap data using the configured file persistence backend.
 	 *
-	 * @param options - Read options such as source path and parsing behavior.
+	 * @param content - The content to write (typically serialized data).
+	 * @param options - Persistence options such as destination path and write behavior.
 	 */
 	public async save(content: string, options: FileSaveOptions): Promise<void> {
 		const path = await save({

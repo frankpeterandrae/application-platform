@@ -4,55 +4,48 @@
  */
 import { TestBed } from '@angular/core/testing';
 
+import { setupTestingModule } from '../../test-setup';
+
+import type { FeatureToggles } from './feature-toggle.model';
 import { FeatureToggleService } from './feature-toggle.service';
 import { FEATURE_TOGGLES } from './feature-toggle.token';
 
 describe('FeatureToggleService', () => {
-	it('should return true for enabled features', () => {
-		TestBed.configureTestingModule({
+	beforeEach(() => {
+		TestBed.resetTestingModule();
+	});
+
+	async function createService(toggles: FeatureToggles): Promise<FeatureToggleService> {
+		await setupTestingModule({
 			providers: [
 				{
 					provide: FEATURE_TOGGLES,
-					useValue: {
-						'starmap.renderer3d': true
-					}
+					useValue: toggles
 				}
 			]
 		});
 
-		const service = TestBed.inject(FeatureToggleService);
+		return TestBed.inject(FeatureToggleService);
+	}
+
+	it('should return true for enabled features', async () => {
+		const service = await createService({
+			'starmap.renderer3d': true
+		});
 
 		expect(service.isEnabled('starmap.renderer3d')).toBe(true);
 	});
 
-	it('should return false for disabled features', () => {
-		TestBed.configureTestingModule({
-			providers: [
-				{
-					provide: FEATURE_TOGGLES,
-					useValue: {
-						'starmap.renderer3d': false
-					}
-				}
-			]
+	it('should return false for disabled features', async () => {
+		const service = await createService({
+			'starmap.renderer3d': false
 		});
-
-		const service = TestBed.inject(FeatureToggleService);
 
 		expect(service.isEnabled('starmap.renderer3d')).toBe(false);
 	});
 
-	it('should return false for unknown features', () => {
-		TestBed.configureTestingModule({
-			providers: [
-				{
-					provide: FEATURE_TOGGLES,
-					useValue: {}
-				}
-			]
-		});
-
-		const service = TestBed.inject(FeatureToggleService);
+	it('should return false for unknown features', async () => {
+		const service = await createService({});
 
 		expect(service.isEnabled('unknown.feature')).toBe(false);
 	});

@@ -10,8 +10,7 @@ import { BrowserFileService } from '../browser-file/browser-file.service';
 import { FileOpenOptions, FilePersistence, FileSaveOptions } from './file-persistence';
 
 /**
- * BrowserFilePersistenceService is an Angular service that implements the FilePersistence interface.
- * It provides methods to open and save files in a browser environment using the BrowserFileService.
+ * Provides browser-based file persistence.
  */
 @Injectable({
 	providedIn: 'root'
@@ -20,9 +19,10 @@ export class BrowserFilePersistenceService implements FilePersistence {
 	private readonly browserFileService = inject(BrowserFileService);
 
 	/**
-	 * Opens a file dialog for the user to select a file to open. The selected file's content is read as text and returned as a Promise.
-	 * @param options - An object containing the file extensions that are allowed to be opened.
-	 * @returns A Promise that resolves to the content of the selected file as a string, or null if no file was selected.
+	 * Opens a browser file picker and returns the selected file content.
+	 *
+	 * @param options Options controlling which file extensions can be selected.
+	 * @returns The selected file content, or `null` if the dialog is cancelled.
 	 */
 	public open(options: FileOpenOptions): Promise<string | null> {
 		return new Promise((resolve) => {
@@ -33,10 +33,15 @@ export class BrowserFilePersistenceService implements FilePersistence {
 
 			input.addEventListener(
 				'change',
-				async () => {
+				() => {
 					const file = input.files?.[0];
 
-					resolve(file ? await file.text() : null);
+					if (!file) {
+						resolve(null);
+						return;
+					}
+
+					void file.text().then((content) => resolve(content));
 				},
 				{ once: true }
 			);
@@ -50,10 +55,11 @@ export class BrowserFilePersistenceService implements FilePersistence {
 	}
 
 	/**
-	 * Saves the provided content to a file with the specified options. The file is saved using the BrowserFileService.
-	 * @param content - The content to be saved to the file.
-	 * @param options - An object containing the file name, allowed extensions, and optional MIME type for the file to be saved.
-	 * @returns A Promise that resolves when the file has been saved.
+	 * Downloads the provided content as a file.
+	 *
+	 * @param content The content to save.
+	 * @param options Options controlling the downloaded file.
+	 * @returns A promise that resolves after the browser download has been triggered.
 	 */
 	public save(content: string, options: FileSaveOptions): Promise<void> {
 		this.browserFileService.save(content, options.fileName, options.mimeType ?? 'text/plain;charset=utf-8');

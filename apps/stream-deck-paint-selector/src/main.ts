@@ -15,4 +15,11 @@ streamDeck.actions.registerAction(new PaintSelectorOpenAction());
 
 streamDeck.logger.info('Paint Selector action registered');
 
-streamDeck.connect();
+streamDeck
+	.connect()
+	.then((r) => {
+		streamDeck.logger.info('Paint Selector plugin connected');
+	})
+	.catch((err) => {
+		streamDeck.logger.error('Paint Selector plugin failed to connect', err);
+	});

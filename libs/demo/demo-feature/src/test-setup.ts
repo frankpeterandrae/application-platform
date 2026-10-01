@@ -12,9 +12,10 @@ import '@application-platform/testing/analog';
 import { of } from 'rxjs';
 
 /**
- * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
- * @returns {Promise<void>} A promise that resolves when the test module is compiled.
+ * Sets up the shared Angular test environment for this library.
+ *
+ * @param metadata Angular test module metadata.
+ * @returns A promise that resolves when the testing module has been compiled.
  */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
 	const demoProviders = [

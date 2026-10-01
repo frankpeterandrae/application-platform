@@ -6,8 +6,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Paint, PaintColorGroup } from '@application-platform/paint';
 
-let nextId = 0;
-
 /**
  * Renders a paint swatch as an SVG paint blob.
  */
@@ -22,7 +20,9 @@ export class PaintSwatchComponent {
 	public readonly paint = input<Paint>();
 	public readonly color = input<string>();
 
-	private readonly instanceId = createInstanceId();
+	private static nextId = 0;
+
+	private readonly instanceId = `paint-swatch-${++PaintSwatchComponent.nextId}`;
 
 	protected readonly blobClipId = `${this.instanceId}-blob-clip`;
 	protected readonly baseGradientId = `${this.instanceId}-base-gradient`;
@@ -55,16 +55,15 @@ export class PaintSwatchComponent {
 
 	protected readonly secondaryColor = computed(() => this.paint()?.secondaryColor || this.paint()?.mainColor || (this.color() ?? ''));
 
-	protected readonly isTechnical = computed(() => this.paint()?.colorGroups?.includes(PaintColorGroup.Technical));
+	protected readonly isTechnical = computed(() => this.paint()?.colorGroups.includes(PaintColorGroup.Technical));
 
-	protected readonly isMetallic = computed(() => this.paint()?.colorGroups?.includes(PaintColorGroup.Metallic));
+	protected readonly isMetallic = computed(() => this.paint()?.colorGroups.includes(PaintColorGroup.Metallic));
 
 	protected readonly isInkOrGlaze = computed(
-		() => this.paint()?.colorGroups?.includes(PaintColorGroup.Inks) || this.paint()?.colorGroups?.includes(PaintColorGroup.Glaze)
+		() => this.paint()?.colorGroups.includes(PaintColorGroup.Inks) || this.paint()?.colorGroups.includes(PaintColorGroup.Glaze)
 	);
 
-	protected readonly isWash = computed(() => this.paint()?.colorGroups?.includes(PaintColorGroup.Washes));
-
+	protected readonly isWash = computed(() => this.paint()?.colorGroups.includes(PaintColorGroup.Washes));
 	protected readonly baseVariant = computed<'default' | 'metallic' | 'ink-or-glaze' | 'wash'>(() => {
 		if (this.isMetallic()) {
 			return 'metallic';
@@ -81,70 +80,39 @@ export class PaintSwatchComponent {
 		return 'default';
 	});
 
-	protected readonly technicalTopStartColor = computed(() => mixHex(this.secondaryColor(), '#ffffff', 0.35));
+	protected readonly technicalTopStartColor = computed(() => this.mixHex(this.secondaryColor(), '#ffffff', 0.35));
 
 	protected readonly technicalTopEndColor = computed(() => this.secondaryColor());
-}
 
-/**
- * Mixes two hex colors.
- *
- * @param base Base color.
- * @param mixWith Color to mix with.
- * @param amount Mix amount between 0 and 1.
- * @returns Mixed hex color.
- */
-function mixHex(base: string, mixWith: string, amount: number): `#${string}` {
-	const a = hexToRgb(base);
-	const b = hexToRgb(mixWith);
+	private mixHex(base: string, mixWith: string, amount: number): `#${string}` {
+		const a = this.hexToRgb(base);
+		const b = this.hexToRgb(mixWith);
 
-	const r = Math.round(a.r + (b.r - a.r) * amount);
-	const g = Math.round(a.g + (b.g - a.g) * amount);
-	const bValue = Math.round(a.b + (b.b - a.b) * amount);
+		const r = Math.round(a.r + (b.r - a.r) * amount);
+		const g = Math.round(a.g + (b.g - a.g) * amount);
+		const bValue = Math.round(a.b + (b.b - a.b) * amount);
 
-	return rgbToHex(r, g, bValue);
-}
+		return this.rgbToHex(r, g, bValue);
+	}
 
-/**
- * Converts a hex color into RGB channels.
- *
- * @param hex Hex color value.
- * @returns RGB channels.
- */
-function hexToRgb(hex: string): { r: number; g: number; b: number } {
-	const normalized = hex.replace('#', '');
-	const expanded =
-		normalized.length === 3
-			? normalized
-					.split('')
-					.map((char) => `${char}${char}`)
-					.join('')
-			: normalized;
+	private hexToRgb(hex: string): { r: number; g: number; b: number } {
+		const normalized = hex.replace('#', '');
+		const expanded =
+			normalized.length === 3
+				? normalized
+						.split('')
+						.map((char) => `${char}${char}`)
+						.join('')
+				: normalized;
 
-	return {
-		r: Number.parseInt(expanded.slice(0, 2), 16),
-		g: Number.parseInt(expanded.slice(2, 4), 16),
-		b: Number.parseInt(expanded.slice(4, 6), 16)
-	};
-}
+		return {
+			r: Number.parseInt(expanded.slice(0, 2), 16),
+			g: Number.parseInt(expanded.slice(2, 4), 16),
+			b: Number.parseInt(expanded.slice(4, 6), 16)
+		};
+	}
 
-/**
- * Converts RGB channels to a hex color.
- *
- * @param r Red channel.
- * @param g Green channel.
- * @param b Blue channel.
- * @returns Hex color.
- */
-function rgbToHex(r: number, g: number, b: number): `#${string}` {
-	return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}` as `#${string}`;
-}
-
-/**
- * Increse the id of the current paint swatch
- */
-function createInstanceId(): string {
-	nextId += 1;
-
-	return `paint-swatch-${nextId}`;
+	private rgbToHex(r: number, g: number, b: number): `#${string}` {
+		return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}` as `#${string}`;
+	}
 }

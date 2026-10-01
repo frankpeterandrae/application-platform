@@ -12,9 +12,6 @@ import { APP_ENVIRONMENT } from '../config/app-environment';
 
 import { EnvGuard } from './env.guard';
 
-/**
- * Test suite for DataConnectionService.
- */
 describe('EnvGuard', () => {
 	let guard: EnvGuard;
 	let router: Router;

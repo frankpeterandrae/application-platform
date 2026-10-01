@@ -4,15 +4,15 @@
  */
 
 // Ensure the Angular JIT compiler is loaded for tests that require runtime compilation fallback.
-// runtime wrapper for tests — avoid type-only imports to keep the Vite/ESBuild plugin happy
 import type { TestModuleMetadata } from '@angular/core/testing';
 import { setupTestingModule as sharedSetup } from '@application-platform/testing';
 import '@application-platform/testing/analog';
 
 /**
- * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} param0 - The metadata for the test module, including imports, providers, and declarations.
- * @returns {Promise<void>} A promise that resolves when the test module is compiled.
+ * Sets up the shared Angular test environment for this library.
+ *
+ * @param metadata Angular test module metadata.
+ * @returns A promise that resolves when the testing module has been compiled.
  */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
 	return sharedSetup({ imports, providers, declarations });

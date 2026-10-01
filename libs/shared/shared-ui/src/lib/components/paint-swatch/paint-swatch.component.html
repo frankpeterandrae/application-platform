@@ -43,10 +43,7 @@
 	</defs>
 
 	@if (isTechnical()) {
-		<!-- Basis: gesamter Klecks in Main Color -->
 		<path [attr.d]="blobPath" [attr.fill]="mainColor()" />
-
-		<!-- Oberer Bereich: Secondary mit Verlauf, auf den Klecks geclippt -->
 		<g [attr.clip-path]="'url(#' + blobClipId + ')'">
 			<path
 				d="

@@ -3,6 +3,9 @@
  * All rights reserved.
  */
 
+/**
+ * Translation scopes used by application features.
+ */
 export enum Scopes {
 	FKTT_CARDS = 'fkttCards/i18n',
 	THEME = 'theme/i18n',
