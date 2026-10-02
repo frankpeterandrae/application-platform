@@ -27,25 +27,16 @@ describe('InputComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
-	it('should update value and notify consumers on input', () => {
+	it('should update the value and notify consumers on input', () => {
 		const onChange = vi.fn();
 		const valueChangeSpy = vi.spyOn(component.valueChange, 'emit');
 
 		component.registerOnChange(onChange);
 
-		const inputElement = document.createElement('input');
-		inputElement.value = 'new value';
+		const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
 
-		const inputEvent = new Event('input');
-		Object.defineProperty(inputEvent, 'target', {
-			value: inputElement
-		});
-
-		component.onInput(inputEvent);
+		input.value = 'new value';
+		input.dispatchEvent(new Event('input'));
 
 		expect(component.value()).toBe('new value');
 		expect(onChange).toHaveBeenCalledWith('new value');
@@ -65,20 +56,6 @@ describe('InputComponent', () => {
 	it('should set inputFocused to true on focus event', () => {
 		component.onFocus();
 		expect(component.inputFocused).toBe(true);
-	});
-
-	it('should register onChange callback', () => {
-		const fn = vi.fn();
-		component.registerOnChange(fn);
-		component['onChange']('new value');
-		expect(fn).toHaveBeenCalledWith('new value');
-	});
-
-	it('should register onTouched callback', () => {
-		const fn = vi.fn();
-		component.registerOnTouched(fn);
-		component['onTouched']();
-		expect(fn).toHaveBeenCalled();
 	});
 
 	it('should render a value written by the form without user interaction', () => {

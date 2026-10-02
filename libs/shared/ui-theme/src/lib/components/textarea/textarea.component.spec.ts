@@ -24,10 +24,6 @@ describe('TextareaComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should render a value written by the form without user interaction', () => {
 		component.writeValue('written value');
 
@@ -38,12 +34,15 @@ describe('TextareaComponent', () => {
 		expect(textarea.value).toBe('written value');
 	});
 
-	it('onInput updates value, calls onChange, and emits valueChange', () => {
+	it('should update the value and notify consumers on input', () => {
 		const onChange = vi.fn();
 		const emitSpy = vi.spyOn(component.valueChange, 'emit');
+
 		component.registerOnChange(onChange);
 
-		component.onInput({ target: { value: 'Hello' } } as unknown as Event);
+		const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+		textarea.value = 'Hello';
+		textarea.dispatchEvent(new Event('input'));
 
 		expect(component.value()).toBe('Hello');
 		expect(onChange).toHaveBeenCalledWith('Hello');
@@ -96,5 +95,23 @@ describe('TextareaComponent', () => {
 		fixture.componentRef.setInput('isDynamic', false);
 		fixture.detectChanges();
 		expect((component as unknown as { isFloating: () => boolean }).isFloating()).toBe(false);
+	});
+
+	it('should disable the native textarea through the CVA', () => {
+		component.setDisabledState(true);
+		fixture.detectChanges();
+
+		const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+
+		expect(textarea.disabled).toBe(true);
+	});
+
+	it('should disable the native textarea through the component input', () => {
+		fixture.componentRef.setInput('disabled', true);
+		fixture.detectChanges();
+
+		const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+
+		expect(textarea.disabled).toBe(true);
 	});
 });

@@ -10,7 +10,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { FloatingLabelDirective } from '../../directives/floating-lable';
 
 /**
- * TextareaComponent is a custom Angular component that provides a reusable textarea input field.
+ * Reusable textarea that integrates with Angular forms.
  */
 @Component({
 	selector: 'theme-textarea',
@@ -46,32 +46,27 @@ export class TextareaComponent implements ControlValueAccessor {
 
 	public readonly formDisabled = signal(false);
 
-	/**
-	 * Callback function to handle changes in the textarea value.
-	 */
-	private onChange: (value: string) => void = () => {
-		/* empty */
-	};
-	/**
-	 * Callback function to handle touch events on the textarea.
-	 */
-	private onTouched: () => void = () => {
-		/* empty */
-	};
+	private onChange: (value: string) => void = () => undefined;
+	private onTouched: () => void = () => undefined;
 
 	/**
-	 * Handles the textarea event and updates the component's value.
-	 * @param {Event} event - The textarea event.
+	 * Handles native textarea changes.
+	 *
+	 * @param event The textarea input event.
+	 * @returns Nothing.
 	 */
 	public onInput(event: Event): void {
-		const input = event.target as HTMLInputElement;
-		this.value.set(input.value);
-		this.onChange(input.value);
-		this.valueChange.emit(input.value);
+		const textarea = event.target as HTMLTextAreaElement;
+
+		this.value.set(textarea.value);
+		this.onChange(textarea.value);
+		this.valueChange.emit(textarea.value);
 	}
+
 	/**
-	 * Checks if the textarea field is filled.
-	 * @returns {boolean} - True if the textarea field has a value, otherwise false.
+	 * Indicates whether the textarea should be treated as filled.
+	 *
+	 * @returns `true` when a value or placeholder is present.
 	 */
 	public isFilled(): boolean {
 		return this.value().length > 0 || !!this.placeholder();
@@ -119,8 +114,9 @@ export class TextareaComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Sets the disabled state of the textarea field.
-	 * @returns {boolean} - The disabled state.
+	 * Indicates whether the floating label should be active.
+	 *
+	 * @returns `true` when dynamic labels are enabled and the textarea has focus.
 	 */
 	protected isFloating(): boolean {
 		return this.isDynamic() && this.textareaFocused;
@@ -128,6 +124,7 @@ export class TextareaComponent implements ControlValueAccessor {
 
 	/**
 	 * Sets the disabled state of the textarea field.
+	 *
 	 * @internal
 	 * @param {boolean} isDisabled - The disabled state.
 	 */

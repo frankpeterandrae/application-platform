@@ -10,7 +10,7 @@ import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 import { ButtonColorDefinition, IconDefinition } from '../../enums';
 
 /**
- * ButtonComponent is a reusable button component with customizable properties.
+ * Renders a configurable button with optional text and icon.
  */
 @Component({
 	selector: 'theme-button',
@@ -54,9 +54,11 @@ export class ButtonComponent {
 	public contentClasses: string[] = [];
 
 	/**
-	 * Callback function to emit the click event.
+	 * Emits the button click event unless the button is disabled.
+	 *
+	 * @returns Nothing.
 	 */
-	public callback(): void {
+	public handleClick(): void {
 		if (!this.disabled()) {
 			this.buttonClick.emit();
 		}

@@ -4,15 +4,15 @@
  */
 
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { setupTestingModule } from '../../../test-setup';
 import { ButtonColorDefinition } from '../../enums';
-import { ButtonConfigModel } from '../../model';
+import { ButtonComponent } from '../button/button.component';
 
 import { ButtonBarComponent } from './button-bar.component';
 
 describe('ButtonBarComponent', () => {
-	let component: ButtonBarComponent;
 	let fixture: ComponentFixture<ButtonBarComponent>;
 
 	beforeEach(async () => {
@@ -20,20 +20,49 @@ describe('ButtonBarComponent', () => {
 			imports: [ButtonBarComponent]
 		});
 
-		const config: ButtonConfigModel[] = [
-			{
-				buttonText: 'Button 1',
-				callback: () => console.log('Button 1 clicked'),
-				color: ButtonColorDefinition.DANGER
-			}
-		];
 		fixture = TestBed.createComponent(ButtonBarComponent);
-		component = fixture.componentInstance;
-		fixture.componentRef.setInput('buttons', config);
-		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
+	it('should render two configured buttons', () => {
+		const callbacks = [vi.fn(), vi.fn()];
+
+		fixture.componentRef.setInput('buttons', [
+			{
+				buttonText: 'Save',
+				callback: callbacks[0],
+				color: ButtonColorDefinition.PRIMARY
+			},
+			{
+				buttonText: 'Delete',
+				callback: callbacks[1],
+				color: ButtonColorDefinition.DANGER
+			}
+		]);
+
+		fixture.detectChanges();
+
+		const buttons = fixture.nativeElement.querySelectorAll('theme-button');
+
+		expect(buttons).toHaveLength(2);
+	});
+
+	it('should invoke the configured callback when a button is clicked', () => {
+		const callback = vi.fn();
+
+		fixture.componentRef.setInput('buttons', [
+			{
+				buttonText: 'Save',
+				callback,
+				color: ButtonColorDefinition.PRIMARY
+			}
+		]);
+
+		fixture.detectChanges();
+
+		const button = fixture.debugElement.query(By.directive(ButtonComponent));
+
+		button.componentInstance.buttonClick.emit();
+
+		expect(callback).toHaveBeenCalledOnce();
 	});
 });

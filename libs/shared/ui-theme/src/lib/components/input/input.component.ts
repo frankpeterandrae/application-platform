@@ -14,8 +14,7 @@ import { FloatingLabelDirective } from '../../directives/floating-lable';
 import { IconDefinition } from '../../enums';
 
 /**
- * InputComponent is a custom Angular component that implements ControlValueAccessor
- * to provide a reusable input field with various configurable properties.
+ * Reusable text/number input that integrates with Angular forms.
  */
 @Component({
 	selector: 'theme-input',
@@ -31,23 +30,19 @@ import { IconDefinition } from '../../enums';
 	]
 })
 export class InputComponent implements ControlValueAccessor {
-	/** Optional id for the input element. */
 	public readonly id = input<string>('');
-	/** Reference to the input element. */
 	public readonly inputElement = viewChild.required<ElementRef<HTMLInputElement>>('input');
 	public readonly label = input.required<string>();
 	public readonly type = input<string>('text');
 	public readonly placeholder = input<string>('');
 	public readonly icon = input<IconDefinition>(IconDefinition.NONE);
 	public readonly isDynamic = input<boolean>(true);
-	/** When true, applies dark text color for light backgrounds. */
 	public readonly darkText = input<boolean>(false);
 	public readonly disabled = input<boolean>(false);
 	public readonly step = input<number>(1);
 	public readonly min = input<number | null>(null);
 	public readonly max = input<number | null>(null);
 
-	// Define output using the `output` function
 	public readonly valueChange = output<string>();
 
 	public readonly value = signal<string | number>('');
@@ -56,16 +51,14 @@ export class InputComponent implements ControlValueAccessor {
 	public inputFocused = false;
 	public error?: string;
 
-	private onChange: (value: string) => void = () => {
-		/* empty */
-	};
-	private onTouched: () => void = () => {
-		/* empty */
-	};
+	private onChange: (value: string) => void = () => undefined;
+	private onTouched: () => void = () => undefined;
 
 	/**
-	 * Handles the input event and updates the component's value.
-	 * @param {Event} event - The input event.
+	 * Handles native input changes.
+	 *
+	 * @param event The input event.
+	 * @returns Nothing.
 	 */
 	public onInput(event: Event): void {
 		const input = event.target as HTMLInputElement;
@@ -76,13 +69,12 @@ export class InputComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Checks if the input field is filled.
-	 * @returns {boolean} - True if the input field has a value, otherwise false.
+	 * Indicates whether the input should be treated as filled.
+	 *
+	 * @returns `true` when a value or placeholder is present.
 	 */
 	public isFilled(): boolean {
-		const value = this.value();
-
-		return (value !== null && value !== undefined && String(value).length > 0) || !!this.placeholder();
+		return String(this.value()).length > 0 || !!this.placeholder();
 	}
 
 	/**
@@ -93,7 +85,7 @@ export class InputComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Handles the blur event on the input field.
+	 * Handles the blur event on the textarea field.
 	 */
 	public onBlur(): void {
 		this.inputFocused = false;
@@ -101,46 +93,51 @@ export class InputComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Registers a callback function to be called when the input value changes.
-	 * @internal
-	 * @param {any} fn - The callback function.
+	 * Registers the Angular forms change callback.
+	 *
+	 * @param fn Callback invoked when the value changes.
+	 * @returns Nothing.
 	 */
 	public registerOnChange(fn: (value: string) => void): void {
 		this.onChange = fn;
 	}
 
 	/**
-	 * Registers a callback function to be called when the input is touched.
-	 * @internal
-	 * @param {any} fn - The callback function.
+	 * Registers the Angular forms touched callback.
+	 *
+	 * @param fn Callback invoked when the control is touched.
+	 * @returns Nothing.
 	 */
 	public registerOnTouched(fn: () => void): void {
 		this.onTouched = fn;
 	}
 
 	/**
-	 * Writes a new value to the input field.
-	 * @internal
-	 * @param {string} value - The new value.
+	 * Writes a value from Angular forms to the input.
+	 *
+	 * @param value The value to render.
+	 * @returns Nothing.
 	 */
 	public writeValue(value: string | number | null | undefined): void {
 		this.value.set(value ?? '');
 	}
 
 	/**
-	 * Sets the floating state of the input field.
-	 * @returns {boolean} - The disabled state.
-	 */
-	protected isFloating(): boolean {
-		return this.isDynamic() && this.inputFocused;
-	}
-
-	/**
-	 * Sets the disabled state of the input field.
-	 * @internal
-	 * @param {boolean} isDisabled - The disabled state.
+	 * Sets the disabled state supplied by Angular forms.
+	 *
+	 * @param isDisabled Whether the control is disabled.
+	 * @returns Nothing.
 	 */
 	public setDisabledState(isDisabled: boolean): void {
 		this.formDisabled.set(isDisabled);
+	}
+
+	/**
+	 * Indicates whether the floating label should be active.
+	 *
+	 * @returns `true` when dynamic labels are enabled and the input has focus.
+	 */
+	protected isFloating(): boolean {
+		return this.isDynamic() && this.inputFocused;
 	}
 }

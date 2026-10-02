@@ -9,20 +9,18 @@
 	[ngClass]="[color() ? 'fpa-' + color() : 'fpa-no-color', ...buttonClasses, disabled() ? 'fpa-disabled' : '']"
 	[attr.aria-expanded]="ariaExpanded()"
 	[attr.aria-haspopup]="ariaHaspopup()"
-	(click)="callback()"
+	(click)="handleClick()"
 	(keydown)="keydownEvent.emit($event)"
 	[disabled]="disabled()"
 >
 	<div class="fpa-flex fpa-flex-row" [ngClass]="contentClasses" [class.fpa-flex-row-reverse]="iconEnd()">
-		@if (icon()) {
-			<fast-svg [name]="icon()!" [size]="'16'" />
+		@if (icon(); as iconName) {
+			<fast-svg [name]="iconName" [size]="'16'" />
 		}
 		@if (buttonText()) {
-			@if (buttonText()) {
-				<span class="fpa-flex-align-content-center">
-					{{ buttonText() }}
-				</span>
-			}
+			<span class="fpa-flex-align-content-center">
+				{{ buttonText() }}
+			</span>
 		}
 	</div>
 </button>

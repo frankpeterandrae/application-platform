@@ -6,6 +6,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Paint, PaintColorGroup } from '@application-platform/paint';
 
+import { BaseComponent } from '../base/base.component';
+
 /**
  * Renders a paint swatch as an SVG paint blob.
  */
@@ -16,7 +18,7 @@ import { Paint, PaintColorGroup } from '@application-platform/paint';
 	styleUrl: './paint-swatch.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PaintSwatchComponent {
+export class PaintSwatchComponent extends BaseComponent {
 	public readonly paint = input<Paint>();
 	public readonly color = input<string>();
 

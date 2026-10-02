@@ -7,8 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 
 /**
- * CardComponent is a standalone Angular component that represents a card UI element.
- * It uses the CommonModule and has an external HTML template and SCSS stylesheet.
+ * Displays projected content inside a themed card.
  */
 @Component({
 	selector: 'theme-card',
@@ -17,8 +16,6 @@ import { Component, input } from '@angular/core';
 	styleUrl: './card.component.scss'
 })
 export class CardComponent {
-	/**
-	 * A boolean input property that determines if the card is inverted.
-	 */
-	public inverted = input<boolean>();
+	/** Whether the card uses the inverted color scheme. */
+	public inverted = input(false);
 }
