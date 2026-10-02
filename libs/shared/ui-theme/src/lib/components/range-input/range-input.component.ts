@@ -8,14 +8,16 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 
 import { InputComponent } from '../input/input.component';
 
+/**
+ * Represents the lower and upper bounds of a range.
+ */
 export interface RangeInput {
 	from: string;
 	to: string;
 }
 
 /**
- * RangeInputComponent is a standalone component that represents a range input field.
- * It implements the ControlValueAccessor interface to integrate with Angular forms.
+ * Combines two text inputs into an Angular forms-compatible range control.
  */
 @Component({
 	selector: 'theme-range-input',
@@ -41,21 +43,14 @@ export class RangeInputComponent implements ControlValueAccessor {
 
 	public readonly formDisabled = signal(false);
 
-	/**
-	 * Callback function to handle changes in the input value.
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private onChange: (value: RangeInput) => void = () => {};
-	/**
-	 * Callback function to handle touch events on the input.
-	 */
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private onTouched: () => void = () => {};
+	private onChange: (value: RangeInput) => void = () => undefined;
+	private onTouched: () => void = () => undefined;
 
 	/**
-	 * Writes a new value to the input field.
-	 * @internal
-	 * @param {RangeInput} value - The new value.
+	 * Writes a value from Angular forms to the range control.
+	 *
+	 * @param value The range value to render.
+	 * @returns Nothing.
 	 */
 	public writeValue(value: RangeInput | null | undefined): void {
 		this.value.set({
@@ -83,8 +78,10 @@ export class RangeInputComponent implements ControlValueAccessor {
 	}
 
 	/**
-	 * Sets the disabled state of the input field.
-	 * @param {boolean} isDisabled - Whether the input should be disabled.
+	 * Sets the disabled state supplied by Angular forms.
+	 *
+	 * @param isDisabled Whether the control is disabled.
+	 * @returns Nothing.
 	 */
 	public setDisabledState(isDisabled: boolean): void {
 		this.formDisabled.set(isDisabled);
