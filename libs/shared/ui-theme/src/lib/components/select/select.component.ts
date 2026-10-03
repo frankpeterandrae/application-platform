@@ -11,19 +11,21 @@ import { FastSvgComponent } from '@push-based/ngx-fast-svg';
 import { FloatingLabelDirective } from '../../directives/floating-lable';
 import { IconDefinition } from '../../enums';
 
+/**
+ * Represents an option displayed by SelectComponent.
+ */
 export interface SelectOption<T = unknown> {
 	label: string;
 	value: T;
 }
 
 /**
- * Type alias for the select component value (single, multiple, or undefined).
+ * Represents a single or multiple select value.
  */
 export type SelectValue<T = unknown> = T | T[] | undefined;
 
 /**
- * SelectComponent is a custom Angular component that implements ControlValueAccessor
- * to provide a reusable dropdown (single or multi-select).
+ * Angular forms-compatible select supporting single and multiple selection.
  */
 @Component({
 	selector: 'theme-select',
@@ -103,15 +105,14 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 		return options.find((option) => option.value === current)?.label ?? '';
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private onChange: (value: SelectValue<T>) => void = () => {};
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private onTouched: () => void = () => {};
+	private onChange: (value: SelectValue<T>) => void = () => undefined;
+	private onTouched: () => void = () => undefined;
 
 	/**
-	 * Writes a new value to the select component.
-	 * @param {(value:  SelectValue<T>) => void} value - The new value to be written (single, multiple, or undefined).
+	 * Writes a value from Angular forms to the select.
+	 *
+	 * @param {(value:  SelectValue<T>) => void} value The value to display.
+	 * @returns Nothing.
 	 */
 	public writeValue(value: SelectValue<T>): void {
 		if (this.multiple()) {
@@ -125,6 +126,7 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 
 	/**
 	 * Registers a callback function that should be called when the value changes.
+	 *
 	 * @param {(value:  SelectValue<T>) => void} fn - The change callback.
 	 */
 	public registerOnChange(fn: (value: SelectValue<T>) => void): void {
@@ -133,6 +135,7 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 
 	/**
 	 * Registers a callback function that should be called when the control is touched.
+	 *
 	 * @param {() => void} fn - The touch callback.
 	 */
 	public registerOnTouched(fn: () => void): void {
@@ -141,6 +144,7 @@ export class SelectComponent<T = unknown> implements ControlValueAccessor {
 
 	/**
 	 * Sets the disabled state of the select component.
+	 *
 	 * @param {boolean} isDisabled - Whether the component should be disabled.
 	 */
 	public setDisabledState(isDisabled: boolean): void {

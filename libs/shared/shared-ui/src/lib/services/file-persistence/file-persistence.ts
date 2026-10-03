@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { InjectionToken } from '@angular/core';
+
 /**
  * Options for opening a text file.
  */
@@ -40,3 +42,5 @@ export interface FilePersistence {
 	 */
 	save(content: string, options: FileSaveOptions): Promise<void>;
 }
+
+export const FILE_PERSISTENCE = new InjectionToken<FilePersistence>('FILE_PERSISTENCE');

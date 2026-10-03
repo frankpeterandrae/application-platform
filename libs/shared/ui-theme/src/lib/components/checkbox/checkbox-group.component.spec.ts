@@ -14,6 +14,19 @@ describe('CheckboxGroupComponent', () => {
 	let component: CheckboxGroupComponent;
 	let fixture: ComponentFixture<CheckboxGroupComponent>;
 
+	const checkboxes = [
+		{
+			id: 'a',
+			label: 'Option A',
+			value: 'a'
+		},
+		{
+			id: 'b',
+			label: 'Option B',
+			value: 'b'
+		}
+	];
+
 	beforeEach(async () => {
 		await setupTestingModule({
 			imports: [CheckboxGroupComponent]
@@ -21,173 +34,152 @@ describe('CheckboxGroupComponent', () => {
 
 		fixture = TestBed.createComponent(CheckboxGroupComponent);
 		component = fixture.componentInstance;
-		fixture.detectChanges();
+
+		fixture.componentRef.setInput('checkboxes', checkboxes);
 	});
 
-	it('should initialize its value from checked checkbox configuration', () => {
+	function getInputs(): HTMLInputElement[] {
+		return Array.from(fixture.nativeElement.querySelectorAll('input[type="checkbox"]'));
+	}
+
+	it('should render the configured checkboxes', () => {
+		fixture.detectChanges();
+
+		const inputs = getInputs();
+
+		expect(inputs).toHaveLength(2);
+		expect(inputs[0].value).toBe('a');
+		expect(inputs[1].value).toBe('b');
+	});
+
+	it('should render the group label', () => {
+		fixture.componentRef.setInput('label', 'Options');
+		fixture.detectChanges();
+
+		const legend = fixture.nativeElement.querySelector('legend');
+
+		expect(legend?.textContent?.trim()).toBe('Options');
+	});
+
+	it('should use configured checked values as the initial state', () => {
 		fixture.componentRef.setInput('checkboxes', [
-			{ id: 'a', label: 'A', value: 'a', checked: true },
-			{ id: 'b', label: 'B', value: 'b', checked: false }
+			{
+				id: 'a',
+				label: 'Option A',
+				value: 'a',
+				checked: true
+			},
+			{
+				id: 'b',
+				label: 'Option B',
+				value: 'b',
+				checked: false
+			}
 		]);
 
 		fixture.detectChanges();
 
-		const inputs = Array.from(fixture.nativeElement.querySelectorAll('input')) as HTMLInputElement[];
+		const inputs = getInputs();
 
 		expect(inputs[0].checked).toBe(true);
 		expect(inputs[1].checked).toBe(false);
 	});
 
-	it('should let writeValue override the configured checked state', () => {
-		fixture.componentRef.setInput('checkboxes', [
-			{ id: 'a', label: 'A', value: 'a', checked: true },
-			{ id: 'b', label: 'B', value: 'b', checked: false }
-		]);
-
-		fixture.detectChanges();
-
+	it('should render values written by Angular forms', () => {
 		component.writeValue(['b']);
 		fixture.detectChanges();
 
-		const inputs = Array.from(fixture.nativeElement.querySelectorAll('input')) as HTMLInputElement[];
+		const inputs = getInputs();
 
 		expect(inputs[0].checked).toBe(false);
 		expect(inputs[1].checked).toBe(true);
 	});
 
-	it('updates value and emits when a checkbox is checked', () => {
-		const checkboxes = [{ id: 'a', label: 'A', value: 'a', checked: false }];
-		fixture.componentRef.setInput('checkboxes', checkboxes);
+	it('should clear the selection when writeValue receives null', () => {
+		component.writeValue(['a', 'b']);
+		component.writeValue(null);
+
 		fixture.detectChanges();
 
+		const inputs = getInputs();
+
+		expect(inputs.every((input) => !input.checked)).toBe(true);
+	});
+
+	it('should propagate a checked value and emit the changed checkbox', () => {
 		const onChange = vi.fn();
 		const emitSpy = vi.spyOn(component.changeCheckbox, 'emit');
-		component.registerOnChange(onChange);
-
-		(component as unknown as { onCheckChange: (e: Event, c: unknown) => void }).onCheckChange(
-			{ target: { checked: true, value: 'a' } } as unknown as Event,
-			checkboxes[0]
-		);
-
-		expect(onChange).toHaveBeenCalledWith(['a']);
-		expect(emitSpy).toHaveBeenCalledWith({ ...checkboxes[0], checked: true });
-	});
-
-	it('removes value when a checkbox is unchecked', () => {
-		const checkboxes = [{ id: 'a', label: 'A', value: 'a', checked: true }];
-		fixture.componentRef.setInput('checkboxes', checkboxes);
-		fixture.detectChanges();
-
-		const onChange = vi.fn();
-		component.registerOnChange(onChange);
-
-		(component as unknown as { onCheckChange: (e: Event, c: unknown) => void }).onCheckChange(
-			{ target: { checked: false, value: 'a' } } as unknown as Event,
-			checkboxes[0]
-		);
-
-		expect(onChange).toHaveBeenCalledWith([]);
-	});
-
-	it('should disable all checkboxes through setDisabledState', () => {
-		fixture.componentRef.setInput('checkboxes', [
-			{ id: 'a', label: 'A', value: 'a', checked: false },
-			{ id: 'b', label: 'B', value: 'b', checked: false }
-		]);
-
-		component.setDisabledState(true);
-		fixture.detectChanges();
-
-		const inputs = Array.from(fixture.nativeElement.querySelectorAll('input[type="checkbox"]')) as HTMLInputElement[];
-
-		expect(inputs).toHaveLength(2);
-		expect(inputs.every((input) => input.disabled)).toBe(true);
-	});
-
-	it('should render values written by the form', () => {
-		const checkboxes = [
-			{ id: 'a', label: 'A', value: 'a', checked: false },
-			{ id: 'b', label: 'B', value: 'b', checked: false }
-		];
-
-		fixture.componentRef.setInput('checkboxes', checkboxes);
-		fixture.detectChanges();
-
-		component.writeValue(['b']);
-		fixture.detectChanges();
-
-		const inputs = Array.from(fixture.nativeElement.querySelectorAll('input[type="checkbox"]')) as HTMLInputElement[];
-
-		expect(inputs[0].checked).toBe(false);
-		expect(inputs[1].checked).toBe(true);
-	});
-
-	it('should propagate a checked value', () => {
-		const onChange = vi.fn();
-
-		const checkboxes = [{ id: 'a', label: 'A', value: 'a', checked: false }];
-
-		fixture.componentRef.setInput('checkboxes', checkboxes);
-		fixture.detectChanges();
 
 		component.registerOnChange(onChange);
 
-		const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+		fixture.detectChanges();
+
+		const input = getInputs()[0];
 
 		input.checked = true;
 		input.dispatchEvent(new Event('change'));
 
-		expect(component['value']()).toEqual(['a']);
 		expect(onChange).toHaveBeenCalledWith(['a']);
+		expect(emitSpy).toHaveBeenCalledWith({
+			...checkboxes[0],
+			checked: true
+		});
 	});
 
-	it('should propagate an unchecked value', () => {
+	it('should remove an unchecked value', () => {
 		const onChange = vi.fn();
 
-		const checkboxes = [{ id: 'a', label: 'A', value: 'a', checked: true }];
-
-		fixture.componentRef.setInput('checkboxes', checkboxes);
-		fixture.detectChanges();
-
+		component.writeValue(['a', 'b']);
 		component.registerOnChange(onChange);
 
-		const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+		fixture.detectChanges();
+
+		const input = getInputs()[0];
 
 		input.checked = false;
 		input.dispatchEvent(new Event('change'));
 
-		expect(component['value']()).toEqual([]);
-		expect(onChange).toHaveBeenCalledWith([]);
+		expect(onChange).toHaveBeenCalledWith(['b']);
 	});
 
 	it('should mark the control as touched on blur', () => {
 		const onTouched = vi.fn();
 
-		fixture.componentRef.setInput('checkboxes', [{ id: 'a', label: 'A', value: 'a', checked: false }]);
+		component.registerOnTouched(onTouched);
 		fixture.detectChanges();
 
-		component.registerOnTouched(onTouched);
-
-		const input = fixture.nativeElement.querySelector('input[type="checkbox"]') as HTMLInputElement;
-
-		input.dispatchEvent(new Event('blur'));
+		getInputs()[0].dispatchEvent(new Event('blur'));
 
 		expect(onTouched).toHaveBeenCalledOnce();
 	});
 
 	it('should disable all checkboxes through the CVA', () => {
-		const checkboxes = [
-			{ id: 'a', label: 'A', value: 'a', checked: false },
-			{ id: 'b', label: 'B', value: 'b', checked: false }
-		];
-
-		fixture.componentRef.setInput('checkboxes', checkboxes);
 		component.setDisabledState(true);
+		fixture.detectChanges();
+
+		expect(getInputs().every((input) => input.disabled)).toBe(true);
+	});
+
+	it('should respect the disabled state of individual checkboxes', () => {
+		fixture.componentRef.setInput('checkboxes', [
+			{
+				id: 'a',
+				label: 'Option A',
+				value: 'a',
+				disabled: true
+			},
+			{
+				id: 'b',
+				label: 'Option B',
+				value: 'b'
+			}
+		]);
 
 		fixture.detectChanges();
 
-		const inputs = Array.from(fixture.nativeElement.querySelectorAll('input')) as HTMLInputElement[];
+		const inputs = getInputs();
 
-		expect(inputs.every((input) => input.disabled)).toBe(true);
+		expect(inputs[0].disabled).toBe(true);
+		expect(inputs[1].disabled).toBe(false);
 	});
 });

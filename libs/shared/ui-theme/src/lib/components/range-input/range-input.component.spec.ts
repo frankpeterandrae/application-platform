@@ -26,12 +26,14 @@ describe('RangeInputComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should render a value written by the form', () => {
+	it('should render a value written by the form', async () => {
 		component.writeValue({
 			from: '1',
 			to: '10'
 		});
 
+		fixture.detectChanges();
+		await fixture.whenStable();
 		fixture.detectChanges();
 
 		const inputs = fixture.nativeElement.querySelectorAll('input');
