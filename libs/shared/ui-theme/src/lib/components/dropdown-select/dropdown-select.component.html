@@ -9,11 +9,10 @@
 		[disabled]="disabled()"
 		[ariaExpanded]="isOpen()"
 		[ariaHaspopup]="'listbox'"
-		[icon]="$safeNavigationMigration($any(selectedOption())?.icon)"
+		[icon]="selectedOption()?.icon"
 		(buttonClick)="toggle()"
 		(keydownEvent)="onButtonKeydown($event)"
 	>
-		<!-- projected content intentionally empty; icon passed via inputs when TemplateRef -->
 	</theme-button>
 
 	<div class="fpa-dropdown-select-list-container" [class.open]="isOpen()">

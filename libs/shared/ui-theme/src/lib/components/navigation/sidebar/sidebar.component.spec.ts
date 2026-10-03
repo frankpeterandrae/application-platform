@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2024-2026. Frank-Peter Andrä
+ * Copyright (c) 2026. Frank-Peter Andrä
  * All rights reserved.
  */
 
 import { signal } from '@angular/core';
 import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
+import { InputComponent } from '../../input/input.component';
 
 import { SidebarComponent } from './sidebar.component';
 
@@ -20,76 +22,81 @@ describe('SidebarComponent', () => {
 	beforeEach(async () => {
 		await setupTestingModule({
 			imports: [SidebarComponent],
-			providers: [
-				{
-					provide: ActivatedRoute,
-					useValue: {
-						params: of({}),
-						snapshot: {
-							paramMap: {
-								/**
-								 * Mocked get.
-								 * @returns Null.
-								 */
-								get: (): any => null
-							}
-						}
-					}
-				}
-			]
+			providers: [provideRouter([])]
 		});
 
 		fixture = TestBed.createComponent(SidebarComponent);
 		component = fixture.componentInstance;
+
 		fixture.componentRef.setInput('menuItems', []);
-		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		fixture.componentRef.setInput('menuItems', []);
-		expect(component).toBeTruthy();
-	});
-
-	it('should render the sidebar component', () => {
-		const sidebarElement = fixture.nativeElement.querySelector('nav');
-		expect(sidebarElement).toBeTruthy();
-	});
-
-	it('should display menu items when provided', () => {
+	it('should render configured menu items', () => {
 		fixture.componentRef.setInput('menuItems', [
-			{ id: 'dashboard', label: 'Dashboard', link: '/' },
-			{ id: 'settings', label: 'Settings', link: '/settings' }
+			{ id: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+			{ id: 'settings', label: 'Settings', route: '/settings' }
 		]);
+
 		fixture.detectChanges();
-		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems).toHaveLength(2);
-		expect(menuItems[0].textContent).toContain('Dashboard');
-		expect(menuItems[1].textContent).toContain('Settings');
+
+		const items = fixture.nativeElement.querySelectorAll('.menu-item');
+
+		expect(items).toHaveLength(2);
+		expect(items[0].textContent).toContain('Dashboard');
+		expect(items[1].textContent).toContain('Settings');
 	});
 
-	it('should not display any menu items when none are provided', () => {
-		fixture.componentRef.setInput('menuItems', []);
+	it('should render routed items as links', () => {
+		fixture.componentRef.setInput('menuItems', [{ id: 'dashboard', label: 'Dashboard', route: '/dashboard' }]);
+
 		fixture.detectChanges();
-		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems).toHaveLength(0);
+
+		const link = fixture.nativeElement.querySelector('a');
+
+		expect(link).not.toBeNull();
+		expect(link.textContent).toContain('Dashboard');
 	});
 
-	it('should handle null menu items gracefully', () => {
-		fixture.componentRef.setInput('menuItems', null);
+	it('should render action items as buttons', () => {
+		fixture.componentRef.setInput('menuItems', [{ id: 'action', label: 'Action' }]);
+
 		fixture.detectChanges();
-		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
-		expect(menuItems).toHaveLength(0);
+
+		const button = fixture.nativeElement.querySelector('button.menu-action');
+
+		expect(button).not.toBeNull();
+		expect(button.textContent).toContain('Action');
 	});
 
-	it('should show the search input when searchable is enabled', () => {
+	it('should emit the selected action item', () => {
+		const item = {
+			id: 'action',
+			label: 'Action'
+		};
+		const emitSpy = vi.spyOn(component.menuItemSelected, 'emit');
+
+		fixture.componentRef.setInput('menuItems', [item]);
+		fixture.detectChanges();
+
+		const button = fixture.nativeElement.querySelector('button.menu-action') as HTMLButtonElement;
+
+		button.click();
+
+		expect(emitSpy).toHaveBeenCalledWith(item);
+	});
+
+	it('should show the search input only when searchable is enabled', () => {
+		fixture.detectChanges();
+
+		expect(fixture.nativeElement.querySelector('theme-input')).toBeNull();
+
 		fixture.componentRef.setInput('searchable', true);
-
 		fixture.detectChanges();
 
-		expect(fixture.nativeElement.querySelector('theme-input')).toBeTruthy();
+		expect(fixture.nativeElement.querySelector('theme-input')).not.toBeNull();
 	});
 
-	it('should filter menu items by label', () => {
+	it('should filter menu items case-insensitively', () => {
 		fixture.componentRef.setInput('searchable', true);
 		fixture.componentRef.setInput('menuItems', [
 			{ id: 'sol', label: 'Sol' },
@@ -99,28 +106,41 @@ describe('SidebarComponent', () => {
 
 		fixture.detectChanges();
 
-		(component as any).updateSearchTerm('alpha');
+		const searchInput = fixture.debugElement.query(By.directive(InputComponent)).componentInstance as InputComponent;
 
+		searchInput.valueChange.emit('ALPHA');
 		fixture.detectChanges();
 
-		const menuItems = fixture.nativeElement.querySelectorAll('.menu-item');
+		const items = fixture.nativeElement.querySelectorAll('.menu-item');
 
-		expect(menuItems).toHaveLength(1);
-		expect(menuItems[0].textContent).toContain('Alpha Centauri');
+		expect(items).toHaveLength(1);
+		expect(items[0].textContent).toContain('Alpha Centauri');
 	});
 
-	it('should show all menu items when the search term is empty', () => {
+	it('should show all menu items when the search term is cleared', () => {
+		fixture.componentRef.setInput('searchable', true);
 		fixture.componentRef.setInput('menuItems', [
 			{ id: 'sol', label: 'Sol' },
 			{ id: 'alpha', label: 'Alpha' }
 		]);
 
-		(component as any).updateSearchTerm('');
+		fixture.detectChanges();
 
-		expect((component as any).filteredMenuItems()).toHaveLength(2);
+		const searchInput = fixture.debugElement.query(By.directive(InputComponent)).componentInstance as InputComponent;
+
+		searchInput.valueChange.emit('sol');
+		fixture.detectChanges();
+
+		expect(fixture.nativeElement.querySelectorAll('.menu-item')).toHaveLength(1);
+
+		searchInput.valueChange.emit('');
+		fixture.detectChanges();
+
+		expect(fixture.nativeElement.querySelectorAll('.menu-item')).toHaveLength(2);
 	});
 
-	it('should ignore non-string labels when filtering', () => {
+	it('should ignore signal labels while filtering', () => {
+		fixture.componentRef.setInput('searchable', true);
 		fixture.componentRef.setInput('menuItems', [
 			{
 				id: 'dynamic',
@@ -132,13 +152,16 @@ describe('SidebarComponent', () => {
 			}
 		]);
 
-		(component as any).updateSearchTerm('sol');
+		fixture.detectChanges();
 
-		expect((component as any).filteredMenuItems()).toEqual([
-			{
-				id: 'sol',
-				label: 'Sol'
-			}
-		]);
+		const searchInput = fixture.debugElement.query(By.directive(InputComponent)).componentInstance as InputComponent;
+
+		searchInput.valueChange.emit('sol');
+		fixture.detectChanges();
+
+		const items = fixture.nativeElement.querySelectorAll('.menu-item');
+
+		expect(items).toHaveLength(1);
+		expect(items[0].textContent).toContain('Sol');
 	});
 });

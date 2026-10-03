@@ -21,6 +21,9 @@ import { Logger } from '@application-platform/shared-ui';
 import { IconDefinition } from '../../enums';
 import { ButtonComponent } from '../button/button.component';
 
+/**
+ * Represents an option rendered by DropdownSelectComponent.
+ */
 export interface DropdownOption<T> {
 	value: T;
 	label: string;
@@ -29,33 +32,7 @@ export interface DropdownOption<T> {
 }
 
 /**
- * A custom dropdown select component with keyboard navigation, accessibility support, and automatic popup alignment.
- *
- * Features:
- * - Two-way binding via `[(selected)]`
- * - Keyboard navigation (Arrow keys, Enter, Escape, Tab)
- * - Disabled state support for individual options
- * - Automatic popup alignment to prevent viewport overflow
- * - Click-outside-to-close behavior
- * - Generic type support for any value type
- *
- * @template T The type of the option values
- *
- * @example
- * ```typescript
- * interface User { id: number; name: string; }
- * const options: DropdownOption<User>[] = [
- *   { value: { id: 1, name: 'Alice' }, label: 'Alice' },
- *   { value: { id: 2, name: 'Bob' }, label: 'Bob', disabled: true }
- * ];
- * ```
- * ```html
- * <theme-dropdown-select
- *   [options]="options"
- *   [(selected)]="selectedUser"
- *   placeholder="Select a user"
- * />
- * ```
+ * Dropdown select with keyboard navigation, optional icons and two-way selection binding.
  */
 @Component({
 	selector: 'theme-dropdown-select',
@@ -67,46 +44,40 @@ export interface DropdownOption<T> {
 })
 export class DropdownSelectComponent<T> {
 	private readonly logger = inject(Logger);
-	/// required, so the component is truly "data-driven"
 	public readonly options = input.required<ReadonlyArray<DropdownOption<T>>>();
 
 	public readonly placeholder = input<string>('Select');
 	public readonly ariaLabel = input<string>();
 	public readonly disabled = input<boolean>(false);
 
-	/**
-	 * Two-way binding: [(selected)]="signalOrField"
-	 * You can also set only [selected] and listen to (selectedChange).
-	 */
+	/** Currently selected value. */
 	public readonly selected = model<T | null>(null);
 
-	/**
-	 * Optional, if you prefer to react explicitly to selection changes.
-	 */
+	/** Emits explicit selection changes. */
 	public readonly selectionChange = output<T | null>();
 
-	public readonly isOpen = signal(false);
+	protected readonly isOpen = signal(false);
 
-	public readonly activeIndex = signal<number>(-1);
+	protected readonly activeIndex = signal<number>(-1);
 
-	public readonly selectedOption = computed(() => {
+	protected readonly selectedOption = computed(() => {
 		const sel = this.selected();
 		if (sel === null) return null;
 		return this.options().find((o) => Object.is(o.value, sel)) ?? null;
 	});
 
-	public readonly buttonLabel = computed(() => {
+	protected readonly buttonLabel = computed(() => {
 		return this.selectedOption()?.label ?? this.placeholder();
 	});
 
-	public readonly hostEl = viewChild.required<ElementRef<HTMLElement>>('host');
+	protected readonly hostEl = viewChild.required<ElementRef<HTMLElement>>('host');
 
 	/**
 	 * Toggles the dropdown open or closed state.
 	 * When opening, syncs the active index to the current selection and adjusts popup alignment.
 	 * Does nothing if the dropdown is disabled.
 	 */
-	public toggle(): void {
+	protected toggle(): void {
 		if (this.disabled()) return;
 		this.isOpen.update((v) => !v);
 		if (this.isOpen()) {
@@ -120,7 +91,7 @@ export class DropdownSelectComponent<T> {
 	 * Syncs the active index to the current selection and adjusts popup alignment to prevent overflow.
 	 * Does nothing if the dropdown is disabled.
 	 */
-	public open(): void {
+	protected open(): void {
 		if (this.disabled()) return;
 		this.isOpen.set(true);
 		this.syncActiveIndexToSelection();
@@ -131,7 +102,7 @@ export class DropdownSelectComponent<T> {
 	 * Closes the dropdown menu.
 	 * Resets the active index to -1 and removes any popup alignment classes.
 	 */
-	public close(): void {
+	protected close(): void {
 		this.isOpen.set(false);
 		this.activeIndex.set(-1);
 		// remove any alignment class when closed
@@ -153,7 +124,7 @@ export class DropdownSelectComponent<T> {
 	 * Handle window resize events — recompute popup alignment when open to avoid viewport overflow.
 	 */
 	@HostListener('window:resize')
-	public onWindowResize(): void {
+	protected onWindowResize(): void {
 		if (!this.isOpen()) return;
 		this.adjustPopupAlignment();
 	}
@@ -164,38 +135,30 @@ export class DropdownSelectComponent<T> {
 	 * We allow a small margin (8px) to avoid touching the viewport edge.
 	 */
 	private adjustPopupAlignment(): void {
-		// wait a frame so the popup DOM is present and measured correctly
+		// Wait until the popup has been rendered before measuring its dimensions.
 		requestAnimationFrame(() => {
 			try {
 				const host = this.hostEl().nativeElement;
 				const popup = host.querySelector<HTMLElement>('.fpa-dropdown-select-list-container');
 				if (!popup) return;
 
-				// Measure popup dimensions
 				const popupRect = popup.getBoundingClientRect();
 				const popupWidth = popupRect.width || popup.offsetWidth;
 				const popupHeight = popupRect.height || popup.offsetHeight;
 
-				// Measure host position relative to viewport
 				const hostRect = host.getBoundingClientRect();
 
-				// calculate the left offset where popup would be placed (0.75rem in CSS)
-				// Convert rem to px using root font-size
 				const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize || '16');
 				const offsetPx = 0.75 * rootFontSize;
 
-				// absolute position of popup's left edge if placed normally
 				const popupLeft = hostRect.left + offsetPx;
 
-				// small safety margin from viewport edge
 				const margin = 8;
 
-				// Check horizontal overflow
 				const willOverflowRight = popupLeft + popupWidth + margin > window.innerWidth;
 
 				this.setPopupAlignRight(willOverflowRight);
 
-				// Check vertical overflow
 				const spaceBelow = window.innerHeight - hostRect.bottom - margin;
 				const spaceAbove = hostRect.top - margin;
 				const willOverflowBottom = spaceBelow < popupHeight;
@@ -203,14 +166,11 @@ export class DropdownSelectComponent<T> {
 
 				this.setPopupFlipUp(shouldFlipUp);
 
-				// Set the position for fixed positioning
 				if (shouldFlipUp) {
-					// Position above the button
 					const bottomPos = window.innerHeight - hostRect.top + 8;
 					popup.style.bottom = `${bottomPos}px`;
 					popup.style.top = 'auto';
 				} else {
-					// Position below the button
 					const topPos = hostRect.bottom + 8;
 					popup.style.top = `${topPos}px`;
 					popup.style.bottom = 'auto';
@@ -250,7 +210,7 @@ export class DropdownSelectComponent<T> {
 	 * Select the given option.
 	 * @param opt The option to select.
 	 */
-	public selectOption(opt: DropdownOption<T>): void {
+	protected selectOption(opt: DropdownOption<T>): void {
 		if (this.disabled() || opt.disabled) return;
 		this.selected.set(opt.value);
 		this.selectionChange.emit(opt.value);
@@ -269,7 +229,7 @@ export class DropdownSelectComponent<T> {
 	 * @param ev The mouse event.
 	 */
 	@HostListener('document:mousedown', ['$event'])
-	public onDocMouseDown(ev: MouseEvent): void {
+	protected onDocMouseDown(ev: MouseEvent): void {
 		if (!this.isOpen()) return;
 		const host = this.hostEl().nativeElement;
 		const target = ev.target as Node | null;
@@ -280,7 +240,7 @@ export class DropdownSelectComponent<T> {
 	 * Handle keyboard events on the main button.
 	 * @param ev The keyboard event.
 	 */
-	public onButtonKeydown(ev: KeyboardEvent): void {
+	protected onButtonKeydown(ev: KeyboardEvent): void {
 		if (this.disabled()) return;
 
 		switch (ev.key) {
@@ -310,7 +270,7 @@ export class DropdownSelectComponent<T> {
 	 * Handle keyboard navigation within the options list.
 	 * @param ev The keyboard event.
 	 */
-	public onListKeydown(ev: KeyboardEvent): void {
+	protected onListKeydown(ev: KeyboardEvent): void {
 		switch (ev.key) {
 			case 'ArrowDown':
 				ev.preventDefault();
@@ -362,7 +322,7 @@ export class DropdownSelectComponent<T> {
 	/**
 	 * Sync change from the native select element (accessibility fallback) into the component model.
 	 */
-	public onNativeSelectChange(ev: Event): void {
+	protected onNativeSelectChange(ev: Event): void {
 		const select = ev.target as HTMLSelectElement | null;
 		if (!select) return;
 		const idx = Number(select.value);

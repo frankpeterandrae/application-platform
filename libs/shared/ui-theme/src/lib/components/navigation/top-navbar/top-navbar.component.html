@@ -20,11 +20,11 @@
 
 <ng-template #navItem let-navigationItem="navigationItem">
 	<li>
-		@if (navigationItem.children) {
-			<div class="nva-dropdown">
+		@if (navigationItem.children?.length) {
+			<div class="nav-dropdown">
 				<button
-					class="nva-dropdown fpa-button-no-style fpa-p-1 fpa-light-text fpa-link"
-					[ngClass]="{ 'link-active': getCurrentRoute().includes(navigationItem.route) }"
+					class="nav-dropdown fpa-button-no-style fpa-p-1 fpa-light-text fpa-link"
+					[class.link-active]="router.url.includes(navigationItem.route)"
 					(click)="toggleNavigation(navigationItem.route)"
 					(keyup.enter)="toggleNavigation(navigationItem.route)"
 					aria-haspopup="menu"
@@ -36,7 +36,7 @@
 					class="dropdown-content fpa-bg-light-shades fpa-dark-text"
 					[ngClass]="{ 'nav-show-dropdown': showDropdown[navigationItem.route] }"
 				>
-					@for (navigationItemChild of getChildren(navigationItem); track navigationItemChild.id) {
+					@for (navigationItemChild of navigationItem.children ?? []; track navigationItemChild.id) {
 						<ng-container
 							[ngTemplateOutlet]="navList"
 							[ngTemplateOutletContext]="{
@@ -51,7 +51,7 @@
 			<a
 				class="fpa-p-1 fpa-light-text fpa-link"
 				[routerLink]="navigationItem.route"
-				[ngClass]="{ 'link-active': getCurrentRoute() === navigationItem.route }"
+				[class.link-active]="router.url === navigationItem.route"
 				(click)="resetDropdowns()"
 			>
 				<span>{{ navigationItem.label | themeUnwrapSignal }}</span>

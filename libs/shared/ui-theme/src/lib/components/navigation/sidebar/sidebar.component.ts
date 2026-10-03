@@ -12,8 +12,7 @@ import { UnwrapSignalPipe } from '../../../pipes/unwrap-signal/unwrap-signal.pip
 import { InputComponent } from '../../input/input.component';
 
 /**
- * SidebarComponent is a standalone component that represents the sidebar navigation.
- * It uses CommonModule, RouterLink, and FastSvgComponent.
+ * Renders a sidebar navigation with optional filtering.
  */
 @Component({
 	selector: 'theme-sidebar',
@@ -36,17 +35,13 @@ export class SidebarComponent {
 		const searchTerm = this.searchTerm().trim().toLowerCase();
 
 		if (!searchTerm) {
-			return this.menuItems() ?? [];
+			return this.menuItems();
 		}
 
-		return (this.menuItems() ?? []).filter((item) => {
+		return this.menuItems().filter((item) => {
 			const label = item.label;
 
-			if (typeof label !== 'string') {
-				return false;
-			}
-
-			return label.toLowerCase().includes(searchTerm);
+			return typeof label === 'string' && label.toLowerCase().includes(searchTerm);
 		});
 	});
 
