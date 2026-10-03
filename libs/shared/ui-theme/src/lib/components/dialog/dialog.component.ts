@@ -13,8 +13,7 @@ import { ButtonComponent } from '../button/button.component';
 import { DIALOG_DATA } from './dialog-tokens';
 
 /**
- * This component serves as a dialog container.
- * It is used to display a dialog in the application.
+ * Renders a dialog inside an Angular CDK overlay.
  */
 @Component({
 	selector: 'theme-dialog',
@@ -24,7 +23,7 @@ import { DIALOG_DATA } from './dialog-tokens';
 })
 export class DialogComponent {
 	private readonly overlayRef = inject(OverlayRef);
-	public data = inject<DialogConfigModel<unknown>>(DIALOG_DATA);
+	public readonly data = inject<DialogConfigModel<unknown>>(DIALOG_DATA);
 
 	protected accept(): void {
 		this.data.settings?.onAccept?.();
@@ -36,17 +35,7 @@ export class DialogComponent {
 		this.overlayRef.dispose();
 	}
 
-	/**
-	 * Closes the dialog by disposing of the overlay reference.
-	 */
-	public close(): void {
-		this.overlayRef.dispose();
-	}
-
-	/**
-	 * Handles the backdrop click event to close the dialog.
-	 */
-	public backdropClick(): void {
+	protected close(): void {
 		this.overlayRef.dispose();
 	}
 
