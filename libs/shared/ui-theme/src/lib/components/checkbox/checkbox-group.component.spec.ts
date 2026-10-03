@@ -24,10 +24,6 @@ describe('CheckboxGroupComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should initialize its value from checked checkbox configuration', () => {
 		fixture.componentRef.setInput('checkboxes', [
 			{ id: 'a', label: 'A', value: 'a', checked: true },

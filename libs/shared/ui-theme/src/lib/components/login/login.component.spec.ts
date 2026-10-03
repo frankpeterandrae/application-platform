@@ -35,10 +35,6 @@ describe('LoginComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should create the login form with email and password controls', () => {
 		expect(component.loginForm.contains('email')).toBeTruthy();
 		expect(component.loginForm.contains('password')).toBeTruthy();

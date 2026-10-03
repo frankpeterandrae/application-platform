@@ -49,10 +49,6 @@ describe('PaintEditorComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should load brands and paints on creation', () => {
 		expect(paintApiService.getBrands).toHaveBeenCalledTimes(1);
 

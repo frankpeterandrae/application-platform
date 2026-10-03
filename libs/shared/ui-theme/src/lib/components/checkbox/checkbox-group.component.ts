@@ -10,8 +10,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CheckboxConfig } from './checkbox-config.model';
 
 /**
- * A component that represents a group of checkboxes.
- * Implements the `ControlValueAccessor` interface to integrate with Angular forms.
+ * Groups multiple checkboxes into an Angular forms-compatible control.
  */
 @Component({
 	selector: 'theme-checkbox-group',
@@ -35,17 +34,14 @@ export class CheckboxGroupComponent implements ControlValueAccessor {
 	protected readonly disabled = signal(false);
 	protected readonly value = signal<string[] | null>(null);
 
-	private propagateChange: (value: string[]) => void = () => {
-		/* empty */
-	};
-	private propagateTouch: () => void = () => {
-		/* empty */
-	};
+	private propagateChange: (value: string[]) => void = () => undefined;
+	private propagateTouch: () => void = () => undefined;
 
 	/**
-	 * Writes a new value to the component.
-	 * This method is called by the Angular forms API to update the model value.
-	 * @param {string[]} value - The new value to write.
+	 * Writes a value from Angular forms to the checkbox group.
+	 *
+	 * @param value The selected checkbox values.
+	 * @returns Nothing.
 	 */
 	public writeValue(value: string[] | null | undefined): void {
 		this.value.set(value ? [...value] : []);

@@ -27,10 +27,6 @@ describe('Error404Component', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should set the sets the backToStartpage property with the translated string', async () => {
 		// wait for translation simulation
 		await new Promise((r) => setTimeout(r, 100));

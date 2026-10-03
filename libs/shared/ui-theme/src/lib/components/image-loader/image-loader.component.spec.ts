@@ -48,10 +48,6 @@ describe('ImageLoaderComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should set placeholder image on initialization', () => {
 		expect(component.imageSrc.toString()).toContain('data:image/svg+xml;base64');
 	});

@@ -67,10 +67,6 @@ describe('NebulaEditorComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should initialize the form from the nebula input', () => {
 		const form = (component as any).form;
 

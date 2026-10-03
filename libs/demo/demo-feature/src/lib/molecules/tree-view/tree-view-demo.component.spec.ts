@@ -23,10 +23,6 @@ describe('TreeViewDemoComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	describe('component initialization', () => {
 		it('should have description with title', () => {
 			expect(component.description.title).toBeDefined();

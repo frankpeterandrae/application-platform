@@ -29,10 +29,6 @@ describe('LanguageToggleComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should initialize language property correctly', () => {
 		expect(component.language).toBe(mockTranslationService.currentLang);
 	});

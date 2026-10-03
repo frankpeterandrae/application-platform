@@ -44,10 +44,6 @@ describe('DialogComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should close the dialog when close is called', () => {
 		const overlayRefSpy = vi.spyOn(component['overlayRef'], 'dispose');
 		component.close();

@@ -27,10 +27,6 @@ describe('DashboardContainerComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should provide dashboard menu items', () => {
 		expect(component.menuItems).toEqual([
 			{

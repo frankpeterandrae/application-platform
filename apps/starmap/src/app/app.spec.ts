@@ -75,10 +75,6 @@ describe('App', () => {
 		httpTesting.verify();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should load the initial map', async () => {
 		await fixture.whenStable();
 

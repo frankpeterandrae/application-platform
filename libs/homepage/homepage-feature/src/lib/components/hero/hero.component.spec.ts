@@ -24,10 +24,6 @@ describe('HeroComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should set the translated paragraph text on initialization', async () => {
 		fixture.detectChanges();
 		// wait for translation simulation

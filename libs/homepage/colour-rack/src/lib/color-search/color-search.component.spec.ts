@@ -25,10 +25,6 @@ describe('ColorSearchComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should emit searchEvent with the provided search term', () => {
 		const searchTerm = 'blue';
 		const searchEventSpy = vi.spyOn(component.searchEvent, 'emit');

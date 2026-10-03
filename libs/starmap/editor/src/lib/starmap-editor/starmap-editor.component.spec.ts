@@ -158,10 +158,6 @@ describe('StarmapEditorComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should build menu items from systems and nebulae', () => {
 		expect((component as any).menuItems()).toEqual([
 			{

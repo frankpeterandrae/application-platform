@@ -49,10 +49,6 @@ describe('TreeViewComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	describe('isFolderItem', () => {
 		it('should return true for a folder item', () => {
 			const folderItem = createFolderItem('Folder', 'folder1');

@@ -90,10 +90,6 @@ describe('SystemEditorComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should initialize the form from the selected system', () => {
 		const form = (component as any).form;
 

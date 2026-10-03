@@ -40,10 +40,6 @@ describe('HomeComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should set the title and meta description', async () => {
 		component.ngOnInit();
 		// wait for translation simulation

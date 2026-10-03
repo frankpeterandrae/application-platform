@@ -5,6 +5,9 @@
 
 import type { CheckboxColorDefinition } from '../../enums';
 
+/**
+ * Configuration for a checkbox rendered by CheckboxGroupComponent.
+ */
 export interface CheckboxConfig {
 	label: string;
 	id: string;
@@ -13,5 +16,4 @@ export interface CheckboxConfig {
 	disabled?: boolean;
 	checked?: boolean;
 	required?: boolean;
-	onInput?: (value: Event) => void;
 }

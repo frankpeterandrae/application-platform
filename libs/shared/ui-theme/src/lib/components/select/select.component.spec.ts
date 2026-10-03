@@ -35,10 +35,6 @@ describe('SelectComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should have default input values', () => {
 		expect(component.id()).toBe('');
 		expect(component.label()).toBe('');

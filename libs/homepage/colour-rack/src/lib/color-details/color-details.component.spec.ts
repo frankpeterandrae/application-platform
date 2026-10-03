@@ -43,10 +43,6 @@ describe('ColorDetailsComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should return correct color type when valid types are provided', () => {
 		component.data.componentData = { type: 'S' } as Color;
 		expect(component.colorType()).toBe('Shadow');

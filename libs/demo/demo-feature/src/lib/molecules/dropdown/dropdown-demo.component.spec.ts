@@ -25,10 +25,6 @@ describe('DropdownDemoComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should have description defined', () => {
 		expect(component.description).toBeDefined();
 		expect(component.description.title).toBeDefined();

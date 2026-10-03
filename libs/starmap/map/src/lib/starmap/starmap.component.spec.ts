@@ -108,10 +108,6 @@ describe('StarmapComponent', () => {
 		await fixture.whenStable();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should render the current star map', () => {
 		const svg = fixture.nativeElement.querySelector('.starmap-container svg');
 

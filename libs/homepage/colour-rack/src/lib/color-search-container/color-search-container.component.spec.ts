@@ -38,10 +38,6 @@ describe('ColorSearchContainerComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
-
 	it('should update search query', () => {
 		const newQuery = 'blue';
 		component.updateSearchQuery(newQuery);
