@@ -1,0 +1,70 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+<!doctype html>
+<html lang="de">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TypeScript Guided Chat</title>
+	<style>body {
+        font-family: system-ui;
+        margin: 30px auto;
+        padding: 0 16px;
+        max-width: 850px;
+        background: #f6f7f9
+    }
+
+    #assistant-side-panel {
+        background: white;
+        border: 1px solid #ddd;
+        height: 540px
+    }
+
+    #assistant-side-panel:not([open]) {
+        display: none
+    }
+
+    guided-login {
+        height: 100%
+    }</style>
+</head>
+<body><h1>Guided Chat: Funktionsdemo</h1>
+<p>Text wird schrittweise sichtbar. Über „Text vollständig anzeigen“ lässt sich die Animation überspringen.</p>
+<button id="toggle">Panel umschalten</button>
+<aside id="assistant-side-panel" open>
+	<guided-login></guided-login>
+</aside>
+<button id="assistant-button-eid" hidden>Mit Online-Ausweis anmelden</button>
+<script type="module">
+	import '../dist/index.js';
+
+	const nodes = {
+		entry_node_welcome: {
+			type: 'question',
+			text: 'Willkommen bei der Anmeldung. Welches Anmeldeverfahren möchten Sie nutzen?',
+			options: [{ value: 'Online-Ausweis', next: 'eid_info' }, { value: 'Weitere Informationen', next: 'more' }]
+		},
+		eid_info: {
+			type: 'text',
+			text: 'Für die Anmeldung mit dem Online-Ausweis benötigen Sie einen freigeschalteten Ausweis und Ihre PIN.',
+			next: 'eid_result'
+		},
+		eid_result: { type: 'result', text: 'Sie können nun die Anmeldung starten.', resultButtonId: 'eid' },
+		more: {
+			type: 'question',
+			text: 'Informationen stehen auch auf <drv-ui-link href="https://www.deutsche-rentenversicherung.de/" value="der DRV-Website"></drv-ui-link> zur Verfügung. Möchten Sie zurück?',
+			options: [{ value: 'Zurück zum Anfang', next: 'entry_node_welcome' }]
+		}
+	};
+	const chat = document.querySelector('guided-login');
+	chat.configure({ charactersPerSecond: 35, nextDelayMs: 350 });
+	chat.nodes = nodes;
+	chat.addEventListener('chat-select', e => console.log('Auswahl', e.detail));
+	document.getElementById('assistant-button-eid').addEventListener('click', () => alert('Bestehende Login-Aktion ausgelöst'));
+	document.getElementById('toggle').addEventListener('click', () => document.getElementById('assistant-side-panel').toggleAttribute('open'));
+</script>
+</body>
+</html>
