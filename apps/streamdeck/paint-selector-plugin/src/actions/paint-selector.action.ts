@@ -5,6 +5,7 @@
 
 import { type KeyDownEvent, SingletonAction, type WillAppearEvent, type WillDisappearEvent } from '@elgato/streamdeck';
 
+import type { PaintSelectorSettings } from '../paint-selector-settings';
 import { PaintSelectorController } from '../services/paint-selector.controller';
 
 const controller = new PaintSelectorController();
@@ -12,7 +13,7 @@ const controller = new PaintSelectorController();
 /**
  * Provides the paint selector action on Stream Deck keys.
  */
-export class PaintSelectorAction extends SingletonAction {
+export class PaintSelectorAction extends SingletonAction<PaintSelectorSettings> {
 	public override readonly manifestId = 'de.frankpeterandrae.paint-selector.select';
 
 	/**
@@ -20,7 +21,7 @@ export class PaintSelectorAction extends SingletonAction {
 	 *
 	 * @param event The Stream Deck will-appear event.
 	 */
-	public override async onWillAppear(event: WillAppearEvent): Promise<void> {
+	public override async onWillAppear(event: WillAppearEvent<PaintSelectorSettings>): Promise<void> {
 		if (!event.action.isKey() || event.payload.isInMultiAction) {
 			return;
 		}
@@ -38,7 +39,7 @@ export class PaintSelectorAction extends SingletonAction {
 	 *
 	 * @param event The Stream Deck will-disappear event.
 	 */
-	public override onWillDisappear(event: WillDisappearEvent): void {
+	public override onWillDisappear(event: WillDisappearEvent<PaintSelectorSettings>): void {
 		controller.unregister(event.action.id);
 	}
 
@@ -47,7 +48,7 @@ export class PaintSelectorAction extends SingletonAction {
 	 *
 	 * @param event The Stream Deck key-down event.
 	 */
-	public override async onKeyDown(event: KeyDownEvent): Promise<void> {
+	public override async onKeyDown(event: KeyDownEvent<PaintSelectorSettings>): Promise<void> {
 		await controller.press(event.action.id);
 	}
 }

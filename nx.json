@@ -1,6 +1,12 @@
 {
 	"$schema": "./node_modules/nx/schemas/nx-schema.json",
 	"targetDefaults": {
+		"lint": [
+			{
+				"filter": { "plugin": "@nx/eslint/plugin" },
+				"outputs": ["{projectRoot}/{options.output-file}"]
+			}
+		],
 		"build": {
 			"cache": true,
 			"dependsOn": ["^build"],
@@ -9,10 +15,6 @@
 		"e2e": {
 			"cache": true,
 			"inputs": ["default", "^production"]
-		},
-		"@nx/eslint:lint": {
-			"cache": true,
-			"inputs": ["default", "^default", "{workspaceRoot}/eslint.config.mjs", "{workspaceRoot}/tools/eslint-rules/**/*"]
 		},
 		"stylelint": {
 			"cache": true,
@@ -36,35 +38,28 @@
 			"dependsOn": ["^build"],
 			"inputs": ["production", "^production"]
 		},
-		"@nx/vitest:test": {
-			"cache": true,
-			"outputs": ["{options.reportsDirectory}"],
-			"inputs": ["default", "^production"],
-			"options": {
-				"coverage": true
-			},
-			"configurations": {
-				"ci": {
-					"coverage": true
-				}
-			}
-		},
-		"@nx/webpack:webpack": {
-			"cache": true,
-			"dependsOn": ["^build"],
-			"inputs": [
-				"production",
-				"^production",
-				{
-					"json": "{workspaceRoot}/tsconfig.json",
-					"fields": ["extends", "files", "include"]
-				}
-			]
-		},
 		"@angular/build:unit-test": {
 			"cache": true,
 			"inputs": ["default", "^production"]
-		}
+		},
+		"test": [
+			{
+				"filter": {
+					"plugin": "@nx/vitest"
+				},
+				"outputs": ["{workspaceRoot}/test-result/{projectRoot}"],
+				"configurations": {
+					"ci": {
+						"coverage": true,
+						"run": true
+					}
+				},
+				"options": {
+					"coverage": true,
+					"passWithNoTests": true
+				}
+			}
+		]
 	},
 	"namedInputs": {
 		"default": ["{projectRoot}/**/*", "sharedGlobals"],
@@ -92,6 +87,61 @@
 			"options": {
 				"targetName": "lint"
 			}
+		},
+		{
+			"plugin": "@nx/vitest",
+			"options": {
+				"testMode": "watch",
+				"testTargetName": "test"
+			},
+			"include": [
+				"apps/stream-overlay-server/**/*",
+				"apps/streamdeck/paint-selector-plugin/**/*",
+				"apps/streamdeck/yamaha-tsr700/**/*",
+				"apps/z21-server/**/*",
+				"libs/demo/demo-feature/**/*",
+				"libs/homepage/colour-rack/**/*",
+				"libs/homepage/homepage-feature/**/*",
+				"libs/shared/config/**/*",
+				"libs/shared/data-db/**/*",
+				"libs/shared/paint/**/*",
+				"libs/shared/shared-ui/**/*",
+				"libs/shared/ui-theme/**/*",
+				"libs/starmap/data-access/**/*",
+				"libs/starmap/domain/**/*",
+				"libs/starmap/editor/**/*",
+				"libs/starmap/map/**/*",
+				"libs/starmap/renderer-3d/**/*",
+				"libs/stream-overlay/dashboard/**/*",
+				"libs/stream-overlay/data-access/**/*",
+				"libs/stream-overlay/overlay/**/*",
+				"libs/stream-overlay/paint-api/**/*",
+				"libs/stream-overlay/paint-data-access/**/*",
+				"libs/stream-overlay/paint-protocol/**/*",
+				"libs/stream-overlay/paint-selector/**/*",
+				"libs/z21-suite/domain/**/*",
+				"libs/z21-suite/protocol/**/*",
+				"libs/z21-suite/server-utils/**/*",
+				"libs/z21-suite/shared/**/*",
+				"libs/z21-suite/z21/**/*"
+			]
+		},
+		{
+			"plugin": "@nx/vitest",
+			"options": {
+				"testMode": "watch",
+				"testTargetName": "e2e"
+			},
+			"include": ["apps/z21-server-e2e/**/*"]
+		},
+		{
+			"plugin": "@nx/webpack/plugin",
+			"options": {
+				"buildTargetName": "build",
+				"previewTargetName": "preview",
+				"serveStaticTargetName": "serve-static",
+				"serveTargetName": "serve"
+			}
 		}
 	],
 	"neverConnectToCloud": true,
@@ -112,5 +162,8 @@
 			"unitTestRunner": "vitest-analog"
 		}
 	},
-	"analytics": false
+	"analytics": false,
+	"affected": {
+		"legacy": true
+	}
 }

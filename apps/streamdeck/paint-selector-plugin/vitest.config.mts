@@ -5,21 +5,24 @@
 
 import { resolve } from 'node:path';
 
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/streamdeck/paint-selector-plugin'),
-	plugins: [tsconfigPaths()],
+	resolve: { tsconfigPaths: true },
 	test: {
 		environment: 'node',
 		globals: true,
-		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/apps/streamdeck/paint-selector-plugin/index.html'),
+		reporters: [
+			['html', { outputDir: resolve(process.cwd(), 'test-result/apps/streamdeck/paint-selector-plugin') }],
+			'default',
+			'verbose'
+		],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		passWithNoTests: true,
 		coverage: {
+			reportsDirectory: resolve(import.meta.dirname, '../../../test-result/apps/streamdeck/paint-selector-plugin/coverage'),
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov'],
 			include: ['src/**/*.ts'],

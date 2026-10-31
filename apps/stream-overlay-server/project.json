@@ -6,22 +6,18 @@
 	"tags": ["platform:nestJS", "scope:stream", "type:server-app"],
 	"targets": {
 		"build": {
-			"executor": "@nx/webpack:webpack",
-			"outputs": ["{options.outputPath}"],
+			"inputs": [
+				"production",
+				"^production",
+				{
+					"json": "{workspaceRoot}/tsconfig.json",
+					"fields": ["extends", "files", "include"]
+				}
+			],
+			"outputs": ["{workspaceRoot}/dist/apps/stream-overlay-server"],
 			"defaultConfiguration": "production",
-			"options": {
-				"target": "node",
-				"compiler": "tsc",
-				"outputPath": "dist/apps/stream-overlay-server",
-				"main": "apps/stream-overlay-server/src/main.ts",
-				"tsConfig": "apps/stream-overlay-server/tsconfig.app.json",
-				"assets": ["apps/stream-overlay-server/src/assets"],
-				"webpackConfig": "apps/stream-overlay-server/webpack.config.js"
-			},
 			"configurations": {
-				"development": {
-					"outputHashing": "none"
-				},
+				"development": {},
 				"production": {}
 			}
 		},
@@ -59,14 +55,11 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "apps/stream-overlay-serve/tsconfig.spec.json",
-				"vitestConfig": "apps/stream-overlay-serve/vitest.config.mts",
-				"reportsDirectory": "test-result/apps/stream-overlay-server/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config apps/stream-overlay-server/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

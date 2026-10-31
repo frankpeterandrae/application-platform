@@ -16,14 +16,11 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/shared/data-db/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/data-db/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/shared/data-db/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/shared/data-db/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

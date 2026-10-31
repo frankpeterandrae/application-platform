@@ -11,8 +11,14 @@ export default defineConfig({
 	test: {
 		coverage: {
 			reportsDirectory: resolve(process.cwd(), 'test-result/apps/starmap/coverage'),
-			include: ['src/**/*.ts'],
-			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
+			include: ['apps/starmap/src/**/*.ts'],
+			exclude: [
+				'apps/starmap/src/**/*.spec.ts',
+				'apps/starmap/src/**/*.test.ts',
+				'apps/starmap/src/test-setup.ts',
+				'apps/starmap/src/index.ts',
+				'apps/starmap/src/lib/**/*.model.ts'
+			]
 		}
 	}
 });

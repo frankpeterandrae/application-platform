@@ -6,14 +6,11 @@
 	"tags": ["type:server-utils", "scope:z21", "platform:node"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/z21-suite/server-utils/tsconfig.spec.json",
-				"vitestConfig": "libs/z21-suite/server-utils/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/z21-suite/server-utils/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/z21-suite/server-utils/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

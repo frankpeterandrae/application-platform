@@ -5,20 +5,19 @@
 
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
 	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/z21-suite/protocol'),
-	plugins: [tsconfigPaths()],
+	resolve: { tsconfigPaths: true },
 	test: {
-		outputFile: resolve(process.cwd(), 'test-result/libs/z21-suite/protocol/index.html'),
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
-		reporters: ['html', 'default', 'verbose'],
+		reporters: [['html', { outputDir: resolve(process.cwd(), 'test-result/libs/z21-suite/protocol') }], 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
+			reportsDirectory: resolve(import.meta.dirname, '../../../test-result/libs/z21-suite/protocol/coverage'),
 			provider: 'v8' as const,
 			reporter: ['html', 'text', 'lcov'],
 			include: ['src/**/*.ts'],

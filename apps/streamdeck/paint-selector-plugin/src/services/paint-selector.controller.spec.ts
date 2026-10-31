@@ -6,6 +6,8 @@
 import type { Paint, PaintBrandDefinition } from '@application-platform/paint';
 import type { KeyAction } from '@elgato/streamdeck';
 
+import type { PaintSelectorSettings } from '../paint-selector-settings';
+
 import { PaintSelectorController } from './paint-selector.controller';
 
 const mocks = vi.hoisted(() => ({
@@ -78,14 +80,14 @@ const paints: Paint[] = [
 	}
 ];
 
-function createAction(deviceId = 'device-1'): KeyAction {
+function createAction(deviceId = 'device-1'): KeyAction<PaintSelectorSettings> {
 	return {
 		device: {
 			id: deviceId
 		},
 		setTitle: vi.fn().mockResolvedValue(undefined),
 		setImage: vi.fn().mockResolvedValue(undefined)
-	} as unknown as KeyAction;
+	} as unknown as KeyAction<PaintSelectorSettings>;
 }
 
 describe('PaintSelectorController', () => {

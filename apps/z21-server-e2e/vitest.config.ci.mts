@@ -12,9 +12,7 @@ export default {
 		// e2e: kein Parallel-Kram in CI
 		fileParallelism: false,
 		pool: 'forks',
-		poolOptions: {
-			forks: { maxForks: 1 }
-		},
+		maxWorkers: 1,
 		// optional: etwas mehr Luft
 		testTimeout: 30_000,
 		hookTimeout: 30_000

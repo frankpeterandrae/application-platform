@@ -6,22 +6,18 @@
 	"implicitDependencies": ["z21-server"],
 	"targets": {
 		"e2e": {
-			"executor": "@nx/vitest:test",
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"],
+			"dependsOn": ["z21-server:build"],
 			"options": {
-				"tsConfig": "apps/z21-server-e2e/tsconfig.spec.json",
-				"vitestConfig": "apps/z21-server-e2e/vitest.config.mts",
-				"reportsDirectory": "test-result/apps/z21-server-e2e/coverage",
+				"cwd": ".",
+				"command": "vitest --config apps/z21-server-e2e/vitest.config.mts",
+				"coverage": true,
 				"passWithNoTests": true
 			},
-			"outputs": ["{options.reportsDirectory}"],
-			"dependsOn": ["z21-server:build"],
 			"configurations": {
 				"ci": {
-					"ci": true,
-					"executor": "@nx/vitest:test",
-					"options": {
-						"vitestConfig": "apps/z21-server-e2e/vitest.config.ci.mts"
-					}
+					"command": "vitest run --config apps/z21-server-e2e/vitest.config.ci.mts",
+					"coverage": true
 				}
 			}
 		},

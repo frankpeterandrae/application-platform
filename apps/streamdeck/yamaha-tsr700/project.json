@@ -88,14 +88,11 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "apps/streamdeck/yamaha-tsr700/tsconfig.spec.json",
-				"vitestConfig": "apps/streamdeck/yamaha-tsr700/vitest.config.mts",
-				"reportsDirectory": "test-result/apps/streamdeck/yamaha-tsr700/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config apps/streamdeck/yamaha-tsr700/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

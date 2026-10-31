@@ -6,14 +6,11 @@
 	"tags": ["type:domain", "scope:starmap", "platform:agnostic"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/starmap/domain/tsconfig.spec.json",
-				"vitestConfig": "libs/starmap/domain/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/starmap/domain/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/starmap/domain/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

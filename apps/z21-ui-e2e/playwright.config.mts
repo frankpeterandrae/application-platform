@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 
+import { workspaceRoot } from '@nx/devkit';
 import { defineConfig, devices } from '@playwright/test';
 
 const port = 4210;
@@ -15,14 +16,18 @@ const config = defineConfig({
 	workers: process.env['CI'] ? 2 : undefined,
 	retries: process.env['CI'] ? 1 : 0,
 	forbidOnly: !!process.env['CI'],
-	reporter: process.env['CI'] ? [['list']] : 'html',
+	reporter: process.env['CI']
+		? [['list']]
+		: [['html', { outputFolder: '../../test-result/apps/z21-ui-e2e/playwright-report', open: 'never' }]],
 	testDir: './src',
+	outputDir: '../../test-result/apps/z21-ui-e2e/test-result',
 	use: {
 		baseURL,
 		trace: process.env['CI'] ? 'on-first-retry' : 'on'
 	},
 	webServer: {
-		command: `cd ../.. && npx nx run z21-ui:serve-static --port=${port} --host=127.0.0.1`,
+		command: 'npx nx run z21-ui:serve-static',
+		cwd: workspaceRoot,
 		url: baseURL,
 		reuseExistingServer: !process.env['CI'],
 		timeout: 150_000,
