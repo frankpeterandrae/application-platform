@@ -13,7 +13,11 @@ export class ChatMessageElement extends HTMLElement {
 		this.#visual = document.createElement('span');
 		this.#visual.setAttribute('aria-hidden', 'true');
 		this.#accessible = document.createElement('span');
-		this.#accessible.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap';
+		this.#accessible.className = 'sr-only';
+		const style = document.createElement('link');
+		style.rel = 'stylesheet';
+		style.href = new URL('../styles/chat-message.css', import.meta.url).href;
+		root.append(style);
 		root.append(this.#visual, this.#accessible);
 	}
 	public setVisualText(value: string): void {

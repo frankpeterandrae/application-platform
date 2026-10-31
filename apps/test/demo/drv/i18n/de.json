@@ -1,0 +1,39 @@
+{
+	"chat": {
+		"region": "Anmeldeassistent",
+		"heading": "Hilfe bei der Anmeldung",
+		"restart": "Neu beginnen",
+		"log": "Chatverlauf",
+		"skip": "Text vollständig anzeigen",
+		"streaming": "Text wird angezeigt",
+		"error": "Der Dialog konnte nicht fortgesetzt werden.",
+		"missingAction": "Anmeldeaktion nicht verfügbar.",
+		"loginAction": "Anmelden",
+		"choose": "Antwort auswählen",
+		"loading": "Chat wird geladen",
+		"flowError": "Dialog konnte nicht geladen werden"
+	},
+	"guided_login": {
+		"entry": {
+			"text": {
+				"welcome": "Willkommen bei der Anmeldung."
+			},
+			"question": "Wie möchten Sie sich anmelden?",
+			"fast_path": "Schnellpfad",
+			"select_device": "Gerät auswählen"
+		},
+		"eid": {
+			"info": "Halten Sie Ihren Online-Ausweis bereit.",
+			"result": "Sie können jetzt die Anmeldung starten."
+		},
+		"more": {
+			"question": "Möchten Sie zurück zum Anfang?",
+			"restart": "Zurück zum Anfang"
+		}
+	},
+	"short": {
+		"welcome": "Wie können wir helfen?",
+		"answer": "Informationen",
+		"info": "Dies ist ein alternativer Flow."
+	}
+}

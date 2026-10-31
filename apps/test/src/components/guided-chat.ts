@@ -11,7 +11,7 @@ import { Announcer } from '../accessibility/announcer.js';
 import { FocusManager } from '../accessibility/focus-manager.js';
 import { effectiveCharactersPerSecond } from '../accessibility/motion-preferences.js';
 import { plainText } from '../content.js';
-import { CSS } from '../styles.js';
+import { chatText } from '../i18n/keys.js';
 import { ChatMessageElement } from './chat-message.js';
 import { ChatActionsElement } from './chat-actions.js';
 import type { NodeSource, NodeHandler, ChatOptions, Option } from '../types/chat.types.js';
@@ -32,6 +32,24 @@ export class GuidedChat extends HTMLElement {
 	#abort?: AbortController;
 	#panelObserver?: MutationObserver;
 	#initialized = false;
+	#translate: (key: string) => string = (key) => key;
+	public set translator(fn: (key: string) => string) {
+		this.#translate = fn;
+		this.#refreshLabels();
+	}
+	#t(key: string): string {
+		return this.#translate(key);
+	}
+	#refreshLabels(): void {
+		if (!this.#initialized) return;
+		this.shadowRoot?.querySelector('.chat')?.setAttribute('aria-label', this.#t(chatText.region));
+		const heading = this.shadowRoot?.querySelector('.header strong');
+		if (heading) heading.textContent = this.#t(chatText.heading);
+		const restart = this.shadowRoot?.querySelector<HTMLButtonElement>('.restart');
+		if (restart) restart.textContent = this.#t(chatText.restart);
+		this.#log.setAttribute('aria-label', this.#t(chatText.log));
+		this.#skip.textContent = this.#t(chatText.skip);
+	}
 	#log!: HTMLDivElement;
 	#status!: HTMLDivElement;
 	#skip!: HTMLButtonElement;
@@ -59,30 +77,30 @@ export class GuidedChat extends HTMLElement {
 	public connectedCallback(): void {
 		if (!this.#initialized) {
 			const root = this.shadowRoot!;
-			const style = document.createElement('style');
-			style.textContent =
-				CSS +
-				'\n.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}';
+			const style = document.createElement('link');
+			style.rel = 'stylesheet';
+			style.href = new URL('../styles/chat.css', import.meta.url).href;
 			const shell = document.createElement('section');
 			shell.className = 'chat';
-			shell.setAttribute('aria-label', 'Anmeldeassistent');
+			shell.setAttribute('aria-label', this.#t(chatText.region));
 			const header = document.createElement('header');
 			header.className = 'header';
 			const heading = document.createElement('strong');
-			heading.textContent = 'Hilfe bei der Anmeldung';
-			const restart = this.#button('Neu beginnen');
+			heading.textContent = this.#t(chatText.heading);
+			const restart = this.#button(this.#t(chatText.restart));
+			restart.className = 'restart';
 			restart.addEventListener('click', () => void this.restart());
 			header.append(heading, restart);
 			this.#log = document.createElement('div');
 			this.#log.className = 'log';
 			this.#log.setAttribute('role', 'log');
-			this.#log.setAttribute('aria-label', 'Chatverlauf');
+			this.#log.setAttribute('aria-label', this.#t(chatText.log));
 			this.#log.setAttribute('aria-live', 'off');
 			const footer = document.createElement('footer');
 			footer.className = 'footer';
 			this.#status = document.createElement('div');
 			this.#status.className = 'status';
-			this.#skip = this.#button('Text vollständig anzeigen');
+			this.#skip = this.#button(this.#t(chatText.skip));
 			this.#skip.hidden = true;
 			this.#skip.addEventListener('click', () => this.skip());
 			const live = document.createElement('div');
@@ -161,7 +179,7 @@ export class GuidedChat extends HTMLElement {
 			if (!abort.signal.aborted) this.#event('chat-end', {});
 		} catch (error) {
 			if (!abort.signal.aborted) {
-				this.#status.textContent = 'Der Dialog konnte nicht fortgesetzt werden.';
+				this.#status.textContent = this.#t(chatText.error);
 				this.#announcer.announce(this.#status.textContent);
 				this.#event('chat-error', { error });
 			}
@@ -181,7 +199,7 @@ export class GuidedChat extends HTMLElement {
 		this.#stream = stream;
 		this.#store.update(data.id, { status: 'streaming' });
 		this.#skip.hidden = false;
-		this.#status.textContent = 'Text wird angezeigt';
+		this.#status.textContent = this.#t(chatText.streaming);
 		// Single full announcement. Visual animation remains aria-hidden at all times.
 		this.#announcer.announce(text);
 		try {
@@ -209,6 +227,7 @@ export class GuidedChat extends HTMLElement {
 	#choose(options: Option[], signal: AbortSignal): Promise<string> {
 		if (!options.length) return Promise.reject(new Error('Frage ohne Antworten'));
 		const choices = new ChatActionsElement();
+		choices.groupLabel = this.#t(chatText.choose);
 		choices.setChoices(options);
 		this.#log.append(choices);
 		this.#scroll();
@@ -244,11 +263,11 @@ export class GuidedChat extends HTMLElement {
 	#action(buttonId: string): void {
 		const original = document.getElementById(`assistant-button-${buttonId}`);
 		if (!original) {
-			this.#status.textContent = 'Anmeldeaktion nicht verfügbar.';
+			this.#status.textContent = this.#t(chatText.missingAction);
 			this.#announcer.announce(this.#status.textContent);
 			return;
 		}
-		const button = this.#button(original.getAttribute('value') || original.textContent?.trim() || 'Anmelden');
+		const button = this.#button(original.getAttribute('value') || original.textContent?.trim() || this.#t(chatText.loginAction));
 		button.addEventListener('click', () => {
 			this.#event('chat-action', { id: buttonId });
 			original.click();
