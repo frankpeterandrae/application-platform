@@ -9,6 +9,7 @@
 		"build": {
 			"executor": "@angular/build:application",
 			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
 			"options": {
 				"outputPath": "dist/apps/starmap",
 				"browser": "apps/starmap/src/main.ts",
@@ -62,11 +63,15 @@
 					"extractLicenses": false,
 					"sourceMap": true
 				}
-			},
-			"defaultConfiguration": "production"
+			}
 		},
 		"serve": {
 			"executor": "@angular/build:dev-server",
+			"defaultConfiguration": "development",
+			"continuous": true,
+			"readyWhen": {
+				"signal": true
+			},
 			"options": {
 				"host": "127.0.0.1",
 				"port": 4230
@@ -78,9 +83,7 @@
 				"development": {
 					"buildTarget": "starmap:build:development"
 				}
-			},
-			"defaultConfiguration": "development",
-			"continuous": true
+			}
 		},
 		"test": {
 			"executor": "@angular/build:unit-test",
@@ -88,11 +91,10 @@
 				"tsConfig": "apps/starmap/tsconfig.spec.json",
 				"runnerConfig": "apps/starmap/vitest.config.mts",
 				"coverage": true,
-				"coverageInclude": ["src/**/*.ts"],
+				"coverageInclude": ["apps/starmap/src/**/*.ts"],
 				"coverageExclude": ["libs/**/*.ts"],
 				"coverageReporters": ["html", "text", "lcov"],
-				"reporters": ["html", "default", "verbose"],
-				"outputFile": "test-result/apps/starmap/index.html"
+				"reporters": [["html", { "outputDir": "test-result/apps/starmap" }], "default", "verbose"]
 			}
 		},
 		"serve-static": {
@@ -102,8 +104,13 @@
 				"buildTarget": "starmap:build",
 				"port": 4230,
 				"staticFilePath": "dist/apps/starmap/browser",
-				"spa": true
-			}
+				"spa": true,
+				"host": "127.0.0.1"
+			},
+			"readyWhen": {
+				"signal": true
+			},
+			"dependsOn": ["build"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

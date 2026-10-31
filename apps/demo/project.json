@@ -9,6 +9,7 @@
 		"build": {
 			"executor": "@angular/build:application",
 			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
 			"options": {
 				"outputPath": "dist/apps/demo",
 				"index": "apps/demo/src/index.html",
@@ -67,11 +68,12 @@
 					"extractLicenses": false,
 					"sourceMap": true
 				}
-			},
-			"defaultConfiguration": "production"
+			}
 		},
 		"serve": {
 			"executor": "@angular/build:dev-server",
+			"defaultConfiguration": "development",
+			"continuous": true,
 			"options": {
 				"host": "127.0.0.1",
 				"port": 4250
@@ -84,8 +86,9 @@
 					"buildTarget": "demo:build:development"
 				}
 			},
-			"defaultConfiguration": "development",
-			"continuous": true
+			"readyWhen": {
+				"signal": true
+			}
 		},
 		"test": {
 			"executor": "@angular/build:unit-test",
@@ -93,11 +96,10 @@
 				"tsConfig": "apps/demo/tsconfig.spec.json",
 				"runnerConfig": "apps/demo/vitest.config.mts",
 				"coverage": true,
-				"coverageInclude": ["src/**/*.ts"],
+				"coverageInclude": ["apps/demo/src/**/*.ts"],
 				"coverageExclude": ["libs/**/*.ts"],
 				"coverageReporters": ["html", "text", "lcov"],
-				"reporters": ["html", "default", "verbose"],
-				"outputFile": "test-result/apps/demo/index.html"
+				"reporters": [["html", { "outputDir": "test-result/apps/demo" }], "default", "verbose"]
 			}
 		},
 		"stylelint": {

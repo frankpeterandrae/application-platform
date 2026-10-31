@@ -79,14 +79,11 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "apps/streamdeck/paint-selector-plugin/tsconfig.spec.json",
-				"vitestConfig": "apps/streamdeck/paint-selector-plugin/vitest.config.mts",
-				"reportsDirectory": "test-result/apps/streamdeck/paint-selector-plugin/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config apps/streamdeck/paint-selector-plugin/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

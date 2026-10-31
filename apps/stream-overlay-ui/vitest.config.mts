@@ -11,8 +11,14 @@ export default defineConfig({
 	test: {
 		coverage: {
 			reportsDirectory: resolve(process.cwd(), 'test-result/apps/stream-overlay-ui/coverage'),
-			include: ['src/**/*.ts'],
-			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
+			include: ['apps/stream-overlay-ui/src/**/*.ts'],
+			exclude: [
+				'apps/stream-overlay-ui/src/**/*.spec.ts',
+				'apps/stream-overlay-ui/src/**/*.test.ts',
+				'apps/stream-overlay-ui/src/test-setup.ts',
+				'apps/stream-overlay-ui/src/index.ts',
+				'apps/stream-overlay-ui/src/lib/**/*.model.ts'
+			]
 		}
 	}
 });

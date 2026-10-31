@@ -5,21 +5,20 @@
 
 import { resolve } from 'node:path';
 
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/apps/stream-overlay-server'),
-	plugins: [tsconfigPaths()],
+	resolve: { tsconfigPaths: true },
 	test: {
 		environment: 'node',
 		globals: true,
-		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/apps/stream-overlay-server/index.html'),
+		reporters: [['html', { outputDir: resolve(process.cwd(), 'test-result/apps/stream-overlay-server') }], 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		passWithNoTests: true,
 		coverage: {
+			reportsDirectory: resolve(import.meta.dirname, '../../test-result/apps/stream-overlay-server/coverage'),
 			reporter: ['html', 'text', 'lcov'],
 			provider: 'v8',
 			include: ['src/**/*.ts'],

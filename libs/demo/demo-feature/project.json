@@ -7,14 +7,11 @@
 	"tags": ["type:feature", "scope:demo", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/demo/demo-feature/tsconfig.spec.json",
-				"vitestConfig": "libs/demo/demo-feature/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/demo/demo-feature/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config libs/demo/demo-feature/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

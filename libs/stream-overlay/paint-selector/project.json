@@ -7,14 +7,11 @@
 	"tags": ["platform:agnostic", "scope:stream", "type:util"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/stream-overlay/paint-selector/tsconfig.spec.json",
-				"vitestConfig": "libs/stream-overlay/paint-selector/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/stream-overlay/paint-selector/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config libs/stream-overlay/paint-selector/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

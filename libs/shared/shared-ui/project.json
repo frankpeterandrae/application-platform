@@ -7,14 +7,11 @@
 	"tags": ["type:util", "scope:shared", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/shared/shared-ui/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/shared-ui/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/shared/shared-ui/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config libs/shared/shared-ui/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

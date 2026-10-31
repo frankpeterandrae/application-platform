@@ -85,7 +85,7 @@ jobs:
           echo "$changed_files"
 
           if echo "$changed_files" | grep -Eq \
-            '^(apps/|libs/|tools/|scripts/|package\.json$|package-lock\.json$|nx\.json$|tsconfig.*\.json$|eslint\.config\.mjs$|vitest.*\.ts$|global\.d\.ts$|\.stylelintrc\.json$)'; then
+            '^(apps/|libs/|tools/|scripts/|package\.json$|package-lock\.json$|\.npmrc$|\.nvmrc$|nx\.json$|tsconfig.*\.json$|eslint\.config\.mjs$|vitest.*\.ts$|global\.d\.ts$|\.stylelintrc\.json$)'; then
             echo "run_ci=true" >> "$GITHUB_OUTPUT"
           else
             echo "run_ci=false" >> "$GITHUB_OUTPUT"
@@ -94,8 +94,12 @@ jobs:
       - uses: actions/setup-node@v7
         if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         with:
-          node-version: "24"
+          node-version-file: ".nvmrc"
           cache: "npm"
+
+      - name: Use workspace npm version
+        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
+        run: npm install --global npm@10.9.9
 
       - name: Install deps
         if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
@@ -194,9 +198,9 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Install Playwright OS deps
+      - name: Install Playwright browsers and OS deps
         if: ${{ inputs.mode == 'main' || steps.affected-e2e.outputs.has_e2e == 'true' }}
-        run: npx playwright install-deps
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: E2E
         if: ${{ inputs.mode == 'main' || steps.affected-e2e.outputs.has_e2e == 'true' }}

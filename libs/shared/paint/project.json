@@ -6,14 +6,11 @@
 	"tags": ["type:util", "scope:shared", "platform:agnostic"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/paint/shared/tsconfig.spec.json",
-				"vitestConfig": "libs/paint/shared/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/paint/shared/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/shared/paint/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

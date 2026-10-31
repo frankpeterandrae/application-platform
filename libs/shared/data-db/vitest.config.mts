@@ -6,7 +6,6 @@
 import { resolve } from 'node:path';
 
 import angular from '@analogjs/vite-plugin-angular';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -17,15 +16,16 @@ export default defineConfig({
 			allow: [resolve(process.cwd(), '.')]
 		}
 	},
-	plugins: [angular(), tsconfigPaths()],
+	plugins: [angular()],
+	resolve: { tsconfigPaths: true },
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts', resolve(process.cwd(), 'vitest.setup.ts')],
-		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/libs/shared/data-db/index.html'),
+		reporters: [['html', { outputDir: resolve(process.cwd(), 'test-result/libs/shared/data-db') }], 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
+			reportsDirectory: resolve(import.meta.dirname, '../../../test-result/libs/shared/data-db/coverage'),
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov'],
 			include: ['src/**/*.ts'],

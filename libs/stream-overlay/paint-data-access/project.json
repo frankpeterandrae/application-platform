@@ -6,13 +6,11 @@
 	"tags": ["platform:nestJS", "scope:stream", "type:data-access"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/stream-overlay/paint-data-access/tsconfig.spec.json",
-				"vitestConfig": "libs/stream-overlay/paint-data-access/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/stream-overlay/paint-data-access/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/stream-overlay/paint-data-access/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

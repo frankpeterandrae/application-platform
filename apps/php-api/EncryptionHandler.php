@@ -24,7 +24,7 @@ class EncryptionHandler
 			'AES-256-CBC',
 			$this->encryptionFile['encryption_key'],
 			0,
-			'1234567812345678'
+			'1234567812345678',
 		);
 		file_put_contents('db_encrypted_config.txt', $encryptedCredentials);
 	}

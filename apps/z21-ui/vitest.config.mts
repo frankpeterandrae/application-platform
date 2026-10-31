@@ -11,8 +11,14 @@ export default defineConfig({
 	test: {
 		coverage: {
 			reportsDirectory: resolve(process.cwd(), 'test-result/apps/z21-ui/coverage'),
-			include: ['src/**/*.ts'],
-			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
+			include: ['apps/z21-ui/src/**/*.ts'],
+			exclude: [
+				'apps/z21-ui/src/**/*.spec.ts',
+				'apps/z21-ui/src/**/*.test.ts',
+				'apps/z21-ui/src/test-setup.ts',
+				'apps/z21-ui/src/index.ts',
+				'apps/z21-ui/src/lib/**/*.model.ts'
+			]
 		}
 	}
 });

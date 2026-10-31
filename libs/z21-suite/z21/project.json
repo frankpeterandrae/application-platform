@@ -6,14 +6,11 @@
 	"tags": ["type:integration", "scope:z21", "platform:node"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/z21-suite/z21/tsconfig.spec.json",
-				"vitestConfig": "libs/z21-suite/z21/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/z21-suite/z21/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/z21-suite/z21/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

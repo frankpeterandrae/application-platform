@@ -55,14 +55,11 @@
 			}
 		},
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "apps/z21-server/tsconfig.spec.json",
-				"vitestConfig": "apps/z21-server/vitest.config.mts",
-				"reportsDirectory": "test-result/apps/z21-server/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config apps/z21-server/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

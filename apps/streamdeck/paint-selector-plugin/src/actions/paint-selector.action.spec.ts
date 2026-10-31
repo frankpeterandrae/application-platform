@@ -23,6 +23,8 @@ vi.mock('../services/paint-selector.controller', () => ({
 	}
 }));
 
+import type { PaintSelectorSettings } from '../paint-selector-settings';
+
 import { PaintSelectorAction } from './paint-selector.action';
 
 describe('PaintSelectorAction', () => {
@@ -57,7 +59,7 @@ describe('PaintSelectorAction', () => {
 					column: 3
 				}
 			}
-		} as unknown as WillAppearEvent;
+		} as unknown as WillAppearEvent<PaintSelectorSettings>;
 
 		await action.onWillAppear(event);
 
@@ -77,7 +79,7 @@ describe('PaintSelectorAction', () => {
 			payload: {
 				isInMultiAction: false
 			}
-		} as unknown as WillAppearEvent;
+		} as unknown as WillAppearEvent<PaintSelectorSettings>;
 
 		await action.onWillAppear(event);
 
@@ -96,7 +98,7 @@ describe('PaintSelectorAction', () => {
 			payload: {
 				isInMultiAction: true
 			}
-		} as unknown as WillAppearEvent;
+		} as unknown as WillAppearEvent<PaintSelectorSettings>;
 
 		await action.onWillAppear(event);
 
@@ -112,7 +114,7 @@ describe('PaintSelectorAction', () => {
 			action: {
 				id: 'action-1'
 			}
-		} as unknown as WillDisappearEvent;
+		} as unknown as WillDisappearEvent<PaintSelectorSettings>;
 
 		action.onWillDisappear(event);
 
@@ -126,7 +128,7 @@ describe('PaintSelectorAction', () => {
 			action: {
 				id: 'action-1'
 			}
-		} as unknown as KeyDownEvent;
+		} as unknown as KeyDownEvent<PaintSelectorSettings>;
 
 		await action.onKeyDown(event);
 

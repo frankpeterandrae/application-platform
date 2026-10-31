@@ -16,14 +16,11 @@
 	},
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/shared/ui-theme/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/ui-theme/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/shared/ui-theme/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config libs/shared/ui-theme/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"watch-css": {
 			"executor": "nx:run-commands",

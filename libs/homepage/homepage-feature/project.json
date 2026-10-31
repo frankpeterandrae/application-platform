@@ -7,14 +7,11 @@
 	"tags": ["type:feature", "scope:homepage", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/homepage/homepage-feature/tsconfig.spec.json",
-				"vitestConfig": "libs/homepage/homepage-feature/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/homepage/homepage-feature/coverage",
-				"passWithNoTests": true
+				"cwd": ".",
+				"command": "vitest --config libs/homepage/homepage-feature/vitest.config.mts"
 			},
-			"outputs": ["{options.reportsDirectory}"]
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

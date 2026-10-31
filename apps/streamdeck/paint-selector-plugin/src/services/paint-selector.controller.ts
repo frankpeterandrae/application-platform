@@ -7,13 +7,15 @@ import type { PaintId } from '@application-platform/paint';
 import { PAINT_SELECTOR_HOME_SLOT, PaintSelector } from '@application-platform/paint-selector';
 import streamDeck, { type KeyAction } from '@elgato/streamdeck';
 
+import type { PaintSelectorSettings } from '../paint-selector-settings';
+
 import { PaintSelectorButtonRenderer } from './paint-selector-button.renderer';
 import { StreamOverlayClient } from './stream-overlay.client';
 
 const STREAM_DECK_COLUMNS = 8;
 
 interface VisibleAction {
-	readonly action: KeyAction;
+	readonly action: KeyAction<PaintSelectorSettings>;
 	readonly slotIndex: number;
 }
 
@@ -53,7 +55,7 @@ export class PaintSelectorController {
 	 * @param row The key row.
 	 * @param column The key column.
 	 */
-	public register(id: string, action: KeyAction, row: number, column: number): void {
+	public register(id: string, action: KeyAction<PaintSelectorSettings>, row: number, column: number): void {
 		this.visibleActions.set(id, {
 			action,
 			slotIndex: row * STREAM_DECK_COLUMNS + column

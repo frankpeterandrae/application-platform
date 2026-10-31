@@ -7,13 +7,11 @@
 	"tags": ["type:util", "scope:shared", "platform:agnostic"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
 			"options": {
-				"tsConfig": "libs/shared/config/tsconfig.spec.json",
-				"vitestConfig": "libs/shared/config/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/shared/config/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/shared/config/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"typecheck": {
 			"executor": "nx:noop",

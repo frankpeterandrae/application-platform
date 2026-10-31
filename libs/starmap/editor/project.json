@@ -7,14 +7,11 @@
 	"tags": ["type:feature", "scope:starmap", "platform:browser"],
 	"targets": {
 		"test": {
-			"executor": "@nx/vitest:test",
-			"outputs": ["{options.reportsDirectory}"],
 			"options": {
-				"tsConfig": "libs/starmap/editor/tsconfig.spec.json",
-				"vitestConfig": "libs/starmap/editor/vitest.config.mts",
-				"reportsDirectory": "test-result/libs/starmap/editor/coverage",
-				"passWithNoTests": true
-			}
+				"cwd": ".",
+				"command": "vitest --config libs/starmap/editor/vitest.config.mts"
+			},
+			"outputs": ["{workspaceRoot}/test-result/{projectRoot}"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

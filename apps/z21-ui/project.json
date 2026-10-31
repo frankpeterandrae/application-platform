@@ -9,6 +9,7 @@
 		"build": {
 			"executor": "@angular/build:application",
 			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
 			"options": {
 				"outputPath": "dist/apps/z21-ui",
 				"browser": "apps/z21-ui/src/main.ts",
@@ -43,12 +44,15 @@
 					"extractLicenses": false,
 					"sourceMap": true
 				}
-			},
-			"defaultConfiguration": "production"
+			}
 		},
 		"serve": {
 			"continuous": true,
 			"executor": "@angular/build:dev-server",
+			"defaultConfiguration": "development",
+			"readyWhen": {
+				"signal": true
+			},
 			"options": {
 				"host": "127.0.0.1",
 				"port": 4210
@@ -60,8 +64,7 @@
 				"development": {
 					"buildTarget": "z21-ui:build:development"
 				}
-			},
-			"defaultConfiguration": "development"
+			}
 		},
 		"test": {
 			"executor": "@angular/build:unit-test",
@@ -69,11 +72,10 @@
 				"tsConfig": "apps/z21-ui/tsconfig.spec.json",
 				"runnerConfig": "apps/z21-ui/vitest.config.mts",
 				"coverage": true,
-				"coverageInclude": ["src/**/*.ts"],
+				"coverageInclude": ["apps/z21-ui/src/**/*.ts"],
 				"coverageExclude": ["libs/**/*.ts"],
 				"coverageReporters": ["html", "text", "lcov"],
-				"reporters": ["html", "default", "verbose"],
-				"outputFile": "test-result/apps/z21-ui/index.html"
+				"reporters": [["html", { "outputDir": "test-result/apps/z21-ui" }], "default", "verbose"]
 			}
 		},
 		"serve-static": {
@@ -83,8 +85,13 @@
 				"buildTarget": "z21-ui:build",
 				"port": 4210,
 				"staticFilePath": "dist/apps/z21-ui/browser",
-				"spa": true
-			}
+				"spa": true,
+				"host": "127.0.0.1"
+			},
+			"readyWhen": {
+				"signal": true
+			},
+			"dependsOn": ["build"]
 		},
 		"stylelint": {
 			"executor": "nx-stylelint:lint"

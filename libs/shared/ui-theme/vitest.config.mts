@@ -6,21 +6,21 @@
 import { resolve } from 'node:path';
 
 import angular from '@analogjs/vite-plugin-angular';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	root: import.meta.dirname,
 	cacheDir: resolve(process.cwd(), 'node_modules/.vite/libs/shared/ui-theme'),
-	plugins: [angular(), tsconfigPaths()],
+	plugins: [angular()],
+	resolve: { tsconfigPaths: true },
 	test: {
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: [resolve(process.cwd(), 'vitest.setup.ts')],
-		reporters: ['html', 'default', 'verbose'],
-		outputFile: resolve(process.cwd(), 'test-result/libs/shared/ui-theme/index.html'),
+		reporters: [['html', { outputDir: resolve(process.cwd(), 'test-result/libs/shared/ui-theme') }], 'default', 'verbose'],
 		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
 		coverage: {
+			reportsDirectory: resolve(import.meta.dirname, '../../../test-result/libs/shared/ui-theme/coverage'),
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov'],
 			include: ['src/**/*.ts'],
