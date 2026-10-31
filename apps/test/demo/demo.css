@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+body {
+    font-family: system-ui;
+    margin: 30px auto;
+    padding: 0 16px;
+    max-width: 850px;
+    background: #f6f7f9
+}
+
+#assistant-side-panel {
+    background: white;
+    border: 1px solid #ddd;
+    height: 540px
+}
+
+#assistant-side-panel:not([open]) {
+    display: none
+}
+
+guided-login {
+    height: 100%
+}

@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2026. Frank-Peter Andrä
+ * All rights reserved.
+ */
+
+:host {
+    display: block;
+    inline-size: min(100%, 480px)
+}
+
+[role="group"] {
+    display: grid;
+    gap: 8px
+}
+
+button {
+    font: inherit;
+    text-align: start;
+    border: 1px solid var(--gc-accent, #0f62fe);
+    border-radius: 7px;
+    padding: 10px 12px;
+    background: transparent;
+    color: var(--gc-accent, #0f62fe);
+    cursor: pointer
+}
+
+button:focus-visible {
+    outline: 3px solid var(--gc-focus, #0f62fe);
+    outline-offset: 2px
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed
+}
