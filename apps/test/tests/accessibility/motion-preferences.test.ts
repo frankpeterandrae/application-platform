@@ -5,6 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { effectiveCharactersPerSecond } from '../../src/accessibility/motion-preferences.js';
+
 describe('motion preferences', () => {
 	it('disables animated text with reduced motion', () => {
 		vi.stubGlobal('matchMedia', () => ({ matches: true }));

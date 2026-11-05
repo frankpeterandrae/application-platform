@@ -4,6 +4,7 @@
  */
 
 import { safeFragment } from '../content.js';
+
 export class ChatMessageElement extends HTMLElement {
 	#visual: HTMLSpanElement;
 	#accessible: HTMLSpanElement;

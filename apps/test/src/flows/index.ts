@@ -4,6 +4,7 @@
  */
 
 import type { FlowDefinition, FlowLoader } from './flow.types.js';
+
 /** Explicit allowlist so the HTML attribute cannot construct arbitrary import paths. */
 const registry: Record<string, FlowLoader> = {
 	demo: async (): Promise<FlowDefinition> => {

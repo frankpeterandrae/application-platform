@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { ChatEngine } from '../../src/core/chat-engine.js';
+
 describe('ChatEngine', () => {
 	it('looks up sync and async sources', async () => {
 		const engine = new ChatEngine({ a: { type: 'text', text: 'A' } });

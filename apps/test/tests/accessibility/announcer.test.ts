@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { Announcer } from '../../src/accessibility/announcer.js';
+
 describe('Announcer', () => {
 	it('uses one atomic polite live region', () => {
 		const node = document.createElement('div');

@@ -4,6 +4,7 @@
  */
 
 import type { I18nOptions, TranslationObject, TranslationParams, TranslationValue } from './translation.types.js';
+
 export class I18n {
 	private currentLanguage: string;
 	private readonly translations = new Map<string, TranslationObject>();

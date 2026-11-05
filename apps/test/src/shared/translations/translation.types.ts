@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2026. Frank-Peter Andrä
- * All rights reserved.
- */
-
 export type TranslationValue = string | TranslationObject;
 export interface TranslationObject {
 	[key: string]: TranslationValue;

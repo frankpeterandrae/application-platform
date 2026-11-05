@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { plainText, safeFragment } from '../src/content.js';
+
 describe('content sanitizer', () => {
 	it('does not retain scripts or javascript URLs', () => {
 		const node = document.createElement('div');

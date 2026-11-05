@@ -4,6 +4,7 @@
  */
 
 import type { TranslationObject } from './translation.types.js';
+
 export async function loadTranslations(language: string): Promise<TranslationObject> {
 	// Relative to the hosting application, not the Web Component's JS bundle.
 	const response = await fetch(`drv/i18n/${encodeURIComponent(language)}.json`);

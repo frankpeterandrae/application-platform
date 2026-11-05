@@ -6,6 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ChatEngine } from '../../src/core/chat-engine.js';
 import { DialogRunner } from '../../src/core/dialog-runner.js';
+
 describe('DialogRunner', () => {
 	it('visits question, answer and result in order', async () => {
 		const engine = new ChatEngine({

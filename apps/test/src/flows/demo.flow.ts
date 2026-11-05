@@ -5,6 +5,7 @@
 
 import type { DialogNode } from '../types/chat.types.js';
 import { i18n } from '../shared/translations/index.js';
+
 /** Existing getFlow() shape preserved. A fresh map enables language changes. */
 export function getFlow(): Record<string, DialogNode> {
 	return {

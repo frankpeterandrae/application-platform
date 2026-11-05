@@ -4,7 +4,7 @@
  */
 
 import { ChatEngine } from '../core/chat-engine.js';
-import { DialogRunner, type DialogPort } from '../core/dialog-runner.js';
+import { type DialogPort, DialogRunner } from '../core/dialog-runner.js';
 import { MessageStore } from '../core/message-store.js';
 import { TextStream } from '../streaming/text-stream.js';
 import { Announcer } from '../accessibility/announcer.js';
@@ -12,9 +12,12 @@ import { FocusManager } from '../accessibility/focus-manager.js';
 import { effectiveCharactersPerSecond } from '../accessibility/motion-preferences.js';
 import { plainText } from '../content.js';
 import { chatText } from '../i18n/keys.js';
+import { loadFlow } from '../flows/index.js';
+import { i18n } from '../shared/translations/index.js';
+import type { FlowDefinition } from '../flows/flow.types.js';
 import { ChatMessageElement } from './chat-message.js';
 import { ChatActionsElement } from './chat-actions.js';
-import type { NodeSource, NodeHandler, ChatOptions, Option } from '../types/chat.types.js';
+import type { ChatOptions, NodeHandler, NodeSource, Option } from '../types/chat.types.js';
 
 const DEFAULTS: ChatOptions = {
 	startNode: 'entry_node_welcome',
@@ -32,7 +35,39 @@ export class GuidedChat extends HTMLElement {
 	#abort?: AbortController;
 	#panelObserver?: MutationObserver;
 	#initialized = false;
-	#translate: (key: string) => string = (key) => key;
+	#flowRevision = 0;
+	#following = true;
+	/** Override before connecting to integrate a different application's flow registry. */
+	public flowLoader: (name: string) => Promise<FlowDefinition> = loadFlow;
+	/** Override before connecting to integrate an existing translation service. */
+	public initializeTranslations: () => Promise<void> = () => i18n.init();
+	#translate: (key: string) => string = (key) => i18n.t(key);
+	public static get observedAttributes(): string[] {
+		return ['flow'];
+	}
+	public attributeChangedCallback(name: string, oldValue: string | null, value: string | null): void {
+		if (name === 'flow' && oldValue !== value && this.isConnected && this.#initialized) void this.loadSelectedFlow();
+	}
+	public async loadSelectedFlow(): Promise<void> {
+		const revision = ++this.#flowRevision;
+		this.#abort?.abort();
+		this.#status.textContent = this.#t(chatText.loading);
+		try {
+			await this.initializeTranslations();
+			if (revision !== this.#flowRevision || !this.isConnected) return;
+			this.#refreshLabels();
+			const definition = await this.flowLoader(this.getAttribute('flow') ?? 'demo');
+			if (revision !== this.#flowRevision || !this.isConnected) return;
+			this.#config = { ...this.#config, startNode: definition.startNode };
+			this.#engine.source = definition.nodes;
+			await this.restart();
+		} catch (error) {
+			if (revision !== this.#flowRevision || !this.isConnected) return;
+			this.#status.textContent = this.#t(chatText.flowError);
+			this.#announcer.announce(this.#status.textContent);
+			this.#event('chat-error', { error });
+		}
+	}
 	public set translator(fn: (key: string) => string) {
 		this.#translate = fn;
 		this.#refreshLabels();
@@ -93,6 +128,9 @@ export class GuidedChat extends HTMLElement {
 			header.append(heading, restart);
 			this.#log = document.createElement('div');
 			this.#log.className = 'log';
+			this.#log.addEventListener('scroll', () => {
+				this.#following = this.#isNearBottom();
+			});
 			this.#log.setAttribute('role', 'log');
 			this.#log.setAttribute('aria-label', this.#t(chatText.log));
 			this.#log.setAttribute('aria-live', 'off');
@@ -111,6 +149,7 @@ export class GuidedChat extends HTMLElement {
 			root.append(style, shell);
 			this.#initialized = true;
 		}
+		void this.loadSelectedFlow();
 		const panel = this.closest('#assistant-side-panel');
 		this.#panelObserver?.disconnect();
 		if (panel) {
@@ -125,6 +164,7 @@ export class GuidedChat extends HTMLElement {
 		}
 	}
 	public disconnectedCallback(): void {
+		++this.#flowRevision;
 		this.#panelObserver?.disconnect();
 		this.#abort?.abort();
 	}
@@ -137,12 +177,17 @@ export class GuidedChat extends HTMLElement {
 	#event(name: string, detail: unknown): void {
 		this.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
 	}
+	#isNearBottom(): boolean {
+		return this.#log.scrollHeight - this.#log.clientHeight - this.#log.scrollTop <= 48;
+	}
 	#scroll(): void {
+		if (!this.#following) return;
 		this.#log.scrollTop = this.#log.scrollHeight;
 	}
 	public async restart(): Promise<void> {
 		this.#abort?.abort();
 		this.#log.replaceChildren();
+		this.#following = true;
 		this.#store.clear();
 		this.#status.textContent = '';
 		this.#announcer.clear();
@@ -228,10 +273,9 @@ export class GuidedChat extends HTMLElement {
 		if (!options.length) return Promise.reject(new Error('Frage ohne Antworten'));
 		const choices = new ChatActionsElement();
 		choices.groupLabel = this.#t(chatText.choose);
-		choices.setChoices(options);
 		this.#log.append(choices);
 		this.#scroll();
-		return new Promise((resolve, reject) => {
+		const selection = new Promise<string>((resolve, reject) => {
 			const cancel = () => {
 				signal.removeEventListener('abort', cancel);
 				choices.remove();
@@ -256,9 +300,31 @@ export class GuidedChat extends HTMLElement {
 				},
 				{ once: true }
 			);
-			// Focus on the host is not sufficient for shadow-DOM buttons. Focus target inside the component.
-			choices.shadowRoot?.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
 		});
+		const animation = choices.revealChoices(
+			options,
+			this.#config.charactersPerSecond,
+			signal,
+			this.#config.respectReducedMotion,
+			() => this.#scroll(),
+			(stream) => {
+				this.#stream = stream;
+				this.#skip.hidden = !stream;
+			}
+		);
+		// Choice listeners are active while the buttons are revealed. Only finished buttons are clickable.
+		void animation
+			.then(() => {
+				if (!signal.aborted && choices.isConnected) {
+					this.#skip.hidden = true;
+					choices.focusFirst();
+					this.#scroll();
+				}
+			})
+			.catch((error) => {
+				if (!signal.aborted) this.#event('chat-error', { error });
+			});
+		return selection;
 	}
 	#action(buttonId: string): void {
 		const original = document.getElementById(`assistant-button-${buttonId}`);

@@ -5,6 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { ChatActionsElement } from '../../src/components/chat-actions.js';
+
 describe('ChatActionsElement', () => {
 	it('emits the selected option and disables buttons', () => {
 		const actions = new ChatActionsElement();

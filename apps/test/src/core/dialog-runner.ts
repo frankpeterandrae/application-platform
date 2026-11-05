@@ -5,6 +5,7 @@
 
 import { ChatEngine } from './chat-engine.js';
 import type { ChatContext, Option } from '../types/chat.types.js';
+
 export interface DialogPort {
 	assistant(text: string, nodeId: string, signal: AbortSignal): Promise<void>;
 	choose(options: Option[], signal: AbortSignal): Promise<string>;

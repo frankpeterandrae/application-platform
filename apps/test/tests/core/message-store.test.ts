@@ -5,6 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { MessageStore } from '../../src/core/message-store.js';
+
 describe('MessageStore', () => {
 	it('notifies on add/update/clear and never exposes writable state', () => {
 		const store = new MessageStore();

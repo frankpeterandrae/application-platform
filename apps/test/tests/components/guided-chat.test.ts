@@ -5,15 +5,20 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { GuidedChat } from '../../src/components/guided-chat.js';
+
 describe('GuidedChat', () => {
 	it('renders complete question, selection and result without Carbon', async () => {
 		const chat = new GuidedChat();
+		chat.initializeTranslations = async () => {};
+		chat.flowLoader = async () => ({
+			startNode: 'entry_node_welcome',
+			nodes: {
+				entry_node_welcome: { type: 'question', text: 'PIN vorhanden?', options: [{ value: 'Ja', next: 'done' }] },
+				done: { type: 'text', text: 'Weiter geht es.' }
+			}
+		});
 		chat.configure({ charactersPerSecond: 0, nextDelayMs: 0 });
 		document.body.append(chat);
-		chat.nodes = {
-			entry_node_welcome: { type: 'question', text: 'PIN vorhanden?', options: [{ value: 'Ja', next: 'done' }] },
-			done: { type: 'text', text: 'Weiter geht es.' }
-		};
 		await vi.waitFor(() => expect(chat.shadowRoot?.querySelector('chat-actions button')).toBeNull()); // shadow encapsulation
 		await vi.waitFor(() => expect(chat.shadowRoot?.querySelector('chat-actions')?.shadowRoot?.querySelector('button')).toBeTruthy());
 		const live = chat.shadowRoot?.querySelector('[aria-live="polite"]');

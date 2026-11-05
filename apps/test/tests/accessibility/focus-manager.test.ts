@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { FocusManager } from '../../src/accessibility/focus-manager.js';
+
 describe('FocusManager', () => {
 	it('focuses the first enabled action and restores a trigger', () => {
 		const container = document.createElement('div');

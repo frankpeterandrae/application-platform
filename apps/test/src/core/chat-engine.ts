@@ -4,6 +4,7 @@
  */
 
 import type { DialogNode, NodeHandler, NodeSource } from '../types/chat.types.js';
+
 /** Framework-free orchestration primitives. UI-specific behavior belongs to adapters/runner. */
 export class ChatEngine {
 	#source?: NodeSource;

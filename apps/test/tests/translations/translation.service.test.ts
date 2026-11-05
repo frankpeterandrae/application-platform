@@ -5,6 +5,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 import { I18n } from '../../src/shared/translations/translation.service.js';
+
 describe('I18n', () => {
 	it('loads, interpolates and resolves nested keys', async () => {
 		const loader = vi.fn(async () => ({ chat: { hello: 'Hallo {{name}}' } }));

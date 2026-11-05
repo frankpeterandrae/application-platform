@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { TextStream } from '../../src/streaming/text-stream.js';
+
 describe('TextStream', () => {
 	it('renders immediately when speed is zero', async () => {
 		let visible = '';

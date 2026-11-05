@@ -6,6 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { loadFlow } from '../../src/flows/index.js';
 import { i18n } from '../../src/shared/translations/index.js';
+
 describe('flow registry', () => {
 	it('preserves startNode and existing node map', async () => {
 		vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
