@@ -34,7 +34,13 @@ export class PaintSnapshotService implements OnApplicationShutdown {
 	 * Exports the current persistent paint data to the snapshot directory.
 	 */
 	public export(): void {
-		exportDatabaseSnapshot(this.db, this.dataDir, paintSnapshotConfig);
+		try {
+			exportDatabaseSnapshot(this.db, this.dataDir, paintSnapshotConfig);
+		} catch (error) {
+			this.dirty = true;
+			this.logger.error('Paint snapshot export failed.', error);
+			throw error;
+		}
 
 		this.dirty = false;
 
@@ -43,17 +49,17 @@ export class PaintSnapshotService implements OnApplicationShutdown {
 
 	/**
 	 * Exports the paint snapshot during shutdown when persistent data changed.
-	 *
-	 * @param signal Optional shutdown signal provided by NestJS.
 	 */
-	public onApplicationShutdown(signal?: string): void {
-		this.logger.log('onApplicationShutdown called');
+	public onApplicationShutdown(): void {
 		if (!this.dirty) {
-			this.logger.log('No unsaved changes detected');
 			return;
 		}
 
-		this.logger.log('Unsaved changes detected. Exporting paint snapshot before shutdown...');
-		this.export();
+		this.logger.log('Exporting pending paint changes during shutdown.');
+		try {
+			this.export();
+		} catch {
+			// export() logged the failure. Let the remaining shutdown hooks run.
+		}
 	}
 }

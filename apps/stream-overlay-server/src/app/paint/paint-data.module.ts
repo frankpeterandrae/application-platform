@@ -32,7 +32,10 @@ import { PaintController } from './paint.controller';
 			provide: PaintSnapshotService,
 			inject: [DatabaseService],
 			useFactory: (databaseService: DatabaseService): PaintSnapshotService =>
-				new PaintSnapshotService(databaseService.db, path.join(process.cwd(), 'libs', 'shared', 'paint-data-access-old', 'data'))
+				new PaintSnapshotService(
+					databaseService.db,
+					path.join(process.cwd(), 'libs', 'stream-overlay', 'paint-data-access', 'data')
+				)
 		},
 		{
 			provide: PaintRepository,

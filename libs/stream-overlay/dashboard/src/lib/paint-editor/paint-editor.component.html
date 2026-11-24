@@ -5,10 +5,34 @@
 <stream-dashboard-container>
 	<div class="fpa-flex-grow-1 fpa-grid-12 fpa-grid-gutter fpa-light-text">
 		<aside class="fpa-flex fpa-flex-column fpa-height-100 fpa-grid-col-end-8">
-			<div class="fpa-flex fpa-flex-justify-space-between fpa-flex-align-items-center">
+			<div class="sto-paint-editor__header">
 				<h1>Paint Editor</h1>
 
-				<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="'Neue Farbe'" (click)="createPaint()"></theme-button>
+				<div class="sto-paint-editor__actions">
+					<theme-button
+						[color]="ButtonColorDefinition.DEFAULT"
+						[buttonText]="'Farbdaten exportieren'"
+						[disabled]="exportStatus() === 'pending'"
+						(buttonClick)="exportPaints()"
+					></theme-button>
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						[buttonText]="'Neue Farbe'"
+						(buttonClick)="createPaint()"
+					></theme-button>
+				</div>
+
+				@switch (exportStatus()) {
+					@case ('pending') {
+						<theme-notification message="Export läuft …" [durationMs]="null" />
+					}
+					@case ('success') {
+						<theme-notification message="Farbdaten exportiert." tone="success" />
+					}
+					@case ('error') {
+						<theme-notification message="Export fehlgeschlagen." tone="error" />
+					}
+				}
 			</div>
 
 			<theme-select

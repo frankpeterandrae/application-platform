@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type { Db } from '../db';
+import { type Db, withTx } from '../db';
 
 import type { DatabaseSnapshotConfig, DatabaseSnapshotRow, DatabaseSnapshotTableConfig } from './database-snapshot.types';
 import { getSnapshotTables, quoteIdentifier } from './database-snapshot.utils';
@@ -21,17 +21,19 @@ import { getSnapshotTables, quoteIdentifier } from './database-snapshot.utils';
  * @param config Snapshot configuration.
  */
 export function exportDatabaseSnapshot(db: Db, dataDir: string, config: DatabaseSnapshotConfig): void {
-	replaceSnapshot(dataDir, (directory) => {
-		for (const table of getSnapshotTables(db, config.tablePrefix)) {
-			const tableConfig = config.tables?.[table];
+	replaceSnapshot(dataDir, (directory) =>
+		withTx(db, () => {
+			for (const table of getSnapshotTables(db, config.tablePrefix)) {
+				const tableConfig = config.tables?.[table];
 
-			if (tableConfig?.export === false) {
-				continue;
+				if (tableConfig?.export === false) {
+					continue;
+				}
+
+				exportTable(db, directory, table, tableConfig);
 			}
-
-			exportTable(db, directory, table, tableConfig);
-		}
-	});
+		})
+	);
 }
 
 /**
@@ -82,15 +84,19 @@ function exportGroupedTable(directory: string, table: string, rows: DatabaseSnap
 	}
 
 	for (const [key, groupRows] of groups) {
+		if (path.posix.basename(key) !== key || path.win32.basename(key) !== key || key.includes(':')) {
+			throw new TypeError(`Table "${table}" contains an invalid snapshot file name.`);
+		}
+
 		writeJson(path.join(directory, table, `${key}.json`), groupRows);
 	}
 }
 
 /**
- * Replaces the snapshot directory with a new snapshot.
+ * Writes a formatted JSON snapshot file.
  *
- * @param dataDir Snapshot directory.
- * @param writeSnapshot Callback to write the snapshot into a staging directory.
+ * @param file Snapshot file.
+ * @param data Data to serialize.
  */
 function writeJson(file: string, data: unknown): void {
 	fs.mkdirSync(path.dirname(file), {
@@ -103,34 +109,32 @@ function writeJson(file: string, data: unknown): void {
 /**
  * Replaces the snapshot directory with a new snapshot.
  *
- * @param dataDir
- * @param writeSnapshot
+ * @param dataDir Snapshot directory.
+ * @param writeSnapshot Callback to write a complete snapshot into staging.
  */
 function replaceSnapshot(dataDir: string, writeSnapshot: (directory: string) => void): void {
-	const stagingDir = `${dataDir}.__staging`;
+	const target = path.resolve(dataDir);
+	fs.mkdirSync(path.dirname(target), { recursive: true });
+	const stagingDir = fs.mkdtempSync(`${target}.__staging-`);
 
-	fs.rmSync(stagingDir, {
-		recursive: true,
-		force: true
-	});
+	try {
+		writeSnapshot(stagingDir);
+	} catch (error) {
+		try {
+			fs.rmSync(stagingDir, { recursive: true, force: true });
+		} catch (cleanupError) {
+			throw new AggregateError([error, cleanupError], `Could not write or clean up snapshot staging at "${stagingDir}".`);
+		}
+		throw error;
+	}
 
-	fs.mkdirSync(stagingDir, {
-		recursive: true
-	});
-
-	writeSnapshot(stagingDir);
-
-	fs.rmSync(dataDir, {
-		recursive: true,
-		force: true
-	});
-
-	fs.cpSync(stagingDir, dataDir, {
-		recursive: true
-	});
-
-	fs.rmSync(stagingDir, {
-		recursive: true,
-		force: true
-	});
+	// A non-empty directory must be removed before it can be replaced by rename.
+	try {
+		fs.rmSync(target, { recursive: true, force: true });
+		fs.renameSync(stagingDir, target);
+	} catch (error) {
+		throw new Error(`Could not replace snapshot at "${target}". Complete snapshot remains at "${stagingDir}".`, {
+			cause: error
+		});
+	}
 }

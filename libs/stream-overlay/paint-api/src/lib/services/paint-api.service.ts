@@ -17,6 +17,15 @@ export class PaintApiService {
 	private readonly http = inject(HttpClient);
 
 	/**
+	 * Exports the current persistent paint data on the server.
+	 *
+	 * @returns An observable that completes after the server publishes the snapshot.
+	 */
+	public exportPaints(): Observable<void> {
+		return this.http.post<void>('api/paints/export', null);
+	}
+
+	/**
 	 * Retrieves all paint brands.
 	 *
 	 * @returns An observable containing all paint brand definitions.

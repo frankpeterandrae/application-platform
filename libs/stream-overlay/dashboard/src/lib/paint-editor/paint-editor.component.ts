@@ -14,6 +14,7 @@ import {
 	DialogType,
 	IconDefinition,
 	InputComponent,
+	NotificationComponent,
 	SelectComponent
 } from '@application-platform/shared/ui-theme';
 import { PaintSwatchComponent } from '@application-platform/shared-ui';
@@ -40,6 +41,7 @@ type SaveStatus = 'idle' | 'success' | 'error' | 'deleted';
 		ReactiveFormsModule,
 		ButtonComponent,
 		InputComponent,
+		NotificationComponent,
 		DashboardContainerComponent,
 		SelectComponent,
 		PaintSwatchComponent
@@ -67,6 +69,7 @@ export class PaintEditorComponent {
 	protected readonly isNew = computed(() => this.selectedPaint() === undefined);
 
 	protected readonly saveStatus = signal<SaveStatus>('idle');
+	protected readonly exportStatus = signal<'idle' | 'pending' | 'success' | 'error'>('idle');
 	protected readonly filteredPaints = computed(() => {
 		const search = this.searchTerm().trim().toLowerCase();
 
@@ -118,6 +121,17 @@ export class PaintEditorComponent {
 
 	constructor() {
 		this.loadData();
+	}
+
+	/**
+	 * Exports the paint data saved on the server.
+	 */
+	protected exportPaints(): void {
+		this.exportStatus.set('pending');
+		this.paintApiService.exportPaints().subscribe({
+			next: () => this.exportStatus.set('success'),
+			error: () => this.exportStatus.set('error')
+		});
 	}
 
 	/**
