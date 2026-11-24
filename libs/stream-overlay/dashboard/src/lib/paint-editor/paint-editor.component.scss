@@ -6,6 +6,22 @@
 @use '../styles';
 
 .sto-paint-editor {
+	&__header {
+		display: flex;
+		flex: 0 0 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem 1rem;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 0.5rem;
+		margin-inline-start: auto;
+	}
+
 	&__item {
 		display: flex;
 		align-items: center;

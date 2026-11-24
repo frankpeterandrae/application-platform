@@ -4,7 +4,12 @@
  */
 
 import type { Paint, PaintBrandDefinition, PaintId } from '@application-platform/paint';
-import type { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access';
+import type {
+	PaintBrandRepository,
+	PaintRecentSelectionRepository,
+	PaintRepository,
+	PaintSnapshotService
+} from '@application-platform/paint-data-access';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PaintController } from './paint.controller';
@@ -31,6 +36,8 @@ describe('PaintController', () => {
 		findRecent: vi.fn()
 	};
 
+	const paintSnapshotService = { export: vi.fn() };
+
 	const brand: PaintBrandDefinition = {
 		id: 'citadel',
 		label: 'Citadel'
@@ -51,8 +58,15 @@ describe('PaintController', () => {
 		controller = new PaintController(
 			paintRepository as unknown as PaintRepository,
 			paintBrandRepository as unknown as PaintBrandRepository,
-			paintRecentSelectionRepository as unknown as PaintRecentSelectionRepository
+			paintRecentSelectionRepository as unknown as PaintRecentSelectionRepository,
+			paintSnapshotService as unknown as PaintSnapshotService
 		);
+	});
+
+	it('should export the current paint snapshot', () => {
+		controller.exportPaints();
+
+		expect(paintSnapshotService.export).toHaveBeenCalledTimes(1);
 	});
 
 	describe('brands', () => {

@@ -1,0 +1,14 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<div
+	class="fpa-notification"
+	[class.fpa-notification--success]="tone() === 'success'"
+	[class.fpa-notification--error]="tone() === 'error'"
+	[class.fpa-notification--temporary]="displayDuration() !== null"
+	[style.animation-delay.ms]="displayDuration()"
+	[attr.role]="tone() === 'error' ? 'alert' : 'status'"
+>
+	{{ message() }}
+</div>

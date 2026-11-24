@@ -4,8 +4,13 @@
  */
 
 import { Paint, PaintBrandDefinition, PaintId } from '@application-platform/paint';
-import { PaintBrandRepository, PaintRecentSelectionRepository, PaintRepository } from '@application-platform/paint-data-access';
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+	PaintBrandRepository,
+	PaintRecentSelectionRepository,
+	PaintRepository,
+	PaintSnapshotService
+} from '@application-platform/paint-data-access';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 
 /**
  * Handles HTTP requests for paint brands, paints and recent selections.
@@ -15,8 +20,18 @@ export class PaintController {
 	constructor(
 		private readonly paintRepository: PaintRepository,
 		private readonly paintBrandRepository: PaintBrandRepository,
-		private readonly paintRecentSelectionRepository: PaintRecentSelectionRepository
+		private readonly paintRecentSelectionRepository: PaintRecentSelectionRepository,
+		private readonly paintSnapshotService: PaintSnapshotService
 	) {}
+
+	/**
+	 * Exports the current persistent paint data.
+	 */
+	@Post('paints/export')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	public exportPaints(): void {
+		this.paintSnapshotService.export();
+	}
 
 	/**
 	 * Retrieves all available paint brands.

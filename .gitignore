@@ -67,5 +67,6 @@ __screenshots__/
 .nx/migrate-runs
 /data/
 /data.__staging/
+/libs/stream-overlay/paint-data-access/data.__staging-*/
 **/styles.css
 **/src-tauri/target/

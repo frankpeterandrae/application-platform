@@ -45,6 +45,7 @@ describe('exportDatabaseSnapshot', () => {
 	});
 
 	afterEach(() => {
+		vi.restoreAllMocks();
 		db.close();
 
 		fs.rmSync(tempDir, {
@@ -124,5 +125,61 @@ describe('exportDatabaseSnapshot', () => {
 		});
 
 		expect(fs.existsSync(path.join(dataDir, 'obsolete.json'))).toBe(false);
+		expect(fs.readdirSync(tempDir).filter((entry) => entry.startsWith('snapshot.__staging-'))).toEqual([]);
+	});
+
+	it('should preserve the existing snapshot when writing staging fails', () => {
+		exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' });
+		const existingFiles = fs.readdirSync(tempDir);
+		db.prepare('INSERT INTO paint_brand (id, label) VALUES (?, ?)').run('citadel', 'Citadel');
+
+		expect(() =>
+			exportDatabaseSnapshot(db, dataDir, {
+				tablePrefix: 'paint',
+				tables: { paint_brand: { groupBy: 'missing_column' } }
+			})
+		).toThrow('invalid value for grouping column');
+
+		expect(fs.readFileSync(path.join(dataDir, 'paint_brand.json'), 'utf8')).toBe('[]\n');
+		expect(fs.readdirSync(tempDir)).toEqual(existingFiles);
+	});
+
+	it('should retain the completed snapshot and report the cause when publication fails', () => {
+		exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' });
+		const renameError = new Error('Destination is locked');
+		const rename = vi.spyOn(fs, 'renameSync').mockImplementationOnce(() => {
+			throw renameError;
+		});
+
+		expect(() => exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' })).toThrow(
+			expect.objectContaining({ message: expect.stringContaining('Could not replace snapshot'), cause: renameError })
+		);
+
+		const [stagingDir, target] = rename.mock.calls[0];
+		expect(target).toBe(dataDir);
+		expect(fs.readFileSync(path.join(String(stagingDir), 'paint_brand.json'), 'utf8')).toBe('[]\n');
+		expect(fs.existsSync(dataDir)).toBe(false);
+
+		exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' });
+		expect(fs.existsSync(path.join(dataDir, 'paint_brand.json'))).toBe(true);
+	});
+
+	it('should retain the staged snapshot when removing the existing target fails', () => {
+		exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' });
+		const removeError = new Error('Existing snapshot is locked');
+		vi.spyOn(fs, 'rmSync').mockImplementationOnce(() => {
+			throw removeError;
+		});
+		const rename = vi.spyOn(fs, 'renameSync');
+
+		expect(() => exportDatabaseSnapshot(db, dataDir, { tablePrefix: 'paint' })).toThrow(
+			expect.objectContaining({ message: expect.stringContaining('Could not replace snapshot'), cause: removeError })
+		);
+
+		expect(rename).not.toHaveBeenCalled();
+		expect(fs.existsSync(path.join(dataDir, 'paint_brand.json'))).toBe(true);
+		const stagedFiles = fs.readdirSync(tempDir).filter((entry) => entry.startsWith('snapshot.__staging-'));
+		expect(stagedFiles).toHaveLength(1);
+		expect(fs.existsSync(path.join(tempDir, stagedFiles[0], 'paint_brand.json'))).toBe(true);
 	});
 });

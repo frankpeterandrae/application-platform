@@ -25,6 +25,7 @@ export * from './lib/components/navigation/top-navbar/top-navbar.component';
 export * from './lib/components/overlay/dialog/dialog-service';
 export * from './lib/components/overlay/dialog/dialog-tokens';
 export * from './lib/components/overlay/dialog/dialog.component';
+export * from './lib/components/overlay/notification/notification.component';
 export * from './lib/components/overlay/tooltip/tooltip.directive';
 export * from './lib/directives/floating-label.directive';
 export * from './lib/enums';
