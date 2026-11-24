@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
@@ -36,6 +38,8 @@ describe('StreamInfoComponent', () => {
 			imports: [StreamInfoComponent],
 			providers: [
 				provideRouter([]),
+				provideHttpClient(),
+				provideHttpClientTesting(),
 				{
 					provide: StreamStateService,
 					useValue: streamStateService
@@ -49,6 +53,62 @@ describe('StreamInfoComponent', () => {
 
 	it('should create', () => {
 		expect(fixture.componentInstance).toBeTruthy();
+	});
+
+	it('loads the Twitch title as a draft and preserves the subtitle until the form is submitted', () => {
+		const element = fixture.nativeElement as HTMLElement;
+		const inputs = element.querySelectorAll<HTMLInputElement>('input');
+		const twitchButton = element.querySelector<HTMLButtonElement>('button[type="button"]')!;
+		const http = TestBed.inject(HttpTestingController);
+		setInputValue(inputs[1], 'Lokaler Untertitel');
+		twitchButton.click();
+		http.expectOne({ method: 'GET', url: '/api/twitch/stream-title' }).flush({ title: 'Titel von Twitch' });
+		fixture.detectChanges();
+
+		expect(inputs[0].value).toBe('Titel von Twitch');
+		expect(inputs[1].value).toBe('Lokaler Untertitel');
+		expect(streamStateService.updateState).not.toHaveBeenCalled();
+		element.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
+		expect(streamStateService.updateState).toHaveBeenCalledWith({ title: 'Titel von Twitch', subtitle: 'Lokaler Untertitel' });
+		http.verify();
+	});
+
+	it('keeps a more recent local edit when the Twitch response arrives', () => {
+		const element = fixture.nativeElement as HTMLElement;
+		const titleInput = element.querySelector<HTMLInputElement>('theme-input[formcontrolname="title"] input')!;
+		const http = TestBed.inject(HttpTestingController);
+		element.querySelector<HTMLButtonElement>('button[type="button"]')!.click();
+		const request = http.expectOne('/api/twitch/stream-title');
+		setInputValue(titleInput, 'Neuer Entwurf');
+		request.flush({ title: 'Titel von Twitch' });
+		fixture.detectChanges();
+
+		expect(titleInput.value).toBe('Neuer Entwurf');
+		expect(element.querySelector('output')?.textContent).toContain('inzwischen bearbeitet');
+		http.verify();
+	});
+
+	it.each([
+		[404, 'keinen Titel'],
+		[429, 'Anfragelimit'],
+		[503, 'Twitch-Verbindung ist nicht verfügbar'],
+		[502, 'konnte nicht geladen werden']
+	])('keeps the draft and displays a helpful message on HTTP %i', (status, message) => {
+		const element = fixture.nativeElement as HTMLElement;
+		const titleInput = element.querySelector<HTMLInputElement>('theme-input[formcontrolname="title"] input')!;
+		const button = element.querySelector<HTMLButtonElement>('button[type="button"]')!;
+		const http = TestBed.inject(HttpTestingController);
+		setInputValue(titleInput, 'Lokaler Titel');
+		button.click();
+		fixture.detectChanges();
+		expect(button.disabled).toBe(true);
+		http.expectOne('/api/twitch/stream-title').flush(null, { status, statusText: 'Error' });
+		fixture.detectChanges();
+
+		expect(titleInput.value).toBe('Lokaler Titel');
+		expect(element.querySelector('output')?.textContent).toContain(message);
+		expect(button.disabled).toBe(false);
+		http.verify();
 	});
 
 	it('should initialize the form from the current stream state', () => {

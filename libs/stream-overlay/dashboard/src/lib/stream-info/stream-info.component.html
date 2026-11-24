@@ -9,6 +9,16 @@
 		<form [formGroup]="form" (ngSubmit)="apply()">
 			<div class="fpa-flex fpa-flex-column fpa-gap-1">
 				<theme-input label="Titel" placeholder="Miniaturen bemalen" formControlName="title"></theme-input>
+				<theme-button
+					[color]="ButtonColorDefinition.DEFAULT"
+					type="button"
+					buttonText="Titel von Twitch laden"
+					[disabled]="loadingTitle()"
+					(buttonClick)="loadTwitchTitle()"
+				></theme-button>
+				@if (titleStatus(); as status) {
+					<output>{{ status }}</output>
+				}
 
 				<theme-input label="Untertitel" placeholder="Grand Cathay - Sky Lantern" formControlName="subtitle"></theme-input>
 

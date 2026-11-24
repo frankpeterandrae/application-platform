@@ -65,7 +65,7 @@
 			"options": {
 				"host": "127.0.0.1",
 				"port": 4220,
-				"proxyConfig": "apps/stream-overlay-ui/proxy.conf.json"
+				"proxyConfig": "apps/stream-overlay-ui/proxy.conf.mjs"
 			},
 			"configurations": {
 				"production": {

@@ -6,6 +6,14 @@
 import { appRoutes } from './app.routes';
 
 describe('appRoutes', () => {
+	it.each([
+		['dashboard', 'config'],
+		['overlay', 'header']
+	])('loads the %s feature routes', async (path, childPath) => {
+		const route = appRoutes.find((item) => item.path === path);
+		expect(await route?.loadChildren?.()).toEqual(expect.arrayContaining([expect.objectContaining({ path: childPath })]));
+	});
+
 	it('should define dashboard route', () => {
 		expect(appRoutes).toEqual(
 			expect.arrayContaining([

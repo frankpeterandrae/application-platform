@@ -1,0 +1,70 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+<stream-dashboard-container>
+	<section class="fpa-flex fpa-flex-column fpa-flex-grow-1 fpa-height-100 fpa-light-text">
+		<h1>Konfiguration</h1>
+		@if (needsConfigKey()) {
+			<p>Trage den Wert <code>configKey</code> aus <code>%LOCALAPPDATA%\StreamOverlay\twitch-config.json</code> ein.</p>
+			<theme-input id="twitch-config-key" label="Konfigurationsschlüssel" type="password" [formControl]="configKey"></theme-input>
+		}
+		<output>{{ message() }}</output>
+
+		<h2>Twitch-App</h2>
+		<form [formGroup]="appForm" (ngSubmit)="saveApp()" autocomplete="off">
+			<div class="fpa-flex fpa-flex-column fpa-gap-1">
+				<theme-input id="twitch-client-id" label="Client-ID" formControlName="clientId"></theme-input>
+				<theme-input id="twitch-client-secret" label="Client Secret" type="password" formControlName="clientSecret"></theme-input>
+				<theme-button
+					[color]="ButtonColorDefinition.PRIMARY"
+					type="submit"
+					buttonText="Twitch-App speichern"
+					[disabled]="appForm.invalid || saving()"
+				></theme-button>
+			</div>
+		</form>
+
+		<h2>Twitch-Konto</h2>
+		@if (redirectUri(); as uri) {
+			<p>Trage diese vollständige URL in der Twitch Console unter <strong>OAuth Redirect URLs</strong> ein.</p>
+			<p>
+				<code>{{ uri }}</code>
+			</p>
+		}
+		<form [formGroup]="permissions" (ngSubmit)="connect()">
+			<fieldset class="fpa-flex fpa-flex-column fpa-gap-1">
+				<legend>Berechtigungen</legend>
+				<label><input type="checkbox" formControlName="chatRead" /> Chat lesen</label>
+				<label><input type="checkbox" formControlName="chatWrite" /> Chat-Nachrichten senden</label>
+				<label><input type="checkbox" formControlName="alerts" /> Alerts für Follows, Abos und Bits</label>
+				<p>Wähle bei einer erneuten Verbindung alle Berechtigungen aus, die du weiterhin brauchst.</p>
+				<theme-button
+					[color]="ButtonColorDefinition.PRIMARY"
+					type="submit"
+					buttonText="Mit Twitch verbinden"
+					[disabled]="saving()"
+				></theme-button>
+			</fieldset>
+		</form>
+		<details>
+			<summary>Vorhandenen Refresh-Token eingeben</summary>
+			<form [formGroup]="grantForm" (ngSubmit)="saveGrant()" autocomplete="off">
+				<div class="fpa-flex fpa-flex-column fpa-gap-1">
+					<theme-input
+						id="twitch-refresh-token"
+						label="Twitch-Refresh-Token"
+						type="password"
+						formControlName="refreshToken"
+					></theme-input>
+					<theme-button
+						[color]="ButtonColorDefinition.PRIMARY"
+						type="submit"
+						buttonText="Twitch-Zugang speichern"
+						[disabled]="grantForm.invalid || saving()"
+					></theme-button>
+				</div>
+			</form>
+		</details>
+	</section>
+</stream-dashboard-container>

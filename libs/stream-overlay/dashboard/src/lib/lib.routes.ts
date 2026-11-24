@@ -26,5 +26,9 @@ export const dashboardRoutes: Routes = [
 	{
 		path: 'stream-info',
 		loadComponent: () => import('./stream-info/stream-info.component').then((m) => m.StreamInfoComponent)
+	},
+	{
+		path: 'config',
+		loadComponent: () => import('./config/config.component').then(({ ConfigComponent }) => ConfigComponent)
 	}
 ];
