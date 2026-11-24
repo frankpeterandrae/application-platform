@@ -36,6 +36,11 @@ export class DashboardContainerComponent {
 				id: 'stream-info',
 				label: 'Stream Info',
 				route: '../stream-info'
+			},
+			{
+				id: 'stream-config',
+				label: 'Stream Konfiguration',
+				route: '../config'
 			}
 		];
 	}

@@ -10,12 +10,13 @@ import { PaintStateService } from './paint/paint-state.service';
 import { PaintGateway } from './paint/paint.gateway';
 import { StreamStateService } from './stream/stream-state.service';
 import { StreamGateway } from './stream/stream.gateway';
+import { TwitchModule } from './twitch/twitch.module';
 
 /**
  * Root module for the stream overlay server.
  */
 @Module({
-	imports: [PaintDataModule],
+	imports: [PaintDataModule, TwitchModule],
 	controllers: [],
 	providers: [PaintGateway, PaintStateService, StreamGateway, StreamStateService]
 })
