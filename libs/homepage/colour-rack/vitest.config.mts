@@ -18,12 +18,12 @@ export default defineConfig({
 		globals: true,
 		setupFiles: ['./src/test-setup.ts', resolve(import.meta.dirname, '../../../vitest.setup.ts')],
 		reporters: [['html', { outputDir: resolve(process.cwd(), 'test-result/libs/homepage/colour-rack') }], 'default', 'verbose'],
-		include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
+		include: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'tools/**/*.spec.ts'],
 		coverage: {
 			reportsDirectory: resolve(import.meta.dirname, '../../../test-result/libs/homepage/colour-rack/coverage'),
 			provider: 'v8',
 			reporter: ['html', 'text', 'lcov'],
-			include: ['src/**/*.ts'],
+			include: ['src/**/*.ts', 'tools/colour-rack-asset.ts'],
 			exclude: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'src/test-setup.ts', 'src/index.ts', 'src/lib/**/*.model.ts']
 		}
 	}

@@ -5,7 +5,22 @@
 	"prefix": "lib",
 	"projectType": "library",
 	"tags": ["type:feature", "scope:homepage", "platform:browser"],
+	"implicitDependencies": ["stream-overlay-paint-data-access"],
 	"targets": {
+		"export-assets": {
+			"executor": "nx:run-commands",
+			"cache": false,
+			"options": {
+				"command": "tsx libs/homepage/colour-rack/tools/export-colour-rack.ts"
+			}
+		},
+		"verify-assets": {
+			"executor": "nx:run-commands",
+			"cache": false,
+			"options": {
+				"command": "tsx libs/homepage/colour-rack/tools/export-colour-rack.ts --check"
+			}
+		},
 		"test": {
 			"options": {
 				"cwd": ".",

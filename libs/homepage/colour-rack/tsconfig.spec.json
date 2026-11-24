@@ -7,6 +7,6 @@
 		"isolatedModules": true
 	},
 	"files": ["src/test-setup.ts"],
-	"include": ["../../../global.d.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.d.ts"],
+	"include": ["../../../global.d.ts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/*.d.ts", "tools/**/*.ts"],
 	"angularCompilerOptions": { "strictTemplates": false }
 }
