@@ -23,6 +23,10 @@ export const paintSnapshotConfig: DatabaseSnapshotConfig = {
 		paint_color_group: {
 			orderBy: ['paint_id', 'color_group']
 		},
+		paint_match: {
+			orderBy: ['paint_id', 'name'],
+			clearWhenMissingIfImporting: 'paint'
+		},
 		paint_recent_selection: {
 			export: false,
 			import: false

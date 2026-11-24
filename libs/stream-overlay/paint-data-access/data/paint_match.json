@@ -1,0 +1,1602 @@
+[
+	{
+		"paint_id": "two-thin-coats:10001",
+		"name": "Chaotic Red (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10001",
+		"name": "Nocturnal Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10001",
+		"name": "Word Bearers Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10002",
+		"name": "Mephiston Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10002",
+		"name": "Scarlet Blood (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10002",
+		"name": "Vampire Red (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10003",
+		"name": "Bloody Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10003",
+		"name": "Evil Sunz Scarlet (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10003",
+		"name": "Pure Red (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10004",
+		"name": "Averland Sunset (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10004",
+		"name": "Basilisk Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10005",
+		"name": "Daemonic Yellow (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10005",
+		"name": "Gold Yellow (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10005",
+		"name": "Yriel Yellow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10006",
+		"name": "Babe Blonde (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10006",
+		"name": "Flash Gitz Yellow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10006",
+		"name": "Moon Yellow (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10007",
+		"name": "Dark Sky (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10007",
+		"name": "Imperial Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10007",
+		"name": "Macragge Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10008",
+		"name": "Altdorf Guard Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10008",
+		"name": "Elfic Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10008",
+		"name": "Ultramarine Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10009",
+		"name": "Calgar Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10009",
+		"name": "Electric Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10010",
+		"name": "Dry Rust (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10010",
+		"name": "Squig Orange (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10011",
+		"name": "Hot Orange (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10011",
+		"name": "Lava Orange (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10011",
+		"name": "Troll Slayer Orange (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10012",
+		"name": "Fire Dragon Bright (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10012",
+		"name": "Mythical Orange (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10012",
+		"name": "Orange Fire (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10013",
+		"name": "Angel Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10013",
+		"name": "Caliban Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10013",
+		"name": "Dark Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10014",
+		"name": "Greenskin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10014",
+		"name": "Warpstone Glow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10015",
+		"name": "Jungle Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10015",
+		"name": "Moot Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10015",
+		"name": "Scorpy Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10016",
+		"name": "Alien Purple (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10016",
+		"name": "Hexed Lichen (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10016",
+		"name": "Xereus Purple (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10017",
+		"name": "Genestealer Purple (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10017",
+		"name": "Oozing Purple (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10018",
+		"name": "Kakophoni Purple (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10018",
+		"name": "Toxic Boils (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10019",
+		"name": "Abaddon Black (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10019",
+		"name": "Black (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10019",
+		"name": "Matt Black (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10020",
+		"name": "Charcoal (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10020",
+		"name": "Corvus Black (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10020",
+		"name": "Necromancer Cloak (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10021",
+		"name": "Dungeon Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10021",
+		"name": "Mechanicus Standard Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10021",
+		"name": "Neutral Grey (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10022",
+		"name": "Dawnstone (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10022",
+		"name": "Uniform Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10023",
+		"name": "Administratum Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10023",
+		"name": "Ash Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10024",
+		"name": "Matt White (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10024",
+		"name": "White Scar (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10025",
+		"name": "Anthea Skin (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10025",
+		"name": "Bugman's Glow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10025",
+		"name": "Fur Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10026",
+		"name": "Cadian Fleshtone (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10026",
+		"name": "Skin Tone (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10026",
+		"name": "Tanned Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10027",
+		"name": "Kislev Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10027",
+		"name": "Kobold Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10027",
+		"name": "Pale Flesh (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10028",
+		"name": "Dark Fleshtone (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10028",
+		"name": "Oak Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10028",
+		"name": "Rhinox Hide (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10029",
+		"name": "Dark Fleshtone (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10029",
+		"name": "Dirt Spatter (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10029",
+		"name": "Doombull Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10030",
+		"name": "Leather Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10030",
+		"name": "Tuskgor Fur (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10031",
+		"name": "Khaki (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10031",
+		"name": "Skeleton Bone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10031",
+		"name": "Zandri Dust (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10032",
+		"name": "Skeleton Bone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10032",
+		"name": "Ushabti Bone (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10033",
+		"name": "Bone White (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10033",
+		"name": "Screaming Skull (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10033",
+		"name": "Skeleton Bone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10034",
+		"name": "Banshee Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10034",
+		"name": "Rakarth Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10034",
+		"name": "Warm Grey (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10035",
+		"name": "Brainmatter Beige (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10035",
+		"name": "Pallid Wych Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10036",
+		"name": "Corax White (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10036",
+		"name": "Spaceship Exterior (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10037",
+		"name": "Basilisk Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10037",
+		"name": "Earth (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10037",
+		"name": "Steel Legion Drab (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10038",
+		"name": "Desert Yellow (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10038",
+		"name": "Morghast Bone (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10039",
+		"name": "Karak Stone (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10039",
+		"name": "Skeleton Bone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10039",
+		"name": "Stonewall Grey (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10040",
+		"name": "Dark Gunmetal (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10040",
+		"name": "Gun Metal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10040",
+		"name": "Leadbelcher (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10041",
+		"name": "Chainmail (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10041",
+		"name": "Ironbreaker (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10041",
+		"name": "Plate Mail Metal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10042",
+		"name": "Chainmail (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10042",
+		"name": "Shining Sliver (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10042",
+		"name": "Stormhost Silver (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10043",
+		"name": "Balthazar Gold (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10043",
+		"name": "Bright Bronze (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10043",
+		"name": "True Copper (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10044",
+		"name": "Glorious Gold (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10044",
+		"name": "Greedy Gold (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10044",
+		"name": "Retributor Armour (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10045",
+		"name": "Bright Gold (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10045",
+		"name": "Liberator Gold (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10045",
+		"name": "Polished Gold (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10046",
+		"name": "Barak-Nar Burgundy (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10046",
+		"name": "Crusted Sore (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10046",
+		"name": "Deep Magenta (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10047",
+		"name": "Screamer Pink (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10047",
+		"name": "Warlord Purple (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10047",
+		"name": "Wasteland Soil (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10048",
+		"name": "Pink Horror (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10048",
+		"name": "Wasteland Soil (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10049",
+		"name": "Dungeon Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10049",
+		"name": "Sombre Grey (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10049",
+		"name": "The Fang (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10050",
+		"name": "Russ Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10050",
+		"name": "Wolf Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10051",
+		"name": "Fenrisian Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10051",
+		"name": "Ice Storm (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10052",
+		"name": "Dryad Bark (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10052",
+		"name": "Oak Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10053",
+		"name": "Gorthor Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10053",
+		"name": "Werewolf Fur (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10054",
+		"name": "Baneblade Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10054",
+		"name": "Monster Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10055",
+		"name": "Black Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10055",
+		"name": "Dark Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10055",
+		"name": "Nuln Oil (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10056",
+		"name": "Agrax Earthshade (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10056",
+		"name": "Strong Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10056",
+		"name": "Umber Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10057",
+		"name": "Flesh Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10057",
+		"name": "Flesh Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10057",
+		"name": "Reikland Fleshshade (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10058",
+		"name": "Biel-Tan Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10058",
+		"name": "Green Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10059",
+		"name": "Athonian Camoshade (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10059",
+		"name": "Military Shade (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10060",
+		"name": "Seraphim Sepia (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10060",
+		"name": "Soft Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10061",
+		"name": "Pink Horror (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10061",
+		"name": "Warlock Purple (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10062",
+		"name": "Emperor's Children (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10062",
+		"name": "Pixie Pink (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10062",
+		"name": "Squid Pink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10063",
+		"name": "Centaur Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10063",
+		"name": "Fulgrim Pink (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10064",
+		"name": "Crusted Sore (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10064",
+		"name": "Gal Vorbak Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10064",
+		"name": "Nocturnal Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10065",
+		"name": "Chaotic Red (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10065",
+		"name": "Khorne Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10065",
+		"name": "Succubus Skin (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10066",
+		"name": "Abomination Gore (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10066",
+		"name": "Gory Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10066",
+		"name": "Wazdakka Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10067",
+		"name": "Hydra Turquoise (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10067",
+		"name": "Thousand Sons Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10068",
+		"name": "Ahriman Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10068",
+		"name": "Royal Cloak (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10069",
+		"name": "Baharroth Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10069",
+		"name": "Toxic Mist (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10070",
+		"name": "Deep Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10070",
+		"name": "Kantor Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10071",
+		"name": "Caledor Sky (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10071",
+		"name": "Magic Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10071",
+		"name": "Viking Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10072",
+		"name": "Electric Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10072",
+		"name": "Hoeth Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10072",
+		"name": "Voidshield Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10073",
+		"name": "Greenskin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10073",
+		"name": "Waaagh! Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10074",
+		"name": "Goblin Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10074",
+		"name": "Sick Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10074",
+		"name": "Warboss Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10075",
+		"name": "Mouldy Clothes (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10075",
+		"name": "Skarsnik Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10076",
+		"name": "Crypt Wraith (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10076",
+		"name": "Field Grey (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10076",
+		"name": "Vulkan Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10077",
+		"name": "Sons of Horus Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10077",
+		"name": "Venom Worm (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10078",
+		"name": "Combat Fatigues (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10078",
+		"name": "Krieg Khaki (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10079",
+		"name": "Castellan Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10079",
+		"name": "Cayman Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10079",
+		"name": "Elf Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10080",
+		"name": "Goblin Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10080",
+		"name": "Warboss Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10081",
+		"name": "Camouflage Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10081",
+		"name": "Scaly Hide (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10081",
+		"name": "Straken Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10082",
+		"name": "Incubi Darkness (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10083",
+		"name": "Kabalite Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10083",
+		"name": "Scurvy Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10083",
+		"name": "Wizards Orb (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10084",
+		"name": "Elemental Bolt (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10084",
+		"name": "Foul Green (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10084",
+		"name": "Sybarite Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10085",
+		"name": "Eshin Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10085",
+		"name": "Necromancer Cloak (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10086",
+		"name": "Hardened Carapace (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10086",
+		"name": "Skavenblight Dinge (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10087",
+		"name": "Castle Grey (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10087",
+		"name": "Stormvermin Fur (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10088",
+		"name": "Dirt Spatter (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10088",
+		"name": "Gorgone Brown (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10088",
+		"name": "Mournfang Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10089",
+		"name": "Fur Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10089",
+		"name": "Parasite Brown (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10089",
+		"name": "Skrag Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10090",
+		"name": "Deathclaw Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10090",
+		"name": "Troll Claws (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10091",
+		"name": "Fur Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10091",
+		"name": "Leather Brown (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10091",
+		"name": "XV-88 (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10092",
+		"name": "Bronze Brown (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10092",
+		"name": "Tau Light Ochre (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10092",
+		"name": "Troll Claws (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10093",
+		"name": "Barbarian Flesh (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10093",
+		"name": "Ungor Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10094",
+		"name": "Dorado Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10095",
+		"name": "Amber Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10096",
+		"name": "Banshee Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10097",
+		"name": "Catachan Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10097",
+		"name": "Onyx Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10098",
+		"name": "Blood Reaver Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10098",
+		"name": "Mocca Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10099",
+		"name": "Jasper Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10099",
+		"name": "Knight Questor Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10101",
+		"name": "Moondust (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10101",
+		"name": "Toxic Yellow (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10102",
+		"name": "Sunrise Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10103",
+		"name": "Phoenix Flames (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10104",
+		"name": "Poisonous Cloud (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10105",
+		"name": "Dechala Lilac (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10105",
+		"name": "Lustful Purple (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10105",
+		"name": "Oozing Purple (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10106",
+		"name": "Iron Warriors (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10107",
+		"name": "Bright Bronze (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10107",
+		"name": "Runelord Brass (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10108",
+		"name": "Castellax Bronze (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10108",
+		"name": "Hammered Copper (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10109",
+		"name": "Brassy Brass (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10109",
+		"name": "Screaming Bell (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10109",
+		"name": "Weapon Bronze (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10110",
+		"name": "Sycorax Bronze (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10111",
+		"name": "Canoptek Alloy (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10112",
+		"name": "Carroburg Crimson (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10112",
+		"name": "Red Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10112",
+		"name": "Red Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10113",
+		"name": "Blue Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10113",
+		"name": "Blue Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10113",
+		"name": "Drakenhof Nightshade (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10114",
+		"name": "Druchii Violet (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10114",
+		"name": "Purple Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10114",
+		"name": "Violet Wash (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10115",
+		"name": "Red Ink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10116",
+		"name": "Yellow Ink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10117",
+		"name": "Blue Ink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10119",
+		"name": "Green Ink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10120",
+		"name": "Violet Ink (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10121",
+		"name": "Evil Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10121",
+		"name": "Gal Vorbak Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10122",
+		"name": "Gory Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10122",
+		"name": "Wazdakka Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10122",
+		"name": "Wyvern Fury (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10123",
+		"name": "Blood Chalice (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10123",
+		"name": "Bloody Red (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10123",
+		"name": "Wild Rider Red (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10126",
+		"name": "Molten Lava (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10127",
+		"name": "Middlestone (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10127",
+		"name": "Wasteland Clay (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10128",
+		"name": "Burnt Turf (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10128",
+		"name": "Dark Sand (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10129",
+		"name": "Barren Dune (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10129",
+		"name": "Pale Sand (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10130",
+		"name": "Lemon Yellow (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10130",
+		"name": "Phalanx Yellow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10130",
+		"name": "Warped Yellow (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10131",
+		"name": "Dorn Yellow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10131",
+		"name": "Space Dust (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10132",
+		"name": "Ice Yellow (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10132",
+		"name": "Ice Yellow (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10133",
+		"name": "Black Green (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10133",
+		"name": "Lupercal Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10133",
+		"name": "Scarab Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10134",
+		"name": "Sons of Horus Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10134",
+		"name": "Temple Gate Teal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10135",
+		"name": "Aquamarine (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10135",
+		"name": "Pharaoh Guard (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10135",
+		"name": "Sybarite Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10136",
+		"name": "Death Guard Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10136",
+		"name": "Olive Drab (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10137",
+		"name": "Ionrach Skin (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10137",
+		"name": "Necrotic Flesh (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10137",
+		"name": "Pastel Green (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10138",
+		"name": "Deepkin Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10138",
+		"name": "Grotesque Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10139",
+		"name": "Abyssal Turquoise (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10139",
+		"name": "Scarab Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10139",
+		"name": "Stegadon Scale Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10140",
+		"name": "Pharaoh Guard (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10140",
+		"name": "Sotek Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10140",
+		"name": "Turquoise (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10141",
+		"name": "Talisman Teal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10141",
+		"name": "Temple Guard Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10142",
+		"name": "Caledor Sky (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10142",
+		"name": "Royal Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10143",
+		"name": "Crystal Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10143",
+		"name": "Deep Sky Blue (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10143",
+		"name": "Teclis Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10144",
+		"name": "Arctic Gem (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10144",
+		"name": "Lothern Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10144",
+		"name": "Sky Blue (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10145",
+		"name": "Dark Reaper (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10145",
+		"name": "Night Sky (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10146",
+		"name": "Grey Blue (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10146",
+		"name": "Thunderhawk Blue (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10146",
+		"name": "Thunderous Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10147",
+		"name": "Fenrisian Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10147",
+		"name": "Frost Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10147",
+		"name": "Steel Grey (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10148",
+		"name": "Naggaroth Night (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10148",
+		"name": "Royal Purple (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10148",
+		"name": "Terrestrial Titan (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10149",
+		"name": "Diabolic Plumb (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10149",
+		"name": "Midnight Purple (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10149",
+		"name": "Phoenician Purple (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10150",
+		"name": "Blue Violet (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10150",
+		"name": "Cultist Purple (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10150",
+		"name": "Kakophoni Purple (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10151",
+		"name": "Alien Purple (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10151",
+		"name": "Daemonette Hide (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10151",
+		"name": "Hexed Violet (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10152",
+		"name": "Violet Coven (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10152",
+		"name": "Warpfiend Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10153",
+		"name": "Kraken Lavender (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10153",
+		"name": "Slaanesh Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10154",
+		"name": "Bootstrap Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10154",
+		"name": "Leather Brown (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10154",
+		"name": "Thondia Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10155",
+		"name": "Gorthor Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10155",
+		"name": "Leather Brown (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10155",
+		"name": "Saddle Brown (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10156",
+		"name": "Baneblade Brown (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10156",
+		"name": "Cork Brown (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10156",
+		"name": "Paratrooper Tan (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10157",
+		"name": "Fulgrim Pink (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10157",
+		"name": "Impish Rogue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10158",
+		"name": "Gauss Blaster Green (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10158",
+		"name": "Green Sky (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10158",
+		"name": "Mossy Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10159",
+		"name": "Inner Light (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10159",
+		"name": "Lugganath Orange (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10160",
+		"name": "Blue Horror (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10160",
+		"name": "Frost Blue (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10160",
+		"name": "Glacier Blue (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10161",
+		"name": "Vivid Volt (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10161",
+		"name": "Yellow Green (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10162",
+		"name": "Flayed One Flesh (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10162",
+		"name": "Light Flesh (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10162",
+		"name": "Pearl Skin (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10163",
+		"name": "Gemstone Red (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10167",
+		"name": "Glittering Green (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10170",
+		"name": "Death Metal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10171",
+		"name": "Brass Scorpion (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10171",
+		"name": "Evil Chrome (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10172",
+		"name": "Cobalt Metal (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10172",
+		"name": "Grey Knights Steel (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10173",
+		"name": "Bright Gold (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10173",
+		"name": "Skullcrusher Brass (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10174",
+		"name": "Rough Iron (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10174",
+		"name": "Runelord Brass (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10174",
+		"name": "Tinny Tin (VGC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10175",
+		"name": "Soulblight Grey (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10176",
+		"name": "Casandora Yellow (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10177",
+		"name": "Coelia Greenshade (GW)"
+	},
+	{
+		"paint_id": "two-thin-coats:10178",
+		"name": "Rust Tone (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10510",
+		"name": "Matt Varnish (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10510",
+		"name": "Matt Varnish (VMC)"
+	},
+	{
+		"paint_id": "two-thin-coats:10512",
+		"name": "Gloss Varnish (AP)"
+	},
+	{
+		"paint_id": "two-thin-coats:10512",
+		"name": "Gloss Varnish (VMC)"
+	}
+]

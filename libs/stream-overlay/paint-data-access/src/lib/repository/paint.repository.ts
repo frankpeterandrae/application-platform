@@ -18,6 +18,7 @@ interface PaintRow {
 	color_groups: string;
 	main_color: HexColor;
 	secondary_color: HexColor | null;
+	matches: string;
 	barcode: string | null;
 }
 
@@ -56,6 +57,7 @@ export class PaintRepository {
 		  ) AS color_groups,
           main_color,
           secondary_color,
+          (SELECT json_group_array(name ORDER BY name) FROM paint_match WHERE paint_id = paint.id) AS matches,
           barcode
         FROM paint
         ORDER BY name
@@ -93,6 +95,7 @@ export class PaintRepository {
 		  ) AS color_groups,
           main_color,
           secondary_color,
+          (SELECT json_group_array(name ORDER BY name) FROM paint_match WHERE paint_id = paint.id) AS matches,
           barcode
         FROM paint
         WHERE id = ?
@@ -130,6 +133,7 @@ export class PaintRepository {
 				   ) AS color_groups,
           main_color,
           secondary_color,
+          (SELECT json_group_array(name ORDER BY name) FROM paint_match WHERE paint_id = paint.id) AS matches,
           barcode
         FROM paint
         WHERE brand_id = ?
@@ -142,6 +146,7 @@ export class PaintRepository {
 	}
 
 	private mapRow(row: PaintRow): Paint {
+		const matches = JSON.parse(row.matches) as string[];
 		return {
 			id: row.id,
 			brand: row.brand_id,
@@ -157,6 +162,9 @@ export class PaintRepository {
 			mainColor: row.main_color,
 			...(row.secondary_color !== null && {
 				secondaryColor: row.secondary_color
+			}),
+			...(matches.length > 0 && {
+				matchColor: matches
 			}),
 			...(row.barcode !== null && {
 				barcode: row.barcode
@@ -201,6 +209,7 @@ export class PaintRepository {
 				);
 
 			this.replaceColorGroups(paint.id, paint.colorGroups);
+			this.replaceMatches(paint.id, paint.matchColor);
 		});
 
 		this.paintSnapshotService.markDirty();
@@ -244,6 +253,7 @@ export class PaintRepository {
 			}
 
 			this.replaceColorGroups(paint.id, paint.colorGroups);
+			this.replaceMatches(paint.id, paint.matchColor);
 		});
 
 		this.paintSnapshotService.markDirty();
@@ -277,6 +287,15 @@ export class PaintRepository {
 	public deleteAll(): void {
 		this.db.prepare('DELETE FROM paint').run();
 		this.paintSnapshotService.markDirty();
+	}
+
+	private replaceMatches(paintId: PaintId, matches: readonly string[] = []): void {
+		this.db.prepare('DELETE FROM paint_match WHERE paint_id = ?').run(paintId);
+		const insert = this.db.prepare('INSERT INTO paint_match (paint_id, name) VALUES (?, ?)');
+
+		for (const name of matches) {
+			insert.run(paintId, name);
+		}
 	}
 
 	/**

@@ -5,9 +5,10 @@
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import type { Paint } from '@application-platform/paint';
 import { PaintApiService } from '@application-platform/stream-overlay-paint-api';
 import { of, throwError } from 'rxjs';
-import { vi } from 'vitest';
+import { assert, vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 
@@ -17,9 +18,19 @@ describe('PaintEditorComponent', () => {
 	let component: PaintEditorComponent;
 	let fixture: ComponentFixture<PaintEditorComponent>;
 
+	const paint: Paint = {
+		id: 'two-thin-coats:21-03',
+		brand: 'two-thin-coats',
+		sku: '21-03',
+		name: 'Berserker Red',
+		mainColor: '#991115',
+		matchColor: ['Word Bearers Red (GW)'],
+		colorGroups: ['red']
+	};
+
 	const paintApiService = {
 		getBrands: vi.fn(() => of([])),
-		getPaints: vi.fn(() => of([])),
+		getPaints: vi.fn(() => of([paint])),
 		exportPaints: vi.fn(),
 		createPaint: vi.fn(),
 		updatePaint: vi.fn(),
@@ -54,6 +65,37 @@ describe('PaintEditorComponent', () => {
 		expect(paintApiService.getBrands).toHaveBeenCalledTimes(1);
 
 		expect(paintApiService.getPaints).toHaveBeenCalledTimes(1);
+	});
+
+	it('should load, add and clear alternative paints', () => {
+		paintApiService.updatePaint.mockReturnValue(of(paint));
+		const editor = fixture.nativeElement as HTMLElement;
+		const paintButton = editor.querySelector<HTMLButtonElement>('.sto-paint-editor__item');
+		assert(paintButton);
+		paintButton.click();
+		fixture.detectChanges();
+
+		const input = editor.querySelector<HTMLTextAreaElement>('#paint_match_color');
+		const form = editor.querySelector('form');
+		assert(input);
+		assert(form);
+		expect(input.value).toBe('Word Bearers Red (GW)');
+
+		const submit = (value: string): void => {
+			input.value = value;
+			input.dispatchEvent(new Event('input'));
+			form.dispatchEvent(new Event('submit'));
+			fixture.detectChanges();
+		};
+
+		submit('Word Bearers Red (GW)\n\n Chaotic Red (AP) \nNocturnal Red (VGC)');
+		submit(' \n');
+		expect(paintApiService.updatePaint).toHaveBeenCalledTimes(2);
+		expect(paintApiService.updatePaint).toHaveBeenNthCalledWith(1, {
+			...paint,
+			matchColor: ['Word Bearers Red (GW)', 'Chaotic Red (AP)', 'Nocturnal Red (VGC)']
+		});
+		expect(paintApiService.updatePaint.mock.calls[1][0]).not.toHaveProperty('matchColor');
 	});
 
 	it.each([

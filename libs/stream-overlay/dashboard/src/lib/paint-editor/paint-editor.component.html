@@ -128,6 +128,17 @@
 
 				<theme-input label="Secondary Color" formControlName="secondaryColor" />
 
+				<div class="sto-paint-editor__matches">
+					<label for="paint_match_color">Match-Color</label>
+					<textarea
+						id="paint_match_color"
+						formControlName="matchColor"
+						rows="3"
+						aria-describedby="paint_match_color_hint"
+					></textarea>
+					<small id="paint_match_color_hint">Eine Alternativfarbe pro Zeile, z. B. Word Bearers Red (GW).</small>
+				</div>
+
 				<theme-input label="Barcode" formControlName="barcode" />
 
 				<div class="fpa-flex fpa-flex-column fpa-flex-justify-end fpa-pt-2">

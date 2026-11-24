@@ -3,14 +3,23 @@
  * All rights reserved.
  */
 
-import type { Db } from '@application-platform/data-db';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+import { type Db, exportDatabaseSnapshot, importDatabaseSnapshot } from '@application-platform/data-db';
 import { type Paint, PaintColorGroup } from '@application-platform/paint';
 import Database from 'better-sqlite3';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { paintSnapshotConfig } from '../service/paint-snapshot.config';
 import type { PaintSnapshotService } from '../service/paint-snapshot.service';
 
 import { PaintRepository } from './paint.repository';
+
+const schemaDir = 'libs/stream-overlay/paint-data-access/src/lib/schema';
+const legacyMatchMigration = readFileSync(join(schemaDir, '004_paint_match.sql'), 'utf8');
+const matchNameMigration = readFileSync(join(schemaDir, '005_paint_match_names.sql'), 'utf8');
 
 describe('PaintRepository', () => {
 	let db: Db;
@@ -38,6 +47,8 @@ describe('PaintRepository', () => {
 		db.pragma('foreign_keys = ON');
 
 		createSchema(db);
+		db.exec(legacyMatchMigration);
+		db.exec(matchNameMigration);
 
 		paintSnapshotService = {
 			markDirty
@@ -154,7 +165,7 @@ describe('PaintRepository', () => {
 			const result = repository.findByBrand('citadel');
 
 			expect(result).toHaveLength(1);
-			expect(result[0]?.brand).toBe('citadel');
+			expect(result[0]).toEqual(paint);
 		});
 	});
 
@@ -273,6 +284,82 @@ describe('PaintRepository', () => {
 
 			expect(markDirty).toHaveBeenCalledTimes(1);
 		});
+	});
+
+	it('should read, replace, clear and cascade-delete alternative paint relationships', () => {
+		insertBrand(db, 'citadel');
+		const first = 'Chaotic Red (AP)';
+		const second = 'Nocturnal Red (VGC)';
+		const source = { ...paint, matchColor: [first, second] };
+		repository.insert(source);
+
+		expect(repository.findAll()).toContainEqual(source);
+		expect(repository.findByBrand(paint.brand)).toEqual([source]);
+		expect(repository.findById(paint.id)).toEqual(source);
+
+		repository.update({ ...paint, matchColor: [second] });
+		expect(repository.findById(paint.id)?.matchColor).toEqual([second]);
+		repository.update({ ...paint, matchColor: [] });
+		expect(repository.findById(paint.id)).toEqual(paint);
+
+		repository.update(source);
+		repository.delete(paint.id);
+		expect(db.prepare('SELECT * FROM paint_match').all()).toEqual([]);
+	});
+
+	it('should migrate existing catalog references to alternative paint names', () => {
+		const legacyDb = new Database(':memory:');
+
+		try {
+			legacyDb.pragma('foreign_keys = ON');
+			createSchema(legacyDb);
+			legacyDb.exec(legacyMatchMigration);
+			insertBrand(legacyDb, 'two-thin-coats');
+			insertBrand(legacyDb, 'citadel');
+			const insert = legacyDb.prepare('INSERT INTO paint (id, brand_id, sku, name, main_color) VALUES (?, ?, ?, ?, ?)');
+			insert.run('two-thin-coats:10001', 'two-thin-coats', '10001', 'Berserker Red', '#4D1A15');
+			insert.run('citadel:22-73', 'citadel', '22-73', 'Word Bearers Red', '#631c14');
+			legacyDb
+				.prepare('INSERT INTO paint_match (paint_id, match_paint_id) VALUES (?, ?)')
+				.run('two-thin-coats:10001', 'citadel:22-73');
+
+			legacyDb.exec(matchNameMigration);
+
+			const legacyRepository = new PaintRepository(legacyDb, paintSnapshotService);
+			expect(legacyRepository.findById('two-thin-coats:10001')?.matchColor).toEqual(['Word Bearers Red (citadel)']);
+			expect(legacyDb.pragma('foreign_key_check')).toEqual([]);
+		} finally {
+			legacyDb.close();
+		}
+	});
+
+	it('should round-trip alternatives and safely import snapshots without relationships', () => {
+		insertBrand(db, 'citadel');
+		const alternative = 'Word Bearers Red (GW)';
+		const source = { ...paint, matchColor: [alternative] };
+		repository.insert(source);
+		const directory = mkdtempSync(join(tmpdir(), 'paint-snapshot-'));
+		const dataDir = join(directory, 'snapshot');
+		const matchFile = join(dataDir, 'paint_match.json');
+
+		try {
+			exportDatabaseSnapshot(db, dataDir, paintSnapshotConfig);
+			expect(JSON.parse(readFileSync(matchFile, 'utf8'))).toEqual([{ paint_id: paint.id, name: alternative }]);
+
+			repository.deleteAll();
+			importDatabaseSnapshot(db, dataDir, paintSnapshotConfig);
+			expect(repository.findById(paint.id)).toEqual(source);
+
+			writeFileSync(matchFile, JSON.stringify([{ paint_id: 'unknown:1', name: alternative }]));
+			expect(() => importDatabaseSnapshot(db, dataDir, paintSnapshotConfig)).toThrow('Foreign key validation failed');
+			expect(repository.findById(paint.id)).toEqual(source);
+
+			rmSync(matchFile);
+			importDatabaseSnapshot(db, dataDir, paintSnapshotConfig);
+			expect(repository.findById(paint.id)).not.toHaveProperty('matchColor');
+		} finally {
+			rmSync(directory, { recursive: true, force: true });
+		}
 	});
 
 	describe('delete', () => {

@@ -31,12 +31,18 @@ export function importDatabaseSnapshot(db: Db, dataDir: string, config: Database
 		throw new Error(`Import directory does not exist: ${dataDir}`);
 	}
 
-	const tables = getSnapshotTables(db, config.tablePrefix)
+	const entries = getSnapshotTables(db, config.tablePrefix)
 		.filter((table) => config.tables?.[table]?.import !== false)
 		.map((table) => ({
 			table,
 			rows: readTableRows(dataDir, table, config.tables?.[table])
-		}))
+		}));
+	const importedTables = new Set(entries.filter(({ rows }) => rows !== undefined).map(({ table }) => table));
+	const tables = entries
+		.map((entry) => {
+			const parent = config.tables?.[entry.table]?.clearWhenMissingIfImporting;
+			return entry.rows === undefined && parent && importedTables.has(parent) ? { ...entry, rows: [] } : entry;
+		})
 		.filter(
 			(
 				entry
@@ -57,15 +63,14 @@ export function importDatabaseSnapshot(db: Db, dataDir: string, config: Database
 			for (const { table, rows } of tables) {
 				replaceTableRows(db, table, rows);
 			}
+
+			const violations = db.pragma('foreign_key_check') as ForeignKeyViolation[];
+			if (violations.length > 0) {
+				throw new Error('Foreign key validation failed during snapshot import.');
+			}
 		});
 	} finally {
 		db.pragma('foreign_keys = ON');
-	}
-
-	const violations = db.pragma('foreign_key_check') as ForeignKeyViolation[];
-
-	if (Array.isArray(violations) && violations.length > 0) {
-		throw new Error('Foreign key validation failed after snapshot import.');
 	}
 }
 
