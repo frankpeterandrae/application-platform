@@ -5,11 +5,7 @@
 
 <div class="fpa-flex fpa-flex-column fpa-height-100">
 	<theme-header class="fpa-flex-shrink-1">
-		<theme-dropdown-select
-			[options]="themeOptions"
-			[selected]="selectedTheme()"
-			(selectionChange)="setTheme($event)"
-		/>
+		<theme-dropdown-select [options]="themeOptions" [selected]="selectedTheme()" (selectionChange)="setTheme($event)" />
 	</theme-header>
 
 	<div class="fpa-grid-12 fpa-overflow-y-hidden fpa-flex-1">

@@ -106,9 +106,7 @@ describe('ColorDetailsComponent', () => {
 		});
 
 		const element = fixture.nativeElement as HTMLElement;
-		const values = Array.from(element.querySelectorAll<HTMLElement>('.fpa-grid-col-end-10 p')).map((item) =>
-			item.textContent?.trim()
-		);
+		const values = Array.from(element.querySelectorAll<HTMLElement>('.fpa-grid-col-end-10 p')).map((item) => item.textContent?.trim());
 
 		expect(values[0]).toBe('-');
 		expect(values[5]).toBe('-');

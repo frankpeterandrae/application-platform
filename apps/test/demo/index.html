@@ -1,32 +1,7 @@
-<!--
-  ~ Copyright (c) 2026. Frank-Peter Andrä
-  ~ All rights reserved.
-  -->
-
 <!doctype html>
-<html lang="de">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>TypeScript Guided Chat</title>
-		<link rel="stylesheet" href="./demo.css" />
-	</head>
-	<body>
-		<h1>Guided Chat: Funktionsdemo</h1>
-		<p>Der Flow wird über das Attribut ausgewählt.</p>
-		<button id="toggle">Panel umschalten</button>
-		<aside id="assistant-side-panel" open>
-			<guided-login flow="demo"></guided-login>
-		</aside>
-		<button id="assistant-button-eid" hidden>Mit Online-Ausweis anmelden</button>
-		<script type="module" src="../dist/index.js"></script>
-		<script type="module">
-			document
-				.getElementById('assistant-button-eid')
-				?.addEventListener('click', () => console.info('Example login action triggered'));
-			document
-				.getElementById('toggle')
-				?.addEventListener('click', () => document.getElementById('assistant-side-panel')?.toggleAttribute('open'));
-		</script>
-	</body>
-</html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TypeScript Guided Chat</title><link rel="stylesheet" href="./demo.css"></head>
+<body><h1>Guided Chat: Funktionsdemo</h1><p>Der Flow wird über das Attribut ausgewählt.</p><button id="toggle">Panel umschalten</button><aside id="assistant-side-panel" open><guided-login flow="demo" assistant-avatar="./assistant-avatar.svg" assistant-avatar-dark="./assistant-avatar-dark.svg"></guided-login></aside><button id="assistant-button-eid" hidden>Mit Online-Ausweis anmelden</button><script type="module" src="../dist/index.js"></script>
+<script type="module">
+  document.getElementById('assistant-button-eid')?.addEventListener('click', () => console.info('Example login action triggered'));
+  document.getElementById('toggle')?.addEventListener('click', () => document.getElementById('assistant-side-panel')?.toggleAttribute('open'));
+</script></body></html>

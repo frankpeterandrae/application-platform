@@ -1,13 +1,94 @@
-/*
- * Copyright (c) 2026. Frank-Peter Andrä
- * All rights reserved.
- */
+:host {
+  display: grid;
+  grid-template-columns: var(--gc-avatar-size, 32px) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  inline-size: 100%;
+}
+
+.avatar {
+  display: block;
+  grid-column: 1;
+  grid-row: 1;
+  inline-size: var(--gc-avatar-size, 32px);
+  block-size: var(--gc-avatar-size, 32px);
+  border-radius: 50%;
+}
+
+.avatar[hidden] {
+  display: none;
+}
+
+.avatar img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  grid-column: 2;
+  flex-direction: column;
+  gap: 6px;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.label {
+  color: var(--gc-muted, #525252);
+  font-size: 0.875rem;
+}
+
+.visual {
+  white-space: pre-wrap;
+}
 
 .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* User replies omit the avatar and align their label above the bubble. */
+:host([message-role='user']) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:host([message-role='user']) .avatar {
+  display: none;
+}
+
+:host([message-role='user']) .content {
+  grid-column: 1;
+  align-items: flex-end;
+}
+
+:host([message-role='user']) .label {
+  align-self: flex-end;
+  text-align: right;
+}
+
+:host([message-role='user']) .visual {
+  display: block;
+  align-self: flex-end;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--gc-user, #dcecff);
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+
+/* An assistant without an avatar does not reserve an empty icon column. */
+:host(:not([avatar-url]):not([avatar-url-dark])) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+:host(:not([avatar-url]):not([avatar-url-dark])) .content {
+  grid-column: 1;
 }

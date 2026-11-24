@@ -9,10 +9,7 @@ async function main(): Promise<void> {
 	const coverage = await loadCoverage();
 	const report = createCoverageReport(coverage);
 
-	const [jsonFile, lcovFile] = await Promise.all([
-		writeCoverageReport(report, 'coverage-report.json'),
-		writeMergedLcov(coverage)
-	]);
+	const [jsonFile, lcovFile] = await Promise.all([writeCoverageReport(report, 'coverage-report.json'), writeMergedLcov(coverage)]);
 
 	console.log(`Coverage report contains ${report.files.length} file(s).`);
 	console.log(`Written to ${jsonFile}`);

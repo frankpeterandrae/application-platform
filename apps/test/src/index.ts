@@ -7,3 +7,6 @@ export { Announcer } from './accessibility/announcer.js';
 export { FocusManager } from './accessibility/focus-manager.js';
 export { prefersReducedMotion, effectiveCharactersPerSecond } from './accessibility/motion-preferences.js';
 export type * from './types/chat.types.js';
+
+export { ResultButtonHandler } from './core/result-button-handler.js';
+export { ChatExternalActionElement } from './components/chat-external-action.js';

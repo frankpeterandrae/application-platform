@@ -51,9 +51,7 @@ describe('PaintSwatchComponent', () => {
 	it('should expand short hex colors for derived paint colors', () => {
 		setPaint(createPaint([PaintColorGroup.Technical], '#123', '#abc'));
 
-		const gradient = fixture.nativeElement.querySelector(
-			'linearGradient[id$="-technical-top-gradient"]'
-		) as SVGLinearGradientElement;
+		const gradient = fixture.nativeElement.querySelector('linearGradient[id$="-technical-top-gradient"]') as SVGLinearGradientElement;
 
 		const stops = getStops(gradient);
 

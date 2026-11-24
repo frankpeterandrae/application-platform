@@ -60,7 +60,6 @@ describe('SelectComponent', () => {
 		expect(getTrigger().textContent).toContain('Red, Blue');
 	});
 
-
 	it('should use an empty array when a non-array value is written in multiple mode', () => {
 		fixture.componentRef.setInput('multiple', true);
 		component.writeValue('red');

@@ -19,15 +19,7 @@ async function main(): Promise<void> {
 
 	console.log(`Running affected tests against ${base} (merge base ${mergeBase})...`);
 
-	await run('npx', [
-		'nx',
-		'affected',
-		'--target=test',
-		`--base=${mergeBase}`,
-		'--head=HEAD',
-		'--configuration=ci',
-		'--skip-nx-cache'
-	]);
+	await run('npx', ['nx', 'affected', '--target=test', `--base=${mergeBase}`, '--head=HEAD', '--configuration=ci', '--skip-nx-cache']);
 
 	const coverage = await loadCoverage();
 	const changedLines = await getChangedLines(base);

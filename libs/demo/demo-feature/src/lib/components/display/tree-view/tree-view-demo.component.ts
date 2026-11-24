@@ -40,12 +40,42 @@ export class TreeViewDemoComponent {
 		definition: {
 			span: 12,
 			rows: [
-				{ columns: [{ value: 'items', span: 2, columntype: 'code', type: 'TreeItems[]', optional: false }, { value: i18nTextModules.TreeView.lbl.Items, span: 10, columntype: 'string' }] },
-				{ columns: [{ value: 'selectedItem', span: 2, columntype: 'code', type: 'Output<unknown>', optional: false }, { value: i18nTextModules.TreeView.lbl.SelectedItem, span: 10, columntype: 'string' }] },
-				{ columns: [{ value: 'LeafItem<T>', span: 2, columntype: 'code', type: 'Type', optional: false }, { value: i18nTextModules.TreeView.lbl.LeafItem, span: 10, columntype: 'string' }] },
-				{ columns: [{ value: 'FolderItem', span: 2, columntype: 'code', type: 'Type', optional: false }, { value: i18nTextModules.TreeView.lbl.FolderItem, span: 10, columntype: 'string' }] },
-				{ columns: [{ value: 'expanded', span: 2, columntype: 'code', type: 'boolean', optional: true }, { value: i18nTextModules.TreeView.lbl.Expanded, span: 10, columntype: 'string' }] },
-				{ columns: [{ value: 'content', span: 2, columntype: 'code', type: 'T (generic)', optional: true }, { value: i18nTextModules.TreeView.lbl.Content, span: 10, columntype: 'string' }] }
+				{
+					columns: [
+						{ value: 'items', span: 2, columntype: 'code', type: 'TreeItems[]', optional: false },
+						{ value: i18nTextModules.TreeView.lbl.Items, span: 10, columntype: 'string' }
+					]
+				},
+				{
+					columns: [
+						{ value: 'selectedItem', span: 2, columntype: 'code', type: 'Output<unknown>', optional: false },
+						{ value: i18nTextModules.TreeView.lbl.SelectedItem, span: 10, columntype: 'string' }
+					]
+				},
+				{
+					columns: [
+						{ value: 'LeafItem<T>', span: 2, columntype: 'code', type: 'Type', optional: false },
+						{ value: i18nTextModules.TreeView.lbl.LeafItem, span: 10, columntype: 'string' }
+					]
+				},
+				{
+					columns: [
+						{ value: 'FolderItem', span: 2, columntype: 'code', type: 'Type', optional: false },
+						{ value: i18nTextModules.TreeView.lbl.FolderItem, span: 10, columntype: 'string' }
+					]
+				},
+				{
+					columns: [
+						{ value: 'expanded', span: 2, columntype: 'code', type: 'boolean', optional: true },
+						{ value: i18nTextModules.TreeView.lbl.Expanded, span: 10, columntype: 'string' }
+					]
+				},
+				{
+					columns: [
+						{ value: 'content', span: 2, columntype: 'code', type: 'T (generic)', optional: true },
+						{ value: i18nTextModules.TreeView.lbl.Content, span: 10, columntype: 'string' }
+					]
+				}
 			]
 		}
 	};
@@ -65,7 +95,12 @@ export class TreeViewDemoComponent {
 					expanded: false,
 					children: [{ label: 'Subleaf 1', id: 'subleaf1', type: 'leaf', content: 'Hello, World!' } satisfies LeafItem<string>]
 				} satisfies FolderItem,
-				{ label: 'Subleaf 2', id: 'subleaf2', type: 'leaf', content: { message: 'This is a leaf content' } } satisfies LeafItem<object>
+				{
+					label: 'Subleaf 2',
+					id: 'subleaf2',
+					type: 'leaf',
+					content: { message: 'This is a leaf content' }
+				} satisfies LeafItem<object>
 			]
 		} satisfies FolderItem
 	];

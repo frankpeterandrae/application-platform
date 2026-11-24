@@ -38,7 +38,13 @@ export class HeaderDemoComponent {
 				{
 					columns: [
 						{ value: 'menuItems', span: 1, columntype: 'code' },
-						{ value: i18nTextModules.Header.lbl.MenuItemsDescription, span: 5, columntype: 'string', type: 'MenuItem[]', optional: true }
+						{
+							value: i18nTextModules.Header.lbl.MenuItemsDescription,
+							span: 5,
+							columntype: 'string',
+							type: 'MenuItem[]',
+							optional: true
+						}
 					]
 				}
 			]

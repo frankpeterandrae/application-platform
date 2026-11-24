@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2026. Frank-Peter Andrä
- * All rights reserved.
- */
-
 import { loadTranslations } from './translation-loader.js';
 import { I18n } from './translation.service.js';
-
 export const i18n = new I18n({ defaultLanguage: 'de', fallbackLanguage: 'de', loader: loadTranslations });

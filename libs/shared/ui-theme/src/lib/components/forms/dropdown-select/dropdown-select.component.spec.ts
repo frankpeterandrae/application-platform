@@ -93,7 +93,6 @@ describe('DropdownSelectComponent', () => {
 		expect(component.selected()).toBe('b');
 	});
 
-
 	it('should stay closed when disabled', () => {
 		fixture.componentRef.setInput('disabled', true);
 		fixture.detectChanges();

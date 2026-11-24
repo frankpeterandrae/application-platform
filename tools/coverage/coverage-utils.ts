@@ -103,11 +103,7 @@ export function createCoverageReport(
 	};
 }
 
-export async function writeCoverageReport(
-	report: CoverageReport,
-	fileName: string,
-	extra: Record<string, unknown> = {}
-): Promise<string> {
+export async function writeCoverageReport(report: CoverageReport, fileName: string, extra: Record<string, unknown> = {}): Promise<string> {
 	const outputDirectory = resolve(process.cwd(), 'tmp/coverage');
 	const outputFile = resolve(outputDirectory, fileName);
 
@@ -162,13 +158,7 @@ function mergeLcov(target: Map<string, FileCoverage>, content: string, exclusion
 				}
 			} else if (line.startsWith('BRDA:')) {
 				const [lineNumber, block, branch, rawHits] = line.slice(5).split(',');
-				mergeBranch(
-					coverage,
-					Number(lineNumber),
-					block,
-					branch,
-					rawHits === '-' ? null : Number(rawHits)
-				);
+				mergeBranch(coverage, Number(lineNumber), block, branch, rawHits === '-' ? null : Number(rawHits));
 			}
 		}
 	}
@@ -211,12 +201,7 @@ function mergeFunction(file: FileCoverage, line: number, name: string, hits: num
 function mergeBranch(file: FileCoverage, line: number, block: string, branch: string, hits: number | null): void {
 	const key = `${line}:${block}:${branch}`;
 	const existing = file.branches.get(key);
-	const mergedHits =
-		existing?.hits === null
-			? hits
-			: hits === null
-				? existing?.hits ?? null
-				: Math.max(existing?.hits ?? 0, hits);
+	const mergedHits = existing?.hits === null ? hits : hits === null ? (existing?.hits ?? null) : Math.max(existing?.hits ?? 0, hits);
 
 	file.branches.set(key, {
 		line,
@@ -274,11 +259,15 @@ function serializeLcov(coverage: Map<string, FileCoverage>): string {
 		.map((file) => {
 			const lines = ['TN:', `SF:${file.file}`];
 
-			for (const fn of [...file.functions.values()].sort((left, right) => left.line - right.line || left.name.localeCompare(right.name))) {
+			for (const fn of [...file.functions.values()].sort(
+				(left, right) => left.line - right.line || left.name.localeCompare(right.name)
+			)) {
 				lines.push(`FN:${fn.line},${fn.name}`);
 			}
 
-			for (const fn of [...file.functions.values()].sort((left, right) => left.line - right.line || left.name.localeCompare(right.name))) {
+			for (const fn of [...file.functions.values()].sort(
+				(left, right) => left.line - right.line || left.name.localeCompare(right.name)
+			)) {
 				lines.push(`FNDA:${fn.hits},${fn.name}`);
 			}
 
