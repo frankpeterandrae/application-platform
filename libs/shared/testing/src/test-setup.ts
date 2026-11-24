@@ -8,7 +8,7 @@ import '@angular/compiler';
 
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import type { ModuleWithProviders } from '@angular/core';
+import type { ModuleWithProviders, ValueProvider } from '@angular/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { ScopedTranslationServiceInterface } from '@application-platform/interfaces';
@@ -20,15 +20,20 @@ import { ScopedTranslationServiceMock, TranslateSignalMock } from './lib/mocks/s
 /** @internal HashMap type for transloco compatibility */
 type HashMap<T = unknown> = Record<string, T>;
 
+export interface TestingModuleMetadata extends TestModuleMetadata {
+	/** Value mocks that also replace providers declared on components. */
+	providerOverrides?: readonly ValueProvider[];
+}
+
 /**
  * Sets up the Angular testing module with the provided metadata.
- * @param {TestModuleMetadata} metadata - The metadata for the test module, including imports, providers, and declarations.
+ * @param {TestingModuleMetadata} metadata - The metadata for the test module, including provider overrides.
  * @param {HashMap<Translation>} langs - A hashmap of translations for different languages.
  * @param {Partial<TranslocoConfig>} config - Partial configuration for the Transloco module.
  * @returns {Promise<void>} A promise that resolves when the test module is compiled and resources resolved.
  */
 export async function sharedSetupTestingModule(
-	metadata: TestModuleMetadata,
+	metadata: TestingModuleMetadata,
 	langs?: HashMap<Translation>,
 	config: Partial<TranslocoConfig> = {}
 ): Promise<void> {
@@ -99,12 +104,18 @@ export async function sharedSetupTestingModule(
 	const usedLangs = langs ?? defaultLangs;
 
 	// Configure and compile the testing module
-	await TestBed.configureTestingModule({
+	TestBed.configureTestingModule({
 		imports: [translocoTestingModulFactory(config, usedLangs), ...(metadata.imports || [])],
 		providers: providers,
 		declarations: [...(metadata.declarations || [])],
 		schemas: [NO_ERRORS_SCHEMA, ...(metadata.schemas || [])]
-	}).compileComponents();
+	});
+
+	for (const { provide, ...override } of metadata.providerOverrides ?? []) {
+		TestBed.overrideProvider(provide, override);
+	}
+
+	await TestBed.compileComponents();
 
 	// Some Angular runtimes expose resolveComponentResources to load external templateUrl/styleUrls for components.
 	// If present, call it to ensure standalone components with external resources are resolved in tests.
@@ -136,6 +147,6 @@ function translocoTestingModulFactory(
 }
 
 // Provide a runtime-friendly alias so wrappers can import `{ setupTestingModule }` from the shared testing package.
-export const setupTestingModule = (options: any, langs?: HashMap<Translation>, config: Partial<TranslocoConfig> = {}) => {
+export const setupTestingModule = (options: TestingModuleMetadata, langs?: HashMap<Translation>, config: Partial<TranslocoConfig> = {}) => {
 	return sharedSetupTestingModule(options, langs, config);
 };

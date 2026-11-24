@@ -22,15 +22,7 @@ describe('HeaderComponent', () => {
 
 		await setupTestingModule({
 			imports: [HeaderComponent],
-			providers: [
-				{
-					provide: StreamStateService,
-					useValue: {
-						title,
-						subtitle
-					}
-				}
-			]
+			providerOverrides: [{ provide: StreamStateService, useValue: { title, subtitle } }]
 		});
 	});
 

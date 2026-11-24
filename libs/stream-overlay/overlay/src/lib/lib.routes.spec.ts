@@ -4,15 +4,13 @@
  */
 
 import { overlayRoutes } from './lib.routes';
-import { OverlayWrapperComponent } from './overlay/components/overlay-wrapper/overlay-wrapper.component';
 
 describe('overlayRoutes', () => {
-	it('should expose overlay component at root route', () => {
-		expect(overlayRoutes).toEqual([
-			{
-				path: '',
-				component: OverlayWrapperComponent
-			}
-		]);
+	it('should expose only lazy widget routes', () => {
+		expect(overlayRoutes.map(({ path }) => path)).toEqual(['header', 'current-paint', 'webcam-frame', 'scene-frame']);
+		for (const route of overlayRoutes) {
+			expect(route.loadComponent).toBeTypeOf('function');
+			expect(route.component).toBeUndefined();
+		}
 	});
 });

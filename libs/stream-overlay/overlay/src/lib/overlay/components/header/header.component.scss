@@ -4,11 +4,21 @@
  */
 @use '../../styles' as mixins;
 
+:host {
+	display: block;
+	font-family: Montserrat, sans-serif;
+}
+
+.header {
+	display: flex;
+	align-items: flex-start;
+}
+
 .logo-container {
 	display: flex;
 	justify-content: center;
-	width: 6rem;
-	height: 6rem;
+	width: min(6rem, 30vw, 100vh);
+	aspect-ratio: 1;
 
 	@include mixins.segmented-border(
 		$segments: right bottom top left top-left bottom-right,
@@ -16,12 +26,10 @@
 		$width: 2px,
 		$color: mixins.$sto-border
 	);
-
-	z-index: 2;
 }
 
 .logo-background {
-	z-index: -1;
+	flex: none;
 
 	@include mixins.clipped-background($corners: top-left bottom-right, $color: mixins.$sto-background);
 }
@@ -34,7 +42,8 @@
 
 h1 {
 	font-family: 'Cinzel Semibold', sans-serif;
-	font-size: 1.5rem;
+	font-size: min(1.5rem, 7vw, 20vh);
+	line-height: 1.2;
 	margin: 0;
 	padding: 0;
 	color: mixins.$sto-font-highlight;
@@ -42,7 +51,8 @@ h1 {
 }
 
 h2 {
-	font-size: 1rem;
+	font-size: min(1rem, 5vw, 14vh);
+	line-height: 1.2;
 	margin: 0;
 	padding: 0;
 	color: mixins.$sto-font-highlight;
@@ -50,12 +60,15 @@ h2 {
 }
 
 .title-container {
-	padding: 0.5rem 1rem;
+	padding: min(0.5rem, 5vh) min(1rem, 4vw);
+	overflow-wrap: anywhere;
 
 	@include mixins.segmented-border($segments: right bottom top bottom-right, $corner: 15px, $width: 2px, $color: mixins.$sto-border);
 }
 
 .title-background {
+	min-width: 0;
+
 	@include mixins.clipped-background($corners: bottom-right, $color: mixins.$sto-background);
 }
 
