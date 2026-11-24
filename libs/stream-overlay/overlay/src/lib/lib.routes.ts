@@ -4,14 +4,26 @@
  */
 import type { Routes } from '@angular/router';
 
-import { OverlayWrapperComponent } from './overlay/components/overlay-wrapper/overlay-wrapper.component';
-
 /**
  * Route configuration for the stream overlay.
  */
 export const overlayRoutes: Routes = [
 	{
-		path: '',
-		component: OverlayWrapperComponent
+		path: 'header',
+		loadComponent: () => import('./overlay/components/header/header.component').then(({ HeaderComponent }) => HeaderComponent)
+	},
+	{
+		path: 'current-paint',
+		loadComponent: () =>
+			import('./overlay/components/current-paint/current-paint.component').then(({ CurrentPaintComponent }) => CurrentPaintComponent)
+	},
+	{
+		path: 'webcam-frame',
+		loadComponent: () => import('./overlay/components/camera/camera.component').then(({ CameraComponent }) => CameraComponent)
+	},
+	{
+		path: 'scene-frame',
+		loadComponent: () =>
+			import('./overlay/components/scene-frame/scene-frame.component').then(({ SceneFrameComponent }) => SceneFrameComponent)
 	}
 ];

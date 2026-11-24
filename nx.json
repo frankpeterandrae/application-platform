@@ -40,7 +40,10 @@
 		},
 		"@angular/build:unit-test": {
 			"cache": true,
-			"inputs": ["default", "^production"]
+			"inputs": ["default", "^production"],
+			"options": {
+				"watch": false
+			}
 		},
 		"test": [
 			{
@@ -56,7 +59,8 @@
 				},
 				"options": {
 					"coverage": true,
-					"passWithNoTests": true
+					"passWithNoTests": true,
+					"watch": false
 				}
 			}
 		]

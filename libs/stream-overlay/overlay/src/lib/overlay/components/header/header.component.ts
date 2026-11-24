@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 import { Component, inject } from '@angular/core';
-import { StreamStateService } from '@application-platform/stream-overlay-data-access';
+import { StreamStateService, WebSocketService } from '@application-platform/stream-overlay-data-access';
 
 /**
  * The header component for the stream overlay.
@@ -14,6 +14,7 @@ import { StreamStateService } from '@application-platform/stream-overlay-data-ac
 @Component({
 	selector: 'stream-overlay-header',
 	standalone: true,
+	providers: [StreamStateService, WebSocketService],
 	templateUrl: './header.component.html',
 	styleUrl: './header.component.scss'
 })

@@ -6,7 +6,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { Paint } from '@application-platform/paint';
 import { PaintSwatchComponent } from '@application-platform/shared-ui';
-import { PaintService } from '@application-platform/stream-overlay-data-access';
+import { PaintService, WebSocketService } from '@application-platform/stream-overlay-data-access';
 
 /**
  * Displays the currently selected paint in the stream overlay.
@@ -19,6 +19,7 @@ import { PaintService } from '@application-platform/stream-overlay-data-access';
 	standalone: true,
 	templateUrl: './current-paint.component.html',
 	imports: [PaintSwatchComponent],
+	providers: [PaintService, WebSocketService],
 	styleUrl: './current-paint.component.scss'
 })
 export class CurrentPaintComponent {

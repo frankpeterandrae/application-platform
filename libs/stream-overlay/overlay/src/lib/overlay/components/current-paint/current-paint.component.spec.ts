@@ -7,7 +7,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { Paint } from '@application-platform/paint';
 import { PaintService } from '@application-platform/stream-overlay-data-access';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
 
@@ -21,15 +21,12 @@ describe('CurrentPaintComponent', () => {
 
 		await setupTestingModule({
 			imports: [CurrentPaintComponent],
-			providers: [
-				{
-					provide: PaintService,
-					useValue: {
-						currentPaint
-					}
-				}
-			]
+			providerOverrides: [{ provide: PaintService, useValue: { currentPaint } }]
 		});
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
 	});
 
 	it('should create', () => {
@@ -63,8 +60,6 @@ describe('CurrentPaintComponent', () => {
 		expect(fixture.nativeElement.querySelector('strong')?.textContent?.trim()).toBe('Mephiston Red');
 
 		expect(fixture.nativeElement.querySelector('.paint-color')).not.toBeNull();
-
-		vi.useRealTimers();
 	});
 
 	it('should not render current paint before transition duration has elapsed', () => {
@@ -92,8 +87,6 @@ describe('CurrentPaintComponent', () => {
 		fixture.detectChanges();
 
 		expect(fixture.nativeElement.querySelector('.paint-overlay')).not.toBeNull();
-
-		vi.useRealTimers();
 	});
 
 	it('should discard a pending paint when another paint is selected during the transition', () => {
@@ -135,8 +128,6 @@ describe('CurrentPaintComponent', () => {
 		fixture.detectChanges();
 
 		expect(fixture.nativeElement.querySelector('strong')?.textContent?.trim()).toBe('Khorne Red');
-
-		vi.useRealTimers();
 	});
 
 	function createComponent() {

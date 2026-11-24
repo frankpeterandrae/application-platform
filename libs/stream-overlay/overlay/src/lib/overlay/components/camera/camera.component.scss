@@ -6,15 +6,12 @@
 @use '../../styles' as mixins;
 
 .camera-position {
-	position: fixed;
-	height: 240px;
-	width: 320px;
-	right: 4rem;
-	bottom: 4rem;
+	width: 100vw;
+	height: 100vh;
 
 	@include mixins.segmented-border(
 		$segments: top top-left left top-right right bottom bottom-right bottom-left,
-		$corner: 25px,
+		$corner: min(25px, 50vmin),
 		$width: 2px,
 		$color: mixins.$sto-border
 	);

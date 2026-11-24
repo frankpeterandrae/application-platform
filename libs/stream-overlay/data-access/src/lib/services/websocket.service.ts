@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Injectable, signal } from '@angular/core';
+import { Injectable, OnDestroy, signal } from '@angular/core';
 import { filter, map, Observable, Subject } from 'rxjs';
 
 import { WebSocketMessage } from '../model/websocket-message';
@@ -17,7 +17,7 @@ import { WebSocketMessage } from '../model/websocket-message';
 @Injectable({
 	providedIn: 'root'
 })
-export class WebSocketService {
+export class WebSocketService implements OnDestroy {
 	private readonly socket = new WebSocket('ws://localhost:3000/ws');
 
 	private readonly messageSubject = new Subject<WebSocketMessage<unknown>>();
@@ -37,6 +37,11 @@ export class WebSocketService {
 		this.socket.addEventListener('message', ({ data }) => {
 			this.handleMessage(data);
 		});
+	}
+
+	ngOnDestroy(): void {
+		this.socket.close();
+		this.messageSubject.complete();
 	}
 
 	/**

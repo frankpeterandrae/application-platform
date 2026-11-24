@@ -17,6 +17,7 @@ class MockWebSocket {
 	public static instances: MockWebSocket[] = [];
 
 	public readonly send = vi.fn();
+	public readonly close = vi.fn();
 
 	public readyState = MockWebSocket.CONNECTING;
 
@@ -83,6 +84,16 @@ describe('WebSocketService', () => {
 
 	it('should initially be disconnected', () => {
 		expect(service.connected()).toBe(false);
+	});
+
+	it('should close the connection and complete event subscriptions on destroy', () => {
+		const complete = vi.fn();
+		service.on('paint.changed').subscribe({ complete });
+
+		service.ngOnDestroy();
+
+		expect(socket.close).toHaveBeenCalled();
+		expect(complete).toHaveBeenCalled();
 	});
 
 	it('should set connected state when socket opens', () => {
