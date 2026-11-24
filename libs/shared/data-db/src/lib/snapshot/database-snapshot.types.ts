@@ -11,6 +11,8 @@ export interface DatabaseSnapshotTableConfig {
 	readonly import?: false;
 	readonly groupBy?: string;
 	readonly orderBy?: readonly string[];
+	/** Clears this table when its snapshot is absent and the named table is replaced. */
+	readonly clearWhenMissingIfImporting?: string;
 }
 
 /**

@@ -115,6 +115,7 @@ export class PaintEditorComponent {
 		category: [''],
 		mainColor: ['#000000', [Validators.required, Validators.pattern(/^#[0-9a-fA-F]{6}$/)]],
 		secondaryColor: ['', Validators.pattern(/^$|^#[0-9a-fA-F]{6}$/)],
+		matchColor: [''],
 		barcode: [''],
 		colorGroups: this.formBuilder.nonNullable.control<PaintColorGroup[]>([], Validators.required)
 	});
@@ -148,6 +149,7 @@ export class PaintEditorComponent {
 			category: '',
 			mainColor: '#000000',
 			secondaryColor: '',
+			matchColor: '',
 			barcode: '',
 			colorGroups: []
 		});
@@ -172,6 +174,7 @@ export class PaintEditorComponent {
 			category: paint.category ?? '',
 			mainColor: paint.mainColor,
 			secondaryColor: paint.secondaryColor ?? '',
+			matchColor: paint.matchColor?.join('\n') ?? '',
 			barcode: paint.barcode ?? '',
 			colorGroups: [...paint.colorGroups]
 		});
@@ -268,6 +271,10 @@ export class PaintEditorComponent {
 
 	private createPaintFromForm(id: PaintId): Paint {
 		const value = this.paintForm.getRawValue();
+		const matchColor = value.matchColor
+			.split(/\r?\n/)
+			.map((name) => name.trim())
+			.filter(Boolean);
 
 		return {
 			id,
@@ -283,6 +290,9 @@ export class PaintEditorComponent {
 			}),
 			...(value.secondaryColor && {
 				secondaryColor: value.secondaryColor as `#${string}`
+			}),
+			...(matchColor.length > 0 && {
+				matchColor
 			}),
 			...(value.barcode && {
 				barcode: value.barcode

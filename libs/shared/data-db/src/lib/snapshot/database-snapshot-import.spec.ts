@@ -245,7 +245,7 @@ describe('importDatabaseSnapshot', () => {
 			importDatabaseSnapshot(db, dataDir, {
 				tablePrefix: 'paint'
 			})
-		).toThrow('Foreign key validation failed after snapshot import.');
+		).toThrow('Foreign key validation failed during snapshot import.');
 	});
 
 	function writeJson(file: string, data: unknown): void {

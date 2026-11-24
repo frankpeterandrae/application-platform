@@ -43,6 +43,17 @@
 		}
 	}
 
+	&__matches {
+		display: grid;
+		gap: 0.25rem;
+		margin-block: 1rem;
+
+		textarea {
+			font: inherit;
+			resize: vertical;
+		}
+	}
+
 	&__color {
 		display: block;
 		flex: 0 0 auto;

@@ -33,6 +33,8 @@ export interface PaintDefinition {
 
 	readonly mainColor: HexColor;
 	readonly secondaryColor?: HexColor;
+	/** Alternative paint names, including their brand or range when available. */
+	readonly matchColor?: readonly string[];
 
 	readonly barcode?: string;
 

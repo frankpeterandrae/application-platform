@@ -49,6 +49,7 @@ describe('PaintController', () => {
 		sku: '21-03',
 		name: 'Mephiston Red',
 		mainColor: '#991115',
+		matchColor: ['Word Bearers Red (GW)'],
 		colorGroups: ['red']
 	};
 
@@ -165,6 +166,34 @@ describe('PaintController', () => {
 
 			expect(paintRepository.delete).toHaveBeenCalledWith('citadel:21-03');
 		});
+
+		it.each([[[]], [[' ']], [null], [undefined]] as const)('should clear an empty match color (%s)', (matchColor) => {
+			const result = controller.updatePaint(paint.id, { ...paint, matchColor });
+
+			expect(result).not.toHaveProperty('matchColor');
+			expect(paintRepository.update).toHaveBeenCalledWith(result);
+		});
+
+		it('should normalize blanks, whitespace and duplicate alternative names', () => {
+			const result = controller.updatePaint(paint.id, {
+				...paint,
+				matchColor: [' Word Bearers Red (GW) ', '', 'Word Bearers Red (GW)']
+			});
+			expect(result).toEqual(paint);
+			expect(paintRepository.update).toHaveBeenCalledWith(paint);
+		});
+
+		it.each([['#112233'], [['#112233']], [[17]], [['Word Bearers\nRed']]])(
+			'should reject invalid alternatives before writing (%s)',
+			(matchColor) => {
+				const invalidPaint = { ...paint, matchColor } as unknown as Paint;
+
+				expect(() => controller.createPaint(invalidPaint)).toThrow('matchColor');
+				expect(() => controller.updatePaint(paint.id, invalidPaint)).toThrow('matchColor');
+				expect(paintRepository.insert).not.toHaveBeenCalled();
+				expect(paintRepository.update).not.toHaveBeenCalled();
+			}
+		);
 	});
 
 	it('should return recent paint ids', () => {

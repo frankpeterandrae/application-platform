@@ -10,7 +10,10 @@ import {
 	PaintRepository,
 	PaintSnapshotService
 } from '@application-platform/paint-data-access';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+
+/** Paint payload with nullable alternatives for clients that explicitly clear the field. */
+type PaintBody = Omit<Paint, 'matchColor'> & { matchColor?: NonNullable<Paint['matchColor']> | null };
 
 /**
  * Handles HTTP requests for paint brands, paints and recent selections.
@@ -103,10 +106,11 @@ export class PaintController {
 	 * @returns The created paint.
 	 */
 	@Post('paints')
-	public createPaint(@Body() paint: Paint): Paint {
-		this.paintRepository.insert(paint);
+	public createPaint(@Body() paint: PaintBody): Paint {
+		const createdPaint = this.normalizePaint(paint);
+		this.paintRepository.insert(createdPaint);
 
-		return paint;
+		return createdPaint;
 	}
 
 	/**
@@ -117,15 +121,31 @@ export class PaintController {
 	 * @returns The updated paint.
 	 */
 	@Put('paints/:id')
-	public updatePaint(@Param('id') id: PaintId, @Body() paint: Paint): Paint {
-		const updatedPaint: Paint = {
+	public updatePaint(@Param('id') id: PaintId, @Body() paint: PaintBody): Paint {
+		const updatedPaint = this.normalizePaint({
 			...paint,
 			id
-		};
+		});
 
 		this.paintRepository.update(updatedPaint);
 
 		return updatedPaint;
+	}
+
+	private normalizePaint({ matchColor, ...paint }: PaintBody): Paint {
+		if (matchColor === undefined || matchColor === null) {
+			return paint;
+		}
+
+		if (!Array.isArray(matchColor) || matchColor.some((name) => typeof name !== 'string' || /[\r\n]/.test(name))) {
+			throw new BadRequestException('matchColor must contain single-line alternative paint names.');
+		}
+
+		const names = [...new Set(matchColor.map((name: string) => name.trim()).filter(Boolean))];
+		if (names.some((name) => /^#[0-9a-f]{6}$/i.test(name))) {
+			throw new BadRequestException('matchColor must contain alternative paint names.');
+		}
+		return names.length ? { ...paint, matchColor: names } : paint;
 	}
 
 	/**
