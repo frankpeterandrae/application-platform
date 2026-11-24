@@ -6,13 +6,9 @@
 
 ## Development prerequisites
 
-Use Node 24.19.0 from `.nvmrc` (supported: Node 24.15+ within major 24) and npm 10.9.9 from `packageManager` in `package.json`.
-The npm version is pinned because npm 11 prunes the separate optional Chokidar 4 peer required by Nest's generator tooling.
-Install with `npm ci`, or bootstrap the pinned npm without changing the global installation:
+Use the Node version from `.nvmrc` as the CI baseline. GitHub Actions uses the npm version bundled with that Node release.
 
-```powershell
-npm exec --package=npm@10.9.9 -- npm ci
-```
+Install dependencies with `npm ci`.
 
 On Windows, an installation with lifecycle scripts requires Python 3 and Visual Studio C++ build tools for `better-sqlite3`.
 If Python is not on `PATH`, set `NODE_GYP_FORCE_PYTHON` to its executable before running `npm ci`.
