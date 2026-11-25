@@ -30,6 +30,11 @@
 						"glob": "**/*",
 						"input": "libs/demo/demo-feature/src/assets",
 						"output": "assets/demo-feature"
+					},
+					{
+						"glob": "**/*",
+						"input": "libs/homepage/colour-rack/src/assets",
+						"output": "assets/colour-rack"
 					}
 				],
 				"styles": [

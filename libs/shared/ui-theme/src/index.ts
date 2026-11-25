@@ -18,6 +18,7 @@ export * from './lib/components/forms/textarea/textarea.component';
 export * from './lib/components/layout/card/card.component';
 export * from './lib/components/layout/footer/footer.component';
 export * from './lib/components/layout/header/header.component';
+export * from './lib/components/navigation/pagination/pagination.component';
 export * from './lib/components/navigation/sidebar/sidebar.component';
 export * from './lib/components/navigation/tabs/tab-group.component';
 export * from './lib/components/navigation/tabs/tab.component';

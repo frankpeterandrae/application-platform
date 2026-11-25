@@ -23,4 +23,12 @@ describe('appRoutes', () => {
 		expect(TestBed.inject(Router).url).toBe('/demo/button');
 		expect(harness.routeNativeElement?.querySelector('theme-button')).not.toBeNull();
 	});
+
+	it('should lazy load the paint rack demo', async () => {
+		const route = appRoutes.find(({ path }) => path === 'demo/paint-rack');
+		const component = await route?.loadComponent?.();
+
+		const { ColorSearchContainerComponent } = await import('@application-platform/colour-rack');
+		expect(component).toBe(ColorSearchContainerComponent);
+	});
 });

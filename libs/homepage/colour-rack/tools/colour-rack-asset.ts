@@ -3,6 +3,8 @@
  * All rights reserved.
  */
 
+import type { HexColor } from '@application-platform/paint';
+
 import type { Color, ColorTypeCode } from '../src/lib/models/color.model';
 
 const brand = 'two-thin-coats';
@@ -29,25 +31,20 @@ export class ColourRackAsset {
 			if (!types.has(type)) {
 				throw new Error(`${id}: unsupported category ${JSON.stringify(type)}`);
 			}
-			const color: Color = {
+			return {
 				name: this.required(paint['name'], 'name', id),
 				alternativeNames: [...(names.get(sku) ?? [])].sort(
 					(left, right) => this.matchBrandRank(left) - this.matchBrandRank(right) || left.localeCompare(right, 'en')
 				),
 				type: type as ColorTypeCode,
-				mainColor: this.required(paint['main_color'], 'main_color', id, hexColor)
+				mainColor: this.required(paint['main_color'], 'main_color', id, hexColor) as HexColor,
+				...(paint['secondary_color'] != null
+					? { secondaryColor: this.required(paint['secondary_color'], 'secondary_color', id, hexColor) as HexColor }
+					: {}),
+				...(paint['range'] != null ? { wave: this.required(paint['range'], 'range', id) } : {}),
+				sku,
+				...(paint['barcode'] != null ? { barcode: this.required(paint['barcode'], 'barcode', id, /^\d+$/) } : {})
 			};
-			if (paint['secondary_color'] != null) {
-				color.secondaryColor = this.required(paint['secondary_color'], 'secondary_color', id, hexColor);
-			}
-			if (paint['range'] != null) {
-				color.wave = this.required(paint['range'], 'range', id);
-			}
-			color.sku = sku;
-			if (paint['barcode'] != null) {
-				color.barcode = this.required(paint['barcode'], 'barcode', id, /^\d+$/);
-			}
-			return color;
 		});
 	}
 

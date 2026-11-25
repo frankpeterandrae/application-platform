@@ -21,14 +21,18 @@ export const i18nTextModules = {
 	},
 	ColorSearchContainer: {
 		lbl: {
-			ColorDetails: 'ColorSearchContainer.lbl.ColorDetails',
-			ColorDetailsDescription: 'ColorSearchContainer.lbl.ColorDetailsDescription',
-			ColorGrid: 'ColorSearchContainer.lbl.ColorGrid',
-			ColorGridDescription: 'ColorSearchContainer.lbl.ColorGridDescription',
-			ColorSearch: 'ColorSearchContainer.lbl.ColorSearch',
-			ColorSearchDescription: 'ColorSearchContainer.lbl.ColorSearchDescription',
 			Description: 'ColorSearchContainer.lbl.Description',
-			FunctionsDescription: 'ColorSearchContainer.lbl.FunctionsDescription',
+			Loading: 'ColorSearchContainer.lbl.Loading',
+			LoadError: 'ColorSearchContainer.lbl.LoadError',
+			Retry: 'ColorSearchContainer.lbl.Retry',
+			Sort: 'ColorSearchContainer.lbl.Sort',
+			RackOrder: 'ColorSearchContainer.lbl.RackOrder',
+			NameOrder: 'ColorSearchContainer.lbl.NameOrder',
+			Results: 'ColorSearchContainer.lbl.Results',
+			NoResults: 'ColorSearchContainer.lbl.NoResults',
+			Page: 'ColorSearchContainer.lbl.Page',
+			Previous: 'ColorSearchContainer.lbl.Previous',
+			Next: 'ColorSearchContainer.lbl.Next',
 			Title: 'ColorSearchContainer.lbl.Title'
 		},
 		meta: {
