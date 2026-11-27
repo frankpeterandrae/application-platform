@@ -6,7 +6,7 @@
 // eslint.config.mjs
 import nx from '@nx/eslint-plugin';
 import prettier from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
+import importX from 'eslint-plugin-import-x';
 import jsdoc from 'eslint-plugin-jsdoc';
 import unusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
@@ -15,6 +15,12 @@ export default [
 	...nx.configs['flat/base'],
 	...nx.configs['flat/typescript'],
 	...nx.configs['flat/javascript'],
+	{
+		rules: {
+			// Preserve the ESLint 9 recommended rule set during the v10 upgrade.
+			'preserve-caught-error': 'off'
+		}
+	},
 
 	{
 		ignores: [
@@ -264,7 +270,7 @@ export default [
 			}
 		},
 		plugins: {
-			import: importPlugin,
+			'import-x': importX,
 			'unused-imports': unusedImports,
 			jsdoc,
 			'@typescript-eslint': tseslint.plugin
@@ -278,8 +284,8 @@ export default [
 			'@typescript-eslint/no-non-null-assertion': 'warn',
 
 			// keep it readable and avoid Nx pain
-			'import/no-cycle': ['error', { maxDepth: 1 }],
-			'import/order': [
+			'import-x/no-cycle': ['error', { maxDepth: 1 }],
+			'import-x/order': [
 				'warn',
 				{
 					'newlines-between': 'always',
@@ -352,7 +358,7 @@ export default [
 		},
 		rules: {
 			'@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-			'import/no-duplicates': ['error', { 'prefer-inline': true }],
+			'import-x/no-duplicates': ['error', { 'prefer-inline': true }],
 			'@typescript-eslint/no-floating-promises': 'error',
 			'@typescript-eslint/no-misused-promises': 'error',
 			'@typescript-eslint/await-thenable': 'error',
