@@ -97,10 +97,6 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "npm"
 
-      - name: Use workspace npm version
-        if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
-        run: npm install --global npm@10.9.9
-
       - name: Install deps
         if: ${{ inputs.mode == 'main' || steps.ci-changes.outputs.run_ci == 'true' }}
         run: npm ci --ignore-scripts

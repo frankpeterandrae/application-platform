@@ -31,7 +31,14 @@
 		"@nx/esbuild:esbuild": {
 			"cache": true,
 			"dependsOn": ["^build"],
-			"inputs": ["production", "^production"]
+			"inputs": [
+				"production",
+				"^production",
+				{
+					"dependentTasksOutputFiles": "**/*",
+					"transitive": true
+				}
+			]
 		},
 		"@nx/js:tsc": {
 			"cache": true,
