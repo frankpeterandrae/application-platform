@@ -3,19 +3,24 @@
  * All rights reserved.
  */
 
+import { provideLocationMocks } from '@angular/common/testing';
+import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+
+import { setupTestingModule } from '../test-setup';
+
 import { appRoutes } from './app.routes';
 
 describe('appRoutes', () => {
-	it('should redirect the root route to the button demo', () => {
-		const route = appRoutes.find(({ path }) => path === '');
-
-		expect(route?.redirectTo).toBe('demo/button');
-		expect(route?.pathMatch).toBe('full');
+	beforeEach(async () => {
+		await setupTestingModule({ providers: [provideRouter(appRoutes), provideLocationMocks()] });
 	});
 
-	it('should lazy load the demo feature', () => {
-		const route = appRoutes.find(({ path }) => path === 'demo');
+	it('redirects the root URL to the button demo and renders it', async () => {
+		const harness = await RouterTestingHarness.create('/');
 
-		expect(route?.loadChildren).toBeTypeOf('function');
+		expect(TestBed.inject(Router).url).toBe('/demo/button');
+		expect(harness.routeNativeElement?.querySelector('theme-button')).not.toBeNull();
 	});
 });

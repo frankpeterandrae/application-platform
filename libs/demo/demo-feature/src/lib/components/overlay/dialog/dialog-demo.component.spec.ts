@@ -4,10 +4,9 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ButtonComponent, DialogComponent, DialogService, DialogType } from '@application-platform/shared/ui-theme';
+import { DialogComponent, DialogService, DialogType } from '@application-platform/shared/ui-theme';
 import { type Mocked, createMock } from '@application-platform/testing';
-import { vi } from 'vitest';
+import { assert, vi } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
 
@@ -30,9 +29,9 @@ describe('DialogDemoComponent', () => {
 	});
 
 	it('should open the basic dialog from the demo button', () => {
-		const button = fixture.debugElement.query(By.directive(ButtonComponent)).componentInstance as ButtonComponent;
-
-		button.buttonClick.emit();
+		const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('theme-button button');
+		assert(button);
+		button.click();
 
 		expect(dialogService.open).toHaveBeenCalledWith(DialogComponent, {
 			componentData: undefined,

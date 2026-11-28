@@ -10,7 +10,6 @@ export interface Color {
 	type: ColorTypeCode;
 	mainColor: string;
 	secondaryColor?: string;
-	highlighted?: boolean;
 	wave?: string;
 	sku?: string;
 	barcode?: string;

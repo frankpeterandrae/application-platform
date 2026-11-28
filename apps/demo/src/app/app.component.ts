@@ -3,7 +3,8 @@
  * All rights reserved.
  */
 
-import { Component, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
 	DropdownOption,
@@ -15,7 +16,7 @@ import {
 
 type Theme = 'homepage' | 'z21';
 
-/** Root component of the demo application. */
+/** Lets users preview the demo routes with either application theme. */
 @Component({
 	imports: [RouterOutlet, HeaderComponent, DropdownSelectComponent, FooterComponent],
 	selector: 'demo-root',
@@ -23,7 +24,7 @@ type Theme = 'homepage' | 'z21';
 })
 export class AppComponent {
 	private readonly themeStylesheetId = 'homepage-theme';
-	private themeStylesheet = document.getElementById(this.themeStylesheetId) as HTMLLinkElement | null;
+	private readonly document = inject(DOCUMENT);
 
 	protected readonly selectedTheme = signal<Theme>('homepage');
 
@@ -43,18 +44,15 @@ export class AppComponent {
 
 		this.selectedTheme.set(theme);
 
-		const existing = document.getElementById(this.themeStylesheetId) as HTMLLinkElement | null;
-		if (existing) {
-			this.themeStylesheet = existing;
+		// Reuse the active stylesheet so only one theme contributes styles.
+		let stylesheet = this.document.querySelector<HTMLLinkElement>('link#' + this.themeStylesheetId);
+		if (!stylesheet) {
+			stylesheet = this.document.createElement('link');
+			stylesheet.id = this.themeStylesheetId;
+			stylesheet.rel = 'stylesheet';
+			this.document.head.appendChild(stylesheet);
 		}
 
-		if (!this.themeStylesheet?.isConnected) {
-			this.themeStylesheet = document.createElement('link');
-			this.themeStylesheet.id = this.themeStylesheetId;
-			this.themeStylesheet.rel = 'stylesheet';
-			document.head.appendChild(this.themeStylesheet);
-		}
-
-		this.themeStylesheet.href = `${theme}-theme.css`;
+		stylesheet.href = `${theme}-theme.css`;
 	}
 }

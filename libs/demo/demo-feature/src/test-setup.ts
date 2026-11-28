@@ -11,12 +11,6 @@ import { setupTestingModule as sharedSetup } from '@application-platform/testing
 import '@application-platform/testing/analog';
 import { of } from 'rxjs';
 
-/**
- * Sets up the shared Angular test environment for this library.
- *
- * @param metadata Angular test module metadata.
- * @returns A promise that resolves when the testing module has been compiled.
- */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
 	const demoProviders = [
 		{
@@ -25,7 +19,7 @@ export function setupTestingModule({ imports = [], providers = [], declarations 
 				params: of({}),
 				snapshot: {
 					paramMap: {
-						get: (): any => null
+						get: (): null => null
 					}
 				}
 			}

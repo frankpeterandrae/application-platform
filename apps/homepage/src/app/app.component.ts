@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-import { Component, inject, type OnInit } from '@angular/core';
+import { Component, computed, inject, type OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import {
@@ -21,7 +21,7 @@ import { environment } from '../environments/environment';
 
 import { i18nTextModules } from './i18n/i18n';
 
-/** Root component of the homepage application. */
+/** Builds the localized navigation and registers site-wide metadata. */
 @Component({
 	imports: [RouterOutlet, HeaderComponent, FooterComponent, LanguageToggleComponent],
 	selector: 'fpa-root',
@@ -36,39 +36,35 @@ export class AppComponent implements OnInit {
 	private readonly inDevelopmentLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.InDevelopment);
 	private readonly testLabel = translateSignal(i18nTextModules.AppComponent.menu.lbl.Test);
 
-	/**
-	 * Returns the menu items for the application header.
-	 */
-	public get menuItems(): MenuItem[] {
-		return [
-			{
-				id: 'home',
-				label: this.homeLabel(),
-				icon: IconDefinition.HOUSE,
-				route: '/'
-			},
-			{
-				id: 'paint-rack',
-				label: this.paintRackLabel(),
-				icon: IconDefinition.BRUSH,
-				route: '/paint-rack'
-			},
-			...(environment.production
-				? []
-				: [
-						{
-							id: 'dev',
-							label: this.inDevelopmentLabel(),
-							icon: IconDefinition.BRUSH,
-							route: '/dev',
-							children: [
-								{ id: 'test', label: this.testLabel(), route: '/dev/test' },
-								{ id: 'demo', label: 'DEMO', route: '/dev/demo' }
-							]
-						}
-					])
-		];
-	}
+	// Keep the menu stable until a label changes through the active language.
+	protected readonly menuItems = computed<MenuItem[]>(() => [
+		{
+			id: 'home',
+			label: this.homeLabel(),
+			icon: IconDefinition.HOUSE,
+			route: '/'
+		},
+		{
+			id: 'paint-rack',
+			label: this.paintRackLabel(),
+			icon: IconDefinition.BRUSH,
+			route: '/paint-rack'
+		},
+		...(environment.production
+			? []
+			: [
+					{
+						id: 'dev',
+						label: this.inDevelopmentLabel(),
+						icon: IconDefinition.BRUSH,
+						route: '/dev',
+						children: [
+							{ id: 'test', label: this.testLabel(), route: '/dev/test' },
+							{ id: 'demo', label: 'DEMO', route: '/dev/demo' }
+						]
+					}
+				])
+	]);
 
 	constructor() {
 		this.meta.addTags([

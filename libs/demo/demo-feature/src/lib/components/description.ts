@@ -3,7 +3,7 @@
  * All rights reserved.
  */
 
-export type Columntype = 'string' | 'code';
+type Columntype = 'string' | 'code';
 
 export type Column = {
 	value: string;

@@ -4,124 +4,78 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogService } from '@application-platform/shared/ui-theme';
-import { type Mocked, createMock } from '@application-platform/testing';
-import { of } from 'rxjs';
+import { DialogService, DialogType } from '@application-platform/shared/ui-theme';
+import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
+import { ColorDetailsComponent } from '../color-details/color-details.component';
 import type { Color } from '../models/color.model';
 import { ColorService } from '../services/color.service';
 
 import { ColorGridComponent } from './color-grid.component';
 
-class TestColorGridComponent extends ColorGridComponent {
-	public openColorDetails(color: Color): void {
-		this.openDetails(color);
-	}
-
-	public getBackgroundColor(color: Color): string {
-		return this.backgroundColor(color);
-	}
-}
-
 describe('ColorGridComponent', () => {
 	let fixture: ComponentFixture<ColorGridComponent>;
-	let colorService: Mocked<ColorService>;
-	let dialogService: Mocked<DialogService>;
-
+	let paintData: Subject<Color[]>;
+	const open = vi.fn();
 	const colors: Color[] = [
-		{
-			name: 'Red',
-			alternativeNames: ['Crimson'],
-			type: 'M',
-			mainColor: '#ff0000'
-		},
-		{
-			name: 'Blue',
-			alternativeNames: ['Azure'],
-			type: 'S',
-			mainColor: '#0000ff'
-		}
+		{ name: 'Red', alternativeNames: ['Crimson'], type: 'M', mainColor: '#ff0000' },
+		{ name: 'Blue', alternativeNames: ['Azure'], type: 'S', mainColor: '#0000ff' }
 	];
 
+	const tiles = () => (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button.color-tile');
+	const dimmedTiles = () => Array.from(tiles()).filter((tile) => tile.querySelector('.grayed-out'));
+
 	beforeEach(async () => {
-		colorService = createMock<ColorService>({
-			getColors: vi.fn().mockReturnValue(of(colors))
-		});
-
-		dialogService = createMock<DialogService>({
-			open: vi.fn()
-		});
-
+		paintData = new Subject();
+		open.mockClear();
 		await setupTestingModule({
 			imports: [ColorGridComponent],
 			providers: [
-				{
-					provide: ColorService,
-					useValue: colorService
-				},
-				{
-					provide: DialogService,
-					useValue: dialogService
-				}
+				{ provide: ColorService, useValue: { getColors: () => paintData } },
+				{ provide: DialogService, useValue: { open } }
 			]
 		});
 
 		fixture = TestBed.createComponent(ColorGridComponent);
 		fixture.detectChanges();
+		// The test DOM has no layout. Give virtual scrolling a measurable viewport.
+		Object.defineProperty(fixture.nativeElement.querySelector('cdk-virtual-scroll-viewport'), 'clientHeight', { value: 600 });
+		await fixture.whenStable();
 	});
 
-	it('should load colors on initialization', () => {
-		expect(colorService.getColors).toHaveBeenCalledOnce();
-	});
+	async function renderColors(): Promise<void> {
+		paintData.next(colors);
+		fixture.detectChanges();
+		await fixture.whenStable();
+		fixture.detectChanges();
+	}
 
-	it('should assign storage positions to loaded colors', () => {
-		expect(colors[0].row).toBe(1);
-		expect(colors[0].column).toBe(1);
+	it('keeps storage positions visible and applies a query entered before the paints arrive', async () => {
+		fixture.componentRef.setInput('searchQuery', 'AZURE');
+		await renderColors();
 
-		expect(colors[1].row).toBe(1);
-		expect(colors[1].column).toBe(2);
-	});
+		expect(Array.from(tiles(), (tile) => tile.querySelector('.storage-location')?.textContent?.trim())).toEqual(['1 - 1', '1 - 2']);
+		expect(dimmedTiles()).toEqual([tiles()[0]]);
 
-	it('should highlight colors matching their primary name', () => {
 		fixture.componentRef.setInput('searchQuery', 'red');
 		fixture.detectChanges();
-
-		expect(colors[0].highlighted).toBe(true);
-		expect(colors[1].highlighted).toBe(false);
-	});
-
-	it('should highlight colors matching an alternative name', () => {
-		fixture.componentRef.setInput('searchQuery', 'azure');
-		fixture.detectChanges();
-
-		expect(colors[0].highlighted).toBe(false);
-		expect(colors[1].highlighted).toBe(true);
-	});
-
-	it('should clear highlighting when the search query is empty', () => {
-		fixture.componentRef.setInput('searchQuery', 'red');
-		fixture.detectChanges();
+		expect(dimmedTiles()).toEqual([tiles()[1]]);
 
 		fixture.componentRef.setInput('searchQuery', '');
 		fixture.detectChanges();
-
-		expect(colors[0].highlighted).toBe(false);
-		expect(colors[1].highlighted).toBe(false);
+		expect(dimmedTiles()).toHaveLength(0);
 	});
 
-	it('should open color details', () => {
-		const testComponent = TestBed.runInInjectionContext(() => new TestColorGridComponent());
+	it('opens details for the paint selected in the grid', async () => {
+		await renderColors();
 
-		testComponent.openColorDetails(colors[0]);
+		tiles()[1].click();
 
-		expect(dialogService.open).toHaveBeenCalledOnce();
-	});
-
-	it('should not reload colors when the window is resized', () => {
-		window.dispatchEvent(new Event('resize'));
-
-		expect(colorService.getColors).toHaveBeenCalledOnce();
+		expect(open).toHaveBeenCalledExactlyOnceWith(ColorDetailsComponent, {
+			componentData: { ...colors[1], row: 1, column: 2 },
+			settings: { title: 'Blue', type: DialogType.INFO }
+		});
 	});
 });

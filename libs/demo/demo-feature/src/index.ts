@@ -3,4 +3,4 @@
  * All rights reserved.
  */
 
-export * from './lib/demo-feature.routes';
+export { demoFeatureRoutes } from './lib/demo-feature.routes';

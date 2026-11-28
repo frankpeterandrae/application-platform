@@ -9,7 +9,7 @@ import { translateSignal } from '@jsverse/transloco';
 
 import { i18nTextModules } from '../i18n/i18n';
 
-/** Provides the color search input. */
+/** Exposes the search text while the parent decides how to present matches. */
 @Component({
 	selector: 'cr-color-search',
 	templateUrl: './color-search.component.html',
@@ -18,18 +18,13 @@ import { i18nTextModules } from '../i18n/i18n';
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSearchComponent {
-	/**
-	 * Event emitted when a search is performed.
-	 */
+	/** Emits the current input, including an empty string when the search is cleared. */
 	public readonly searchEvent = output<string>();
 
 	protected readonly searchColor = translateSignal(i18nTextModules.ColorSearch.lbl.SearchColor);
 
 	protected readonly IconDefinition = IconDefinition;
 
-	/**
-	 * Emits the current search term.
-	 */
 	protected onSearchTermChange(searchTerm: string): void {
 		this.searchEvent.emit(searchTerm);
 	}

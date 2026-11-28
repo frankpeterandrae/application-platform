@@ -3,33 +3,26 @@
  * All rights reserved.
  */
 
-import { environment } from '../environments/environment';
+import { provideLocationMocks } from '@angular/common/testing';
+import { provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+
+import { setupTestingModule } from '../test-setup';
 
 import { appRoutes } from './app.routes';
 
 describe('appRoutes', () => {
-	it('should lazy load the homepage', () => {
-		const route = appRoutes.find(({ path }) => path === '');
-
-		expect(route?.loadComponent).toBeTypeOf('function');
+	beforeEach(async () => {
+		await setupTestingModule({ providers: [provideRouter(appRoutes), provideLocationMocks()] });
 	});
 
-	it('should configure the paint rack route with scoped providers', () => {
-		const route = appRoutes.find(({ path }) => path === 'paint-rack');
+	it.each([
+		['/', 'homepage-feature-home'],
+		['/paint-rack', 'cr-color-search-container'],
+		['/unknown-page', 'homepage-feature-error404']
+	])('renders the page for %s', async (url, selector) => {
+		const harness = await RouterTestingHarness.create(url);
 
-		expect(route?.loadComponent).toBeTypeOf('function');
-		expect(route?.providers).toBeDefined();
-	});
-
-	it('should expose development routes only outside production', () => {
-		const route = appRoutes.find(({ path }) => path === 'dev');
-
-		expect(Boolean(route)).toBe(!environment.production);
-	});
-
-	it('should lazy load the not-found page for unknown routes', () => {
-		const route = appRoutes.find(({ path }) => path === '**');
-
-		expect(route?.loadComponent).toBeTypeOf('function');
+		expect(harness.routeNativeElement?.matches(selector)).toBe(true);
 	});
 });

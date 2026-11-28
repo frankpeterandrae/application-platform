@@ -6,11 +6,10 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { By, Meta, Title } from '@angular/platform-browser';
 import { type Mocked, createMock } from '@application-platform/testing';
-import { vi } from 'vitest';
+import { assert, vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
 import { ColorGridComponent } from '../color-grid/color-grid.component';
-import { ColorSearchComponent } from '../color-search/color-search.component';
 
 import { ColorSearchContainerComponent } from './color-search-container.component';
 
@@ -41,28 +40,19 @@ describe('ColorSearchContainerComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should pass search terms to the color grid', () => {
-		const search = fixture.debugElement.query(By.directive(ColorSearchComponent)).componentInstance as ColorSearchComponent;
-
+	it('forwards typed and cleared search terms to the grid input', () => {
+		const input = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>('cr-color-search input');
+		assert(input);
 		const grid = fixture.debugElement.query(By.directive(ColorGridComponent)).componentInstance as ColorGridComponent;
 
-		search.searchEvent.emit('blue');
+		input.value = 'blue';
+		input.dispatchEvent(new Event('input'));
 		fixture.detectChanges();
-
 		expect(grid.searchQuery()).toBe('blue');
-	});
 
-	it('should clear the color grid search when the search term is empty', () => {
-		const search = fixture.debugElement.query(By.directive(ColorSearchComponent)).componentInstance as ColorSearchComponent;
-
-		const grid = fixture.debugElement.query(By.directive(ColorGridComponent)).componentInstance as ColorGridComponent;
-
-		search.searchEvent.emit('blue');
+		input.value = '';
+		input.dispatchEvent(new Event('input'));
 		fixture.detectChanges();
-
-		search.searchEvent.emit('');
-		fixture.detectChanges();
-
 		expect(grid.searchQuery()).toBe('');
 	});
 

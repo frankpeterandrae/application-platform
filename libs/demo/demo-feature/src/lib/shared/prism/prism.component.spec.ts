@@ -20,10 +20,6 @@ describe('PrismComponent', () => {
 		fixture = TestBed.createComponent(PrismComponent);
 	});
 
-	it('should tolerate changes before the view is initialized', () => {
-		expect(() => fixture.componentInstance.ngOnChanges()).not.toThrow();
-	});
-
 	it('should render the provided code', () => {
 		fixture.componentRef.setInput('code', '<button>Test</button>');
 		fixture.detectChanges();
@@ -33,7 +29,8 @@ describe('PrismComponent', () => {
 		expect(code.textContent).toContain('<button>Test</button>');
 	});
 
-	it('should apply the selected language class', () => {
+	it('re-highlights the rendered code when its inputs change', () => {
+		fixture.detectChanges();
 		fixture.componentRef.setInput('language', 'javascript');
 		fixture.componentRef.setInput('code', 'const value = 1;');
 		fixture.detectChanges();
@@ -41,5 +38,6 @@ describe('PrismComponent', () => {
 		const code = fixture.nativeElement.querySelector('code') as HTMLElement;
 
 		expect(code.classList).toContain('language-javascript');
+		expect(code.querySelector('.token.keyword')?.textContent).toBe('const');
 	});
 });

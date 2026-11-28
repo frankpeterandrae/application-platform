@@ -12,12 +12,6 @@ import '@application-platform/testing/analog';
 import de from './assets/i18n/de.json';
 import en from './assets/i18n/en.json';
 
-/**
- * Sets up the shared Angular test environment for this library.
- *
- * @param metadata Angular test module metadata.
- * @returns A promise that resolves when the testing module has been compiled.
- */
 export function setupTestingModule({ imports = [], providers = [], declarations }: TestModuleMetadata): Promise<void> {
 	return sharedSetup({ imports, providers, declarations }, { en, de });
 }
