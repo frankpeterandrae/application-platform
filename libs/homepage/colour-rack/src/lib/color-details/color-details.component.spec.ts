@@ -9,12 +9,12 @@ import { type DialogConfigModel, DIALOG_DATA, DialogType } from '@application-pl
 import { vi } from 'vitest';
 
 import { setupTestingModule } from '../../test-setup';
-import type { Color } from '../models/color.model';
+import type { RackColor } from '../models/color.model';
 
 import { ColorDetailsComponent } from './color-details.component';
 
 describe('ColorDetailsComponent', () => {
-	const defaultColor: Color = {
+	const defaultColor: RackColor = {
 		name: 'Test Color',
 		alternativeNames: ['Alternative One', 'Alternative Two'],
 		type: 'S-ME',
@@ -23,11 +23,20 @@ describe('ColorDetailsComponent', () => {
 		sku: '12345',
 		barcode: '987654321',
 		row: 3,
-		column: 4
+		column: 4,
+		searchTerms: [],
+		paint: {
+			id: 'two-thin-coats:12345',
+			brand: 'two-thin-coats',
+			sku: '12345',
+			name: 'Test Color',
+			mainColor: '#123456',
+			colorGroups: ['metallic']
+		}
 	};
 
-	async function createFixture(color: Color = defaultColor): Promise<ComponentFixture<ColorDetailsComponent>> {
-		const dialogData: DialogConfigModel<Color> = {
+	async function createFixture(color: RackColor = defaultColor): Promise<ComponentFixture<ColorDetailsComponent>> {
+		const dialogData: DialogConfigModel<RackColor> = {
 			componentData: color,
 			settings: {
 				title: 'Color Details',
@@ -69,12 +78,14 @@ describe('ColorDetailsComponent', () => {
 		expect(text).toContain('2');
 		expect(text).toContain('987654321');
 		expect(text).toContain('3 - 4');
+		expect(fixture.nativeElement.querySelector('dialog.fpa-bg-dark-shades-t3.fpa-light-text')).toBeTruthy();
+		expect(fixture.nativeElement.querySelector('fpa-shared-ui-paint-swatch svg radialGradient')).toBeTruthy();
 	});
 
 	it('should display Unknown for unsupported color types', async () => {
 		const fixture = await createFixture({
 			...defaultColor,
-			type: 'UNKNOWN' as Color['type']
+			type: 'UNKNOWN' as RackColor['type']
 		});
 
 		expect(fixture.nativeElement.textContent).toContain('Unknown');
@@ -101,16 +112,14 @@ describe('ColorDetailsComponent', () => {
 	it('should display placeholders for missing sku and barcode', async () => {
 		const fixture = await createFixture({
 			...defaultColor,
-			sku: undefined,
+			sku: '',
 			barcode: undefined
 		});
 
 		const element = fixture.nativeElement as HTMLElement;
-		const values = Array.from(element.querySelectorAll<HTMLElement>('.fpa-grid-col-end-10 p')).map((item) =>
-			item.textContent?.trim()
-		);
+		const values = Array.from(element.querySelectorAll<HTMLElement>('dd')).map((item) => item.textContent?.trim());
 
 		expect(values[0]).toBe('-');
-		expect(values[5]).toBe('-');
+		expect(values[4]).toBe('-');
 	});
 });

@@ -9,3 +9,12 @@
 	margin: 0;
 	border: 0;
 }
+
+.dialog-dark-surface {
+	width: min(90vw, max(50vw, 32rem));
+	max-height: 90dvh;
+
+	.dialog-content {
+		overflow-y: auto;
+	}
+}

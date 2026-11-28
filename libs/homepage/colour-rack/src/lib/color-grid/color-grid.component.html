@@ -2,29 +2,21 @@
   ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
-<h2><span [fpaSharedUiTranslate]="i18nTextModules.ColorGrid.lbl.TwoThinCoats"></span></h2>
-<cdk-virtual-scroll-viewport [itemSize]="itemSize" [minBufferPx]="itemSize" [maxBufferPx]="itemSize" class="mobile-height fpa-flex-grow-1">
-	<div *cdkVirtualFor="let colorItems of colors()" class="fpa-grid-12 fpa-gap-05 fpa-mb-05 fpa-mr-05">
-		@for (color of colorItems; track color) {
+
+<ul class="color-grid fpa-gap-05 fpa-m-0 fpa-p-0">
+	@for (color of colors(); track color.sku) {
+		<li>
 			<button
 				type="button"
-				class="color-tile fpa-grid-col-end-6 fpa-grid-col-end-sm-4 fpa-grid-col-end-md-2 fpa-grid-col-end-lg-2 fpa-grid-col-end-xl-1"
-				[ngStyle]="{
-					background: backgroundColor(color)
-				}"
+				class="color-tile fpa-button-no-style fpa-with-max fpa-height-100 fpa-p-0 fpa-text-center"
 				(click)="openDetails(color)"
 			>
-				<div class="color-name fpa-dark-text fpa-text-shadow-light">
-					<h3>{{ color.name }}</h3>
-				</div>
-
-				<div class="storage-location fpa-dark-text fpa-paragraph fpa-font-weight-extra-black fpa-text-shadow-light">
-					{{ color.row }} - {{ color.column }}
-				</div>
-				@if (matchingColors()?.has(color) === false) {
-					<div class="grayed-out"></div>
-				}
+				<fpa-shared-ui-paint-swatch class="swatch" [paint]="color.paint" />
+				<span class="swatch-label fpa-flex fpa-flex-column fpa-max-width-100 fpa-light-text">
+					<strong>{{ color.name }}</strong>
+					<span>{{ color.row }} - {{ color.column }}</span>
+				</span>
 			</button>
-		}
-	</div>
-</cdk-virtual-scroll-viewport>
+		</li>
+	}
+</ul>

@@ -2,64 +2,60 @@
   ~ Copyright (c) 2024-2026. Frank-Peter Andrä
   ~ All rights reserved.
   -->
-<theme-dialog>
-	<div class="fpa-grid-12">
-		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.SKU">: </span>
-		</div>
-		<div class="fpa-grid-col-end-10">
-			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-				<p>{{ data.componentData?.sku || '-' }}</p>
-			</div>
-		</div>
+<theme-dialog cdkTrapFocus [cdkTrapFocusAutoCapture]="true" [darkSurface]="true">
+	@if (data.componentData; as color) {
+		<div class="fpa-grid-12 fpa-gap-1">
+			<fpa-shared-ui-paint-swatch class="swatch fpa-grid-col-end-12 fpa-grid-col-end-sm-5" [paint]="color.paint" />
 
-		@if (data.componentData?.alternativeNames) {
-			<div class="fpa-grid-col-end-2">
-				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.AlternativeNames">:</span>
-			</div>
-			<div class="fpa-grid-col-end-10">
-				@for (alternativeNames of data.componentData?.alternativeNames; track alternativeNames; let idx = $index) {
-					<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-						<p>{{ alternativeNames }}</p>
-					</div>
+			<dl class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-grid-12 fpa-gap-05 fpa-m-0">
+				<dt
+					class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+					[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.SKU"
+				></dt>
+				<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">
+					{{ color.sku || '-' }}
+				</dd>
+
+				@if (color.alternativeNames.length) {
+					<dt
+						class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+						[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.AlternativeNames"
+					></dt>
+					<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">
+						@for (name of color.alternativeNames; track name) {
+							<span class="fpa-block">{{ name }}</span>
+						}
+					</dd>
 				}
-			</div>
-		}
 
-		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Type">:</span>
-		</div>
-		<div class="fpa-grid-col-end-10">
-			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-				<p>{{ colorType() }}</p>
-			</div>
-		</div>
+				<dt
+					class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+					[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Type"
+				></dt>
+				<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">{{ colorType() }}</dd>
 
-		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Wave">:</span>
-		</div>
-		<div class="fpa-grid-col-end-10">
-			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-				<p>{{ data.componentData?.wave }}</p>
-			</div>
-		</div>
+				<dt
+					class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+					[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Wave"
+				></dt>
+				<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">{{ color.wave }}</dd>
 
-		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Barcode">:</span>
-		</div>
-		<div class="fpa-grid-col-end-10">
-			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-				<p>{{ data.componentData?.barcode || '-' }}</p>
-			</div>
-		</div>
+				<dt
+					class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+					[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Barcode"
+				></dt>
+				<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">
+					{{ color.barcode || '-' }}
+				</dd>
 
-		<div class="fpa-grid-col-end-2">
-			<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Position"></span>:
+				<dt
+					class="fpa-grid-col-end-12 fpa-grid-col-end-sm-5 fpa-font-weight-bold"
+					[fpaSharedUiTranslate]="i18nTextModules.ColorDetails.lbl.Position"
+				></dt>
+				<dd class="fpa-grid-col-end-12 fpa-grid-col-end-sm-7 fpa-pl-15 fpa-pl-sm-0 fpa-mb-05 fpa-mb-sm-0">
+					{{ color.row }} - {{ color.column }}
+				</dd>
+			</dl>
 		</div>
-		<div class="fpa-grid-col-end-10">
-			<div class="fpa-flex fpa-flex-row fpa-justify-between fpa-mb-05">
-				<p>{{ data.componentData?.row }} - {{ data.componentData?.column }}</p>
-			</div>
-		</div>
-	</div>
+	}
 </theme-dialog>

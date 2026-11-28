@@ -1,0 +1,22 @@
+<!--
+  ~ Copyright (c) 2026. Frank-Peter Andrä
+  ~ All rights reserved.
+  -->
+
+@if (pageCount() > 1) {
+	<nav class="fpa-flex fpa-flex-wrap fpa-flex-align-items-center fpa-gap-05" [attr.aria-label]="label()">
+		<theme-button
+			[color]="buttonColor"
+			[buttonText]="previousLabel()"
+			[disabled]="pageIndex() <= 0"
+			(buttonClick)="pageChange.emit(pageIndex() - 1)"
+		/>
+		<span>{{ pageIndex() + 1 }} / {{ pageCount() }}</span>
+		<theme-button
+			[color]="buttonColor"
+			[buttonText]="nextLabel()"
+			[disabled]="pageIndex() + 1 >= pageCount()"
+			(buttonClick)="pageChange.emit(pageIndex() + 1)"
+		/>
+	</nav>
+}

@@ -33,6 +33,7 @@ describe('ColorService', () => {
 		const colors: Color[] = [
 			{
 				name: 'Test Color',
+				sku: '001',
 				alternativeNames: [],
 				type: 'M',
 				mainColor: '#123456'

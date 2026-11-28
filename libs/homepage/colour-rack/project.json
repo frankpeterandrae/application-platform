@@ -4,7 +4,7 @@
 	"sourceRoot": "libs/homepage/colour-rack/src",
 	"prefix": "lib",
 	"projectType": "library",
-	"tags": ["type:feature", "scope:homepage", "platform:browser"],
+	"tags": ["type:feature", "scope:homepage", "scope:demo", "platform:browser"],
 	"implicitDependencies": ["stream-overlay-paint-data-access"],
 	"targets": {
 		"export-assets": {

@@ -3,48 +3,41 @@
  * All rights reserved.
  */
 
-/* stylelint-disable */
-@use 'libs/shared/ui-theme/src/lib/theme/base/_variables.scss';
-@use 'libs/shared/ui-theme/src/lib/theme/base/_utility.scss';
-/* stylelint-enable */
+.color-grid {
+	--tile-gap: 0.5rem;
+	--twelfth-column: calc((100% - 11 * var(--tile-gap)) / 12);
 
-:host {
-	.color-tile {
-		position: relative;
-		width: 100%;
-		padding: 100% 0 0;
-		border: 0;
-		cursor: pointer;
-		text-align: inherit;
-	}
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, max(8rem, var(--twelfth-column))), 1fr));
+	list-style: none;
+}
 
-	.color-name {
-		position: absolute;
-		top: 5px;
-		left: 5px;
-		margin-right: 5px;
-		padding: 2px 5px;
-		border-radius: 3px;
-	}
+.color-tile {
+	display: grid;
+	place-items: center;
+	min-height: 7rem;
+	color: inherit;
+	font: inherit;
+}
 
-	.storage-location {
-		position: absolute;
-		bottom: 5px;
-		left: 5px;
-		padding: 2px 5px;
-		border-radius: 3px;
-	}
+.color-tile:focus-visible {
+	outline: 2px solid currentcolor;
+	outline-offset: 2px;
+}
 
-	.grayed-out {
-		position: absolute;
-		inset: 0;
-		background-color: rgb(0 0 0 / 70%);
-		z-index: 1;
-	}
+.swatch,
+.swatch-label {
+	grid-area: 1 / 1;
+}
 
-	@media screen and (width <=640px) {
-		.mobile-height {
-			height: 600px;
-		}
-	}
+.swatch {
+	min-height: 7rem;
+}
+
+.swatch-label {
+	padding: 0.125rem 0.375rem;
+	border-radius: 0.25rem;
+	background: rgb(0 0 0 / 80%);
+	font-size: 0.875rem;
+	overflow-wrap: anywhere;
 }

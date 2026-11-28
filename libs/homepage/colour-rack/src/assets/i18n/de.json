@@ -21,14 +21,18 @@
 	},
 	"ColorSearchContainer": {
 		"lbl": {
-			"ColorDetails": "Farbdetails",
-			"ColorDetailsDescription": "Beim Klicken auf eine Farbe im Raster öffnet sich ein Dialog, der detaillierte Informationen über die ausgewählte Farbe anzeigt, einschließlich alternativer Namen und Farbtypen.",
-			"ColorGrid": "Farbraster",
-			"ColorGridDescription": "Die gefundenen Farben werden in einem Raster dargestellt. Jede Farbe kann angeklickt werden, um weitere Details anzuzeigen.",
-			"ColorSearch": "Farbsuche",
-			"ColorSearchDescription": "Benutzer können eine Farbeingabe verwenden, um nach bestimmten Farben zu suchen. Die Suchergebnisse werden in einem Raster angezeigt.",
 			"Description": "Ich habe auf dieser Seite eine Übersicht über Duncan Rhodes' Two Thin Coats Farben erstellt.",
-			"FunctionsDescription": "Diese Seite bietet folgende Funktionen",
+			"Loading": "Farben werden geladen …",
+			"LoadError": "Die Farben konnten nicht geladen werden.",
+			"Retry": "Erneut versuchen",
+			"Sort": "Sortieren nach",
+			"RackOrder": "Rack-Position",
+			"NameOrder": "Name (A–Z)",
+			"Results": "Treffer",
+			"NoResults": "Keine passenden Farben gefunden.",
+			"Page": "Seite",
+			"Previous": "Zurück",
+			"Next": "Weiter",
 			"Title": "Farbregal"
 		},
 		"meta": {

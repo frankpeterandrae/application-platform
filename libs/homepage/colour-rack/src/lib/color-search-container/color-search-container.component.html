@@ -3,32 +3,61 @@
   ~ All rights reserved.
   -->
 
-<div class="fpa-content">
-	<h1 class="fpa-flex-align-self-center">
-		<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.Title"></span>
-	</h1>
+<div class="fpa-content fpa-height-auto">
+	<h1><span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.Title"></span></h1>
 	<p [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.Description"></p>
-	<p [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.FunctionsDescription">:</p>
-	<ol>
-		<li>
-			<p>
-				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorSearch">: </span>
-				<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorSearchDescription"></span>
+	<h2><span [fpaSharedUiTranslate]="i18nTextModules.ColorGrid.lbl.TwoThinCoats"></span></h2>
+
+	@switch (state().status) {
+		@case ('loading') {
+			<p role="status" [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.Loading"></p>
+		}
+		@case ('error') {
+			<p role="alert" [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.LoadError"></p>
+			<theme-button [color]="ButtonColorDefinition.PRIMARY" [buttonText]="retryLabel()" (buttonClick)="retry()" />
+		}
+		@case ('ready') {
+			<div class="fpa-flex fpa-flex-wrap fpa-flex-align-items-end fpa-gap-1 fpa-mb-1">
+				<theme-input id="paint-rack-search" type="search" [label]="searchLabel()" (valueChange)="search($event)" />
+				<theme-select
+					class="rack-sort"
+					[label]="sortLabel()"
+					[options]="sortOptions()"
+					[emptySelection]="false"
+					[ngModel]="sort()"
+					(ngModelChange)="changeSort($event)"
+				/>
+			</div>
+			<p #resultsStatus role="status" tabindex="-1">
+				@if (matches().length) {
+					<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.Results"></span> {{ matches().length }}
+				} @else {
+					<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.NoResults"></span>
+				}
 			</p>
-		</li>
-		<li>
-			<p>
-				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorGrid">: </span>
-				<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorGridDescription"></span>
-			</p>
-		</li>
-		<li>
-			<p>
-				<span class="fpa-font-weight-bold" [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorDetails">: </span>
-				<span [fpaSharedUiTranslate]="i18nTextModules.ColorSearchContainer.lbl.ColorDetailsDescription"></span>
-			</p>
-		</li>
-	</ol>
-	<cr-color-search (searchEvent)="updateSearchQuery($event)"></cr-color-search>
-	<cr-color-grid class="fpa-flex-grow-1 fpa-flex fpa-flex-column" [searchQuery]="searchQuery()"></cr-color-grid>
+			@if (pageCount() > 1) {
+				<theme-pagination
+					class="fpa-block fpa-mb-05"
+					[label]="pageLabel()"
+					[previousLabel]="previousLabel()"
+					[nextLabel]="nextLabel()"
+					[pageIndex]="page()"
+					[pageCount]="pageCount()"
+					(pageChange)="changePage($event)"
+				/>
+			}
+			<cr-color-grid [colors]="visibleColors()" />
+			@if (pageCount() > 1) {
+				<theme-pagination
+					class="fpa-block fpa-my-05"
+					[label]="pageLabel()"
+					[previousLabel]="previousLabel()"
+					[nextLabel]="nextLabel()"
+					[pageIndex]="page()"
+					[pageCount]="pageCount()"
+					(pageChange)="changePage($event, resultsStatus)"
+				/>
+			}
+		}
+	}
 </div>

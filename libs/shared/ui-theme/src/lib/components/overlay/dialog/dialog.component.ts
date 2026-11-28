@@ -4,7 +4,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 import { ButtonColorDefinition, IconDefinition } from '../../../enums';
 import { DialogConfigModel, DialogType } from '../../../model';
@@ -23,6 +23,7 @@ import { DIALOG_DATA } from './dialog-tokens';
 })
 export class DialogComponent {
 	private readonly overlayRef = inject(OverlayRef);
+	public readonly darkSurface = input(false);
 	public readonly data = inject<DialogConfigModel<unknown>>(DIALOG_DATA);
 
 	protected accept(): void {

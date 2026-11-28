@@ -21,14 +21,18 @@
 	},
 	"ColorSearchContainer": {
 		"lbl": {
-			"ColorDetails": "Color details",
-			"ColorDetailsDescription": "Clicking on a color in the grid opens a dialog that displays detailed information about the selected color, including alternative names and color types.",
-			"ColorGrid": "Color grid",
-			"ColorGridDescription": "The colors found are displayed in a grid. Each color can be clicked on to display further details.",
-			"ColorSearch": "Color search",
-			"ColorSearchDescription": "Users can use a color input to search for specific colors. The search results are displayed in a grid.",
 			"Description": "I have created an overview of Duncan Rhodes' Two Thin Coats colors on this page.",
-			"FunctionsDescription": "This page offers the following functions",
+			"Loading": "Loading paints…",
+			"LoadError": "Could not load paints.",
+			"Retry": "Try again",
+			"Sort": "Sort by",
+			"RackOrder": "Rack position",
+			"NameOrder": "Name (A–Z)",
+			"Results": "Results",
+			"NoResults": "No matching paints found.",
+			"Page": "Page",
+			"Previous": "Previous",
+			"Next": "Next",
 			"Title": "Paint rack"
 		},
 		"meta": {

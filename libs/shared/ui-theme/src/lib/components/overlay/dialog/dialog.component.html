@@ -6,13 +6,22 @@
 <div class="fpa-pos-fix fpa-back-drop" (click)="close()" (keydown.escape)="close()" aria-hidden="true"></div>
 
 <dialog
-	class="fpa-flex fpa-flex-column fpa-bg-light-shades fpa-box-shadow fpa-dark-text fpa-p-1 dialog-container"
+	class="fpa-flex fpa-flex-column fpa-box-shadow fpa-p-1 dialog-container"
+	[class.fpa-bg-light-shades]="!darkSurface()"
+	[class.fpa-dark-text]="!darkSurface()"
+	[class.fpa-bg-dark-shades-t3]="darkSurface()"
+	[class.fpa-light-text]="darkSurface()"
+	[class.dialog-dark-surface]="darkSurface()"
 	aria-labelledby="dialog-title"
 >
 	<header class="fpa-flex fpa-flex-row fpa-flex-justify-space-between fpa-border-bottom fpa-border-themed-info fpa-mb-05 fpa-p-05">
 		<h2 id="dialog-title">{{ data.settings.title }}</h2>
 
-		<theme-button (buttonClick)="close()" [color]="undefined" [icon]="IconDefinition.CLOSE" />
+		<theme-button
+			(buttonClick)="close()"
+			[color]="darkSurface() ? ButtonColorDefinition.DEFAULT : undefined"
+			[icon]="IconDefinition.CLOSE"
+		/>
 	</header>
 
 	<div class="fpa-p-05 dialog-content">
