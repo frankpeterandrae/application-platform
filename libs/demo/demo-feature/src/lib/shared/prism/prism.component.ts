@@ -11,11 +11,6 @@ import 'prismjs/components/prism-markup';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace';
 
-Prism.plugins['NormalizeWhitespace'].setDefaults({
-	'left-trim': true,
-	'right-trim': true
-});
-
 /** Renders syntax-highlighted code using Prism.js. */
 @Component({
 	selector: 'demo-theme-prism',
@@ -45,6 +40,7 @@ export class PrismComponent implements AfterViewInit, OnChanges {
 
 		const element = codeRef.nativeElement;
 
+		// Set text before highlighting so HTML snippets are displayed as code.
 		element.textContent = this.code();
 		element.className = `language-${this.language()}`;
 

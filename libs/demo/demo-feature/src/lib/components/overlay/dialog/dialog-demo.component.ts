@@ -10,7 +10,7 @@ import { i18nTextModules } from '../../../i18n/i18n';
 import { DemoThemeContainerComponent } from '../../demo-theme-container.component';
 import { Description } from '../../description';
 
-/** Displays dialog usage examples. */
+/** Shows how a demo action opens an informational dialog. */
 @Component({
 	selector: 'demo-dialog',
 	imports: [ButtonComponent, DemoThemeContainerComponent],

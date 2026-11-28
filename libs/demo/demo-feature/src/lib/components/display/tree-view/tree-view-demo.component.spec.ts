@@ -4,8 +4,7 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { type LeafItem, TreeViewComponent } from '@application-platform/shared/ui-theme';
+import { assert } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
 
@@ -20,20 +19,10 @@ describe('TreeViewDemoComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should render the tree view example', () => {
-		expect(fixture.nativeElement.querySelector('theme-tree-view')).not.toBeNull();
-	});
-
-	it('should display selected item content', () => {
-		const treeView = fixture.debugElement.query(By.directive(TreeViewComponent)).componentInstance as TreeViewComponent;
-		const selectedItem: LeafItem<number> = {
-			label: 'Leaf 1',
-			id: 'leaf1',
-			type: 'leaf',
-			content: 42
-		};
-
-		treeView.selectedItem.emit(selectedItem);
+	it('displays the selected leaf data', () => {
+		const leaf = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('theme-tree-view button.theme-tree-view-leaf');
+		assert(leaf);
+		leaf.click();
 		fixture.detectChanges();
 
 		expect(fixture.nativeElement.textContent).toContain('"content": 42');

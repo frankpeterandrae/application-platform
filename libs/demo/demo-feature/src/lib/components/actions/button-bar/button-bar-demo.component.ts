@@ -10,7 +10,7 @@ import { i18nTextModules } from '../../../i18n/i18n';
 import { DemoThemeContainerComponent } from '../../demo-theme-container.component';
 import { Description } from '../../description';
 
-/** Displays button bar usage examples. */
+/** Compares action, navigation, and multi-action button groups. */
 @Component({
 	selector: 'demo-button-bar',
 	imports: [ButtonBarComponent, DemoThemeContainerComponent, CardComponent],

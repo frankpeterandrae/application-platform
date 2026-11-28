@@ -19,9 +19,7 @@ export class ColorService {
 	private readonly http = inject(HttpClient);
 	private readonly colorsUrl = 'assets/colour-rack/colors.json';
 
-	/**
-	 * Loads all configured colors.
-	 */
+	/** Loads the generated asset in physical rack order. Request failures propagate to the caller. */
 	public getColors(): Observable<Color[]> {
 		return this.http.get<Color[]>(this.colorsUrl);
 	}

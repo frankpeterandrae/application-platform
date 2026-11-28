@@ -15,7 +15,7 @@ interface DemoOption {
 	name: string;
 }
 
-/** Displays dropdown select usage examples. */
+/** Shows object-valued and icon options, including a disabled option. */
 @Component({
 	selector: 'demo-dropdown-select',
 	imports: [DropdownSelectComponent, DemoThemeContainerComponent],

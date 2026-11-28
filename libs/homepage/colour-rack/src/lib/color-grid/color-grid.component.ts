@@ -6,7 +6,19 @@
 import type { NumberInput } from '@angular/cdk/coercion';
 import { CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { NgStyle } from '@angular/common';
-import { type AfterViewInit, type OnChanges, type OnInit, Component, HostListener, inject, input, signal, viewChild } from '@angular/core';
+import {
+	type AfterViewInit,
+	type OnInit,
+	Component,
+	computed,
+	DestroyRef,
+	HostListener,
+	inject,
+	input,
+	signal,
+	viewChild
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { type DialogConfigModel, DialogService, DialogType } from '@application-platform/shared/ui-theme';
 import { LOGGER_SOURCE, Scopes, TranslationDirective } from '@application-platform/shared-ui';
 import { provideTranslocoScope } from '@jsverse/transloco';
@@ -16,9 +28,7 @@ import { i18nTextModules } from '../i18n/i18n';
 import type { Color } from '../models/color.model';
 import { ColorService } from '../services/color.service';
 
-/**
- * Component representing a grid of colors.
- */
+/** Displays the physical paint rack in virtual rows that adapt to the viewport. */
 @Component({
 	selector: 'cr-color-grid',
 	templateUrl: './color-grid.component.html',
@@ -26,116 +36,98 @@ import { ColorService } from '../services/color.service';
 	imports: [NgStyle, CdkVirtualScrollViewport, CdkVirtualForOf, CdkFixedSizeVirtualScroll, TranslationDirective],
 	providers: [{ provide: LOGGER_SOURCE, useValue: 'ColorGridComponent' }, provideTranslocoScope(Scopes.COLOUR_RACK)]
 })
-export class ColorGridComponent implements AfterViewInit, OnInit, OnChanges {
+export class ColorGridComponent implements AfterViewInit, OnInit {
 	private readonly colorService = inject(ColorService);
 	private readonly dialogService = inject(DialogService);
 	protected readonly i18nTextModules = i18nTextModules;
 
-	protected readonly viewPort = viewChild.required(CdkVirtualScrollViewport);
-	/**
-	 * The search query used to filter and highlight colors.
-	 */
-	public searchQuery = input<string | undefined>(undefined);
-
-	/**
-	 * The list of colors to be displayed in the grid.
-	 */
-	protected readonly colors = signal<Color[][]>([]);
-	protected itemSize: NumberInput = 68;
+	private readonly destroyRef = inject(DestroyRef);
+	private readonly viewPort = viewChild.required(CdkVirtualScrollViewport);
 	private readonly allColors = signal<Color[]>([]);
-	private chunkSize = 12;
+	private readonly chunkSize = signal(12);
+
+	/** Dims non-matching tiles without changing their order or storage position. */
+	public readonly searchQuery = input<string>();
+
+	protected itemSize: NumberInput = 68;
+	protected readonly colors = computed(() => {
+		const colors = this.allColors();
+		const chunkSize = this.chunkSize();
+		const chunks: Color[][] = [];
+		for (let index = 0; index < colors.length; index += chunkSize) {
+			chunks.push(colors.slice(index, index + chunkSize));
+		}
+		return chunks;
+	});
+
+	protected readonly matchingColors = computed(() => {
+		const query = this.searchQuery()?.toLowerCase();
+		return query
+			? new Set(
+					this.allColors().filter(({ name, alternativeNames }) =>
+						[name, ...alternativeNames].some((candidate) => candidate.toLowerCase().includes(query))
+					)
+				)
+			: undefined;
+	});
 
 	@HostListener('window:resize')
 	protected adjustOnWindowResize(): void {
 		this.updateItemSize();
 		this.updateChunkSize();
-		this.updateColorChunks();
 	}
 
 	ngOnInit(): void {
 		this.updateChunkSize();
-		this.fetchColors();
-	}
-
-	ngOnChanges(): void {
-		this.highlightMatchingColors(this.searchQuery() || '');
+		this.colorService
+			.getColors()
+			.pipe(takeUntilDestroyed(this.destroyRef))
+			.subscribe((colors) => {
+				// The physical rack always has twelve columns. The viewport can wrap tiles at narrower widths.
+				this.allColors.set(
+					colors.map((color, index) => ({
+						...color,
+						row: Math.floor(index / 12) + 1,
+						column: (index % 12) + 1
+					}))
+				);
+			});
 	}
 
 	ngAfterViewInit(): void {
-		setTimeout(() => {
-			this.updateItemSize();
-		});
-	}
-
-	private fetchColors(): void {
-		this.colorService.getColors().subscribe((colors) => {
-			this.calculateStorageLocation(colors);
-			this.allColors.set(colors);
-			this.updateColorChunks();
-			this.highlightMatchingColors(this.searchQuery() ?? '');
-		});
-	}
-
-	private updateColorChunks(): void {
-		const chunks: Color[][] = [];
-
-		for (let index = 0; index < this.allColors().length; index += this.chunkSize) {
-			chunks.push(this.allColors().slice(index, index + this.chunkSize));
-		}
-
-		this.colors.set(chunks);
-	}
-
-	/**
-	 * Highlights the colors that match the search query.
-	 * @param {string} query - The search query to match against color names.
-	 */
-	public highlightMatchingColors(query: string): void {
-		this.colors().forEach((colorRow) => {
-			colorRow.forEach((color) => {
-				const allNames = [color.name, ...color.alternativeNames];
-				color.highlighted = query ? allNames.some((name) => name.toLowerCase().includes(query.toLowerCase())) : false;
-			});
-		});
-	}
-
-	private calculateStorageLocation(colors: Color[]): Color[] {
-		colors.forEach((color, idx) => {
-			color.row = Math.floor(idx / 12) + 1;
-			color.column = (idx % 12) + 1;
-		});
-		return colors;
+		// Measure after the virtual viewport has laid out its initial row.
+		const timer = setTimeout(() => this.updateItemSize());
+		this.destroyRef.onDestroy(() => clearTimeout(timer));
 	}
 
 	protected openDetails(color: Color): void {
 		const dialogConfig: DialogConfigModel<Color> = { componentData: color, settings: { title: color.name, type: DialogType.INFO } };
-
 		this.dialogService.open(ColorDetailsComponent, dialogConfig);
 	}
 
 	private updateItemSize(): void {
 		const firstCard: HTMLElement | null = this.viewPort().elementRef.nativeElement.querySelector('.color-tile');
 		if (firstCard) {
-			const marginTop = Number.parseInt((globalThis as unknown as Window).getComputedStyle(firstCard).marginTop, 10);
-			const marginBottom = Number.parseInt((globalThis as unknown as Window).getComputedStyle(firstCard).marginBottom, 10);
-			this.itemSize = firstCard.offsetHeight + marginTop + marginBottom;
+			const { marginTop, marginBottom } = getComputedStyle(firstCard);
+			const rowHeight = firstCard.offsetHeight + (Number.parseFloat(marginTop) || 0) + (Number.parseFloat(marginBottom) || 0);
+			if (rowHeight > 0) {
+				this.itemSize = rowHeight;
+			}
 		}
-		this.updateChunkSize();
 	}
 
 	private updateChunkSize(): void {
-		const win = globalThis as unknown as Window;
-		const screenWidth = win.innerWidth / Number.parseFloat(win.getComputedStyle(document.documentElement).fontSize);
+		// Match the theme grid breakpoints, which are expressed in rem.
+		const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+		const screenWidth = window.innerWidth / rootFontSize;
 		if (screenWidth <= 40) {
-			this.chunkSize = 2; // xs
+			this.chunkSize.set(2);
 		} else if (screenWidth <= 56.25) {
-			this.chunkSize = 3; // sm
-		} else if (screenWidth <= 78.125) {
-			this.chunkSize = 6; // md
+			this.chunkSize.set(3);
 		} else if (screenWidth <= 100) {
-			this.chunkSize = 6; // lg
+			this.chunkSize.set(6);
 		} else {
-			this.chunkSize = 12; // xl
+			this.chunkSize.set(12);
 		}
 	}
 

@@ -4,10 +4,8 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { DropdownSelectComponent } from '@application-platform/shared/ui-theme';
-import { afterEach } from 'vitest';
+import { afterEach, assert } from 'vitest';
 
 import { setupTestingModule } from '../test-setup';
 
@@ -36,33 +34,21 @@ describe('AppComponent', () => {
 		expect(fixture.nativeElement.querySelector('theme-footer')).not.toBeNull();
 	});
 
-	it('should ignore an empty theme selection', () => {
-		const dropdown = fixture.debugElement.query(By.directive(DropdownSelectComponent)).componentInstance;
-		const stylesheet = document.getElementById('homepage-theme') as HTMLLinkElement;
+	it('switches the active stylesheet through the rendered theme selector', () => {
+		const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('theme-dropdown-select select');
+		assert(select);
+		const stylesheet = document.querySelector<HTMLLinkElement>('link#homepage-theme');
+		expect(stylesheet?.getAttribute('href')).toBe('homepage-theme.css');
 
-		dropdown.selectionChange.emit(null);
+		select.value = '1';
+		select.dispatchEvent(new Event('change'));
 		fixture.detectChanges();
-
-		expect(stylesheet.getAttribute('href')).toBe('homepage-theme.css');
-	});
-
-	it('should switch the theme stylesheet from the dropdown', () => {
-		const dropdown = fixture.debugElement.query(By.directive(DropdownSelectComponent)).componentInstance;
-
-		dropdown.selectionChange.emit('z21');
-		fixture.detectChanges();
-
-		const stylesheet = document.getElementById('homepage-theme') as HTMLLinkElement | null;
 		expect(stylesheet?.getAttribute('href')).toBe('z21-theme.css');
-	});
 
-	it('should reuse the existing theme stylesheet', () => {
-		const dropdown = fixture.debugElement.query(By.directive(DropdownSelectComponent)).componentInstance;
-
-		dropdown.selectionChange.emit('z21');
-		dropdown.selectionChange.emit('homepage');
-
-		expect(document.querySelectorAll('#homepage-theme')).toHaveLength(1);
-		expect((document.getElementById('homepage-theme') as HTMLLinkElement).getAttribute('href')).toBe('homepage-theme.css');
+		select.value = '0';
+		select.dispatchEvent(new Event('change'));
+		fixture.detectChanges();
+		expect(stylesheet?.getAttribute('href')).toBe('homepage-theme.css');
+		expect(document.querySelectorAll('link#homepage-theme')).toHaveLength(1);
 	});
 });

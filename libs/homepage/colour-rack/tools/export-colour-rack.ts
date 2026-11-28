@@ -6,45 +6,49 @@
 import { randomUUID } from 'node:crypto';
 import { readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
-import { mapRackColors } from './colour-rack-asset';
+import { ColourRackAsset } from './colour-rack-asset';
 import layout from './rack-layout.json';
 
-const source = 'libs/stream-overlay/paint-data-access/data';
-const output = 'libs/homepage/colour-rack/src/assets/colors.json';
+class ColourRackExporter {
+	private static readonly source = 'libs/stream-overlay/paint-data-access/data';
+	private static readonly output = 'libs/homepage/colour-rack/src/assets/colors.json';
 
-async function readJson(path: string): Promise<unknown> {
-	try {
-		return JSON.parse(await readFile(path, 'utf8'));
-	} catch (error) {
-		throw new Error(`Cannot read paint snapshot ${path}`, { cause: error });
-	}
-}
+	static async run(check: boolean): Promise<void> {
+		const [paints, matches] = await Promise.all([
+			this.readJson(join(this.source, 'paint/two-thin-coats.json')),
+			this.readJson(join(this.source, 'paint_match.json'))
+		]);
+		const colors = ColourRackAsset.build(paints, matches, layout);
 
-async function main(): Promise<void> {
-	const [paints, matches] = await Promise.all([
-		readJson(join(source, 'paint/two-thin-coats.json')),
-		readJson(join(source, 'paint_match.json'))
-	]);
-	const json = `${JSON.stringify(mapRackColors(paints, matches, layout), null, '\t')}\n`;
-
-	if (process.argv.includes('--check')) {
-		if ((await readFile(output, 'utf8')) !== json) {
-			throw new Error(`${output} is out of date. Run npm exec -- nx run colour-rack:export-assets.`);
+		if (check) {
+			// Ignore formatting changes while checking paint data and rack order.
+			if (!isDeepStrictEqual(await this.readJson(this.output), colors)) {
+				throw new Error(`${this.output} is out of date. Run npm exec -- nx run colour-rack:export-assets.`);
+			}
+			return;
 		}
-		return;
+
+		const temporary = `${this.output}.${randomUUID()}.tmp`;
+		try {
+			await writeFile(temporary, JSON.stringify(colors, null, '\t') + '\n', 'utf8');
+			await rename(temporary, this.output);
+		} finally {
+			await rm(temporary, { force: true });
+		}
 	}
 
-	const temporary = `${output}.${randomUUID()}.tmp`;
-	try {
-		await writeFile(temporary, json, 'utf8');
-		await rename(temporary, output);
-	} finally {
-		await rm(temporary, { force: true });
+	private static async readJson(path: string): Promise<unknown> {
+		try {
+			return JSON.parse(await readFile(path, 'utf8'));
+		} catch (error) {
+			throw new Error(`Cannot read paint snapshot ${path}`, { cause: error });
+		}
 	}
 }
 
-void main().catch((error: unknown) => {
+void ColourRackExporter.run(process.argv.includes('--check')).catch((error: unknown) => {
 	console.error(error);
 	process.exitCode = 1;
 });

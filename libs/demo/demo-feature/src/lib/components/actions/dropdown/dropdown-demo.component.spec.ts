@@ -4,8 +4,7 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DropdownSelectComponent } from '@application-platform/shared/ui-theme';
+import { assert } from 'vitest';
 
 import { setupTestingModule } from '../../../../test-setup';
 
@@ -23,21 +22,11 @@ describe('DropdownDemoComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should render the dropdown examples', () => {
-		const dropdowns = fixture.nativeElement.querySelectorAll('theme-dropdown-select');
-
-		expect(dropdowns).toHaveLength(3);
-	});
-
 	it('should display the selected person', () => {
-		const dropdowns = fixture.debugElement.queryAll(By.directive(DropdownSelectComponent));
-		const personDropdown = dropdowns[0].componentInstance;
-
-		personDropdown.selectionChange.emit({
-			id: 1,
-			name: 'Alice'
-		});
-
+		const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('theme-dropdown-select select');
+		assert(select);
+		select.value = '0';
+		select.dispatchEvent(new Event('change'));
 		fixture.detectChanges();
 
 		expect(fixture.nativeElement.textContent).toContain('Selected: Alice');

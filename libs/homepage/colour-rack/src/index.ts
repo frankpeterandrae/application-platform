@@ -3,4 +3,4 @@
  * All rights reserved.
  */
 
-export * from './lib/color-search-container/color-search-container.component';
+export { ColorSearchContainerComponent } from './lib/color-search-container/color-search-container.component';

@@ -5,6 +5,7 @@
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { environment } from '../environments/environment';
 import { setupTestingModule } from '../test-setup';
@@ -31,16 +32,28 @@ describe('AppComponent', () => {
 		expect(fixture.nativeElement.querySelector('theme-footer')).not.toBeNull();
 	});
 
-	it('should provide the homepage navigation routes', () => {
-		const menuItems = fixture.componentInstance.menuItems;
+	it('renders navigation links in the active language', async () => {
+		const shell = fixture.nativeElement as HTMLElement;
+		const home = shell.querySelector<HTMLAnchorElement>('nav a[href="/"]');
+		const rack = shell.querySelector<HTMLAnchorElement>('nav a[href="/paint-rack"]');
+		const translations = TestBed.inject(TranslocoService);
 
-		expect(menuItems.find(({ id }) => id === 'home')?.route).toBe('/');
-		expect(menuItems.find(({ id }) => id === 'paint-rack')?.route).toBe('/paint-rack');
+		translations.setActiveLang('en');
+		await fixture.whenStable();
+		fixture.detectChanges();
+		expect(home?.textContent?.trim()).toBe('Home');
+		expect(rack?.textContent?.trim()).toBe('Paint rack');
+
+		translations.setActiveLang('de');
+		await fixture.whenStable();
+		fixture.detectChanges();
+		expect(home?.textContent?.trim()).toBe('Startseite');
+		expect(rack?.textContent?.trim()).toBe('Farbregal');
 	});
 
-	it('should expose development navigation only outside production', () => {
-		const devItem = fixture.componentInstance.menuItems.find(({ id }) => id === 'dev');
+	it('shows the demo link in development', () => {
+		const demoLink = fixture.nativeElement.querySelector('nav a[href="/dev/demo"]');
 
-		expect(Boolean(devItem)).toBe(!environment.production);
+		expect(Boolean(demoLink)).toBe(!environment.production);
 	});
 });

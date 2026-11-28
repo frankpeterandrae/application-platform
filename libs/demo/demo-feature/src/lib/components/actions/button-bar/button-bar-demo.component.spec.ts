@@ -4,8 +4,6 @@
  */
 
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ButtonComponent } from '@application-platform/shared/ui-theme';
 
 import { setupTestingModule } from '../../../../test-setup';
 
@@ -23,19 +21,14 @@ describe('ButtonBarDemoComponent', () => {
 		fixture.detectChanges();
 	});
 
-	it('should render the button bar examples', () => {
-		const buttonBars = fixture.nativeElement.querySelectorAll('theme-button-bar');
+	it('shows action, navigation and editing controls in separate groups', () => {
+		const groups = (fixture.nativeElement as HTMLElement).querySelectorAll('theme-button-bar');
+		const labels = Array.from(groups, (group) => Array.from(group.querySelectorAll('button'), (button) => button.textContent?.trim()));
 
-		expect(buttonBars).toHaveLength(3);
-	});
-
-	it('should execute every configured demo action', () => {
-		const buttons = fixture.debugElement.queryAll(By.directive(ButtonComponent));
-
-		expect(buttons).toHaveLength(6);
-
-		for (const button of buttons) {
-			button.componentInstance.buttonClick.emit();
-		}
+		expect(labels).toEqual([
+			['Cancel', 'Save'],
+			['Previous', 'Next'],
+			['Delete', 'Edit']
+		]);
 	});
 });
